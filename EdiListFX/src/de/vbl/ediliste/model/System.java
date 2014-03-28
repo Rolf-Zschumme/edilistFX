@@ -7,24 +7,32 @@ import javafx.beans.property.StringProperty;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import de.vbl.ediliste.model.Partner;
+import javax.persistence.ManyToOne;
  
 @Entity 
 public class System {
-	private long id;
 	private StringProperty name = new SimpleStringProperty();
-	public StringProperty nameProperty() {
-		return name;
-	}
+	private StringProperty fullname = new SimpleStringProperty();
+	
+	private Long id;
 
+	private Partner partner;
+	// ------------------------------------------------------------------------
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
+	// ------------------------------------------------------------------------
+	public StringProperty nameProperty() {
+		return name;
+	}
+	
 	public String getName() {
 		return name.get();
 	}
@@ -32,5 +40,26 @@ public class System {
 	public void setName(String param) {
 		name.set(param);
 	}
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
+	public StringProperty fullnameProperty() {
+		return fullname;
+	}
+	
+	public String getFullname() {
+		String partnerName = partner == null ? "-?-" : partner.getName();
+		return partnerName + "  " + name.get();
+	}
+	
+	// ------------------------------------------------------------------------
+	@ManyToOne
+	public Partner getPartner() {
+	    return partner;
+	}
+	public void setPartner(Partner param) {
+	    this.partner = param;
+	}
+
+
 
 }

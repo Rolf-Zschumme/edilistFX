@@ -23,16 +23,7 @@ public class EdiEintrag {
 	private StringProperty kurzBez = new SimpleStringProperty();
 	private StringProperty senderName = new SimpleStringProperty();
 
-	public IntegerProperty ediNrProperty() {
-		return ediNr;
-	}
-	public StringProperty kurzBez() {
-		return kurzBez;
-	}
-	public StringProperty senderName() {
-		return senderName;
-	}
-	
+	// ------------------------------------------------------------------------
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
 	public long getId() {
@@ -40,6 +31,11 @@ public class EdiEintrag {
 	}
 	public void setId(long id) {
 		this.id = id;
+	}
+
+	// ------------------------------------------------------------------------
+	public IntegerProperty ediNrProperty() {
+		return ediNr;
 	}
 
 	public Integer getEdiNr() {
@@ -50,27 +46,42 @@ public class EdiEintrag {
 		ediNr.set(param);
 	}
 
+	// ------------------------------------------------------------------------
+	public StringProperty kurzBez() {
+		return kurzBez;
+	}
+
 	@Column(length = 30)
 	public String getKurzBez() {
 		return kurzBez.get();
 	}
+
 	public void setKurzBez(String param) {
 		kurzBez.set(param);
 	}
+
+	// ------------------------------------------------------------------------
+	public StringProperty senderName() {
+		return senderName;
+	}
+
+//	public void setSenderName(String param) {
+//		senderName.set(param);
+//	}
+
+	public String getSenderName () {
+		return senderKomponente == null ? "" : senderKomponente.getName();
+	}
+	
+	// ------------------------------------------------------------------------
 	@OneToOne
 	@PrimaryKeyJoinColumn
-	public Komponente getKomponente() {
+	public Komponente getSender() {
 	    return senderKomponente;
 	}
-	public void setKomponente(Komponente param) {
+	public void setSender(Komponente param) {
 	    this.senderKomponente = param;
 	}
 	
-	public void setSenderName(String param) {
-		senderName.set(param);
-	}
-	public String getSenderName () {
-		return senderName.get();
-	}
-
 }
+

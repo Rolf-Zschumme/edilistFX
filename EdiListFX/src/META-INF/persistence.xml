@@ -4,6 +4,7 @@
 		<class>de.vbl.ediliste.model.EdiEintrag</class>
 		<class>de.vbl.ediliste.model.Komponente</class>
 		<class>de.vbl.ediliste.model.System</class>
+		<class>de.vbl.ediliste.model.Partner</class>
 		<properties>
 			<property name="javax.persistence.jdbc.url" value="jdbc:postgresql://v00011:5432/xidv01"/>
 			<property name="javax.persistence.jdbc.user" value="lyan"/>
