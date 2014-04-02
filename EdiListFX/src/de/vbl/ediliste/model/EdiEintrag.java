@@ -13,6 +13,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
+import de.vbl.ediliste.model.Szenario;
+import javax.persistence.ManyToOne;
 
 
 @Entity
@@ -22,6 +24,7 @@ public class EdiEintrag {
 	private IntegerProperty ediNr = new SimpleIntegerProperty();
 	private StringProperty kurzBez = new SimpleStringProperty();
 	private StringProperty senderName = new SimpleStringProperty();
+	private Szenario szenario;
 
 	// ------------------------------------------------------------------------
 	@Id
@@ -81,6 +84,13 @@ public class EdiEintrag {
 	}
 	public void setSender(Komponente param) {
 	    this.senderKomponente = param;
+	}
+	@ManyToOne
+	public Szenario getSzenario() {
+	    return szenario;
+	}
+	public void setSzenario(Szenario param) {
+	    this.szenario = param;
 	}
 	
 }

@@ -1,29 +1,32 @@
 package de.vbl.ediliste.controller;
 
-import javafx.beans.property.LongProperty;
-import javafx.beans.property.SimpleLongProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ObservableValue;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
-import javafx.fxml.FXML;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableColumn.CellDataFeatures;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.util.Callback;
+import de.vbl.ediliste.model.EdiEintrag;
+import de.vbl.ediliste.model.EdiNrListElement;
 
 public class EdiListController {
 	private static final String PERSISTENCE_UNIT_NAME = "EdiListFX";
@@ -35,7 +38,7 @@ public class EdiListController {
     private URL location;
 
     @FXML
-    private TableColumn<?, ?> ediNrCol;
+    private TableColumn<EdiNrListElement, String> ediNrCol;
 
     @FXML
     private TitledPane ediEintragPane;
@@ -50,10 +53,10 @@ public class EdiListController {
     private TextField ediLastChange;
 
     @FXML
-    private TableColumn<?, ?> ediKurzbezCol;
+    private TableColumn<EdiNrListElement, String> ediKurzbezCol;
 
     @FXML
-    private TableView<?> ediNrTable;
+    private TableView<EdiNrListElement> ediNrTable;
 
     @FXML
     private TitledPane szenarioPane;
@@ -70,6 +73,12 @@ public class EdiListController {
     
     private EntityManager em;
     private ObservableList<EdiNrListElement> ediNrArrayList = FXCollections.observableArrayList();
+    private int maxEdiNr;
+    private Stage primaryStage;
+    
+    public void setStage(Stage temp) {
+    	primaryStage = temp;
+    }
     
     /* ------------------------------------------------------------------------
      * initialize() is the controllers "main"-method 
@@ -83,21 +92,13 @@ public class EdiListController {
         setupBindings();
     }
     
+    
     private void setupBindings() {
     	
-//    	ediNrTable.setItems(ediNrArrayList);
-//    	
-//    	ediNrCol.setCellValueFactory(new Callback<CellDataFeatures<EdiNrListElement, String>, ObservableValue<String> >() {
-//    		@Override
-//    		public ObservableValue<String> call (
-//    				CellDataFeatures<EdiNrListElement, String> parameter) {
-//    			return parameter.getValue().ediNrProperty();
-//    		}
-//    	});
+    	ediNrTable.setItems(ediNrArrayList);
     	
-//    	ediNrCol.setCellValueFactory(new PropertyValueFactory<EdiNrListElement,String>("ediNr"));
-//    	ediKurzbezCol.setCellValueFactory(new PropertyValueFactory<EdiNrListElement,String>("ediKurzBez"));
-		
+    	ediNrCol.setCellValueFactory(new PropertyValueFactory<EdiNrListElement,String>("ediNr"));
+    	ediKurzbezCol.setCellValueFactory(new PropertyValueFactory<EdiNrListElement,String>("ediKurzBez"));
 		
 	}
 
@@ -105,39 +106,74 @@ public class EdiListController {
     	Query query = em.createQuery("SELECT e.id, e.ediNr, e.kurzBez FROM EdiEintrag e ORDER BY e.ediNr");
 
     	ediNrArrayList.clear();
+    	Integer max = 0;
     	for (Object zeile  : query.getResultList()) {
     		Object[] obj = (Object[]) zeile;
-			ediNrArrayList.add(new EdiNrListElement( (Long) obj[0], (String) obj[1], (String) obj[2]));
+			ediNrArrayList.add(new EdiNrListElement( (Long) obj[0], (Integer) obj[1], (String) obj[2]));
+			max = (Integer) obj[1]; 
     	}	
+    	maxEdiNr = max;
 	}
     	
-    class EdiNrListElement    {
-    	private LongProperty ediId;
-    	private StringProperty ediNr;
-    	private StringProperty ediKurzbez;
-    	
-    	public EdiNrListElement(Long id, String nr, String kurzbez) {
-    		this.ediId = new SimpleLongProperty(id);
-    		this.ediNr = new SimpleStringProperty(nr);
-    		this.ediKurzbez = new SimpleStringProperty(kurzbez);
-    	}
-    	
-    	public StringProperty ediNrProperty() {
-    		return ediNr;
-    	}
-    	
-    	public StringProperty ediKurzbezProperty() {
-    		return ediKurzbez;
-    	}
-
-    	public Long getEdiId() {
-    		return ediId.getValue();
-    	}
-    }
-    
-	private void setupEntityManager() {
+    private void setupEntityManager() {
     	EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
     	em = factory.createEntityManager();
+    }
+    
+/* *****************************************************************************
+ * 
+ * ****************************************************************************/
+    void xnewEdiNr(ActionEvent event) {
+
+    	em.getTransaction().begin();
+    	
+    	EdiEintrag ediEintrag = new EdiEintrag();
+    	ediEintrag.setEdiNr(getHighestEdiNr()+1);
+    	
+      	em.persist(ediEintrag);
+    	em.getTransaction().commit();
+    	
+    	ediNrArrayList.add(new EdiNrListElement(ediEintrag.getId(),
+    										   ediEintrag.getEdiNr(),	
+    										   ediEintrag.getKurzBez() ));
+    	if (ediEintrag.getEdiNr() > maxEdiNr)
+    		maxEdiNr = ediEintrag.getEdiNr();
+    }
+
+    
+    @FXML
+    void newEdiNr(ActionEvent event) {
+    
+    	FXMLLoader fl = new FXMLLoader();
+    	fl.setLocation(getClass().getResource("../view/NeuerEdiEintrag.fxml"));
+    	try {
+			fl.load();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    	Parent root = fl.getRoot();
+    	
+    	Stage modal_dialog = new Stage(StageStyle.DECORATED);
+    	modal_dialog.initModality(Modality.APPLICATION_MODAL);
+    	modal_dialog.initOwner(primaryStage);
+    	Scene scene = new Scene(root);
+
+    	modal_dialog.setScene(scene);
+    	modal_dialog.show();
+    }    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    private Integer getHighestEdiNr() {
+//    	Query query = em.createNativeQuery("SELECT ediNr FROM EdiEintrag WHERE ediNr=(SELECT MAX(ediNr) FROM EdiEintrag");
+//    	Object o = query.getSingleResult();
+    	return maxEdiNr;
     }
     
     private void checkFieldFromView() {

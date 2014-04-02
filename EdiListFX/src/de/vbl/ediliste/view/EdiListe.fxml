@@ -35,7 +35,7 @@
 <VBox>
 <children><ToolBar layoutX="-48.0" layoutY="14.0" prefWidth="200.0">
   <items>
-    <Button mnemonicParsing="false" text="Neu" /><Button disable="true" mnemonicParsing="false" text="Löschen" />
+    <Button mnemonicParsing="false" onAction="#newEdiNr" text="Neu" /><Button disable="true" mnemonicParsing="false" text="Löschen" />
   </items>
 </ToolBar><TableView fx:id="ediNrTable" prefHeight="499.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
   <columns>
