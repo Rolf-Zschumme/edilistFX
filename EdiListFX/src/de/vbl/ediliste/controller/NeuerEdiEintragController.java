@@ -1,11 +1,9 @@
 package de.vbl.ediliste.controller;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.util.converter.NumberStringConverter;
@@ -26,14 +24,12 @@ public class NeuerEdiEintragController {
     @FXML
     private TextField tfKurzbez;
 
-    private Stage aktStage;
+    @FXML
+    private Label fehlertext;
+    
 	private EntityManager em;
-	private IntegerProperty ediNr = new SimpleIntegerProperty();
-	private StringProperty kurzbez = new SimpleStringProperty();
+	private EdiEintrag ediEintrag;
 	
-    public void setStage(Stage temp) {
-    	aktStage = temp;
-    }
 	
     /* ------------------------------------------------------------------------
      * initialize() is the controllers "main"-method 
@@ -43,13 +39,16 @@ public class NeuerEdiEintragController {
     void initialize() {
     	checkFieldFromView();
         setupEntityManager();
-        ediNr.setValue(getHighestEdiNr()+1);
+        
+        ediEintrag = new EdiEintrag();        
+        ediEintrag.setEdiNr(getHighestEdiNr()+1);
+        
         setupBindings();
     }
     
     private void setupBindings() {
-    	tfEdiNr.textProperty().bindBidirectional(ediNr,new NumberStringConverter());
-    	tfKurzbez.textProperty().bindBidirectional(kurzbez);
+    	tfEdiNr.textProperty().bindBidirectional(ediEintrag.ediNrProperty(),new NumberStringConverter());
+    	tfKurzbez.textProperty().bindBidirectional(ediEintrag.kurzBezProperty());
 	}
     	
     private void setupEntityManager() {
@@ -59,36 +58,50 @@ public class NeuerEdiEintragController {
     
     @FXML
     void okPressed(ActionEvent event) {
-    	System.out.println("OK");
-    	aktStage.close();
+    	int ediNr = ediEintrag.getEdiNr();
+    	if (isEdiNrUsed(ediNr)) {
+    		fehlertext.setText("Die Nummer " + ediNr + " ist bereits vergeben - bitte ändern");
+    	}
+    	else if (ediEintrag.getKurzBez()=="") {
+    		fehlertext.setText("Bitte eine Kurzbezeichnung eingeben");
+    	}
+    	else {
+    		em.getTransaction().begin();
+    		em.persist(ediEintrag);
+    		em.getTransaction().commit();
+    		close(event);
+    	}
     }
 
     @FXML
     void escapePressed(ActionEvent event) {
-    	System.out.println("Abbruch");
-    	aktStage.close();
+    	close(event);
     }
     
+    private void close(ActionEvent event) {
+    	tfEdiNr.textProperty().unbindBidirectional(ediEintrag.ediNrProperty());
+    	tfKurzbez.textProperty().unbindBidirectional(ediEintrag.kurzBezProperty());
+    	Node source = (Node) event.getSource();
+    	Stage stage = (Stage) source.getScene().getWindow();
+    	stage.close();
+    }
     
-    
-    
-/* *****************************************************************************
- * 
- * ****************************************************************************/
-    void storeEdiEintrag() {
-
-    	em.getTransaction().begin();
-    	
-    	EdiEintrag ediEintrag = new EdiEintrag();
-    	ediEintrag.setEdiNr(getHighestEdiNr()+1);
-    	
-      	em.persist(ediEintrag);
-    	em.getTransaction().commit();
-    	
+	/* *****************************************************************************
+	 * 
+	 * ****************************************************************************/
+    private boolean isEdiNrUsed(int nr) {
+    	Query query = em.createQuery("SELECT e.ediNr FROM EdiEintrag e");
+    	for (Object zeile  : query.getResultList()) {
+    		Object obj = (Object) zeile;
+    		int aktnr = (Integer) obj;
+			if (aktnr == nr)
+				return true;
+    	}	
+    	return false;
     }
     
     private Integer getHighestEdiNr() {
-    	Query query = em.createQuery("SELECT e.id, e.ediNr, e.kurzBez FROM EdiEintrag e ORDER BY e.ediNr");
+    	Query query = em.createQuery("SELECT e.ediNr FROM EdiEintrag e ORDER BY e.ediNr");
     	Integer max = 0;
     	for (Object zeile  : query.getResultList()) {
     		Object[] obj = (Object[]) zeile;
@@ -100,5 +113,6 @@ public class NeuerEdiEintragController {
     private void checkFieldFromView() {
         assert tfEdiNr != null : "fx:id=\"tfEdiNr\" was not injected: check your FXML file 'NeuerEdiEintrag.fxml'.";
         assert tfKurzbez != null : "fx:id=\"tfKurzbez\" was not injected: check your FXML file 'NeuerEdiEintrag.fxml'.";
+        assert fehlertext != null : "fx:id=\"fehlertext\" was not injected: check your FXML file 'NeuerEdiEintrag.fxml'.";
 	}
 }

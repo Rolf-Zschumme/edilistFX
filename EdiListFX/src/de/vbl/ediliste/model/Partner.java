@@ -7,6 +7,9 @@ import javafx.beans.property.StringProperty;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import de.vbl.ediliste.model.System;
+import java.util.Collection;
+import javax.persistence.OneToMany;
 
 /**
  * Entity implementation class for Entity: Partner
@@ -18,6 +21,8 @@ public class Partner {
 	private StringProperty name = new SimpleStringProperty();
 
 	private Long id;
+
+	private Collection<System> system;
 	
 	// ------------------------------------------------------------------------
 	@Id
@@ -41,6 +46,15 @@ public class Partner {
 
 	public void setName(String param) {
 		name.set(param);
+	}
+
+	@OneToMany(mappedBy = "partner")
+	public Collection<System> getSystem() {
+	    return system;
+	}
+
+	public void setSystem(Collection<System> param) {
+	    this.system = param;
 	}
 
 	// ------------------------------------------------------------------------

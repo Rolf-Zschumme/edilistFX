@@ -25,6 +25,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
+import de.vbl.ediliste.main.EdiListMain;
 import de.vbl.ediliste.model.EdiEintrag;
 import de.vbl.ediliste.model.EdiNrListElement;
 
@@ -70,11 +71,15 @@ public class EdiListController {
     @FXML
     private TitledPane anbindungPane;
 
-    
+    private EdiListMain mainApp;
     private EntityManager em;
     private ObservableList<EdiNrListElement> ediNrArrayList = FXCollections.observableArrayList();
     private int maxEdiNr;
     private Stage primaryStage;
+
+    public void setMainApp(EdiListMain mainApp) {
+    	this.mainApp = mainApp;
+    }
     
     public void setStage(Stage temp) {
     	primaryStage = temp;
@@ -144,22 +149,28 @@ public class EdiListController {
     @FXML
     void newEdiNr(ActionEvent event) {
     
-    	FXMLLoader fl = new FXMLLoader();
-    	fl.setLocation(getClass().getResource("../view/NeuerEdiEintrag.fxml"));
+    	FXMLLoader loader = new FXMLLoader();
+    	loader.setLocation(getClass().getResource("../view/NeuerEdiEintrag.fxml"));
     	try {
-			fl.load();
+			loader.load();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-    	Parent root = fl.getRoot();
+    	NeuerEdiEintragController controller = loader.getController();
     	
     	Stage modal_dialog = new Stage(StageStyle.DECORATED);
-    	modal_dialog.initModality(Modality.APPLICATION_MODAL);
-    	modal_dialog.initOwner(primaryStage);
+
+    	Parent root = loader.getRoot();
     	Scene scene = new Scene(root);
 
+    	modal_dialog.initModality(Modality.APPLICATION_MODAL);
+    	modal_dialog.initOwner(primaryStage);
     	modal_dialog.setScene(scene);
-    	modal_dialog.show();
+    	modal_dialog.showAndWait();
+    	
+    	
+    	
+    	System.out.println(getClass().getName() + ".newEdiNr wurde beendet.");
     }    
     
     

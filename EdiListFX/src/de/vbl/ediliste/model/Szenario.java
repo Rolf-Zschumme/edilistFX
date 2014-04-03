@@ -1,11 +1,13 @@
 package de.vbl.ediliste.model;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 import javafx.beans.property.StringProperty;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import de.vbl.ediliste.model.Anbindung;
 import javax.persistence.ManyToOne;
 
@@ -14,12 +16,12 @@ import javax.persistence.ManyToOne;
  *
  */
 @Entity
-
 public class Szenario implements Serializable {
 
 	private long id;
 	private StringProperty name;
 	private static final long serialVersionUID = 1L;
+	private Collection<EdiEintrag> ediEintrag;
 	private Anbindung anbindung;
 	public Szenario() {
 		super();
@@ -45,6 +47,15 @@ public class Szenario implements Serializable {
 
 	public void setName(String param) {
 		name.set(param);
+	}
+
+	@OneToMany(mappedBy = "szenario")
+	public Collection<EdiEintrag> getEdiEintrag() {
+	    return ediEintrag;
+	}
+
+	public void setEdiEintrag(Collection<EdiEintrag> param) {
+	    this.ediEintrag = param;
 	}
 
 	@ManyToOne

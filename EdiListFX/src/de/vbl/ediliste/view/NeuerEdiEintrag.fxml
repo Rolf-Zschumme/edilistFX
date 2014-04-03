@@ -32,4 +32,9 @@
 <bottom><HBox alignment="CENTER" prefHeight="65.0" prefWidth="595.0" spacing="25.0" BorderPane.alignment="CENTER">
 <children><Button defaultButton="true" mnemonicParsing="false" onAction="#okPressed" prefWidth="100.0" text="OK" textAlignment="CENTER" /><Button cancelButton="true" mnemonicParsing="false" onAction="#escapePressed" prefWidth="100.0" text="Abbruch" />
 </children></HBox>
-</bottom></BorderPane>
+</bottom>
+<top><Label fx:id="fehlertext" textAlignment="CENTER" textFill="#fc000d" BorderPane.alignment="CENTER">
+<font>
+<Font name="Arial Unicode MS" size="18.0" />
+</font></Label>
+</top></BorderPane>

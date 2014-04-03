@@ -2,6 +2,8 @@ package de.vbl.ediliste.model;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
+import java.util.Collection;
+
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -11,21 +13,22 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
-import de.vbl.ediliste.model.Szenario;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import de.vbl.ediliste.model.Empfaenger;
+import javax.persistence.OneToMany;
 
 
 @Entity
 public class EdiEintrag {
 	private long id;
-	private Komponente senderKomponente;
 	private IntegerProperty ediNr = new SimpleIntegerProperty();
 	private StringProperty kurzBez = new SimpleStringProperty();
 	private StringProperty senderName = new SimpleStringProperty();
+	private Collection<Dokument> dokument;
 	private Szenario szenario;
-
+	private Komponente senderKomponente;
+	private Collection<Empfaenger> empfaenger;
 	// ------------------------------------------------------------------------
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
@@ -50,7 +53,7 @@ public class EdiEintrag {
 	}
 
 	// ------------------------------------------------------------------------
-	public StringProperty kurzBez() {
+	public StringProperty kurzBezProperty() {
 		return kurzBez;
 	}
 
@@ -64,7 +67,7 @@ public class EdiEintrag {
 	}
 
 	// ------------------------------------------------------------------------
-	public StringProperty senderName() {
+	public StringProperty senderNameProperty() {
 		return senderName;
 	}
 
@@ -75,15 +78,12 @@ public class EdiEintrag {
 	public String getSenderName () {
 		return senderKomponente == null ? "" : senderKomponente.getName();
 	}
-	
-	// ------------------------------------------------------------------------
-	@OneToOne
-	@PrimaryKeyJoinColumn
-	public Komponente getSender() {
-	    return senderKomponente;
+	@ManyToMany
+	public Collection<Dokument> getDokument() {
+	    return dokument;
 	}
-	public void setSender(Komponente param) {
-	    this.senderKomponente = param;
+	public void setDokument(Collection<Dokument> param) {
+	    this.dokument = param;
 	}
 	@ManyToOne
 	public Szenario getSzenario() {
@@ -91,6 +91,20 @@ public class EdiEintrag {
 	}
 	public void setSzenario(Szenario param) {
 	    this.szenario = param;
+	}
+	public void setSender(Komponente param) {
+	    this.senderKomponente = param;
+	}
+	@ManyToOne
+	public Komponente getSender() {
+	    return senderKomponente;
+	}
+	@OneToMany(mappedBy = "ediEintrag")
+	public Collection<Empfaenger> getEmpfaenger() {
+	    return empfaenger;
+	}
+	public void setEmpfaenger(Collection<Empfaenger> param) {
+	    this.empfaenger = param;
 	}
 	
 }

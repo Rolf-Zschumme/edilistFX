@@ -5,9 +5,28 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
-<AnchorPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.ediliste.controller.EdiListController">
-<children>
+<BorderPane prefHeight="527.0" prefWidth="981.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.ediliste.controller.EdiListController">
+<top><MenuBar BorderPane.alignment="CENTER">
+  <menus>
+    <Menu mnemonicParsing="false" text="Datei">
+      <items>
+        <MenuItem mnemonicParsing="false" text="Beenden" />
+      </items>
+    </Menu>
+    <Menu mnemonicParsing="false" text="Bearbeiten">
+      <items>
+        <MenuItem mnemonicParsing="false" text="Löschen" />
+      </items>
+    </Menu>
+    <Menu mnemonicParsing="false" text="Hilfe">
+      <items>
+        <MenuItem mnemonicParsing="false" text="Über" />
+      </items>
+    </Menu>
+  </menus>
+</MenuBar>
+</top>
+<center>
 <SplitPane dividerPositions="0.25435540069686413" prefHeight="511.0" prefWidth="895.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" BorderPane.alignment="CENTER">
 <items><TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
   <tabs>
@@ -73,5 +92,4 @@
 </VBox>
 </items>
 </SplitPane>
-</children>
-</AnchorPane>
+</center></BorderPane>
