@@ -43,9 +43,9 @@ public class EdiListMain extends Application {
 		showEdiListe();
 	}
 	
-	public Stage getPrimaryStage() {
-		return primaryStage;
-	}
+//	public Stage getPrimaryStage() {
+//		return primaryStage;
+//	}
 	
 	public void showEdiListe() {
 		try {
@@ -54,7 +54,6 @@ public class EdiListMain extends Application {
 			rootLayout.setCenter(ediListView);
 			
 			EdiListController controller = loader.getController();
-			controller.setMainApp(this);
 			controller.setStage(primaryStage);
 			
 		} catch(Exception e) {

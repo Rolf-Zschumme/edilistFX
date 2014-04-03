@@ -29,9 +29,11 @@ public class NeuerEdiEintragController {
     
 	private EntityManager em;
 	private EdiEintrag ediEintrag;
-	
-	
-    /* ------------------------------------------------------------------------
+
+	public EdiEintrag hasCreatedNew() {
+		return ediEintrag;
+	}
+	/* ------------------------------------------------------------------------
      * initialize() is the controllers "main"-method 
      * it is called after loading "....fxml" 
      * ----------------------------------------------------------------------*/
@@ -69,23 +71,29 @@ public class NeuerEdiEintragController {
     		em.getTransaction().begin();
     		em.persist(ediEintrag);
     		em.getTransaction().commit();
+    		unbind();
     		close(event);
     	}
     }
 
     @FXML
     void escapePressed(ActionEvent event) {
+		unbind();
+    	ediEintrag = null;
     	close(event);
     }
     
-    private void close(ActionEvent event) {
+    private void unbind() {
     	tfEdiNr.textProperty().unbindBidirectional(ediEintrag.ediNrProperty());
     	tfKurzbez.textProperty().unbindBidirectional(ediEintrag.kurzBezProperty());
+    }
+    
+    private void close(ActionEvent event) {
     	Node source = (Node) event.getSource();
     	Stage stage = (Stage) source.getScene().getWindow();
     	stage.close();
     }
-    
+
 	/* *****************************************************************************
 	 * 
 	 * ****************************************************************************/
@@ -104,8 +112,8 @@ public class NeuerEdiEintragController {
     	Query query = em.createQuery("SELECT e.ediNr FROM EdiEintrag e ORDER BY e.ediNr");
     	Integer max = 0;
     	for (Object zeile  : query.getResultList()) {
-    		Object[] obj = (Object[]) zeile;
-			max = (Integer) obj[1]; 
+    		Object obj = (Object) zeile;
+			max = (Integer) obj; 
     	}	
     	return max;
     }

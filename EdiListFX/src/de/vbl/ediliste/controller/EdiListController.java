@@ -27,7 +27,7 @@ import javax.persistence.Query;
 
 import de.vbl.ediliste.main.EdiListMain;
 import de.vbl.ediliste.model.EdiEintrag;
-import de.vbl.ediliste.model.EdiNrListElement;
+import de.vbl.ediliste.view.EdiNrListElement;
 
 public class EdiListController {
 	private static final String PERSISTENCE_UNIT_NAME = "EdiListFX";
@@ -71,16 +71,11 @@ public class EdiListController {
     @FXML
     private TitledPane anbindungPane;
 
-    private EdiListMain mainApp;
     private EntityManager em;
     private ObservableList<EdiNrListElement> ediNrArrayList = FXCollections.observableArrayList();
     private int maxEdiNr;
     private Stage primaryStage;
 
-    public void setMainApp(EdiListMain mainApp) {
-    	this.mainApp = mainApp;
-    }
-    
     public void setStage(Stage temp) {
     	primaryStage = temp;
     }
@@ -97,13 +92,12 @@ public class EdiListController {
         setupBindings();
     }
     
-    
     private void setupBindings() {
     	
     	ediNrTable.setItems(ediNrArrayList);
     	
     	ediNrCol.setCellValueFactory(new PropertyValueFactory<EdiNrListElement,String>("ediNr"));
-    	ediKurzbezCol.setCellValueFactory(new PropertyValueFactory<EdiNrListElement,String>("ediKurzBez"));
+    	ediKurzbezCol.setCellValueFactory(new PropertyValueFactory<EdiNrListElement,String>("kurzBez"));
 		
 	}
 
@@ -125,27 +119,9 @@ public class EdiListController {
     	em = factory.createEntityManager();
     }
     
-/* *****************************************************************************
- * 
- * ****************************************************************************/
-    void xnewEdiNr(ActionEvent event) {
-
-    	em.getTransaction().begin();
-    	
-    	EdiEintrag ediEintrag = new EdiEintrag();
-    	ediEintrag.setEdiNr(getHighestEdiNr()+1);
-    	
-      	em.persist(ediEintrag);
-    	em.getTransaction().commit();
-    	
-    	ediNrArrayList.add(new EdiNrListElement(ediEintrag.getId(),
-    										   ediEintrag.getEdiNr(),	
-    										   ediEintrag.getKurzBez() ));
-    	if (ediEintrag.getEdiNr() > maxEdiNr)
-    		maxEdiNr = ediEintrag.getEdiNr();
-    }
-
-    
+	/* *****************************************************************************
+	 * 
+	 * ****************************************************************************/
     @FXML
     void newEdiNr(ActionEvent event) {
     
@@ -156,7 +132,7 @@ public class EdiListController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-    	NeuerEdiEintragController controller = loader.getController();
+    	NeuerEdiEintragController dialogController = loader.getController();
     	
     	Stage modal_dialog = new Stage(StageStyle.DECORATED);
 
@@ -165,27 +141,16 @@ public class EdiListController {
 
     	modal_dialog.initModality(Modality.APPLICATION_MODAL);
     	modal_dialog.initOwner(primaryStage);
+    	
     	modal_dialog.setScene(scene);
     	modal_dialog.showAndWait();
-    	
-    	
-    	
-    	System.out.println(getClass().getName() + ".newEdiNr wurde beendet.");
+    	EdiEintrag newE = dialogController.hasCreatedNew();
+    	if (newE != null) {
+    		ediNrArrayList.add(new EdiNrListElement(newE.getId(),newE.getEdiNr(),newE.getKurzBez()));
+    		if (newE.getEdiNr() > maxEdiNr)
+    			maxEdiNr = newE.getEdiNr();
+    	}
     }    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    private Integer getHighestEdiNr() {
-//    	Query query = em.createNativeQuery("SELECT ediNr FROM EdiEintrag WHERE ediNr=(SELECT MAX(ediNr) FROM EdiEintrag");
-//    	Object o = query.getSingleResult();
-    	return maxEdiNr;
-    }
     
     private void checkFieldFromView() {
 		assert ediNrCol != null : "fx:id=\"ediNrCol\" was not injected: check your FXML file 'EdiListe.fxml'.";

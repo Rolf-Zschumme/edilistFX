@@ -1,4 +1,4 @@
-package de.vbl.ediliste.model;
+package de.vbl.ediliste.view;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.LongProperty;
@@ -10,12 +10,12 @@ import javafx.beans.property.StringProperty;
 public class EdiNrListElement    {
 	private LongProperty ediId;
 	private IntegerProperty ediNr;
-	private StringProperty ediKurzbez;
+	private StringProperty kurzBez;
 	
-	public EdiNrListElement(Long id, Integer nr, String kurzbez) {
+	public EdiNrListElement(Long id, Integer nr, String kurzBez) {
 		this.ediId = new SimpleLongProperty(id);
 		this.ediNr = new SimpleIntegerProperty(nr);
-		this.ediKurzbez = new SimpleStringProperty(kurzbez);
+		this.kurzBez = new SimpleStringProperty(kurzBez);
 	}
 	
 	public Long getEdiId() {
@@ -26,8 +26,8 @@ public class EdiNrListElement    {
 		return ediNr;
 	}
 	
-	public StringProperty ediKurzbezProperty() {
-		return ediKurzbez;
+	public StringProperty kurzBezProperty() {
+		return kurzBez;
 	}
 
 }
