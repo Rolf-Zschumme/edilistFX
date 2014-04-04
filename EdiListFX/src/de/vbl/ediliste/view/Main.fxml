@@ -5,7 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane prefHeight="527.0" prefWidth="981.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.ediliste.controller.EdiListController">
+<BorderPane prefHeight="527.0" prefWidth="981.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.ediliste.controller.MainController">
 <top><MenuBar BorderPane.alignment="CENTER">
   <menus>
     <Menu mnemonicParsing="false" text="Datei">
@@ -35,7 +35,7 @@
 <VBox>
 <children><ToolBar layoutX="-48.0" layoutY="14.0" prefWidth="200.0">
   <items>
-    <Button mnemonicParsing="false" onAction="#newEdiNr" text="Neu" /><Button disable="true" mnemonicParsing="false" text="Löschen" />
+    <Button fx:id="newEdiNrButton" mnemonicParsing="false" onAction="#newEdiNr" text="Neu" /><Button fx:id="deleteEdiEintragButton" disable="true" mnemonicParsing="false" onAction="#deleteEdiEintrag" text="Löschen" />
   </items>
 </ToolBar><TableView fx:id="ediNrTable" prefHeight="499.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
   <columns>

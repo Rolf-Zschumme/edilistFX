@@ -1,16 +1,11 @@
 package de.vbl.ediliste.main;
 	
-import java.awt.Button;
-
-import de.vbl.ediliste.controller.EdiListController;
 import javafx.application.Application;
-import javafx.stage.Stage;
-import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
+import de.vbl.ediliste.controller.MainController;
 
 
 public class EdiListMain extends Application {
@@ -28,9 +23,10 @@ public class EdiListMain extends Application {
 		this.primaryStage.setTitle("EdiListe");
 		
 		try {
-			
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/RootLayout.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/Main.fxml"));
 			rootLayout = (BorderPane) loader.load();
+			MainController controller = loader.getController();
+			controller.setStage(primaryStage);
 			
 			Scene scene = new Scene(rootLayout); 
 			scene.getStylesheets().add(getClass().getResource("../view/application.css").toExternalForm());
@@ -39,26 +35,24 @@ public class EdiListMain extends Application {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		
-		showEdiListe();
 	}
 	
 //	public Stage getPrimaryStage() {
 //		return primaryStage;
 //	}
 	
-	public void showEdiListe() {
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/EdiListe.fxml"));
-			AnchorPane ediListView = (AnchorPane) loader.load();
-			rootLayout.setCenter(ediListView);
-			
-			EdiListController controller = loader.getController();
-			controller.setStage(primaryStage);
-			
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
+//	public void showEdiListe() {
+//		try {
+//			FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/EdiListe.fxml"));
+//			AnchorPane ediListView = (AnchorPane) loader.load();
+//			rootLayout.setCenter(ediListView);
+//			
+//			xxController controller = loader.getController();
+//			controller.setStage(primaryStage);
+//			
+//		} catch(Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
 	
 }

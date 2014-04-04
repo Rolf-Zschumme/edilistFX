@@ -18,14 +18,9 @@ import de.vbl.ediliste.model.EdiEintrag;
 public class NeuerEdiEintragController {
 	private static final String PERSISTENCE_UNIT_NAME = "EdiListFX";
     
-    @FXML
-    private TextField tfEdiNr;
-
-    @FXML
-    private TextField tfKurzbez;
-
-    @FXML
-    private Label fehlertext;
+    @FXML private TextField tfEdiNr;
+    @FXML private TextField tfKurzbez;
+    @FXML private Label fehlertext;
     
 	private EntityManager em;
 	private EdiEintrag ediEintrag;

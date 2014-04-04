@@ -12,7 +12,7 @@ public class EdiNrListElement    {
 	private IntegerProperty ediNr;
 	private StringProperty kurzBez;
 	
-	public EdiNrListElement(Long id, Integer nr, String kurzBez) {
+	public EdiNrListElement(long id, Integer nr, String kurzBez) {
 		this.ediId = new SimpleLongProperty(id);
 		this.ediNr = new SimpleIntegerProperty(nr);
 		this.kurzBez = new SimpleStringProperty(kurzBez);
