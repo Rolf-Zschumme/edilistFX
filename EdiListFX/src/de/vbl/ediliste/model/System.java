@@ -18,17 +18,17 @@ public class System {
 	private StringProperty name = new SimpleStringProperty();
 	private StringProperty fullname = new SimpleStringProperty();
 	
-	private Long id;
+	private long id;
 	private Partner partner;
 	private Collection<Komponente> komponente;
 
 	// ------------------------------------------------------------------------
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
-	public Long getId() {
+	public long getId() {
 		return id;
 	}
-	public void setId(Long id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 

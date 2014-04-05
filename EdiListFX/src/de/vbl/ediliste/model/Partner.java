@@ -20,18 +20,18 @@ import javax.persistence.OneToMany;
 public class Partner {
 	private StringProperty name = new SimpleStringProperty();
 
-	private Long id;
+	private long id;
 
 	private Collection<System> system;
 	
 	// ------------------------------------------------------------------------
 	@Id
 	@GeneratedValue(strategy = IDENTITY)	
-	public Long getId() {
+	public long getId() {
 		return this.id;
 	}
 
-	public void setId(Long id) {
+	public void setId(long id) {
 		this.id = id;
 	}   
 

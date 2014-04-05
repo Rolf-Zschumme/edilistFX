@@ -9,6 +9,8 @@ import javax.persistence.Id;
 import de.vbl.ediliste.model.Szenario;
 import java.util.Collection;
 import javax.persistence.OneToMany;
+import javax.persistence.GeneratedValue;
+import static javax.persistence.GenerationType.IDENTITY;
 
 /**
  * Entity implementation class for Entity: Anbindung
@@ -19,7 +21,7 @@ import javax.persistence.OneToMany;
 public class Anbindung implements Serializable {
 
 	   
-	private Long id;
+	private long id;
 	private StringProperty name;
 	private static final long serialVersionUID = 1L;
 	private Collection<Szenario> szenario;
@@ -28,6 +30,7 @@ public class Anbindung implements Serializable {
 	}
 	
 	@Id
+	@GeneratedValue(strategy = IDENTITY)
 	public long getId() {
 		return this.id;
 	}

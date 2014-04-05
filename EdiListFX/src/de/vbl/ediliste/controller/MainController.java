@@ -73,6 +73,7 @@ public class MainController {
      * initialize() is the controllers "main"-method 
      * it is called after loading "EdiListe.fxml" 
      * ----------------------------------------------------------------------*/
+    EdiEintrag aktEdi;
     @FXML
     void initialize() {
     	
@@ -87,15 +88,20 @@ public class MainController {
         			public void changed(
         					ObservableValue<? extends EdiNrListElement> observable,
         					EdiNrListElement oldValue, EdiNrListElement newValue) {
-        				EdiEintrag edi = new EdiEintrag();
+//        				System.out.println("oldValue=" + ((oldValue == null) ? "null" : oldValue.ediNrProperty().get()) 
+//        							   + "  newValue=" + ((newValue == null) ? "null" : newValue.ediNrProperty().get()) ); 
+        				final EdiEintrag defEdi = new EdiEintrag();
         				if (oldValue != null) {
-        					ediBezeichnung.textProperty().unbindBidirectional(edi.kurzBezProperty());
+        					ediBezeichnung.textProperty().unbindBidirectional(defEdi.kurzBezProperty());
+        					ediBezeichnung.textProperty().unbindBidirectional(aktEdi.kurzBezProperty());;
         				}
         				if (newValue != null) {
-        					edi = em.find(EdiEintrag.class, newValue.getEdiId());
-        					ediBezeichnung.textProperty().bindBidirectional(edi.kurzBezProperty());
+        					aktEdi = em.find(EdiEintrag.class, newValue.getEdiId());
+        					ediBezeichnung.textProperty().bindBidirectional(aktEdi.kurzBezProperty());
         				}
-        				else System.out.println("newValue=null");
+        				else {
+        					ediBezeichnung.textProperty().bindBidirectional(defEdi.kurzBezProperty());
+        				}
         			}
 				}
         );
@@ -111,7 +117,6 @@ public class MainController {
     	deleteEdiEintragButton.disableProperty().bind(Bindings.isNull(ediNrTable.getSelectionModel().selectedItemProperty()));
     	
 //		szenarioPane.textProperty().bind(ediEintrag.szenarioNameProperty());
-//    	ediBezeichnung.textProperty().bindBidirectional(arg0);
 	}
 
 	private void loadEdiNrListData() {

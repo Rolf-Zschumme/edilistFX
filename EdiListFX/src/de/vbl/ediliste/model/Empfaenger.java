@@ -1,14 +1,14 @@
 package de.vbl.ediliste.model;
 
-import java.io.Serializable;
-
+import static javax.persistence.GenerationType.IDENTITY;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import de.vbl.ediliste.model.EdiEintrag;
+import javax.persistence.ManyToOne;
 
 /**
  * Entity implementation class for Entity: Empfaenger
@@ -16,23 +16,17 @@ import de.vbl.ediliste.model.EdiEintrag;
  */
 @Entity
 
-public class Empfaenger implements Serializable {
-
-	
-	private Long id;
-	private static final long serialVersionUID = 1L;
+public class Empfaenger {
 	private StringProperty datenart = new SimpleStringProperty();
-	private Komponente komponente;
+	private long id;
 	private EdiEintrag ediEintrag;
-	public Empfaenger() {
-		super();
-	}   
 	@Id    
-	public Long getId() {
+	@GeneratedValue(strategy = IDENTITY)
+	public long getId() {
 		return this.id;
 	}
 
-	public void setId(Long id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
@@ -48,17 +42,12 @@ public class Empfaenger implements Serializable {
 	public void setDatenart(String param) {
 		datenart.set(param);
 	}
-	@ManyToOne
-	public Komponente getKomponente() {
-	    return komponente;
-	}
-	public void setKomponente(Komponente param) {
-	    this.komponente = param;
-	}
+
 	@ManyToOne
 	public EdiEintrag getEdiEintrag() {
 	    return ediEintrag;
 	}
+
 	public void setEdiEintrag(EdiEintrag param) {
 	    this.ediEintrag = param;
 	}

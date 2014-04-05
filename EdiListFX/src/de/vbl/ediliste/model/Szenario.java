@@ -10,6 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import de.vbl.ediliste.model.Anbindung;
 import javax.persistence.ManyToOne;
+import javax.persistence.GeneratedValue;
+import static javax.persistence.GenerationType.IDENTITY;
 
 /**
  * Entity implementation class for Entity: Szenario
@@ -28,6 +30,7 @@ public class Szenario implements Serializable {
 	}   
 
 	@Id
+	@GeneratedValue(strategy = IDENTITY)
 	public long getId() {
 		return this.id;
 	}
