@@ -12,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Dialogs;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
@@ -24,6 +25,7 @@ import de.vbl.ediliste.model.Komponente;
 import de.vbl.ediliste.model.Partner;
 
 public class KomponentenAuswahlController {
+	private static final String APPL_TITLE = "EdiListe";
 	private static final String PERSISTENCE_UNIT_NAME = "EdiListFX";
     
     @FXML private ResourceBundle resources;
@@ -48,6 +50,7 @@ public class KomponentenAuswahlController {
 	public Komponente selectedKomponenten() {
 		return komponente;
 	}
+	
 	/* ------------------------------------------------------------------------
      * initialize() is the controllers "main"-method 
      * it is called after loading "....fxml" 
@@ -71,14 +74,7 @@ public class KomponentenAuswahlController {
     		partnerList.add(partner.getName());
     		partnerIdList.add(partner.getId());
     	}
-		partnerList.add("Beteiligte");			partnerIdList.add(1L);
-		partnerList.add("Postrentendienst");	partnerIdList.add(2L);
-		partnerList.add("Bankhaus Metzler");	partnerIdList.add(3L);
-		partnerList.add("Versicherte");			partnerIdList.add(4L);
-		partnerList.add("Siteforum");			partnerIdList.add(4L);
     }
-    
-    
     
     private void setupBindings() {
     	newSystemButton.disableProperty().bind(Bindings.isNull(partnerCB.getSelectionModel().selectedItemProperty()));
@@ -131,9 +127,54 @@ public class KomponentenAuswahlController {
 
     @FXML
     void newPartnerPressed(ActionEvent event) {
-
+    	Node source = (Node) event.getSource();
+    	Stage stage = (Stage) source.getScene().getWindow();
+    	String name = "";
+    	while(true) {
+    		name = Dialogs.showInputDialog(stage,
+    				"Bezeichnung des Partners:",
+    				"Neuen Partner eingeben",APPL_TITLE,name);
+    		if (name == null)	
+    			break;
+    		if (name.length() < 3) {
+    			Dialogs.showInformationDialog(stage, 
+    					"Bitte einen Namen mit mind. 3 Zeichen eingeben",
+    					"Korrektur erforderlich",APPL_TITLE);
+    			continue;
+    		}
+    		if (partnerNameExist(name)) {
+    			Dialogs.showInformationDialog(stage, 
+    					"Ein Partner mit diesem Namen ist bereits vorhanden",
+    					"Duplikatsprüfung",APPL_TITLE);
+    			continue;
+    		}
+    		Partner partner = new Partner(name);
+    		try {
+    			em.getTransaction().begin();
+    			em.persist(partner);
+    			em.getTransaction().commit();
+    		} catch (RuntimeException e) {
+    			Dialogs.showErrorDialog(stage,
+    					"Fehler beim speichern des Partners",
+    					"Datenbankfehler",APPL_TITLE,e);
+    			continue;
+    		}
+    		partnerList.add(name);
+    		partnerIdList.add(partner.getId());
+    		partnerCB.getSelectionModel().select(name);
+    		break;
+    	}	
     }
+    
+    private boolean partnerNameExist(String name) {
+    	for (String p : partnerList) {
+    		if (name.equalsIgnoreCase(p))
+    			return false;
+    	}
+		return false;
+	}
 
+    
     @FXML
     void newSystemPressed(ActionEvent event) {
 

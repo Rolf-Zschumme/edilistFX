@@ -7,6 +7,7 @@ import javafx.beans.property.StringProperty;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Column;
 
 /**
  * Entity implementation class for Entity: Partner
@@ -19,6 +20,11 @@ public class Partner {
 
 	private long id;
 
+	public Partner() {
+	}
+	public Partner(String name) {
+		setName(name);
+	}
 	// ------------------------------------------------------------------------
 	@Id
 	@GeneratedValue(strategy = IDENTITY)	
@@ -35,6 +41,7 @@ public class Partner {
 		return name;
 	}
 	
+	@Column(unique = true)
 	public String getName() {
 		return name.get();
 	}

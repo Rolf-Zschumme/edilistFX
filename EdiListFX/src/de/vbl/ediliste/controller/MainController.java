@@ -218,13 +218,14 @@ public class MainController {
     	Stage dialog = new Stage(StageStyle.UTILITY);
     	dialog.initModality(Modality.APPLICATION_MODAL);
     	dialog.initOwner(primaryStage);
+
     	
     	dialog.setScene(scene);
     	dialog.setX(primaryStage.getX() + 100);
     	dialog.setY(primaryStage.getY() + 250);
     	dialog.showAndWait();
 
-    	KomponentenAuswahlController komponentenAuswahlController = loader.getController();
+//    	KomponentenAuswahlController komponentenAuswahlController = loader.getController();
 //    	Komponente komponente = komponentenAuswahlController.hasCreatedNew();
 //    	if (komponente != null) {
 //    		aktEdi
