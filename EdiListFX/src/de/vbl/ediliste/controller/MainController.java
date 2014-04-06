@@ -34,7 +34,6 @@ import javax.persistence.Persistence;
 import javax.persistence.Query;
 
 import de.vbl.ediliste.model.EdiEintrag;
-import de.vbl.ediliste.model.Komponente;
 import de.vbl.ediliste.view.EdiNrListElement;
 
 public class MainController {
@@ -77,7 +76,6 @@ public class MainController {
     EdiEintrag aktEdi;
     @FXML
     void initialize() {
-    	
     	checkFieldFromView();
         setupEntityManager();
         loadEdiNrListData();

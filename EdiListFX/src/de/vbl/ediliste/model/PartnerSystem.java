@@ -10,13 +10,21 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
  
 @Entity 
-public class System {
+public class PartnerSystem {
 	private StringProperty name = new SimpleStringProperty();
 	private StringProperty fullname = new SimpleStringProperty();
 	
 	private long id;
 	private Partner partner;
-
+	
+	public PartnerSystem() {
+		super();
+	}
+	public PartnerSystem(String name, Partner partner) {
+		super();
+		this.name.setValue(name);
+		this.partner = partner;
+	}
 	// ------------------------------------------------------------------------
 	@Id
 	@GeneratedValue(strategy = IDENTITY)

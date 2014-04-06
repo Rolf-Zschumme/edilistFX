@@ -14,7 +14,7 @@ public class Komponente {
 	private StringProperty name = new SimpleStringProperty();
 	private StringProperty fullname = new SimpleStringProperty();
 	private long id;
-	private System system;
+	private PartnerSystem partnerSystem;
 	// ------------------------------------------------------------------------
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
@@ -45,17 +45,17 @@ public class Komponente {
 	}
 	
 	public String getFullname() {
-		String fullName = system == null ? "-?-" : system.getFullname();
+		String fullName = partnerSystem == null ? "-?-" : partnerSystem.getFullname();
 		return fullName + "  " + name.get();
 	}
 
 	@ManyToOne
-	public System getSystem() {
-	    return system;
+	public PartnerSystem getPartnerSystem() {
+	    return partnerSystem;
 	}
 
-	public void setSystem(System param) {
-	    this.system = param;
+	public void setPartnerSystem(PartnerSystem param) {
+	    this.partnerSystem = param;
 	}
 }
 
