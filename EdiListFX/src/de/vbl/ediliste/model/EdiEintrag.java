@@ -13,9 +13,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import de.vbl.ediliste.model.Komponente;
 
 
 @Entity
@@ -31,7 +31,7 @@ public class EdiEintrag {
 	@Id 
 	@GeneratedValue(strategy = IDENTITY)
 	public long getId() {
-		return id;
+		return id; 
 	}
 	public void setId(long id) {
 		this.id = id;
@@ -77,7 +77,7 @@ public class EdiEintrag {
 //		return senderKomponente == null ? "" : senderKomponente.getName();
 //	}
 	// ------------------------------------------------------------------------
-	@ManyToMany
+	@ManyToMany 
 	public Collection<Dokument> getDokument() {
 	    return dokument;
 	}
@@ -92,9 +92,8 @@ public class EdiEintrag {
 	}
 	public void setSzenario(Szenario param) {
 	    this.szenario = param;
-	}
+	} 
 	@ManyToOne
-	@JoinTable(name = "KOMPONENTE")
 	public Komponente getKomponente() {
 	    return komponente;
 	}

@@ -1,40 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
+<?import java.lang.*?> 
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="279.0" prefWidth="596.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.ediliste.controller.NeuerEdiEintragController">
-<center><GridPane BorderPane.alignment="CENTER">
-  <columnConstraints>
-    <ColumnConstraints hgrow="SOMETIMES" maxWidth="295.0" minWidth="10.0" prefWidth="68.0" />
-    <ColumnConstraints hgrow="SOMETIMES" maxWidth="547.0" minWidth="10.0" prefWidth="137.0" />
-<ColumnConstraints hgrow="SOMETIMES" maxWidth="547.0" minWidth="10.0" prefWidth="400.0" />
-<ColumnConstraints hgrow="SOMETIMES" maxWidth="547.0" minWidth="10.0" prefWidth="72.0" />
-  </columnConstraints>
-  <rowConstraints>
-    <RowConstraints maxHeight="61.0" minHeight="10.0" prefHeight="61.0" vgrow="SOMETIMES" />
-    <RowConstraints maxHeight="99.0" minHeight="10.0" prefHeight="80.0" vgrow="SOMETIMES" />
-    <RowConstraints maxHeight="189.0" minHeight="10.0" prefHeight="74.0" vgrow="SOMETIMES" />
-  </rowConstraints>
-<children><TextField fx:id="tfEdiNr" focusTraversable="false" maxWidth="-Infinity" prefHeight="25.0" prefWidth="100.0" GridPane.columnIndex="2" GridPane.rowIndex="1" /><Label alignment="CENTER" prefHeight="17.0" prefWidth="135.0" text="Nummer :" GridPane.columnIndex="1" GridPane.rowIndex="1" /><Label prefHeight="17.0" prefWidth="119.0" text="Kurzbezeichnung:" GridPane.columnIndex="1" GridPane.rowIndex="2" /><TextField fx:id="tfKurzbez" GridPane.columnIndex="2" GridPane.rowIndex="2" /><Label text="Neuen EDI Eintrag anlegen" GridPane.columnIndex="2">
-<font>
-<Font size="18.0" />
-</font></Label>
-</children>
-<cursor>
-<Cursor fx:constant="DEFAULT" />
-</cursor>
-</GridPane>
-</center>
-<bottom><HBox alignment="CENTER" prefHeight="65.0" prefWidth="595.0" spacing="25.0" BorderPane.alignment="CENTER">
-<children><Button defaultButton="true" mnemonicParsing="false" onAction="#okPressed" prefWidth="100.0" text="OK" textAlignment="CENTER" /><Button cancelButton="true" mnemonicParsing="false" onAction="#escapePressed" prefWidth="100.0" text="Abbruch" />
-</children></HBox>
-</bottom>
-<top><Label fx:id="fehlertext" textAlignment="CENTER" textFill="#fc000d" BorderPane.alignment="CENTER">
-<font>
-<Font name="Arial Unicode MS" size="18.0" />
-</font></Label>
-</top></BorderPane>
+<BorderPane maxHeight="-Infinity" 
+			maxWidth="-Infinity" 
+			minHeight="-Infinity" 
+			minWidth="-Infinity" 
+			prefHeight="279.0" 
+			prefWidth="596.0" 
+		xmlns="http://javafx.com/javafx/8" 
+		xmlns:fx="http://javafx.com/fxml/1" 
+		fx:controller="de.vbl.ediliste.controller.NeuerEdiEintragController">
+	<top>
+		<Label fx:id="fehlertext" textAlignment="CENTER" textFill="#fc000d" BorderPane.alignment="CENTER">
+			<font>
+				<Font name="Arial Unicode MS" size="18.0" />
+			</font>
+		</Label>
+	</top>
+	<center>
+		<GridPane BorderPane.alignment="CENTER">
+		  <columnConstraints>
+		    <ColumnConstraints hgrow="SOMETIMES" maxWidth="295.0" minWidth="10.0" prefWidth="68.0" />
+		    <ColumnConstraints hgrow="SOMETIMES" maxWidth="547.0" minWidth="10.0" prefWidth="137.0" />
+		<ColumnConstraints hgrow="SOMETIMES" maxWidth="547.0" minWidth="10.0" prefWidth="400.0" />
+		<ColumnConstraints hgrow="SOMETIMES" maxWidth="547.0" minWidth="10.0" prefWidth="72.0" />
+		  </columnConstraints>
+		  <rowConstraints>
+		    <RowConstraints maxHeight="61.0" minHeight="10.0" prefHeight="61.0" vgrow="SOMETIMES" />
+		    <RowConstraints maxHeight="99.0" minHeight="10.0" prefHeight="80.0" vgrow="SOMETIMES" />
+		    <RowConstraints maxHeight="189.0" minHeight="10.0" prefHeight="74.0" vgrow="SOMETIMES" />
+		  </rowConstraints>
+		<children><TextField fx:id="tfEdiNr" focusTraversable="false" maxWidth="-Infinity" prefHeight="25.0" prefWidth="100.0" GridPane.columnIndex="2" GridPane.rowIndex="1" /><Label alignment="CENTER" prefHeight="17.0" prefWidth="135.0" text="Nummer :" GridPane.columnIndex="1" GridPane.rowIndex="1" /><Label prefHeight="17.0" prefWidth="119.0" text="Kurzbezeichnung:" GridPane.columnIndex="1" GridPane.rowIndex="2" /><TextField fx:id="tfKurzbez" GridPane.columnIndex="2" GridPane.rowIndex="2" /><Label text="Neuen EDI Eintrag anlegen" GridPane.columnIndex="2">
+		<font>
+		<Font size="18.0" />
+		</font></Label>
+		</children>
+		<cursor>
+		<Cursor fx:constant="DEFAULT" />
+		</cursor>
+		</GridPane>
+	</center>
+	<bottom>
+		<HBox alignment="CENTER" prefHeight="65.0" prefWidth="595.0" spacing="25.0" BorderPane.alignment="CENTER">
+		<children>
+			<Button defaultButton="true" mnemonicParsing="false" onAction="#okPressed" prefWidth="100.0" text="OK" textAlignment="CENTER" />
+			<Button cancelButton="true" mnemonicParsing="false" onAction="#escapePressed" prefWidth="100.0" text="Abbruch" />
+		</children></HBox>
+	</bottom>
+</BorderPane>

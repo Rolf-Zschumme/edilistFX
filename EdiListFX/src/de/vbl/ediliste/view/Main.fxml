@@ -75,7 +75,8 @@
         <AnchorPane>
 <children><TextField fx:id="ediBezeichnung" alignment="TOP_LEFT" layoutX="113.0" layoutY="28.0" prefHeight="25.0" prefWidth="187.0" />
 <HBox layoutX="30.0" layoutY="97.0" prefHeight="25.0" prefWidth="594.0" spacing="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
-<children><TextField fx:id="senderName" alignment="CENTER" editable="false" layoutX="30.0" layoutY="97.0" /><TextField fx:id="empfaengerName" alignment="CENTER" editable="false" layoutX="189.0" layoutY="97.0" /><TextField fx:id="datenart" alignment="CENTER" layoutX="359.0" layoutY="97.0" prefHeight="25.0" HBox.hgrow="ALWAYS">
+<children><Button fx:id="senderName" alignment="CENTER" disable="true" minWidth="150.0" mnemonicParsing="false" onAction="#senderButton" /><Button fx:id="empfaengerButton" alignment="CENTER" disable="true" minWidth="150.0" mnemonicParsing="false" onAction="#empfaengerButton" />
+		  <TextField fx:id="datenart" alignment="TOP_LEFT" layoutX="359.0" layoutY="97.0" prefHeight="25.0" HBox.hgrow="ALWAYS">
 <HBox.margin>
 <Insets />
 </HBox.margin></TextField>

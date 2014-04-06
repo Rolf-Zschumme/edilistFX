@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import de.vbl.ediliste.model.EdiEintrag;
 import javax.persistence.ManyToOne;
+import de.vbl.ediliste.model.Komponente;
 
 /**
  * Entity implementation class for Entity: Empfaenger
@@ -20,6 +21,7 @@ public class Empfaenger {
 	private StringProperty datenart = new SimpleStringProperty();
 	private long id;
 	private EdiEintrag ediEintrag;
+	private Komponente komponente;
 	@Id    
 	@GeneratedValue(strategy = IDENTITY)
 	public long getId() {
@@ -50,6 +52,15 @@ public class Empfaenger {
 
 	public void setEdiEintrag(EdiEintrag param) {
 	    this.ediEintrag = param;
+	}
+ 
+	@ManyToOne
+	public Komponente getKomponente() {
+	    return komponente;
+	}
+
+	public void setKomponente(Komponente param) {
+	    this.komponente = param;
 	}
 
 

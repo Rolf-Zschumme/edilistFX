@@ -8,9 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import de.vbl.ediliste.model.EdiEintrag;
-import java.util.Collection;
-import javax.persistence.OneToMany;
 
 @Entity
 public class Komponente {
@@ -18,7 +15,6 @@ public class Komponente {
 	private StringProperty fullname = new SimpleStringProperty();
 	private long id;
 	private System system;
-	private Collection<EdiEintrag> ediEintrag;
 	// ------------------------------------------------------------------------
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
@@ -53,7 +49,6 @@ public class Komponente {
 		return fullName + "  " + name.get();
 	}
 
-	// ------------------------------------------------------------------------
 	@ManyToOne
 	public System getSystem() {
 	    return system;
@@ -61,15 +56,6 @@ public class Komponente {
 
 	public void setSystem(System param) {
 	    this.system = param;
-	}
-
-	@OneToMany(mappedBy = "komponente")
-	public Collection<EdiEintrag> getEdiEintrag() {
-	    return ediEintrag;
-	}
-
-	public void setEdiEintrag(Collection<EdiEintrag> param) {
-	    this.ediEintrag = param;
 	}
 }
 

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.ediliste.controller.KomponentenAuswahlController">
+	<top>
+		<Label fx:id="fehlertext" textAlignment="CENTER" textFill="#ff0808" BorderPane.alignment="CENTER">
+			<font>
+				<Font size="18.0" />
+			</font>
+		</Label>
+	</top>
+	<center>
+		<GridPane BorderPane.alignment="CENTER">
+		  	<columnConstraints>
+			    <ColumnConstraints hgrow="SOMETIMES" maxWidth="143.0" minWidth="10.0" prefWidth="19.0" />
+			    <ColumnConstraints hgrow="SOMETIMES" maxWidth="200.0" minWidth="10.0" prefWidth="200.0" />
+				<ColumnConstraints hgrow="SOMETIMES" maxWidth="261.0" minWidth="10.0" prefWidth="200.0" />
+				<ColumnConstraints hgrow="SOMETIMES" maxWidth="221.0" minWidth="10.0" prefWidth="200.0" />
+		  	</columnConstraints>
+			<rowConstraints>
+				<RowConstraints maxHeight="118.0" minHeight="10.0" prefHeight="72.0" vgrow="SOMETIMES" />
+				<RowConstraints maxHeight="94.0" minHeight="10.0" prefHeight="39.0" vgrow="SOMETIMES" />
+				<RowConstraints maxHeight="186.0" minHeight="10.0" prefHeight="57.0" vgrow="SOMETIMES" />
+				<RowConstraints maxHeight="213.0" minHeight="10.0" prefHeight="72.0" vgrow="SOMETIMES" />
+				<RowConstraints maxHeight="213.0" minHeight="10.0" prefHeight="117.0" vgrow="SOMETIMES" />
+			</rowConstraints>
+			<children>
+				<Label alignment="CENTER" prefHeight="17.0" prefWidth="239.0" text="Partner" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+				<Label alignment="CENTER" prefHeight="17.0" prefWidth="204.0" text="System" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+				<Label alignment="CENTER" prefHeight="17.0" prefWidth="204.0" text="Komponente" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+				<Label alignment="CENTER" prefHeight="27.0" prefWidth="208.0" text="Sender auswählen" GridPane.columnIndex="2">
+					<font>
+						<Font size="18.0" />
+					</font>
+				</Label>
+				<ComboBox fx:id="partnerCB" prefHeight="25.0" prefWidth="182.0" visibleRowCount="18" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+				<ComboBox fx:id="systemCB" prefHeight="25.0" prefWidth="182.0" visibleRowCount="18" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+				<ComboBox fx:id="komponenteCB" prefHeight="25.0" prefWidth="182.0" visibleRowCount="18" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+				<Button fx:id="newPartnerButton" mnemonicParsing="false" onAction="#newPartnerPressed" prefHeight="25.0" prefWidth="182.0" text="neuer Partner" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+				<Button fx:id="newSystemButton" mnemonicParsing="false" onAction="#newSystemPressed" prefHeight="25.0" prefWidth="182.0" text="neues System" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+				<Button fx:id="newKomponenteButton" mnemonicParsing="false" onAction="#newKomponentePressed" prefHeight="25.0" prefWidth="182.0" text="neue Komponente" GridPane.columnIndex="3" GridPane.rowIndex="4" />
+			</children>
+		</GridPane>
+	</center>
+	<bottom>
+		<HBox alignment="CENTER" minHeight="76.0" prefHeight="76.0" prefWidth="600.0" spacing="25.0" BorderPane.alignment="CENTER">
+			<children>
+				<Button defaultButton="true" mnemonicParsing="false" onAction="#okPressed" prefWidth="100.0" text="OK" textAlignment="CENTER" />
+				<Button cancelButton="true" mnemonicParsing="false" onAction="#escapePressed" prefWidth="100.0" text="Abbruch" />
+			</children>
+		</HBox>
+	</bottom>
+</BorderPane>

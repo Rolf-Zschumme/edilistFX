@@ -7,11 +7,7 @@ import javafx.beans.property.StringProperty;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import de.vbl.ediliste.model.Partner;
-import de.vbl.ediliste.model.Komponente;
 import javax.persistence.ManyToOne;
-import java.util.Collection;
-import javax.persistence.OneToMany;
  
 @Entity 
 public class System {
@@ -20,7 +16,6 @@ public class System {
 	
 	private long id;
 	private Partner partner;
-	private Collection<Komponente> komponente;
 
 	// ------------------------------------------------------------------------
 	@Id
@@ -60,13 +55,6 @@ public class System {
 	}
 	public void setPartner(Partner param) {
 	    this.partner = param;
-	}
-	@OneToMany(mappedBy = "system")
-	public Collection<Komponente> getKomponente() {
-	    return komponente;
-	}
-	public void setKomponente(Collection<Komponente> param) {
-	    this.komponente = param;
 	}
 
 

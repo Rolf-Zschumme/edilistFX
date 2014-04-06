@@ -3,6 +3,7 @@ package de.vbl.ediliste.controller;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Dialogs.DialogResponse;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -23,9 +24,13 @@ public class NeuerEdiEintragController {
     @FXML private Label fehlertext;
     
 	private EntityManager em;
+	private DialogResponse response = DialogResponse.CANCEL;
 	private EdiEintrag ediEintrag;
 
-	public EdiEintrag hasCreatedNew() {
+	public DialogResponse getResponse() {
+		return response; 
+	}
+	public EdiEintrag getNewEdiEintrag () {
 		return ediEintrag;
 	}
 	/* ------------------------------------------------------------------------
@@ -56,16 +61,23 @@ public class NeuerEdiEintragController {
     @FXML
     void okPressed(ActionEvent event) {
     	int ediNr = ediEintrag.getEdiNr();
-    	if (isEdiNrUsed(ediNr)) {
+    	if (ediNr < 1) {
+    		fehlertext.setText("Ein Zahl größer Null eingeben");
+    	}
+    	else if (isEdiNrUsed(ediNr)) {
     		fehlertext.setText("Die Nummer " + ediNr + " ist bereits vergeben - bitte ändern");
     	}
-    	else if (ediEintrag.getKurzBez()=="") {
-    		fehlertext.setText("Bitte eine Kurzbezeichnung eingeben");
+    	else if (ediEintrag.getKurzBez() == null) {
+    		fehlertext.setText("Bitte eine Bezeichnung eingeben");
+    	}
+    	else if (ediEintrag.getKurzBez().length() < 3) {
+    		fehlertext.setText("Bitte eine Bezeichnung mit mindesten 3 Zeichen eingeben");
     	}
     	else {
     		em.getTransaction().begin();
     		em.persist(ediEintrag);
     		em.getTransaction().commit();
+    		response = DialogResponse.OK;
     		unbind();
     		close(event);
     	}

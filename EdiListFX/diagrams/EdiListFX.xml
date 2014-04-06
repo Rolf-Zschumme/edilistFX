@@ -2,9 +2,9 @@
 	<entity>
 		<entity-name>de.vbl.ediliste.model.Komponente</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>166</entity-height>
+		<entity-height>146</entity-height>
 		<entity-X-Coordinate>238</entity-X-Coordinate>
-		<entity-Y-Coordinate>408</entity-Y-Coordinate>
+		<entity-Y-Coordinate>428</entity-Y-Coordinate>
 		<primary-collapsed>false</primary-collapsed>
 		<relation-collapsed>false</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
@@ -13,9 +13,9 @@
 	<entity>
 		<entity-name>de.vbl.ediliste.model.Partner</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>146</entity-height>
+		<entity-height>108</entity-height>
 		<entity-X-Coordinate>20</entity-X-Coordinate>
-		<entity-Y-Coordinate>191</entity-Y-Coordinate>
+		<entity-Y-Coordinate>200</entity-Y-Coordinate>
 		<primary-collapsed>false</primary-collapsed>
 		<relation-collapsed>false</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
@@ -24,7 +24,7 @@
 	<entity>
 		<entity-name>de.vbl.ediliste.model.System</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>166</entity-height>
+		<entity-height>146</entity-height>
 		<entity-X-Coordinate>238</entity-X-Coordinate>
 		<entity-Y-Coordinate>181</entity-Y-Coordinate>
 		<primary-collapsed>false</primary-collapsed>
@@ -46,9 +46,9 @@
 	<entity>
 		<entity-name>de.vbl.ediliste.model.Anbindung</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>146</entity-height>
+		<entity-height>108</entity-height>
 		<entity-X-Coordinate>20</entity-X-Coordinate>
-		<entity-Y-Coordinate>24</entity-Y-Coordinate>
+		<entity-Y-Coordinate>33</entity-Y-Coordinate>
 		<primary-collapsed>false</primary-collapsed>
 		<relation-collapsed>false</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
@@ -57,7 +57,7 @@
 	<entity>
 		<entity-name>de.vbl.ediliste.model.Szenario</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>166</entity-height>
+		<entity-height>146</entity-height>
 		<entity-X-Coordinate>444</entity-X-Coordinate>
 		<entity-Y-Coordinate>14</entity-Y-Coordinate>
 		<primary-collapsed>false</primary-collapsed>
@@ -68,8 +68,8 @@
 	<entity>
 		<entity-name>de.vbl.ediliste.model.Empfaenger</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>146</entity-height>
-		<entity-X-Coordinate>660</entity-X-Coordinate>
+		<entity-height>166</entity-height>
+		<entity-X-Coordinate>700</entity-X-Coordinate>
 		<entity-Y-Coordinate>418</entity-Y-Coordinate>
 		<primary-collapsed>false</primary-collapsed>
 		<relation-collapsed>false</relation-collapsed>
