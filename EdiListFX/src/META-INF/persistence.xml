@@ -10,11 +10,10 @@
 		<class>de.vbl.ediliste.model.PartnerSystem</class>
 		<class>de.vbl.ediliste.model.Szenario</class>
 		<properties>
-			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://10.0.0.13:3306/ediliste"/>
-			<property name="javax.persistence.jdbc.user" value="ediliste"/>
-			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
+			<property name="javax.persistence.jdbc.url" value="jdbc:sqlite:C:\Dokumente und Einstellungen\P01023\MySQLiteDB"/>
+			<property name="javax.persistence.jdbc.user" value=""/>
+			<property name="javax.persistence.jdbc.driver" value="org.sqlite.JDBC"/>
 			<property name="eclipselink.jdbc.batch-writing" value="None"/>
-			<property name="javax.persistence.jdbc.password" value="1234567"/>
 		</properties>
 	</persistence-unit>
 </persistence>

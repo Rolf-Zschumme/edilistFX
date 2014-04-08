@@ -18,7 +18,7 @@ public class Anbindung {
 	private StringProperty name;
 	private long id;
 	
-	@Id
+	@Id 
 	@GeneratedValue(strategy = IDENTITY)
 	public long getId() {
 		return this.id;

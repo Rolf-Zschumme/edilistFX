@@ -15,6 +15,15 @@ public class Komponente {
 	private StringProperty fullname = new SimpleStringProperty();
 	private long id;
 	private PartnerSystem partnerSystem;
+	
+	public Komponente() {
+	}
+	
+	public Komponente(String name, PartnerSystem system) {
+		this.name.set(name);
+		this.partnerSystem = system;
+	}
+
 	// ------------------------------------------------------------------------
 	@Id
 	@GeneratedValue(strategy = IDENTITY)

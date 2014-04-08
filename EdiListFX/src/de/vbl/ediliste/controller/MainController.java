@@ -7,6 +7,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -33,7 +35,9 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
+import de.vbl.ediliste.controller.KomponentenAuswahlController.KomponentenTyp;
 import de.vbl.ediliste.model.EdiEintrag;
+import de.vbl.ediliste.model.Komponente;
 import de.vbl.ediliste.view.EdiNrListElement;
 
 public class MainController {
@@ -42,9 +46,11 @@ public class MainController {
 
     @FXML private ResourceBundle resources;
     @FXML private URL location;
+
     @FXML private TableView<EdiNrListElement> ediNrTable;
     @FXML private TableColumn<EdiNrListElement, String> ediNrCol;
     @FXML private TableColumn<EdiNrListElement, String> ediKurzbezCol;
+
     @FXML private TitledPane szenarioPane;
     @FXML private TitledPane anbindungPane;
     @FXML private TitledPane ediEintragPane;
@@ -53,10 +59,10 @@ public class MainController {
     @FXML private TextField datenart;
     @FXML private TextField ediLastChange;
 
-    @FXML private Button empfaengerButton;
-    @FXML private Button senderName;
-    @FXML private Button newEdiNrButton;
-    @FXML private Button deleteEdiEintragButton;
+    @FXML private Button btnEmpfaenger1;
+    @FXML private Button btnSender;
+    @FXML private Button btnNewEdiNr;
+    @FXML private Button btnDeleteEdiEintrag;
 
 
     
@@ -65,6 +71,10 @@ public class MainController {
     private int maxEdiNr;
     private Stage primaryStage;
 
+    private BooleanProperty senderIsSelected = new SimpleBooleanProperty(false);
+    
+    private EdiEintrag aktEdi;
+    
     public void setStage(Stage temp) {
     	primaryStage = temp;
     }
@@ -73,7 +83,6 @@ public class MainController {
      * initialize() is the controllers "main"-method 
      * it is called after loading "EdiListe.fxml" 
      * ----------------------------------------------------------------------*/
-    EdiEintrag aktEdi;
     @FXML
     void initialize() {
     	checkFieldFromView();
@@ -113,8 +122,9 @@ public class MainController {
     	ediNrCol.setCellValueFactory(new PropertyValueFactory<EdiNrListElement,String>("ediNr"));
     	ediKurzbezCol.setCellValueFactory(new PropertyValueFactory<EdiNrListElement,String>("kurzBez"));
     	
-    	deleteEdiEintragButton.disableProperty().bind(Bindings.isNull(ediNrTable.getSelectionModel().selectedItemProperty()));
-    	senderName.disableProperty().bind(Bindings.isNull(ediNrTable.getSelectionModel().selectedItemProperty()));
+    	btnDeleteEdiEintrag.disableProperty().bind(Bindings.isNull(ediNrTable.getSelectionModel().selectedItemProperty()));
+    	btnSender.disableProperty().bind(Bindings.isNull(ediNrTable.getSelectionModel().selectedItemProperty()));
+    	btnEmpfaenger1.disableProperty().bind(Bindings.not(senderIsSelected));
 
     	//		szenarioPane.textProperty().bind(ediEintrag.szenarioNameProperty());
 	}
@@ -202,52 +212,74 @@ public class MainController {
     
     @FXML
     void senderButton(ActionEvent event) {
-    	System.out.println(getClass().getName() + ".senderButton called");
+    	Stage dialog = new Stage(StageStyle.UTILITY);
+    	FXMLLoader loader = loadKomponentenAuswahl(dialog); 
+
+    	KomponentenAuswahlController komponentenAuswahlController = loader.getController();
+    	komponentenAuswahlController.setKomponente(KomponentenTyp.SENDER, aktEdi.getKomponente());
+  //  	System.out.println(getClass().getName() + ".senderButton --> vor dialogshowAndWait");
+
+    	dialog.showAndWait();
+    	
+    	Komponente selKomponente = komponentenAuswahlController.selectedKomponenten();
+    	if (aktEdi.getKomponente() != selKomponente) {
+    		aktEdi.setKomponente(selKomponente);
+    		btnSender.setText(selKomponente.getFullname());
+    		senderIsSelected.set(true);
+    	}
+    }
+
+    private FXMLLoader loadKomponentenAuswahl(Stage dialog) {
     	FXMLLoader loader = new FXMLLoader();
     	loader.setLocation(getClass().getResource("../view/KomponentenAuswahl.fxml"));
     	try {
-			loader.load();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+    		loader.load();
+    	} catch (IOException e) {
+    		e.printStackTrace();
+    	}
     	Parent root = loader.getRoot();
+//    	System.out.println(getClass().getName() + ".loaderKomponentenAuswahl --> vor new Scene");
     	Scene scene = new Scene(root);
-    	
-    	Stage dialog = new Stage(StageStyle.UTILITY);
+//    	System.out.println(getClass().getName() + ".loaderKomponentenAuswahl --> vor Modality");
     	dialog.initModality(Modality.APPLICATION_MODAL);
     	dialog.initOwner(primaryStage);
-
-    	
+    	dialog.setTitle(primaryStage.getTitle());
     	dialog.setScene(scene);
     	dialog.setX(primaryStage.getX() + 100);
     	dialog.setY(primaryStage.getY() + 250);
-    	dialog.showAndWait();
+		return loader;
+	}
 
-//    	KomponentenAuswahlController komponentenAuswahlController = loader.getController();
-//    	Komponente komponente = komponentenAuswahlController.hasCreatedNew();
-//    	if (komponente != null) {
-//    		aktEdi
-//    	}
-    	
-    }
-
-    @FXML
+	@FXML
     void empfaengerButton(ActionEvent event) {
+    	Stage dialog = new Stage(StageStyle.UTILITY);
+    	FXMLLoader loader = loadKomponentenAuswahl(dialog); 
+
+    	KomponentenAuswahlController komponentenAuswahlController = loader.getController();
+    	komponentenAuswahlController.setKomponente(KomponentenTyp.RECEIVER, aktEdi.getKomponente());
+    	
+    	dialog.showAndWait();
+    	
+    	Komponente selKomponente = komponentenAuswahlController.selectedKomponenten();
+    	if (aktEdi.getKomponente() != selKomponente) {
+    		aktEdi.setKomponente(selKomponente);
+    	}
 
     }
-
     
     private void checkFieldFromView() {
-		assert ediNrCol != null : "fx:id=\"ediNrCol\" was not injected: check your FXML file 'EdiListe.fxml'.";
-		assert ediEintragPane != null : "fx:id=\"ediEintragPane\" was not injected: check your FXML file 'EdiListe.fxml'.";
-		assert senderName != null : "fx:id=\"sender\" was not injected: check your FXML file 'EdiListe.fxml'.";
-		assert datenart != null : "fx:id=\"datenart\" was not injected: check your FXML file 'EdiListe.fxml'.";
-		assert ediLastChange != null : "fx:id=\"ediLastChange\" was not injected: check your FXML file 'EdiListe.fxml'.";
-		assert ediKurzbezCol != null : "fx:id=\"ediKurzbezCol\" was not injected: check your FXML file 'EdiListe.fxml'.";
-		assert ediNrTable != null : "fx:id=\"ediNrTable\" was not injected: check your FXML file 'EdiListe.fxml'.";
-		assert szenarioPane != null : "fx:id=\"szenarioPane\" was not injected: check your FXML file 'EdiListe.fxml'.";
-		assert ediBezeichnung != null : "fx:id=\"ediBezeichnung\" was not injected: check your FXML file 'EdiListe.fxml'.";
-		assert empfaengerButton != null : "fx:id=\"empfaenger\" was not injected: check your FXML file 'EdiListe.fxml'.";
-		assert anbindungPane != null : "fx:id=\"anbindungPane\" was not injected: check your FXML file 'EdiListe.fxml'.";
+        assert ediNrCol != null : "fx:id=\"ediNrCol\" was not injected: check your FXML file 'Main.fxml'.";
+        assert datenart != null : "fx:id=\"datenart\" was not injected: check your FXML file 'Main.fxml'.";
+        assert ediLastChange != null : "fx:id=\"ediLastChange\" was not injected: check your FXML file 'Main.fxml'.";
+        assert ediKurzbezCol != null : "fx:id=\"ediKurzbezCol\" was not injected: check your FXML file 'Main.fxml'.";
+        assert ediNrTable != null : "fx:id=\"ediNrTable\" was not injected: check your FXML file 'Main.fxml'.";
+        assert ediBezeichnung != null : "fx:id=\"ediBezeichnung\" was not injected: check your FXML file 'Main.fxml'.";
+        assert btnEmpfaenger1 != null : "fx:id=\"btnEmpfaenger1\" was not injected: check your FXML file 'Main.fxml'.";
+        assert anbindungPane != null : "fx:id=\"anbindungPane\" was not injected: check your FXML file 'Main.fxml'.";
+        assert ediEintragPane != null : "fx:id=\"ediEintragPane\" was not injected: check your FXML file 'Main.fxml'.";
+        assert btnNewEdiNr != null : "fx:id=\"btnNewEdiNr\" was not injected: check your FXML file 'Main.fxml'.";
+        assert btnDeleteEdiEintrag != null : "fx:id=\"btnDeleteEdiEintrag\" was not injected: check your FXML file 'Main.fxml'.";
+        assert szenarioPane != null : "fx:id=\"szenarioPane\" was not injected: check your FXML file 'Main.fxml'.";
+        assert btnSender != null : "fx:id=\"btnSender\" was not injected: check your FXML file 'Main.fxml'.";
 	}
 }

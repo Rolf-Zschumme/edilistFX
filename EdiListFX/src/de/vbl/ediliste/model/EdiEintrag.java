@@ -1,9 +1,6 @@
 package de.vbl.ediliste.model;
 
 import static javax.persistence.GenerationType.IDENTITY;
-
-import java.util.Collection;
-
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -13,18 +10,15 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import de.vbl.ediliste.model.Komponente;
 
 
-@Entity
+@Entity 
 public class EdiEintrag {
 	private IntegerProperty ediNr = new SimpleIntegerProperty();
 	private StringProperty kurzBez = new SimpleStringProperty();
 	private StringProperty senderName = new SimpleStringProperty();
 	private long id;
-	private Collection<Dokument> dokument;
 	private Szenario szenario;
 	private Komponente komponente;
 	// ------------------------------------------------------------------------
@@ -73,19 +67,7 @@ public class EdiEintrag {
 //		senderName.set(param);
 //	}
 
-//	public String getSenderName () {
-//		return senderKomponente == null ? "" : senderKomponente.getName();
-//	}
-	// ------------------------------------------------------------------------
-	@ManyToMany 
-	public Collection<Dokument> getDokument() {
-	    return dokument;
-	}
-	public void setDokument(Collection<Dokument> param) {
-	    this.dokument = param;
-	    
-	}
-	// ------------------------------------------------------------------------
+// ------------------------------------------------------------------------
 	@ManyToOne
 	public Szenario getSzenario() {
 	    return szenario;
