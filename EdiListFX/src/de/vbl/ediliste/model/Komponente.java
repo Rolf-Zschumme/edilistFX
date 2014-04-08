@@ -14,14 +14,14 @@ public class Komponente {
 	private StringProperty name = new SimpleStringProperty();
 	private StringProperty fullname = new SimpleStringProperty();
 	private long id;
-	private PartnerSystem partnerSystem;
+	private EdiSystem ediSystem;
 	
 	public Komponente() {
 	}
 	
-	public Komponente(String name, PartnerSystem system) {
+	public Komponente(String name, EdiSystem system) {
 		this.name.set(name);
-		this.partnerSystem = system;
+		this.ediSystem = system;
 	}
 
 	// ------------------------------------------------------------------------
@@ -54,17 +54,17 @@ public class Komponente {
 	}
 	
 	public String getFullname() {
-		String fullName = partnerSystem == null ? "-?-" : partnerSystem.getFullname();
+		String fullName = ediSystem == null ? "-?-" : ediSystem.getFullname();
 		return fullName + "  " + name.get();
 	}
 
 	@ManyToOne
-	public PartnerSystem getPartnerSystem() {
-	    return partnerSystem;
+	public EdiSystem getPartnerSystem() {
+	    return ediSystem;
 	}
 
-	public void setPartnerSystem(PartnerSystem param) {
-	    this.partnerSystem = param;
+	public void setPartnerSystem(EdiSystem param) {
+	    this.ediSystem = param;
 	}
 }
 

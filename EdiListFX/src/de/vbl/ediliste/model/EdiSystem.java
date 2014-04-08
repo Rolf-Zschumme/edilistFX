@@ -10,20 +10,20 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
  
 @Entity 
-public class PartnerSystem {
+public class EdiSystem {
 	private StringProperty name = new SimpleStringProperty();
 	private StringProperty fullname = new SimpleStringProperty();
 	
 	private long id;
-	private Partner partner;
+	private EdiPartner ediPartner;
 	
-	public PartnerSystem() {
+	public EdiSystem() {
 		super();
 	}
-	public PartnerSystem(String name, Partner partner) {
+	public EdiSystem(String name, EdiPartner ediPartner) {
 		super();
 		this.name.setValue(name);
-		this.partner = partner;
+		this.ediPartner = ediPartner;
 	}
 	// ------------------------------------------------------------------------
 	@Id
@@ -54,15 +54,15 @@ public class PartnerSystem {
 	}
 	
 	public String getFullname() {
-		String partnerName = partner == null ? "-?-" : partner.getName();
+		String partnerName = ediPartner == null ? "-?-" : ediPartner.getName();
 		return partnerName + "  " + name.get();
 	}
 	@ManyToOne
-	public Partner getPartner() {
-	    return partner;
+	public EdiPartner getPartner() {
+	    return ediPartner;
 	}
-	public void setPartner(Partner param) {
-	    this.partner = param;
+	public void setPartner(EdiPartner param) {
+	    this.ediPartner = param;
 	}
 
 

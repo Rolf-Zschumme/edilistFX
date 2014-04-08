@@ -6,8 +6,8 @@
 		<class>de.vbl.ediliste.model.EdiEintrag</class>
 		<class>de.vbl.ediliste.model.Empfaenger</class>
 		<class>de.vbl.ediliste.model.Komponente</class>
-		<class>de.vbl.ediliste.model.Partner</class>
-		<class>de.vbl.ediliste.model.PartnerSystem</class>
+		<class>de.vbl.ediliste.model.EdiPartner</class>
+		<class>de.vbl.ediliste.model.EdiSystem</class>
 		<class>de.vbl.ediliste.model.Szenario</class>
 		<properties>
 			<property name="javax.persistence.jdbc.url" value="jdbc:sqlite:C:\Dokumente und Einstellungen\P01023\MySQLiteDB"/>

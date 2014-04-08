@@ -10,19 +10,18 @@ import javax.persistence.Id;
 import javax.persistence.Column;
 
 /**
- * Entity implementation class for Entity: Partner
+ * Entity implementation class for Entity: EdiPartner
  *
  */
-@Entity
-
-public class Partner {
+@Entity 
+public class EdiPartner {
 	private StringProperty name = new SimpleStringProperty();
 
 	private long id;
 
-	public Partner() {
+	public EdiPartner() {
 	}
-	public Partner(String name) {
+	public EdiPartner(String name) {
 		setName(name);
 	}
 	// ------------------------------------------------------------------------
