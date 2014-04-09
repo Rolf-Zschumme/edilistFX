@@ -1,6 +1,8 @@
 package de.vbl.ediliste.model;
 
-import static javax.persistence.GenerationType.IDENTITY;
+import java.util.Collection;
+import java.util.Date;
+
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -10,23 +12,34 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import static javax.persistence.GenerationType.IDENTITY;
+import static javax.persistence.TemporalType.DATE;
 
-
-@Entity 
+@Entity
 public class EdiEintrag {
 	private IntegerProperty ediNr = new SimpleIntegerProperty();
 	private StringProperty kurzBez = new SimpleStringProperty();
 	private StringProperty senderName = new SimpleStringProperty();
 	private long id;
-	private Szenario szenario;
-	private Komponente komponente;
+	private EdiSzenario ediSzenario;
+	private EdiKomponente ediKomponente;
+	private Collection<EdiEmpfaenger> ediEmpfaenger;
+	private Collection<EdiDokuLink> ediDokuLink;
+	private String beschreibung;
+	private Date vonDatum;
+	private Date bisDatum; 
+
 	// ------------------------------------------------------------------------
-	@Id 
+	@Id
 	@GeneratedValue(strategy = IDENTITY)
 	public long getId() {
-		return id; 
+		return id;
 	}
+
 	public void setId(long id) {
 		this.id = id;
 	}
@@ -35,7 +48,7 @@ public class EdiEintrag {
 	public IntegerProperty ediNrProperty() {
 		return ediNr;
 	}
- 
+
 	public Integer getEdiNr() {
 		return ediNr.get();
 	}
@@ -63,24 +76,70 @@ public class EdiEintrag {
 		return senderName;
 	}
 
-//	public void setSenderName(String param) {
-//		senderName.set(param);
-//	}
+	// public void setSenderName(String param) {
+	// senderName.set(param);
+	// }
 
-// ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
 	@ManyToOne
-	public Szenario getSzenario() {
-	    return szenario;
+	public EdiSzenario getSzenario() {
+		return ediSzenario;
 	}
-	public void setSzenario(Szenario param) {
-	    this.szenario = param;
-	} 
+
+	public void setSzenario(EdiSzenario param) {
+		this.ediSzenario = param;
+	}
+
 	@ManyToOne
-	public Komponente getKomponente() {
-	    return komponente;
+	public EdiKomponente getKomponente() {
+		return ediKomponente;
 	}
-	public void setKomponente(Komponente param) {
-	    this.komponente = param;
+
+	public void setKomponente(EdiKomponente param) {
+		this.ediKomponente = param;
+	}
+
+	@OneToMany(mappedBy = "ediEintrag")
+	public Collection<EdiEmpfaenger> getEdiEmpfaenger() {
+		return ediEmpfaenger;
+	}
+
+	public void setEdiEmpfaenger(Collection<EdiEmpfaenger> param) {
+		this.ediEmpfaenger = param;
+	}
+
+	@ManyToMany
+	public Collection<EdiDokuLink> getEdiDokuLink() {
+		return ediDokuLink;
+	}
+
+	public void setEdiDokuLink(Collection<EdiDokuLink> param) {
+		this.ediDokuLink = param;
+	}
+
+	public String getBeschreibung() {
+		return beschreibung;
+	}
+
+	public void setBeschreibung(String param) {
+		this.beschreibung = param;
+	}
+
+	@Temporal(DATE) 
+	public Date getVonDatum() {
+		return vonDatum;
+	}
+
+	public void setVonDatum(Date param) {
+		this.vonDatum = param;
+	}
+
+	@Temporal(DATE) 
+	public Date getBisDatum() {
+		return bisDatum;
+	}
+
+	public void setBisDatum(Date param) {
+		this.bisDatum = param;
 	}
 }
-

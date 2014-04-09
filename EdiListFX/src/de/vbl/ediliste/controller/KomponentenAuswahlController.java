@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.LongProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -29,22 +29,23 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
-import org.eclipse.persistence.internal.sessions.remote.SequencingFunctionCall.GetNextValue;
-
-import de.vbl.ediliste.model.Komponente;
+import de.vbl.ediliste.model.EdiKomponente;
 import de.vbl.ediliste.model.EdiPartner;
 import de.vbl.ediliste.model.EdiSystem;
 
 public class KomponentenAuswahlController {
-	public static enum KomponentenTyp { SENDER, RECEIVER };
+	public static enum KomponentenTyp { 
+					   					SENDER, RECEIVER 
+					   				  };
 	private static final String APPL_TITLE = "EdiListe";
 	private static final String PERSISTENCE_UNIT_NAME = "EdiListFX";
+	private static EntityManager em; 
     
     @FXML private ResourceBundle resources;
 
     @FXML private ComboBox<EdiPartner> partnerCB;
     @FXML private ComboBox<EdiSystem> systemCB;
-    @FXML private ComboBox<Komponente> komponenteCB;
+    @FXML private ComboBox<EdiKomponente> komponenteCB;
     
     @FXML private Button btnOK;
     @FXML private Button btnNewSystem;
@@ -54,33 +55,34 @@ public class KomponentenAuswahlController {
     @FXML private Label lbFehlertext;
     @FXML private Label lbSenderReseiver;
 
-	private EntityManager em; 
 
-	private ObjectProperty<Komponente> komponente;
+	private LongProperty ediKomponentenId;
 	
-	private ObservableList<EdiPartner>       partnerList;     //  = FXCollections.observableArrayList();
-	private ObservableList<EdiSystem> systemList;      //  = FXCollections.observableArrayList(); 
-	private ObservableList<Komponente>    komponentenList; //  = FXCollections.observableArrayList(); 
+	private ObservableList<EdiPartner>      partnerList;     //  = FXCollections.observableArrayList();
+	private ObservableList<EdiSystem> 		systemList;      //  = FXCollections.observableArrayList(); 
+	private ObservableList<EdiKomponente>   komponentenList; //  = FXCollections.observableArrayList(); 
 
-	public Komponente selectedKomponenten() {
-		return komponente.get();
+	public Long selectedKomponentenId() {
+		return ediKomponentenId.get();
 	}
 	
-	public void setKomponente(KomponentenTyp typ, Komponente param) {
+	public void setKomponente(KomponentenTyp typ, Long komponentenID) {
 
 		if (typ == KomponentenTyp.SENDER)
 			lbSenderReseiver.setText("Sender");
 		else
 			lbSenderReseiver.setText("Empfänger");
 
-		komponente.set(param);
-		if (param != null) {
-			
-			partnerCB.getSelectionModel().select(param.getPartnerSystem().getPartner());
-			systemCB.getSelectionModel().select(param.getPartnerSystem());
-			komponenteCB.getSelectionModel().select(komponente.get());
-//			komponenteIsSelected.set(true);
+		ediKomponentenId.set(komponentenID);
+		if (komponentenID > 0L) {
+			EdiKomponente komponente = em.find(EdiKomponente.class, komponentenID);
+				
+			partnerCB.getSelectionModel().select(komponente.getPartnerSystem().getPartner());
+			systemCB.getSelectionModel().select(komponente.getPartnerSystem());
+			komponenteCB.getSelectionModel().select(komponente);
 		}
+		
+		setupBindings();
 	}
 	
 	/* ------------------------------------------------------------------------
@@ -91,10 +93,10 @@ public class KomponentenAuswahlController {
     void initialize() {
     	System.out.println(getClass().getName()+".initialize called");
     	
-    	komponente 	= new SimpleObjectProperty<>();
-  	    partnerList     = FXCollections.observableArrayList();
-		systemList      = FXCollections.observableArrayList();
-		komponentenList = FXCollections.observableArrayList();
+    	ediKomponentenId = new SimpleLongProperty();
+  	    partnerList      = FXCollections.observableArrayList();
+		systemList       = FXCollections.observableArrayList();
+		komponentenList  = FXCollections.observableArrayList();
     	
     	checkFieldFromView();
         setupEntityManager();
@@ -109,7 +111,7 @@ public class KomponentenAuswahlController {
     private void readPartnerData() {
     	// alle EdiPartner lesen
     	TypedQuery<EdiPartner> tq = em.createQuery(
-    			"SELECT partner FROM EdiPartner partner ORDER BY partner.name",EdiPartner.class);
+    		  "SELECT p FROM EdiPartner p ORDER BY p.name", EdiPartner.class);
     	List<EdiPartner> ediList = tq.getResultList();
     	for (EdiPartner ediPartner : ediList) {
     		partnerList.add(ediPartner);
@@ -119,8 +121,7 @@ public class KomponentenAuswahlController {
     private void readSystemData(Long partnerId) {
     	systemList.clear();
 		TypedQuery<EdiSystem> tq = em.createQuery(
-				"SELECT system FROM EdiSystem system ORDER BY system.name", 
-				EdiSystem.class);
+				"SELECT s FROM EdiSystem s ORDER BY s.name", EdiSystem.class);
 		List<EdiSystem> ediList = tq.getResultList();
 		for (EdiSystem ediSystem : ediList) {
 			if (partnerId == ediSystem.getPartner().getId()) {
@@ -131,27 +132,23 @@ public class KomponentenAuswahlController {
 
     private void readKomponentenData(Long systemId) {
     	komponentenList.clear();
-		TypedQuery<Komponente> tq = em.createQuery(
-				"SELECT komponente FROM Komponente komponente ORDER BY komponente.name", 
-				Komponente.class);
-		List<Komponente> resultList = tq.getResultList();
-		for (Komponente komponente : resultList) {
-			if (systemId == komponente.getPartnerSystem().getId()) {
-				komponentenList.add(komponente);
+		TypedQuery<EdiKomponente> tq = em.createQuery(
+		  "SELECT k FROM EdiKomponente k ORDER BY k.name",EdiKomponente.class);
+		List<EdiKomponente> resultList = tq.getResultList();
+		for (EdiKomponente ediKomponente : resultList) {
+			if (systemId == ediKomponente.getPartnerSystem().getId()) {
+				komponentenList.add(ediKomponente);
 			}
 		}
-		System.out.println(getClass().getName()+".getKomponentenData "+
-				"("+resultList.size()+ " von "+komponentenList.size()+")");
     }
     
     private void setupBindings() {
-    	btnOK.disableProperty().bind(Bindings.isNull(komponente));
+    	btnOK.disableProperty().bind(Bindings.equal(0L, ediKomponentenId));
     	
     	btnNewSystem.disableProperty().bind(Bindings.isNull(partnerCB.getSelectionModel().selectedItemProperty()));
     	systemCB.disableProperty().bind(Bindings.isNull(partnerCB.getSelectionModel().selectedItemProperty()));
     	btnNewKomponente.disableProperty().bind(Bindings.isNull(systemCB.getSelectionModel().selectedItemProperty()));
     	komponenteCB.disableProperty().bind(Bindings.isNull(systemCB.getSelectionModel().selectedItemProperty()));
-    	
     	
     	partnerCB.setCellFactory(new Callback<ListView<EdiPartner>,ListCell<EdiPartner>> () {
     		@Override
@@ -163,7 +160,6 @@ public class KomponentenAuswahlController {
     					if(ediPartner != null) {
     						setText(ediPartner.getName());
     					}
-    					else setText("-");
     				}
     			};
     		}
@@ -197,16 +193,14 @@ public class KomponentenAuswahlController {
     					if(system != null) {
     						setText(system.getName());
     					}
-    					else setText("-");
     				}
     			};
     		}
-    	});
+    	}); 
     	systemCB.setButtonCell(new ListCell<EdiSystem> () {
     		@Override
     		protected void updateItem(EdiSystem system, boolean empty) {
     			super.updateItem(system, empty);
-    			System.out.println(getClass().getName()+".updateItem " + ((system==null)?"s":system.getName()));
     			setText( (empty) ? "?" : system.getName());
     		}    		
     	});
@@ -221,46 +215,45 @@ public class KomponentenAuswahlController {
     			}
     	);
 
-    	komponenteCB.setCellFactory(new Callback<ListView<Komponente>,ListCell<Komponente>> () {
+    	komponenteCB.setCellFactory(new Callback<ListView<EdiKomponente>,ListCell<EdiKomponente>> () {
     		@Override
-    		public ListCell<Komponente> call(ListView<Komponente> param) {
-    			return new ListCell<Komponente>() {
+    		public ListCell<EdiKomponente> call(ListView<EdiKomponente> param) {
+    			return new ListCell<EdiKomponente>() {
     				@Override
-    				protected void updateItem(Komponente komponente, boolean empty) {
+    				protected void updateItem(EdiKomponente komponente, boolean empty) {
     					super.updateItem(komponente, empty);
     					if(komponente != null) {
     						setText(komponente.getName());
     					}
-    					else setText("-");
     				}
     			};
     		}
     	});
-    	komponenteCB.setButtonCell(new ListCell<Komponente> () {
+    	
+    	komponenteCB.setButtonCell(new ListCell<EdiKomponente> () {
     		@Override
-    		protected void updateItem(Komponente komponente, boolean empty) {
+    		protected void updateItem(EdiKomponente komponente, boolean empty) {
     			super.updateItem(komponente, empty);
-    			System.out.println(getClass().getName()+".updateItem " + ((komponente==null)?"k":komponente.getName()));
     			setText( (empty) ? "?" : komponente.getName());
     		}    		
     	});
     	komponenteCB.getSelectionModel().selectedItemProperty().addListener(
-    			new ChangeListener<Komponente>() {
+    			new ChangeListener<EdiKomponente>() {
     				@Override
     				public void changed (
-    						ObservableValue<? extends Komponente> observable,
-    							Komponente oldKomponente, Komponente newKomponente) {
-//    					komponenteIsSelected.set(newKomponente!=null);
-    					komponente.set(newKomponente);
-    					System.out.println(getClass().getName() + ".changed " + newKomponente);
+    						ObservableValue<? extends EdiKomponente> observable,
+    							EdiKomponente oldKomponente, EdiKomponente newKomponente) {
+    					ediKomponentenId.set(newKomponente.getId());
     				}
     			}
     	);
     }	
     	
     private void setupEntityManager() {
-    	EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-    	em = factory.createEntityManager();
+    	if (em == null) {
+    		EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+    		em = factory.createEntityManager();
+    	}	
     }
     
     @FXML
@@ -399,10 +392,10 @@ public class KomponentenAuswahlController {
     					"Duplikatsprüfung",APPL_TITLE);
     			continue;
     		} 
-    		Komponente komponente = new Komponente(name, aktSystem);
+    		EdiKomponente ediKomponente = new EdiKomponente(name, aktSystem);
     		try {
     			em.getTransaction().begin();
-    			em.persist(komponente);
+    			em.persist(ediKomponente);
     			em.getTransaction().commit();
     		} catch (RuntimeException e) {
     			Dialogs.showErrorDialog(stage,
@@ -410,15 +403,15 @@ public class KomponentenAuswahlController {
     					"Datenbankfehler",APPL_TITLE,e);
     			continue;
     		}
-    		komponentenList.add(komponente);
-    		komponenteCB.getSelectionModel().select(komponente);
+    		komponentenList.add(ediKomponente);
+    		komponenteCB.getSelectionModel().select(ediKomponente);
     		break;
     	}	
 
     }
 
     private boolean komponentenNameExist(String name) {
-    	for (Komponente k : komponentenList) {
+    	for (EdiKomponente k : komponentenList) {
     		if (name.equalsIgnoreCase(k.getName()))
     			return true;
     	}

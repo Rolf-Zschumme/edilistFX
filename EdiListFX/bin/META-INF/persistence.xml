@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
 	<persistence-unit name="EdiListFX" transaction-type="RESOURCE_LOCAL">
-		<class>de.vbl.ediliste.model.Anbindung</class>
-		<class>de.vbl.ediliste.model.Dokument</class>
+		<class>de.vbl.ediliste.model.EdiAnbindung</class>
+		<class>de.vbl.ediliste.model.EdiDokuLink</class>
 		<class>de.vbl.ediliste.model.EdiEintrag</class>
-		<class>de.vbl.ediliste.model.Empfaenger</class>
-		<class>de.vbl.ediliste.model.Komponente</class>
+		<class>de.vbl.ediliste.model.EdiEmpfaenger</class>
+		<class>de.vbl.ediliste.model.EdiKomponente</class>
 		<class>de.vbl.ediliste.model.EdiPartner</class>
 		<class>de.vbl.ediliste.model.EdiSystem</class>
-		<class>de.vbl.ediliste.model.Szenario</class>
+		<class>de.vbl.ediliste.model.EdiSzenario</class>
 		<properties>
-			<property name="javax.persistence.jdbc.url" value="jdbc:sqlite:C:\Dokumente und Einstellungen\P01023\MySQLiteDB"/>
-			<property name="javax.persistence.jdbc.user" value=""/>
-			<property name="javax.persistence.jdbc.driver" value="org.sqlite.JDBC"/>
 			<property name="eclipselink.jdbc.batch-writing" value="None"/>
+			<property name="eclipselink.jdbc.native-sql" value="false"/>
+			<property name="eclipselink.jdbc.cache-statements" value="false"/>
+			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://10.0.0.13:3306/ediliste"/>
+			<property name="javax.persistence.jdbc.user" value="ediliste"/>
+			<property name="javax.persistence.jdbc.password" value="1234567"/>
+			<property name="javax.persistence.jdbc.driver" value="com.sun.tools.xjc.Driver"/>
 		</properties>
 	</persistence-unit>
 </persistence>

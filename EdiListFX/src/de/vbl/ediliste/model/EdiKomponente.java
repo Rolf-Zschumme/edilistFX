@@ -10,16 +10,16 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class Komponente {
+public class EdiKomponente {
 	private StringProperty name = new SimpleStringProperty();
 	private StringProperty fullname = new SimpleStringProperty();
 	private long id;
 	private EdiSystem ediSystem;
 	
-	public Komponente() {
+	public EdiKomponente() {
 	}
 	
-	public Komponente(String name, EdiSystem system) {
+	public EdiKomponente(String name, EdiSystem system) {
 		this.name.set(name);
 		this.ediSystem = system;
 	}

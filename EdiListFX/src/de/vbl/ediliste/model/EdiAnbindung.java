@@ -5,23 +5,20 @@ import javafx.beans.property.StringProperty;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import static javax.persistence.GenerationType.IDENTITY;
 
 /**
- * Entity implementation class for Entity: Szenario
+ * Entity implementation class for Entity: Anbindung
  *
  */
 @Entity
-public class Szenario {
+
+public class EdiAnbindung {
+
 	private StringProperty name;
 	private long id;
-	private Anbindung anbindung;
-	public Szenario() {
-		super();
-	}   
-
-	@Id
+	
+	@Id 
 	@GeneratedValue(strategy = IDENTITY)
 	public long getId() {
 		return this.id;
@@ -42,15 +39,6 @@ public class Szenario {
 
 	public void setName(String param) {
 		name.set(param);
-	}
-
-	@ManyToOne
-	public Anbindung getAnbindung() {
-	    return anbindung;
-	}
-
-	public void setAnbindung(Anbindung param) {
-	    this.anbindung = param;
 	}
    
 }
