@@ -53,17 +53,17 @@ public class EdiKomponente {
 		return fullname;
 	}
 	
-	public String getFullname() {
-		String fullName = ediSystem == null ? "-?-" : ediSystem.getFullname();
-		return fullName + "  " + name.get();
-	}
+//	public String getFullname() {
+//		String fullName = ediSystem == null ? "-?-" : ediSystem.getFullname();
+//		return fullName + "  " + name.get();
+//	}
 
 	@ManyToOne
-	public EdiSystem getPartnerSystem() {
+	public EdiSystem getSystem() {
 	    return ediSystem;
 	}
 
-	public void setPartnerSystem(EdiSystem param) {
+	public void setSystem(EdiSystem param) {
 	    this.ediSystem = param;
 	}
 }

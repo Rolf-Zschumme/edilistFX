@@ -5,9 +5,7 @@ import java.util.ResourceBundle;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.LongProperty;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleLongProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -77,8 +75,8 @@ public class KomponentenAuswahlController {
 		if (komponentenID > 0L) {
 			EdiKomponente komponente = em.find(EdiKomponente.class, komponentenID);
 				
-			partnerCB.getSelectionModel().select(komponente.getPartnerSystem().getPartner());
-			systemCB.getSelectionModel().select(komponente.getPartnerSystem());
+			partnerCB.getSelectionModel().select(komponente.getSystem().getPartner());
+			systemCB.getSelectionModel().select(komponente.getSystem());
 			komponenteCB.getSelectionModel().select(komponente);
 		}
 		
@@ -136,7 +134,7 @@ public class KomponentenAuswahlController {
 		  "SELECT k FROM EdiKomponente k ORDER BY k.name",EdiKomponente.class);
 		List<EdiKomponente> resultList = tq.getResultList();
 		for (EdiKomponente ediKomponente : resultList) {
-			if (systemId == ediKomponente.getPartnerSystem().getId()) {
+			if (systemId == ediKomponente.getSystem().getId()) {
 				komponentenList.add(ediKomponente);
 			}
 		}

@@ -10,12 +10,12 @@ import javafx.beans.property.StringProperty;
 public class EdiNrListElement    {
 	private LongProperty ediId;
 	private IntegerProperty ediNr;
-	private StringProperty kurzBez;
+	private StringProperty bezeichnung;
 	
 	public EdiNrListElement(long id, Integer nr, String kurzBez) {
 		this.ediId = new SimpleLongProperty(id);
 		this.ediNr = new SimpleIntegerProperty(nr);
-		this.kurzBez = new SimpleStringProperty(kurzBez);
+		this.bezeichnung = new SimpleStringProperty(kurzBez);
 	}
 	
 	public Long getEdiId() {
@@ -26,8 +26,8 @@ public class EdiNrListElement    {
 		return ediNr;
 	}
 	
-	public StringProperty kurzBezProperty() {
-		return kurzBez;
+	public StringProperty bezeichnungProperty() {
+		return bezeichnung;
 	}
 
 }

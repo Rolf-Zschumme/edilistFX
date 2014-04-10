@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import de.vbl.ediliste.model.EdiPartner;
  
 @Entity 
 public class EdiSystem {
@@ -20,11 +21,11 @@ public class EdiSystem {
 	public EdiSystem() {
 		super();
 	}
-	public EdiSystem(String name, EdiPartner ediPartner) {
-		super();
-		this.name.setValue(name);
-		this.ediPartner = ediPartner;
-	}
+//	public EdiSystem(String name, EdiPartner ediPartner) {
+//		super();
+//		this.name.setValue(name);
+//		this.ediPartner = ediPartner;
+//	}
 	// ------------------------------------------------------------------------
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
@@ -53,18 +54,21 @@ public class EdiSystem {
 		return fullname;
 	}
 	
-	public String getFullname() {
-		String partnerName = ediPartner == null ? "-?-" : ediPartner.getName();
-		return partnerName + "  " + name.get();
-	}
+//	public String getFullname() {
+//		String partnerName = ediPartner == null ? "-?-" : ediPartner.getName();
+//		return partnerName + "  " + name.get();
+//	}
+
 	@ManyToOne
 	public EdiPartner getPartner() {
 	    return ediPartner;
 	}
+
 	public void setPartner(EdiPartner param) {
 	    this.ediPartner = param;
 	}
 
-
+	
+	
 
 }
