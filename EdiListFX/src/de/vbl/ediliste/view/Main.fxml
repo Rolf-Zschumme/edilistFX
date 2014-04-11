@@ -27,7 +27,7 @@
 </MenuBar>
 </top>
 <center>
-<SplitPane dividerPositions="0.25435540069686413" prefHeight="511.0" prefWidth="895.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" BorderPane.alignment="CENTER">
+<SplitPane dividerPositions="0.2982635342185904" prefHeight="511.0" prefWidth="895.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" BorderPane.alignment="CENTER">
 <items><TabPane fx:id="TabPaneObjekte" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
   <tabs>
     <Tab fx:id="tabEdiNr" text="Edi-Nr.">
@@ -55,14 +55,14 @@
   <content>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
   </content>
-</Tab><Tab text="Partner">
+</Tab><Tab fx:id="tabPartner" text="Partner">
   <content>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
 <children><TableView fx:id="tablePartnerAuswahl" prefHeight="471.0" prefWidth="246.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
   <columns>
-    <TableColumn fx:id="tColAuswahlPartnerName" prefWidth="75.0" text="Name" />
-    <TableColumn fx:id="tColAuswahlPartnerSysteme" prefWidth="75.0" text="Systeme" />
-<TableColumn fx:id="tColAuswahlPartnerKomponenten" prefWidth="75.0" text="Komponenten" />
+    <TableColumn fx:id="tColAuswahlPartnerName" prefWidth="116.0" text="Name" />
+    <TableColumn fx:id="tColAuswahlPartnerSysteme" prefWidth="65.0" text="Systeme" />
+<TableColumn fx:id="tColAuswahlPartnerKomponenten" prefWidth="91.0" text="Komponenten" />
   </columns>
 </TableView>
 </children></AnchorPane>

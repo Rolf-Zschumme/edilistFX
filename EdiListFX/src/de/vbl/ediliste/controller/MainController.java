@@ -8,7 +8,9 @@ import java.util.ResourceBundle;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -41,7 +43,9 @@ import de.vbl.ediliste.controller.KomponentenAuswahlController.KomponentenTyp;
 import de.vbl.ediliste.model.EdiEintrag;
 import de.vbl.ediliste.model.EdiKomponente;
 import de.vbl.ediliste.model.EdiPartner;
+import de.vbl.ediliste.model.EdiSystem;
 import de.vbl.ediliste.view.EdiNrListElement;
+import de.vbl.ediliste.view.PartnerListElement;
 
 public class MainController {
 	private static final String PERSISTENCE_UNIT_NAME = "EdiListFX";
@@ -56,11 +60,13 @@ public class MainController {
     @FXML private TableColumn<EdiNrListElement, String> tColAuswahlEdiNr;
     @FXML private TableColumn<EdiNrListElement, String> tColAuswahlEdiNrBezeichnung;
 
+    @FXML private Tab tabPartner;
+    @FXML private TableView<PartnerListElement> tablePartnerAuswahl;
+    @FXML private TableColumn<PartnerListElement, String> tColAuswahlPartnerName;
+    @FXML private TableColumn<PartnerListElement, String> tColAuswahlPartnerSysteme;
+    @FXML private TableColumn<PartnerListElement, String> tColAuswahlPartnerKomponenten;
+
     @FXML private Tab tabSysteme;
-    @FXML private TableView<EdiPartner> tablePartnerAuswahl;
-    @FXML private TableColumn<EdiPartner, String> tColAuswahlPartnerName;
-    @FXML private TableColumn<EdiPartner, String> tColAuswahlPartnerSysteme;
-    @FXML private TableColumn<EdiPartner, String> tColAuswahlPartnerKomponenten;
 
     @FXML private TitledPane paneSzenario;
     @FXML private TitledPane paneAnbindung;
@@ -79,7 +85,7 @@ public class MainController {
     
     private EntityManager em;
     private ObservableList<EdiNrListElement> ediNrArrayList = FXCollections.observableArrayList();
-    private ObservableList<EdiPartner> ediPartnerList = FXCollections.observableArrayList();
+    private ObservableList<PartnerListElement> ediPartnerList = FXCollections.observableArrayList();
     private int maxEdiNr;
     private Stage primaryStage;
 
@@ -149,9 +155,9 @@ public class MainController {
     	//		paneSzenario.textProperty().bind(ediEintrag.szenarioNameProperty());
     	
     	tablePartnerAuswahl.setItems(ediPartnerList);
-    	tColAuswahlPartnerName.setCellValueFactory(new PropertyValueFactory<EdiPartner,String>("name"));
-    	
-    	
+    	tColAuswahlPartnerName.setCellValueFactory(new PropertyValueFactory<PartnerListElement,String>("name"));
+    	tColAuswahlPartnerSysteme.setCellValueFactory(new PropertyValueFactory<PartnerListElement,String>("anzSysteme"));
+    	tColAuswahlPartnerKomponenten.setCellValueFactory(new PropertyValueFactory<PartnerListElement,String>("anzKomponenten"));
 	}
 
 	private void loadEdiNrListData() {
@@ -172,7 +178,7 @@ public class MainController {
 
     	ediPartnerList.clear();
     	for (Object p : query.getResultList()) {
-    		ediPartnerList.add((EdiPartner) p);
+    		ediPartnerList.add(new PartnerListElement( (EdiPartner) p));
     	}
 	}
 	
@@ -263,6 +269,7 @@ public class MainController {
     				komponentenAuswahlController.selectedKomponentenId()));
     		btnSender.setText(aktEdi.getKomponente().getFullname());
     		senderIsSelected.set(true);
+            loadPartnerListData();
     	}
     }
 
@@ -291,10 +298,11 @@ public class MainController {
 	@FXML
     void empfaengerButton(ActionEvent event) {
     	Stage dialog = new Stage(StageStyle.UTILITY);
-    	FXMLLoader loader = loadKomponentenAuswahl(dialog); 
+//
+//    	FXMLLoader loader = loadKomponentenAuswahl(dialog); 
 
-    	KomponentenAuswahlController komponentenAuswahlController = loader.getController();
-    	komponentenAuswahlController.setKomponente(KomponentenTyp.RECEIVER, aktEdi.getEdiEmpfaenger().iterator().next().getId() );
+//    	KomponentenAuswahlController komponentenAuswahlController = loader.getController();
+//    	komponentenAuswahlController.setKomponente(KomponentenTyp.RECEIVER, aktEdi.getEdiEmpfaenger().iterator().next().getId() );
     	
     	dialog.showAndWait();
     	
@@ -322,6 +330,7 @@ public class MainController {
         assert tColAuswahlPartnerSysteme != null : "fx:id=\"tColAuswahlPartnerSysteme\" was not injected: check your FXML file 'Main.fxml'.";
         assert tColAuswahlPartnerKomponenten != null : "fx:id=\"tColAuswahlPartnerKomponenten\" was not injected: check your FXML file 'Main.fxml'.";
         assert tabSysteme != null : "fx:id=\"tabSysteme\" was not injected: check your FXML file 'Main.fxml'.";
+        assert tabPartner != null : "fx:id=\"tabPartner\" was not injected: check your FXML file 'Main.fxml'.";
         assert btnDeleteEdiEintrag != null : "fx:id=\"btnDeleteEdiEintrag\" was not injected: check your FXML file 'Main.fxml'.";
         assert btnSender != null : "fx:id=\"btnSender\" was not injected: check your FXML file 'Main.fxml'.";
         assert btnNewEdiNr != null : "fx:id=\"btnNewEdiNr\" was not injected: check your FXML file 'Main.fxml'.";

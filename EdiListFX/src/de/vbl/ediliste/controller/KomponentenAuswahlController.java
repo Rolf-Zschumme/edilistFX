@@ -41,7 +41,7 @@ public class KomponentenAuswahlController {
     
     @FXML private ResourceBundle resources;
 
-    @FXML private ComboBox<EdiPartner> partnerCB;
+    @FXML private ComboBox<EdiPartner> partnerCB; 
     @FXML private ComboBox<EdiSystem> systemCB;
     @FXML private ComboBox<EdiKomponente> komponenteCB;
     
@@ -75,8 +75,8 @@ public class KomponentenAuswahlController {
 		if (komponentenID > 0L) {
 			EdiKomponente komponente = em.find(EdiKomponente.class, komponentenID);
 				
-			partnerCB.getSelectionModel().select(komponente.getSystem().getPartner());
-			systemCB.getSelectionModel().select(komponente.getSystem());
+			partnerCB.getSelectionModel().select(komponente.getEdiSystem().getEdiPartner());
+			systemCB.getSelectionModel().select(komponente.getEdiSystem());
 			komponenteCB.getSelectionModel().select(komponente);
 		}
 		
@@ -122,7 +122,7 @@ public class KomponentenAuswahlController {
 				"SELECT s FROM EdiSystem s ORDER BY s.name", EdiSystem.class);
 		List<EdiSystem> ediList = tq.getResultList();
 		for (EdiSystem ediSystem : ediList) {
-			if (partnerId == ediSystem.getPartner().getId()) {
+			if (partnerId == ediSystem.getEdiPartner().getId()) {
 				systemList.add(ediSystem);
 			}
 		}
@@ -134,7 +134,7 @@ public class KomponentenAuswahlController {
 		  "SELECT k FROM EdiKomponente k ORDER BY k.name",EdiKomponente.class);
 		List<EdiKomponente> resultList = tq.getResultList();
 		for (EdiKomponente ediKomponente : resultList) {
-			if (systemId == ediKomponente.getSystem().getId()) {
+			if (systemId == ediKomponente.getEdiSystem().getId()) {
 				komponentenList.add(ediKomponente);
 			}
 		}
@@ -294,14 +294,14 @@ public class KomponentenAuswahlController {
     			em.getTransaction().begin();
     			em.persist(ediPartner);
     			em.getTransaction().commit();
+    			partnerList.add(ediPartner);
+    			partnerCB.getSelectionModel().select(ediPartner);
     		} catch (RuntimeException e) {
     			Dialogs.showErrorDialog(stage,
     					"Fehler beim speichern des Partners",
     					"Datenbankfehler",APPL_TITLE,e);
     			continue;
     		}
-    		partnerList.add(ediPartner);
-    		partnerCB.getSelectionModel().select(ediPartner);
     		break;
     	}	
     }

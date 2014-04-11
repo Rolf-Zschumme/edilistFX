@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
 
 @Entity
 public class EdiKomponente {
@@ -53,17 +54,19 @@ public class EdiKomponente {
 		return fullname;
 	}
 	
-//	public String getFullname() {
-//		String fullName = ediSystem == null ? "-?-" : ediSystem.getFullname();
-//		return fullName + "  " + name.get();
-//	}
+	public String getFullname() {
+		String fullName = ediSystem == null ? "-?-" : ediSystem.getFullname();
+		return fullName + "  " + name.get();
+	}
 
-	@ManyToOne
-	public EdiSystem getSystem() {
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
+	@ManyToOne 
+	@JoinColumn(name = "ediSystem_id", referencedColumnName = "id")
+	public EdiSystem getEdiSystem() {
 	    return ediSystem;
 	}
 
-	public void setSystem(EdiSystem param) {
+	public void setEdiSystem(EdiSystem param) {
 	    this.ediSystem = param;
 	}
 }

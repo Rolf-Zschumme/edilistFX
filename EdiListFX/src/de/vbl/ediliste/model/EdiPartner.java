@@ -4,10 +4,13 @@ import static javax.persistence.GenerationType.IDENTITY;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Column;
+import de.vbl.ediliste.model.EdiSystem;
+import java.util.Collection;
+import javax.persistence.OneToMany;
 
 /**
  * Entity implementation class for Entity: EdiPartner
@@ -18,7 +21,8 @@ public class EdiPartner {
 	private StringProperty name = new SimpleStringProperty();
 
 	private long id;
-
+	private Collection<EdiSystem> ediSystem;
+	
 	public EdiPartner() {
 	}
 	public EdiPartner(String name) {
@@ -30,11 +34,9 @@ public class EdiPartner {
 	public long getId() {
 		return this.id;
 	}
-
 	public void setId(long id) {
 		this.id = id;
 	}   
-
 	// ------------------------------------------------------------------------
 	public StringProperty nameProperty() {
 		return name;
@@ -47,6 +49,14 @@ public class EdiPartner {
 
 	public void setName(String param) {
 		name.set(param);
+	}
+	// ------------------------------------------------------------------------
+	@OneToMany(mappedBy = "ediPartner")
+	public Collection<EdiSystem> getEdiSystem() {
+	    return ediSystem;
+	}
+	public void setEdiSystem(Collection<EdiSystem> param) {
+	    this.ediSystem = param;
 	}
 
 	// ------------------------------------------------------------------------
