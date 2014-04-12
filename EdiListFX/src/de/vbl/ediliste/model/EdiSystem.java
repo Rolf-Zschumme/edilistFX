@@ -1,17 +1,24 @@
 package de.vbl.ediliste.model;
 
 import static javax.persistence.GenerationType.IDENTITY;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+
 import de.vbl.ediliste.model.EdiPartner;
+
 import javax.persistence.ManyToOne;
 import javax.persistence.JoinColumn;
+
 import de.vbl.ediliste.model.EdiKomponente;
+
 import java.util.Collection;
+
 import javax.persistence.OneToMany;
 
 @Entity 
@@ -22,6 +29,7 @@ public class EdiSystem {
 	private long id;
 	private EdiPartner ediPartner;
 	private Collection<EdiKomponente> ediKomponente;
+	private IntegerProperty anzKomponenten = new SimpleIntegerProperty();
 	
 	public EdiSystem() {
 		super();
@@ -80,4 +88,15 @@ public class EdiSystem {
 	    this.ediKomponente = param;
 	}
 	
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
+	public IntegerProperty anzKomponentenProperty() {
+		return anzKomponenten;
+	}
+	public Integer getAnzKomponenten() {
+		return ediKomponente.size();
+	}
+	
+	public String getPartnerName() {
+		return ediPartner.getName();
+	}
 }

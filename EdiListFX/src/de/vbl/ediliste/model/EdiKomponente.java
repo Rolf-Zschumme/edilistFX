@@ -69,5 +69,13 @@ public class EdiKomponente {
 	public void setEdiSystem(EdiSystem param) {
 	    this.ediSystem = param;
 	}
+	
+	public String getSystemName () {
+		return ediSystem.getName();
+	}
+	
+	public String getPartnerName() {
+		return ediSystem.getPartnerName();
+	}
 }
 

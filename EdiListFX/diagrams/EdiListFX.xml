@@ -3,32 +3,43 @@
 		<entity-name>de.vbl.ediliste.model.EdiAnbindung</entity-name>
 		<entity-width>120</entity-width>
 		<entity-height>83</entity-height>
-		<entity-X-Coordinate>26</entity-X-Coordinate>
-		<entity-Y-Coordinate>49</entity-Y-Coordinate>
+		<entity-X-Coordinate>317</entity-X-Coordinate>
+		<entity-Y-Coordinate>22</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>false</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
 	</entity>
 
 	<entity>
+		<entity-name>de.vbl.ediliste.model.EdiEmpfaenger</entity-name>
+		<entity-width>120</entity-width>
+		<entity-height>96</entity-height>
+		<entity-X-Coordinate>565</entity-X-Coordinate>
+		<entity-Y-Coordinate>479</entity-Y-Coordinate>
+		<primary-collapsed>true</primary-collapsed>
+		<relation-collapsed>true</relation-collapsed>
+		<basic-collapsed>false</basic-collapsed>
+	</entity>
+
+	<entity>
 		<entity-name>de.vbl.ediliste.model.EdiDokuLink</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>181</entity-height>
-		<entity-X-Coordinate>600</entity-X-Coordinate>
-		<entity-Y-Coordinate>246</entity-Y-Coordinate>
+		<entity-height>96</entity-height>
+		<entity-X-Coordinate>565</entity-X-Coordinate>
+		<entity-Y-Coordinate>271</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>false</relation-collapsed>
 		<basic-collapsed>true</basic-collapsed>
 	</entity>
 
 	<entity>
-		<entity-name>de.vbl.ediliste.model.EdiEmpfaenger</entity-name>
+		<entity-name>de.vbl.ediliste.model.EdiSystem</entity-name>
 		<entity-width>120</entity-width>
 		<entity-height>141</entity-height>
-		<entity-X-Coordinate>600</entity-X-Coordinate>
-		<entity-Y-Coordinate>523</entity-Y-Coordinate>
+		<entity-X-Coordinate>40</entity-X-Coordinate>
+		<entity-Y-Coordinate>271</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
-		<relation-collapsed>true</relation-collapsed>
+		<relation-collapsed>false</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
 	</entity>
 
@@ -36,21 +47,10 @@
 		<entity-name>de.vbl.ediliste.model.EdiPartner</entity-name>
 		<entity-width>120</entity-width>
 		<entity-height>121</entity-height>
-		<entity-X-Coordinate>26</entity-X-Coordinate>
-		<entity-Y-Coordinate>156</entity-Y-Coordinate>
+		<entity-X-Coordinate>40</entity-X-Coordinate>
+		<entity-Y-Coordinate>89</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
-		<relation-collapsed>true</relation-collapsed>
-		<basic-collapsed>false</basic-collapsed>
-	</entity>
-
-	<entity>
-		<entity-name>de.vbl.ediliste.model.EdiSystem</entity-name>
-		<entity-width>120</entity-width>
-		<entity-height>141</entity-height>
-		<entity-X-Coordinate>26</entity-X-Coordinate>
-		<entity-Y-Coordinate>338</entity-Y-Coordinate>
-		<primary-collapsed>true</primary-collapsed>
-		<relation-collapsed>true</relation-collapsed>
+		<relation-collapsed>false</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
 	</entity>
 
@@ -58,17 +58,17 @@
 		<entity-name>de.vbl.ediliste.model.EdiKomponente</entity-name>
 		<entity-width>120</entity-width>
 		<entity-height>121</entity-height>
-		<entity-X-Coordinate>24</entity-X-Coordinate>
-		<entity-Y-Coordinate>533</entity-Y-Coordinate>
+		<entity-X-Coordinate>40</entity-X-Coordinate>
+		<entity-Y-Coordinate>466</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
-		<relation-collapsed>true</relation-collapsed>
+		<relation-collapsed>false</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
 	</entity>
 
 	<entity>
 		<entity-name>de.vbl.ediliste.model.EdiEintrag</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>261</entity-height>
+		<entity-height>176</entity-height>
 		<entity-X-Coordinate>317</entity-X-Coordinate>
 		<entity-Y-Coordinate>320</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
@@ -79,9 +79,9 @@
 	<entity>
 		<entity-name>de.vbl.ediliste.model.EdiSzenario</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>121</entity-height>
+		<entity-height>96</entity-height>
 		<entity-X-Coordinate>317</entity-X-Coordinate>
-		<entity-Y-Coordinate>30</entity-Y-Coordinate>
+		<entity-Y-Coordinate>169</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>

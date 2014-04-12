@@ -8,16 +8,18 @@ import java.util.ResourceBundle;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -54,7 +56,7 @@ public class MainController {
     @FXML private ResourceBundle resources;
     @FXML private URL location;
 
-    @FXML private TabPane TabPaneObjekte;    
+    @FXML private TabPane tabPaneObjekte;    
     @FXML private Tab tabEdiNr;
     @FXML private TableView<EdiNrListElement> tableEdiNrAuswahl;
     @FXML private TableColumn<EdiNrListElement, String> tColAuswahlEdiNr;
@@ -67,7 +69,17 @@ public class MainController {
     @FXML private TableColumn<PartnerListElement, String> tColAuswahlPartnerKomponenten;
 
     @FXML private Tab tabSysteme;
+    @FXML private TableView<EdiSystem> tableSystemAuswahl;
+    @FXML private TableColumn<EdiSystem, String> tColSelSystemSystemName;
+    @FXML private TableColumn<EdiSystem, String> tColSelSystemPartnerName;
+    @FXML private TableColumn<EdiSystem, Integer> tColSelSystemKomponenten;
 
+    @FXML private Tab tabKomponenten;
+    @FXML private TableView<EdiKomponente> tableKomponentenAuswahl;   
+    @FXML private TableColumn<EdiKomponente, String> tColSelKompoKomponten;
+    @FXML private TableColumn<EdiKomponente, String> tColSelKompoSysteme;
+    @FXML private TableColumn<EdiKomponente, String> tColSelKompoPartner;
+    
     @FXML private TitledPane paneSzenario;
     @FXML private TitledPane paneAnbindung;
     @FXML private TitledPane paneEdiEintrag;
@@ -80,12 +92,13 @@ public class MainController {
     @FXML private Button btnSender;
     @FXML private Button btnNewEdiNr;
     @FXML private Button btnDeleteEdiEintrag;
-
-
     
     private EntityManager em;
     private ObservableList<EdiNrListElement> ediNrArrayList = FXCollections.observableArrayList();
     private ObservableList<PartnerListElement> ediPartnerList = FXCollections.observableArrayList();
+    private ObservableList<EdiSystem> ediSystemList = FXCollections.observableArrayList();
+    private ObservableList<EdiKomponente> ediKomponentenList = FXCollections.observableArrayList();
+    
     private int maxEdiNr;
     private Stage primaryStage;
 
@@ -106,13 +119,10 @@ public class MainController {
     	checkFieldFromView();
         setupEntityManager();
         loadEdiNrListData();
-        loadPartnerListData();
-        
         setupBindings();
         
         tableEdiNrAuswahl.getSelectionModel().selectedItemProperty().addListener(
         		new ChangeListener<EdiNrListElement>() {
-        			
         			@Override
         			public void changed(
         					ObservableValue<? extends EdiNrListElement> observable,
@@ -138,12 +148,57 @@ public class MainController {
         			}
 				}
         );
+        tabPaneObjekte.getSelectionModel().selectedItemProperty().addListener(
+        		new ChangeListener<Tab>() {
+        			@Override
+        			public void changed(ObservableValue<? extends Tab> ov, Tab talt, Tab tneu) {
+        				final Tab akttab = tneu;
+//        				primaryStage.getScene().setCursor(Cursor.WAIT);
+//        				Task<Void> task = new Task<Void>() {
+//        					@Override
+//        					protected Void call() throws Exception {
+        						if (akttab.equals(tabPartner)) {
+        							// loadPartnerListData();
+        							ediPartnerList.clear();
+        					    	Query query = em.createQuery("SELECT p FROM EdiPartner p ORDER BY p.name");
+        					    	for (Object p : query.getResultList()) {
+        					    		ediPartnerList.add(new PartnerListElement( (EdiPartner) p));
+        					    	}
+        						}
+        						else if(akttab.equals(tabSysteme)) {
+        							// loadSystemListData();
+        							ediSystemList.clear();
+        					    	Query query = em.createQuery("SELECT s FROM EdiSystem s ORDER BY s.name");
+        					    	for (Object s : query.getResultList()) {
+        					    		ediSystemList.add((EdiSystem)s);
+        					    	}
+        						}
+        						else if(akttab.equals(tabKomponenten)) {
+        							// loadKomponentenListData();
+        							ediKomponentenList.clear();
+        					    	Query query = em.createQuery("SELECT k FROM EdiKomponente k ORDER BY k.name");
+        					    	for (Object k : query.getResultList()) {
+        					    		ediKomponentenList.add((EdiKomponente)k);
+        					    	}	
+        						}
+//        						return null;
+//        					}
+//        				};
+//        				task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+//							@Override
+//							public void handle(WorkerStateEvent event) {
+//		        				primaryStage.getScene().setCursor(Cursor.DEFAULT);
+//							}
+//						});
+//        				new Thread(task).start();
+        			}
+				}
+        );
     }
     
 	private void setupBindings() {
     	
     	tableEdiNrAuswahl.setItems(ediNrArrayList);
-    
     	tColAuswahlEdiNr.setCellValueFactory(new PropertyValueFactory<EdiNrListElement,String>("ediNr"));
     	tColAuswahlEdiNrBezeichnung.setCellValueFactory(new PropertyValueFactory<EdiNrListElement,String>("bezeichnung"));
     	
@@ -158,11 +213,20 @@ public class MainController {
     	tColAuswahlPartnerName.setCellValueFactory(new PropertyValueFactory<PartnerListElement,String>("name"));
     	tColAuswahlPartnerSysteme.setCellValueFactory(new PropertyValueFactory<PartnerListElement,String>("anzSysteme"));
     	tColAuswahlPartnerKomponenten.setCellValueFactory(new PropertyValueFactory<PartnerListElement,String>("anzKomponenten"));
+    	
+    	tableSystemAuswahl.setItems(ediSystemList);
+    	tColSelSystemSystemName.setCellValueFactory(new PropertyValueFactory<EdiSystem,String>("name"));
+    	tColSelSystemPartnerName.setCellValueFactory(new PropertyValueFactory<EdiSystem,String>("PartnerName"));
+    	tColSelSystemKomponenten.setCellValueFactory(new PropertyValueFactory<EdiSystem,Integer>("AnzKomponenten"));
+    	
+    	tableKomponentenAuswahl.setItems(ediKomponentenList);
+    	tColSelKompoKomponten.setCellValueFactory(new PropertyValueFactory<EdiKomponente,String>("name"));
+    	tColSelKompoSysteme.setCellValueFactory(new PropertyValueFactory<EdiKomponente,String>("SystemName"));
+    	tColSelKompoPartner.setCellValueFactory(new PropertyValueFactory<EdiKomponente,String>("PartnerName"));
 	}
 
 	private void loadEdiNrListData() {
     	Query query = em.createQuery("SELECT e.id, e.ediNr, e.kurzBez FROM EdiEintrag e ORDER BY e.ediNr");
-
     	ediNrArrayList.clear();
     	Integer max = 0;
     	for (Object zeile  : query.getResultList()) {
@@ -173,17 +237,32 @@ public class MainController {
     	maxEdiNr = max;
 	}
 	
-	private void loadPartnerListData() {
-    	Query query = em.createQuery("SELECT p FROM EdiPartner p ORDER BY p.name");
-
-    	ediPartnerList.clear();
-    	for (Object p : query.getResultList()) {
-    		ediPartnerList.add(new PartnerListElement( (EdiPartner) p));
-    	}
-	}
+//	private void loadPartnerListData() {
+//		ediPartnerList.clear();
+//    	Query query = em.createQuery("SELECT p FROM EdiPartner p ORDER BY p.name");
+//    	for (Object p : query.getResultList()) {
+//    		ediPartnerList.add(new PartnerListElement( (EdiPartner) p));
+//    	}
+//	}
+//	
+//	private void loadSystemListData() {
+//		ediSystemList.clear();
+//    	Query query = em.createQuery("SELECT s FROM EdiSystem s ORDER BY s.name");
+//    	for (Object s : query.getResultList()) {
+//    		ediSystemList.add((EdiSystem)s);
+//    	}
+//	}
 	
+//	private void loadKomponentenListData() {
+//		ediKomponentenList.clear();
+//    	Query query = em.createQuery("SELECT k FROM EdiKomponente k ORDER BY k.name");
+//    	for (Object k : query.getResultList()) {
+//    		ediKomponentenList.add((EdiKomponente)k);
+////    		EdiKomponente kompo = (EdiKomponente) k;
+////    		System.out.println("Komponente read: " + kompo.getName() );
+//    	}
+//	}
 	
-    	
     private void setupEntityManager() {
     	EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
     	em = factory.createEntityManager();
@@ -269,7 +348,6 @@ public class MainController {
     				komponentenAuswahlController.selectedKomponentenId()));
     		btnSender.setText(aktEdi.getKomponente().getFullname());
     		senderIsSelected.set(true);
-            loadPartnerListData();
     	}
     }
 
@@ -321,22 +399,39 @@ public class MainController {
     }
     
     private void checkFieldFromView() {
-    	assert TabPaneObjekte != null : "fx:id=\"TabPaneObjekte\" was not injected: check your FXML file 'Main.fxml'.";
-        assert tabEdiNr != null : "fx:id=\"tabEdiNr\" was not injected: check your FXML file 'Main.fxml'.";
+    	assert tabPaneObjekte != null : "fx:id=\"tabPaneObjekte\" was not injected: check your FXML file 'Main.fxml'.";
+
+    	assert tabEdiNr != null : "fx:id=\"tabEdiNr\" was not injected: check your FXML file 'Main.fxml'.";
+    	assert btnNewEdiNr != null : "fx:id=\"btnNewEdiNr\" was not injected: check your FXML file 'Main.fxml'.";
+    	assert btnDeleteEdiEintrag != null : "fx:id=\"btnDeleteEdiEintrag\" was not injected: check your FXML file 'Main.fxml'.";
         assert tableEdiNrAuswahl != null : "fx:id=\"tableEdiNrAuswahl\" was not injected: check your FXML file 'Main.fxml'.";
         assert tColAuswahlEdiNr != null : "fx:id=\"tColAuswahlEdiNr\" was not injected: check your FXML file 'Main.fxml'.";
         assert tColAuswahlEdiNrBezeichnung != null : "fx:id=\"tColAuswahlEdiNrBezeichnung\" was not injected: check your FXML file 'Main.fxml'.";
+
+        assert tabPartner != null : "fx:id=\"tabPartner\" was not injected: check your FXML file 'Main.fxml'.";
+        assert tablePartnerAuswahl != null : "fx:id=\"tablePartnerAuswahl\" was not injected: check your FXML file 'Main.fxml'.";
         assert tColAuswahlPartnerName != null : "fx:id=\"tColAuswahlPartnerName\" was not injected: check your FXML file 'Main.fxml'.";
         assert tColAuswahlPartnerSysteme != null : "fx:id=\"tColAuswahlPartnerSysteme\" was not injected: check your FXML file 'Main.fxml'.";
         assert tColAuswahlPartnerKomponenten != null : "fx:id=\"tColAuswahlPartnerKomponenten\" was not injected: check your FXML file 'Main.fxml'.";
+
         assert tabSysteme != null : "fx:id=\"tabSysteme\" was not injected: check your FXML file 'Main.fxml'.";
-        assert tabPartner != null : "fx:id=\"tabPartner\" was not injected: check your FXML file 'Main.fxml'.";
-        assert btnDeleteEdiEintrag != null : "fx:id=\"btnDeleteEdiEintrag\" was not injected: check your FXML file 'Main.fxml'.";
-        assert btnSender != null : "fx:id=\"btnSender\" was not injected: check your FXML file 'Main.fxml'.";
-        assert btnNewEdiNr != null : "fx:id=\"btnNewEdiNr\" was not injected: check your FXML file 'Main.fxml'.";
+        assert tableSystemAuswahl != null : "fx:id=\"tableSystemAuswahl\" was not injected: check your FXML file 'Main.fxml'.";
+        assert tColSelSystemSystemName != null : "fx:id=\"tColSelSystemSystemName\" was not injected: check your FXML file 'Main.fxml'.";
+        assert tColSelSystemPartnerName != null : "fx:id=\"tColSelSystemPartnerName\" was not injected: check your FXML file 'Main.fxml'.";
+        assert tColSelSystemKomponenten != null : "fx:id=\"tColSelSystemKomponenten\" was not injected: check your FXML file 'Main.fxml'.";
+        
+        assert tabKomponenten != null : "fx:id=\"tabKomponenten\" was not injected: check your FXML file 'Main.fxml'.";
+        assert tableKomponentenAuswahl != null : "fx:id=\"tableKomponentenAuswahl\" was not injected: check your FXML file 'Main.fxml'.";
+        assert tColSelKompoKomponten != null : "fx:id=\"tColSelKompoKomponten\" was not injected: check your FXML file 'Main.fxml'.";
+        assert tColSelKompoSysteme != null : "fx:id=\"tColSelKompoSysteme\" was not injected: check your FXML file 'Main.fxml'.";
+        assert tColSelKompoPartner != null : "fx:id=\"tColSelKompoPartner\" was not injected: check your FXML file 'Main.fxml'.";
+
         assert paneAnbindung != null : "fx:id=\"paneAnbindung\" was not injected: check your FXML file 'Main.fxml'.";
+
         assert paneSzenario != null : "fx:id=\"paneSzenario\" was not injected: check your FXML file 'Main.fxml'.";
+
         assert paneEdiEintrag != null : "fx:id=\"paneEdiEintrag\" was not injected: check your FXML file 'Main.fxml'.";
+        assert btnSender != null : "fx:id=\"btnSender\" was not injected: check your FXML file 'Main.fxml'.";
         assert tfEdiBezeichnung != null : "fx:id=\"tfEdiBezeichnung\" was not injected: check your FXML file 'Main.fxml'.";
         assert ediLastChange != null : "fx:id=\"ediLastChange\" was not injected: check your FXML file 'Main.fxml'.";
         assert tfDatenart1 != null : "fx:id=\"tfDatenart1\" was not injected: check your FXML file 'Main.fxml'.";
