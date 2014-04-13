@@ -13,7 +13,6 @@ import de.vbl.ediliste.model.EdiEintrag;
 import de.vbl.ediliste.model.EdiKomponente;
 import de.vbl.ediliste.model.EdiPartner;
 import de.vbl.ediliste.model.EdiSystem;
-import de.vbl.ediliste.model.EdiSzenario;
 
 public class DataBaseInit {
 	private static final String PERSISTENCE_UNIT_NAME = "EdiListFX";
@@ -40,10 +39,10 @@ public class DataBaseInit {
 			ta = em.getTransaction();
 			ta.begin();
 
-			if("1".equals("1")) 
-				generateRealObjekts(em);
+			generateRealObjekts(em);
 			
-			generateTestObjekts(em);
+			if("1".equals("2")) 
+				generateTestObjekts(em);
 
 			if (ta.isActive()) {
 				System.out.println("Transaction vor commit isActive=TRUE");
@@ -185,13 +184,13 @@ public class DataBaseInit {
 		
 	}
 
-	private static EdiSzenario newEdiSzenario( 	EdiAnbindung anbindung,	String name) 
-	{
-		EdiSzenario szenario = new EdiSzenario();
-		szenario.setName(name);
-		szenario.setAnbindung(anbindung);
-		return szenario;
-	}
+//	private static EdiSzenario newEdiSzenario( 	EdiAnbindung anbindung,	String name) 
+//	{
+//		EdiSzenario szenario = new EdiSzenario();
+//		szenario.setName(name);
+//		szenario.setAnbindung(anbindung);
+//		return szenario;
+//	}
 	
 	private static EdiSystem newSystem(EdiPartner partner, String name) 
 	{

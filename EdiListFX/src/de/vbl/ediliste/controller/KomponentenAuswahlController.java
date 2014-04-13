@@ -16,6 +16,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialogs;
+import javafx.scene.control.Dialogs.DialogResponse;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -60,7 +61,14 @@ public class KomponentenAuswahlController {
 	private ObservableList<EdiSystem> 		systemList;      //  = FXCollections.observableArrayList(); 
 	private ObservableList<EdiKomponente>   komponentenList; //  = FXCollections.observableArrayList(); 
 
-	public Long selectedKomponentenId() {
+	public DialogResponse getResponse () {
+		if (ediKomponentenId==null || ediKomponentenId.get()==0L)
+			return DialogResponse.CANCEL;
+		else
+			return DialogResponse.OK;
+	}
+
+	public Long getSelectedKomponentenId() {
 		return ediKomponentenId.get();
 	}
 	
@@ -241,7 +249,7 @@ public class KomponentenAuswahlController {
     				public void changed (
     						ObservableValue<? extends EdiKomponente> observable,
     							EdiKomponente oldKomponente, EdiKomponente newKomponente) {
-    					ediKomponentenId.set(newKomponente.getId());
+    					ediKomponentenId.set((newKomponente==null)? 0L : newKomponente.getId());
     				}
     			}
     	);
@@ -262,6 +270,7 @@ public class KomponentenAuswahlController {
 
     @FXML
     void escapePressed(ActionEvent event) {
+    	ediKomponentenId.set(0L);;
 		unbind();
     	close(event);
     }

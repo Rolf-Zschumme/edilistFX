@@ -16,7 +16,7 @@
 			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://10.0.0.13:3306/ediliste"/>
 			<property name="javax.persistence.jdbc.user" value="ediliste"/>
 			<property name="javax.persistence.jdbc.password" value="1234567"/>
-			<property name="javax.persistence.jdbc.driver" value="com.sun.tools.xjc.Driver"/>
+			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
 		</properties>
 	</persistence-unit>
 </persistence>

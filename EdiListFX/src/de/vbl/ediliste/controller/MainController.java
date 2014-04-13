@@ -1,9 +1,8 @@
 package de.vbl.ediliste.controller;
 
-import javafx.scene.control.Dialogs;
-
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.ResourceBundle;
 
 import javafx.beans.binding.Bindings;
@@ -13,16 +12,13 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Dialogs;
 import javafx.scene.control.Dialogs.DialogOptions;
 import javafx.scene.control.Dialogs.DialogResponse;
 import javafx.scene.control.Tab;
@@ -43,6 +39,7 @@ import javax.persistence.Query;
 
 import de.vbl.ediliste.controller.KomponentenAuswahlController.KomponentenTyp;
 import de.vbl.ediliste.model.EdiEintrag;
+import de.vbl.ediliste.model.EdiEmpfaenger;
 import de.vbl.ediliste.model.EdiKomponente;
 import de.vbl.ediliste.model.EdiPartner;
 import de.vbl.ediliste.model.EdiSystem;
@@ -131,17 +128,17 @@ public class MainController {
         							   + "  newValue=" + ((newValue == null) ? "null" : newValue.ediNrProperty().get()) ); 
         				final EdiEintrag defEdi = new EdiEintrag();
         				if (oldValue != null) {
-        					tfEdiBezeichnung.textProperty().unbindBidirectional(defEdi.kurzBezProperty());
-        					tfEdiBezeichnung.textProperty().unbindBidirectional(aktEdi.kurzBezProperty());;
+        					tfEdiBezeichnung.textProperty().unbindBidirectional(defEdi.bezeichnungProperty());
+        					tfEdiBezeichnung.textProperty().unbindBidirectional(aktEdi.bezeichnungProperty());;
         				}
         				if (newValue != null) {
         					aktEdi = em.find(EdiEintrag.class, newValue.getEdiId());
-        					tfEdiBezeichnung.textProperty().bindBidirectional(aktEdi.kurzBezProperty());
+        					tfEdiBezeichnung.textProperty().bindBidirectional(aktEdi.bezeichnungProperty());
         		    		btnSender.setText(aktEdi.getKomponente()==null ? "" : aktEdi.getKomponente().getFullname());
         		    		senderIsSelected.set(aktEdi.getKomponente()!=null);
         				}
         				else {
-        					tfEdiBezeichnung.textProperty().bindBidirectional(defEdi.kurzBezProperty());
+        					tfEdiBezeichnung.textProperty().bindBidirectional(defEdi.bezeichnungProperty());
         					btnSender.setText("");
         		    		senderIsSelected.set(false);
         				}
@@ -226,7 +223,7 @@ public class MainController {
 	}
 
 	private void loadEdiNrListData() {
-    	Query query = em.createQuery("SELECT e.id, e.ediNr, e.kurzBez FROM EdiEintrag e ORDER BY e.ediNr");
+    	Query query = em.createQuery("SELECT e.id, e.ediNr, e.bezeichnung FROM EdiEintrag e ORDER BY e.ediNr");
     	ediNrArrayList.clear();
     	Integer max = 0;
     	for (Object zeile  : query.getResultList()) {
@@ -297,7 +294,7 @@ public class MainController {
 
     	if (dialogController.getResponse() == DialogResponse.OK) {
     		EdiEintrag newEE = dialogController.getNewEdiEintrag();
-			EdiNrListElement newListElement = new EdiNrListElement(newEE.getId(),newEE.getEdiNr(),newEE.getKurzBez());
+			EdiNrListElement newListElement = new EdiNrListElement(newEE.getId(),newEE.getEdiNr(),newEE.getBezeichnung());
 			ediNrArrayList.add(newListElement);
 			if (newEE.getEdiNr() > maxEdiNr) 
 				maxEdiNr = newEE.getEdiNr();
@@ -341,13 +338,13 @@ public class MainController {
     	Long aktSenderId = (aktEdi.getKomponente()==null) ? 0L : aktEdi.getKomponente().getId();
     	komponentenAuswahlController.setKomponente(KomponentenTyp.SENDER, aktSenderId);
     	dialog.showAndWait();
-
-    	Long selKomponentenID = komponentenAuswahlController.selectedKomponentenId();
-    	if (aktSenderId != selKomponentenID) {
-    		aktEdi.setKomponente(em.find(EdiKomponente.class,
-    				komponentenAuswahlController.selectedKomponentenId()));
-    		btnSender.setText(aktEdi.getKomponente().getFullname());
-    		senderIsSelected.set(true);
+    	if (komponentenAuswahlController.getResponse() == DialogResponse.OK ) {
+	    	Long selKomponentenID = komponentenAuswahlController.getSelectedKomponentenId();
+    	    if (aktSenderId != selKomponentenID	) {
+   	    		aktEdi.setKomponente(em.find(EdiKomponente.class, selKomponentenID));
+   	    		senderIsSelected.set(true);
+    	    	btnSender.setText(aktEdi.getKomponente().getFullname());
+    	    }
     	}
     }
 
@@ -358,7 +355,7 @@ public class MainController {
     	try {
     		loader.load();
     	} catch (IOException e) {
-    		e.printStackTrace();
+    		e.printStackTrace(); 
     	}
     	Parent root = loader.getRoot();
 //    	System.out.println(getClass().getName() + ".loaderKomponentenAuswahl --> vor new Scene");
@@ -375,27 +372,26 @@ public class MainController {
 
 	@FXML
     void empfaengerButton(ActionEvent event) {
-    	Stage dialog = new Stage(StageStyle.UTILITY);
-//
-//    	FXMLLoader loader = loadKomponentenAuswahl(dialog); 
 
-//    	KomponentenAuswahlController komponentenAuswahlController = loader.getController();
-//    	komponentenAuswahlController.setKomponente(KomponentenTyp.RECEIVER, aktEdi.getEdiEmpfaenger().iterator().next().getId() );
-    	
+		Stage dialog = new Stage(StageStyle.UTILITY);
+    	FXMLLoader loader = loadKomponentenAuswahl(dialog); 
+
+    	KomponentenAuswahlController komponentenAuswahlController = loader.getController();
+    	Collection<EdiEmpfaenger> empfaengerList = aktEdi.getEdiEmpfaenger();
+    	EdiEmpfaenger empfaenger1 = null;
+    	if (empfaengerList.iterator().hasNext())
+    		empfaenger1 = empfaengerList.iterator().next();
+    	Long aktEmpfaenger1Id = (empfaenger1==null ? 0L : empfaenger1.getId());
     	dialog.showAndWait();
+    	if (komponentenAuswahlController.getResponse() == DialogResponse.OK ) {
+	    	Long selEmpfaenger1ID = komponentenAuswahlController.getSelectedKomponentenId();
+    	    if (aktEmpfaenger1Id != selEmpfaenger1ID) {
+    	    	// toDo
+   	    		EdiKomponente tmpEmpfaenger1 = em.find(EdiKomponente.class, selEmpfaenger1ID);
+    	    	btnEmpfaenger1.setText(tmpEmpfaenger1.getFullname());
+    	    }
+    	}
     	
-//    	Long selEmpfaengerId1 = komponentenAuswahlController.selectedKomponentenId();
-//    	if (aktEdi.getKomponente().getId() != selKomponentenID) {
-//    		aktEdi.setKomponente(em.find(EdiKomponente.class,
-//    				komponentenAuswahlController.selectedKomponentenId()));
-//    		btnSender.setText(aktEdi.getKomponente().getFullname());
-//    		senderIsSelected.set(true);
-//    	}
-//    	EdiKomponente selKomponente = komponentenAuswahlController.selectedKomponenten();
-//    	if (aktEdi.getKomponente() != selKomponente) {
-//    		aktEdi.setKomponente(selKomponente);
-//    	}
-
     }
     
     private void checkFieldFromView() {

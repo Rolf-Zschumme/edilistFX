@@ -22,7 +22,7 @@ import static javax.persistence.TemporalType.DATE;
 @Entity
 public class EdiEintrag {
 	private IntegerProperty ediNr = new SimpleIntegerProperty();
-	private StringProperty kurzBez = new SimpleStringProperty();
+	private StringProperty bezeichnung = new SimpleStringProperty();
 	private StringProperty senderName = new SimpleStringProperty();
 	private long id;
 	private EdiSzenario ediSzenario;
@@ -58,17 +58,17 @@ public class EdiEintrag {
 	}
 
 	// ------------------------------------------------------------------------
-	public StringProperty kurzBezProperty() {
-		return kurzBez;
+	public StringProperty bezeichnungProperty() {
+		return bezeichnung;
 	}
 
-	@Column(length = 30)
-	public String getKurzBez() {
-		return kurzBez.get();
+	@Column(length = 40)
+	public String getBezeichnung() {
+		return bezeichnung.get();
 	}
 
-	public void setKurzBez(String param) {
-		kurzBez.set(param);
+	public void setBezeichnung(String param) {
+		bezeichnung.set(param);
 	}
 
 	// ------------------------------------------------------------------------

@@ -50,7 +50,7 @@ public class NeuerEdiEintragController {
     
     private void setupBindings() {
     	tfEdiNr.textProperty().bindBidirectional(ediEintrag.ediNrProperty(),new NumberStringConverter());
-    	tfKurzbez.textProperty().bindBidirectional(ediEintrag.kurzBezProperty());
+    	tfKurzbez.textProperty().bindBidirectional(ediEintrag.bezeichnungProperty());
 	}
     	
     private void setupEntityManager() {
@@ -67,10 +67,10 @@ public class NeuerEdiEintragController {
     	else if (isEdiNrUsed(ediNr)) {
     		fehlertext.setText("Die Nummer " + ediNr + " ist bereits vergeben - bitte ändern");
     	}
-    	else if (ediEintrag.getKurzBez() == null) {
+    	else if (ediEintrag.getBezeichnung() == null) {
     		fehlertext.setText("Bitte eine Bezeichnung eingeben");
     	}
-    	else if (ediEintrag.getKurzBez().length() < 3) {
+    	else if (ediEintrag.getBezeichnung().length() < 3) {
     		fehlertext.setText("Bitte eine Bezeichnung mit mindesten 3 Zeichen eingeben");
     	}
     	else {
@@ -92,7 +92,7 @@ public class NeuerEdiEintragController {
     
     private void unbind() {
     	tfEdiNr.textProperty().unbindBidirectional(ediEintrag.ediNrProperty());
-    	tfKurzbez.textProperty().unbindBidirectional(ediEintrag.kurzBezProperty());
+    	tfKurzbez.textProperty().unbindBidirectional(ediEintrag.bezeichnungProperty());
     }
     
     private void close(ActionEvent event) {
