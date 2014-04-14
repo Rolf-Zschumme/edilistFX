@@ -179,6 +179,21 @@ public class DataBaseInit {
 			em.persist(system = newSystem(partner,"Internet"));
 					em.persist(newKomponente(system,"ftp-Client"));
 
+		// 8. neuer Partner mit seinen Systemen und Komponenten anlegen  
+		
+		partner = new EdiPartner("Bloomberg");
+		em.persist(partner);
+					
+		// 9. neuer Partner mit seinen Systemen und Komponenten anlegen  
+		
+		partner = new EdiPartner("EMA-Provider");
+		em.persist(partner);
+								
+		// 10. neuer Partner mit seinen Systemen und Komponenten anlegen  
+		
+		partner = new EdiPartner("Bafin");
+		em.persist(partner);
+								
 //		EdiAnbindung anbindung = null;
 //		EdiSzenario szenario = null;
 		

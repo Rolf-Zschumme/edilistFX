@@ -16,10 +16,11 @@ public class EdiKomponente {
 	private StringProperty fullname = new SimpleStringProperty();
 	private long id;
 	private EdiSystem ediSystem;
-	
+	private String beschreibung;
+
 	public EdiKomponente() {
 	}
-	
+
 	public EdiKomponente(String name, EdiSystem system) {
 		this.name.set(name);
 		this.ediSystem = system;
@@ -31,16 +32,16 @@ public class EdiKomponente {
 	public long getId() {
 		return id;
 	}
-	
+
 	public void setId(long id) {
 		this.id = id;
 	}
-	
+
 	// ------------------------------------------------------------------------
 	public StringProperty nameProperty() {
 		return name;
 	}
-	
+
 	public String getName() {
 		return name.get();
 	}
@@ -53,29 +54,36 @@ public class EdiKomponente {
 	public StringProperty fullnameProperty() {
 		return fullname;
 	}
-	
+
 	public String getFullname() {
 		String fullName = ediSystem == null ? "-?-" : ediSystem.getFullname();
 		return fullName + "  " + name.get();
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
-	@ManyToOne 
+	@ManyToOne
 	@JoinColumn(name = "ediSystem_id", referencedColumnName = "id")
 	public EdiSystem getEdiSystem() {
-	    return ediSystem;
+		return ediSystem;
 	}
 
 	public void setEdiSystem(EdiSystem param) {
-	    this.ediSystem = param;
+		this.ediSystem = param;
 	}
-	
-	public String getSystemName () {
+
+	public String getSystemName() {
 		return ediSystem.getName();
 	}
-	
+
 	public String getPartnerName() {
 		return ediSystem.getPartnerName();
 	}
-}
 
+	public String getBeschreibung() {
+		return beschreibung;
+	}
+
+	public void setBeschreibung(String param) {
+		this.beschreibung = param;
+	}
+}

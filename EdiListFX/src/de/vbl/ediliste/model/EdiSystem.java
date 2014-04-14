@@ -21,19 +21,21 @@ import java.util.Collection;
 
 import javax.persistence.OneToMany;
 
-@Entity 
+@Entity
 public class EdiSystem {
 	private StringProperty name = new SimpleStringProperty();
 	private StringProperty fullname = new SimpleStringProperty();
-	
+
 	private long id;
 	private EdiPartner ediPartner;
 	private Collection<EdiKomponente> ediKomponente;
 	private IntegerProperty anzKomponenten = new SimpleIntegerProperty();
-	
+	private String beschreibung;
+
 	public EdiSystem() {
 		super();
 	}
+
 	public EdiSystem(String name, EdiPartner ediPartner) {
 		super();
 		this.name.setValue(name);
@@ -46,6 +48,7 @@ public class EdiSystem {
 	public long getId() {
 		return id;
 	}
+
 	public void setId(long id) {
 		this.id = id;
 	}
@@ -54,9 +57,11 @@ public class EdiSystem {
 	public StringProperty nameProperty() {
 		return name;
 	}
+
 	public String getName() {
 		return name.get();
 	}
+
 	public void setName(String param) {
 		name.set(param);
 	}
@@ -65,38 +70,50 @@ public class EdiSystem {
 	public StringProperty fullnameProperty() {
 		return fullname;
 	}
+
 	public String getFullname() {
 		String partnerName = ediPartner == null ? "-?-" : ediPartner.getName();
 		return partnerName + "  " + name.get();
 	}
-	
+
 	@ManyToOne
-	@JoinColumn(name = "ediPartner_id", referencedColumnName = "id") 
-	public EdiPartner getEdiPartner() { 
-	    return ediPartner;
+	@JoinColumn(referencedColumnName = "id")
+	public EdiPartner getEdiPartner() {
+		return ediPartner;
 	}
+
 	public void setEdiPartner(EdiPartner param) {
-	    this.ediPartner = param;
+		this.ediPartner = param;
 	}
-	
+
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
 	@OneToMany(mappedBy = "ediSystem")
 	public Collection<EdiKomponente> getEdiKomponente() {
-	    return ediKomponente;
+		return ediKomponente;
 	}
+
 	public void setEdiKomponente(Collection<EdiKomponente> param) {
-	    this.ediKomponente = param;
+		this.ediKomponente = param;
 	}
-	
+
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
 	public IntegerProperty anzKomponentenProperty() {
 		return anzKomponenten;
 	}
+
 	public Integer getAnzKomponenten() {
 		return ediKomponente.size();
 	}
-	
+
 	public String getPartnerName() {
 		return ediPartner.getName();
+	}
+
+	public String getBeschreibung() {
+		return beschreibung;
+	}
+
+	public void setBeschreibung(String param) {
+		this.beschreibung = param;
 	}
 }

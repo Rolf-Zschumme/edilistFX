@@ -78,15 +78,15 @@ public class EdiEintrag {
 
 	// public void setSenderName(String param) {
 	// senderName.set(param);
-	// }
+	// } 
 
 	// ------------------------------------------------------------------------
 	@ManyToOne
-	public EdiSzenario getSzenario() {
+	public EdiSzenario getEdiSzenario() {
 		return ediSzenario;
 	}
 
-	public void setSzenario(EdiSzenario param) {
+	public void setEdiSzenario(EdiSzenario param) {
 		this.ediSzenario = param;
 	}
 
@@ -107,7 +107,7 @@ public class EdiEintrag {
 	public void setEdiEmpfaenger(Collection<EdiEmpfaenger> param) {
 		this.ediEmpfaenger = param;
 	}
-
+ 
 	@ManyToMany
 	public Collection<EdiDokuLink> getEdiDokuLink() {
 		return ediDokuLink;

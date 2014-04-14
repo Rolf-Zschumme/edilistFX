@@ -1,6 +1,7 @@
 package de.vbl.ediliste.model;
 
 import static javax.persistence.GenerationType.IDENTITY;
+import static javax.persistence.TemporalType.DATE;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -13,7 +14,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Temporal;
-import static javax.persistence.TemporalType.DATE;
 
 /**
  * Entity implementation class for Entity: Dokumentation
@@ -29,7 +29,6 @@ public class EdiDokuLink implements Serializable {
 	private String pfad;
 	private Date bisDatum;
 	private Integer revision;
-
 	public EdiDokuLink() {
 		super();
 	}

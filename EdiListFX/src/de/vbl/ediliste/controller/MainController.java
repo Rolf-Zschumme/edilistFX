@@ -12,9 +12,13 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -150,10 +154,10 @@ public class MainController {
         			@Override
         			public void changed(ObservableValue<? extends Tab> ov, Tab talt, Tab tneu) {
         				final Tab akttab = tneu;
-//        				primaryStage.getScene().setCursor(Cursor.WAIT);
-//        				Task<Void> task = new Task<Void>() {
-//        					@Override
-//        					protected Void call() throws Exception {
+        				primaryStage.getScene().setCursor(Cursor.WAIT);
+        				Task<Void> task = new Task<Void>() {
+        					@Override
+        					protected Void call() throws Exception {
         						if (akttab.equals(tabPartner)) {
         							// loadPartnerListData();
         							ediPartnerList.clear();
@@ -178,16 +182,17 @@ public class MainController {
         					    		ediKomponentenList.add((EdiKomponente)k);
         					    	}	
         						}
-//        						return null;
-//        					}
-//        				};
-//        				task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-//							@Override
-//							public void handle(WorkerStateEvent event) {
-//		        				primaryStage.getScene().setCursor(Cursor.DEFAULT);
-//							}
-//						});
-//        				new Thread(task).start();
+        						//  
+        						return null;
+        					}
+        				};
+        				task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+							@Override
+							public void handle(WorkerStateEvent event) {
+		        				primaryStage.getScene().setCursor(Cursor.DEFAULT);
+							}
+						});
+        				new Thread(task).start();
         			}
 				}
         );

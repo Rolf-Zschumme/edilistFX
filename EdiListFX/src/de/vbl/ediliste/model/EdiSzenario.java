@@ -1,26 +1,38 @@
 package de.vbl.ediliste.model;
 
+import java.util.Collection;
+
 import javafx.beans.property.StringProperty;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+
 import static javax.persistence.GenerationType.IDENTITY;
+
+import javax.persistence.JoinColumn;
+
+import de.vbl.ediliste.model.EdiAnbindung;
+import javax.persistence.OneToMany;
 
 /**
  * Entity implementation class for Entity: Szenario
- *
+ * 
  */
 @Entity
 public class EdiSzenario {
 	private StringProperty name;
 	private long id;
 	private EdiAnbindung ediAnbindung;
+	private Collection<EdiEintrag> ediEintrag;
+	private String bschreibung;
+
 	public EdiSzenario() {
 		super();
-	}   
+	}
 
+	// ------------------------------------------------------------------------
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
 	public long getId() {
@@ -29,13 +41,13 @@ public class EdiSzenario {
 
 	public void setId(long id) {
 		this.id = id;
-	}   
+	}
 
 	// ------------------------------------------------------------------------
 	public StringProperty nameProperty() {
 		return name;
 	}
-
+ 
 	public String getName() {
 		return name.get();
 	}
@@ -44,13 +56,34 @@ public class EdiSzenario {
 		name.set(param);
 	}
 
+	// ------------------------------------------------------------------------
 	@ManyToOne
-	public EdiAnbindung getAnbindung() {
-	    return ediAnbindung;
+	@JoinColumn(referencedColumnName = "id", nullable = false)
+	public EdiAnbindung getEdiAnbindung() {
+		return ediAnbindung;
 	}
 
-	public void setAnbindung(EdiAnbindung param) {
-	    this.ediAnbindung = param;
+	public void setEdiAnbindung(EdiAnbindung param) {
+		this.ediAnbindung = param;
 	}
-   
+ 
+	// ------------------------------------------------------------------------
+	@OneToMany(mappedBy = "ediSzenario")
+	public Collection<EdiEintrag> getEdiEintrag() {
+		return ediEintrag;
+	}
+
+	public void setEdiEintrag(Collection<EdiEintrag> ediEintrag) {
+		this.ediEintrag = ediEintrag;
+	}
+
+	// ------------------------------------------------------------------------
+	public String getBschreibung() {
+		return bschreibung;
+	}
+	
+	public void setBschreibung(String param) {
+		this.bschreibung = param;
+	}
+	
 }

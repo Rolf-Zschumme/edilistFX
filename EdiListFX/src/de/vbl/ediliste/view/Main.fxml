@@ -5,126 +5,234 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane prefHeight="584.0" prefWidth="1110.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.ediliste.controller.MainController">
-<top><MenuBar BorderPane.alignment="CENTER">
-  <menus>
-    <Menu mnemonicParsing="false" text="Datei">
-      <items>
-        <MenuItem mnemonicParsing="false" text="Beenden" />
-      </items>
-    </Menu>
-    <Menu mnemonicParsing="false" text="Bearbeiten">
-      <items>
-        <MenuItem mnemonicParsing="false" text="Löschen" />
-      </items>
-    </Menu>
-    <Menu mnemonicParsing="false" text="Hilfe">
-      <items>
-        <MenuItem mnemonicParsing="false" text="Über" />
-      </items>
-    </Menu>
-  </menus>
-</MenuBar>
-</top>
-<center>
-<SplitPane dividerPositions="0.3483754512635379" prefHeight="511.0" prefWidth="895.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" BorderPane.alignment="CENTER">
-<items><TabPane fx:id="tabPaneObjekte" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
-  <tabs>
-    <Tab fx:id="tabEdiNr" text="Edi-Nr.">
-      <content>
-<VBox>
-<children><ToolBar layoutX="-48.0" layoutY="14.0" prefWidth="200.0">
-  <items>
-    <Button fx:id="btnNewEdiNr" mnemonicParsing="false" onAction="#newEdiNr" text="Neu" /><Button fx:id="btnDeleteEdiEintrag" disable="true" mnemonicParsing="false" onAction="#deleteEdiEintrag" text="Löschen" />
-  </items>
-</ToolBar><TableView fx:id="tableEdiNrAuswahl" prefHeight="499.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-  <columns>
-    <TableColumn fx:id="tColAuswahlEdiNr" editable="false" minWidth="20.0" prefWidth="50.0" text="Nr." />
-    <TableColumn fx:id="tColAuswahlEdiNrBezeichnung" editable="false" maxWidth="500.0" minWidth="70.0" prefWidth="177.0" text="Bezeichnung" />
-  </columns>
-</TableView>
-</children>
-</VBox>
-      </content>
-    </Tab><Tab fx:id="tabPartner" text="Partner">
-  <content>
-    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-<children><TableView fx:id="tablePartnerAuswahl" prefHeight="471.0" prefWidth="246.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-  <columns>
-    <TableColumn fx:id="tColAuswahlPartnerName" prefWidth="116.0" text="Partner" />
-    <TableColumn fx:id="tColAuswahlPartnerSysteme" prefWidth="65.0" text="Systeme" />
-<TableColumn fx:id="tColAuswahlPartnerKomponenten" prefWidth="91.0" text="Komponenten" />
-  </columns>
-</TableView>
-</children></AnchorPane>
-  </content>
-</Tab><Tab fx:id="tabSysteme" text="Systeme">
-  <content>
-    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-<children><TableView fx:id="tableSystemAuswahl" prefHeight="471.0" prefWidth="306.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-  <columns>
-    <TableColumn fx:id="tColSelSystemSystemName" prefWidth="131.0" text="System" />
-    <TableColumn fx:id="tColSelSystemPartnerName" prefWidth="99.0" text="Partner" /><TableColumn fx:id="tColSelSystemKomponenten" prefWidth="75.0" text="Komponenten" />
-  </columns>
-</TableView>
-</children></AnchorPane>
-  </content>
-</Tab><Tab fx:id="tabKomponenten" text="Komponenten">
-  <content>
-    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-<children><TableView fx:id="tableKomponentenAuswahl" prefHeight="471.0" prefWidth="306.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-  <columns>
-    <TableColumn fx:id="tColSelKompoKomponten" prefWidth="108.0" text="Komponente" />
-    <TableColumn fx:id="tColSelKompoSysteme" prefWidth="83.0" text="System" /><TableColumn fx:id="tColSelKompoPartner" prefWidth="75.0" text="Partner" />
-  </columns>
-</TableView>
-</children></AnchorPane>
-  </content>
-</Tab><Tab disable="true" text="Anwendungen">
-  <content>
-    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-  </content>
-</Tab>
-    <Tab disable="true" text="Szenarios">
-      <content>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-      </content>
-    </Tab>
-  </tabs>
-</TabPane>
-<VBox prefHeight="557.0" prefWidth="722.0">
-<children>
-    <TitledPane fx:id="paneAnbindung" animated="false" expanded="false" text="Anbindung">
-      <content>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="80.0" />
-      </content>
-    </TitledPane>
-    <TitledPane fx:id="paneSzenario" animated="false" expanded="false" text="Szenario ">
-      <content>
-        <AnchorPane minHeight="0.0" minWidth="0.0" opacity="0.6" prefHeight="60.0" />
-      </content>
-    </TitledPane>
-    <TitledPane fx:id="paneEdiEintrag" animated="false" prefHeight="204.0" prefWidth="646.0" text="Edi-Eintrag" textOverrun="LEADING_WORD_ELLIPSIS" VBox.vgrow="ALWAYS">
-      <content>
-        <AnchorPane>
-<children><TextField fx:id="tfEdiBezeichnung" alignment="TOP_LEFT" layoutX="113.0" layoutY="28.0" prefHeight="25.0" prefWidth="187.0" />
-<HBox layoutX="30.0" layoutY="97.0" prefHeight="25.0" prefWidth="594.0" spacing="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
-<children><Button fx:id="btnSender" alignment="CENTER" disable="true" minWidth="150.0" mnemonicParsing="false" onAction="#senderButton" /><Button fx:id="btnEmpfaenger1" alignment="CENTER" disable="true" minWidth="150.0" mnemonicParsing="false" onAction="#empfaengerButton" />
-		  <TextField fx:id="tfDatenart1" alignment="TOP_LEFT" layoutX="359.0" layoutY="97.0" prefHeight="25.0" HBox.hgrow="ALWAYS">
-<HBox.margin>
-<Insets />
-</HBox.margin></TextField>
-</children>
-</HBox><Label layoutX="30.0048828125" layoutY="31.5" text="Bezeichnung:" /><Label alignment="CENTER" layoutX="20.0" layoutY="80.0" prefHeight="17.0" prefWidth="149.0" text="Sender" /><Label layoutX="315.0048828125" layoutY="32.0" text="letzte Änderung:" /><TextField fx:id="ediLastChange" editable="false" layoutX="423.0" layoutY="28.0" prefHeight="25.0" prefWidth="121.0" /><Label layoutX="349.0" layoutY="80.0" prefHeight="17.0" prefWidth="184.0" text="Datenart" /><Label alignment="CENTER" layoutX="179.0" layoutY="80.0" prefHeight="17.0" prefWidth="149.0" text="Empfänger" />
-</children></AnchorPane>
-      </content>
-    </TitledPane><TitledPane animated="false" disable="true" prefWidth="646.0" text="Details">
-  <content>
-    <AnchorPane minHeight="0.0" minWidth="0.0" />
-  </content>
-</TitledPane>
-</children>
-</VBox>
-</items>
-</SplitPane>
-</center></BorderPane>
+<BorderPane prefHeight="604.0" prefWidth="1311.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.ediliste.controller.MainController">
+	<top>
+		<MenuBar BorderPane.alignment="CENTER">
+			<menus>
+				<Menu mnemonicParsing="false" text="Datei">
+					<items>
+						<MenuItem mnemonicParsing="false" text="Beenden" />
+					</items>
+				</Menu>
+				<Menu mnemonicParsing="false" text="Bearbeiten">
+					<items>
+						<MenuItem mnemonicParsing="false" text="Löschen" />
+					</items>
+				</Menu>
+				<Menu mnemonicParsing="false" text="Hilfe">
+					<items>
+						<MenuItem mnemonicParsing="false" text="Über" />
+					</items>
+				</Menu>
+			</menus>
+		</MenuBar>
+	</top>
+	<center>
+		<SplitPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" BorderPane.alignment="CENTER">
+			<items>
+				<TabPane fx:id="tabPaneObjekte" prefHeight="577.0" prefWidth="409.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+					<tabs>
+						<Tab fx:id="tabEdiNr" text="Edi-Nr.">
+							<content>
+								<VBox>
+									<children>
+										<ToolBar layoutX="-48.0" layoutY="14.0" prefWidth="200.0">
+											<items>
+												<Button fx:id="btnNewEdiNr" mnemonicParsing="false" onAction="#newEdiNr" text="Neu" />
+												<Button fx:id="btnDeleteEdiEintrag" disable="true" mnemonicParsing="false" onAction="#deleteEdiEintrag" text="Löschen" />
+											</items>
+										</ToolBar>
+										<TableView fx:id="tableEdiNrAuswahl" prefHeight="499.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+											<columns>
+												<TableColumn fx:id="tColAuswahlEdiNr" editable="false" minWidth="20.0" prefWidth="50.0" text="Nr." />
+												<TableColumn fx:id="tColAuswahlEdiNrBezeichnung" editable="false" maxWidth="500.0" minWidth="70.0" prefWidth="177.0" text="Bezeichnung" />
+											</columns>
+										</TableView>
+									</children>
+								</VBox>
+							</content>
+						</Tab>
+						<Tab fx:id="tabPartner" text="Partner">
+							<content>
+								<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+									<children>
+										<TableView fx:id="tablePartnerAuswahl" prefHeight="471.0" prefWidth="246.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+											<columns>
+												<TableColumn fx:id="tColAuswahlPartnerName" prefWidth="116.0" text="Partner" />
+												<TableColumn fx:id="tColAuswahlPartnerSysteme" prefWidth="65.0" text="Systeme" />
+												<TableColumn fx:id="tColAuswahlPartnerKomponenten" prefWidth="91.0" text="Komponenten" />
+											</columns>
+										</TableView>
+									</children>
+								</AnchorPane>
+							</content>
+						</Tab>
+						<Tab fx:id="tabSysteme" text="Systeme">
+							<content>
+								<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+									<children>
+										<TableView fx:id="tableSystemAuswahl" prefHeight="471.0" prefWidth="306.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+											<columns>
+												<TableColumn fx:id="tColSelSystemSystemName" prefWidth="131.0" text="System" />
+												<TableColumn fx:id="tColSelSystemPartnerName" prefWidth="99.0" text="Partner" />
+												<TableColumn fx:id="tColSelSystemKomponenten" prefWidth="75.0" text="Komponenten" />
+											</columns>
+										</TableView>
+									</children>
+								</AnchorPane>
+							</content>
+						</Tab>
+						<Tab fx:id="tabKomponenten" text="Komponenten">
+							<content>
+								<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+									<children>
+										<TableView fx:id="tableKomponentenAuswahl" prefHeight="471.0" prefWidth="306.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+											<columns>
+												<TableColumn fx:id="tColSelKompoKomponten" prefWidth="108.0" text="Komponente" />
+												<TableColumn fx:id="tColSelKompoSysteme" prefWidth="83.0" text="System" />
+												<TableColumn fx:id="tColSelKompoPartner" prefWidth="75.0" text="Partner" />
+											</columns>
+										</TableView>
+									</children>
+								</AnchorPane>
+							</content>
+						</Tab>
+						<Tab disable="true" text="Anwendungen">
+							<content>
+								<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+							</content>
+						</Tab>
+						<Tab disable="true" text="Szenarios">
+							<content>
+								<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+							</content>
+						</Tab>
+					</tabs>
+				</TabPane>
+				<VBox prefHeight="577.0">
+					<children>
+						<TitledPane fx:id="paneAnbindung" animated="false" collapsible="false" expanded="false" prefHeight="77.0" text="Anbindung">
+							<content>
+								<AnchorPane minHeight="0.0" minWidth="0.0" />
+							</content>
+						</TitledPane>
+						<TitledPane fx:id="paneSzenario" animated="false" collapsible="false" prefHeight="77.0" text="Szenario ">
+							<content>
+								<AnchorPane minHeight="0.0" minWidth="0.0" opacity="0.6" prefHeight="60.0" />
+							</content>
+						</TitledPane>
+						<TitledPane fx:id="paneEdiEintrag" animated="false" collapsible="false" prefHeight="270.0" text="Edi-Eintrag" textOverrun="LEADING_WORD_ELLIPSIS" VBox.vgrow="ALWAYS">
+							<content>
+								<AnchorPane prefHeight="281.0">
+									<children>
+										<HBox layoutX="30.0" layoutY="97.0" prefHeight="25.0" spacing="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" />
+										<VBox layoutX="9.600000381469727" layoutY="9.600000381469727" prefHeight="244.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+											<children>
+												<GridPane prefHeight="107.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+													<columnConstraints>
+														<ColumnConstraints hgrow="NEVER" maxWidth="284.0" minWidth="10.0" prefWidth="87.66668701171875" />
+														<ColumnConstraints hgrow="SOMETIMES" maxWidth="666.0" minWidth="10.0" prefWidth="663.0" />
+														<ColumnConstraints hgrow="NEVER" maxWidth="217.0" minWidth="0.0" prefWidth="98.0" />
+														<ColumnConstraints hgrow="NEVER" maxWidth="182.0" minWidth="10.0" prefWidth="133.0" />
+													</columnConstraints>
+													<rowConstraints>
+														<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+														<RowConstraints maxHeight="72.0" minHeight="10.0" prefHeight="46.0" vgrow="SOMETIMES" />
+														<RowConstraints maxHeight="91.66667175292969" minHeight="10.0" prefHeight="37.0" vgrow="SOMETIMES" />
+														<RowConstraints maxHeight="66.33332061767578" minHeight="2.0" prefHeight="2.0" vgrow="SOMETIMES" />
+													</rowConstraints>
+													<children>
+														<TextField fx:id="tfEdiBezeichnung" alignment="TOP_LEFT" layoutX="113.0" layoutY="28.0" prefHeight="25.0" GridPane.columnIndex="1" />
+														<Label alignment="CENTER" layoutX="30.0048828125" layoutY="31.5" prefHeight="17.0" prefWidth="101.0" text="Bezeichnung:" />
+														<TextField fx:id="ediLastChange" editable="false" layoutX="698.0" layoutY="29.0" prefHeight="25.0" prefWidth="130.0" GridPane.columnIndex="3" />
+														<Label alignment="TOP_CENTER" layoutX="10.0" layoutY="32.0" prefHeight="44.0" prefWidth="101.0" text="Beschreibung:" GridPane.rowIndex="1">
+															<GridPane.margin>
+																<Insets top="10.0" />
+															</GridPane.margin>
+														</Label>
+														<Label alignment="CENTER_RIGHT" layoutX="618.0" layoutY="26.0" prefHeight="17.0" prefWidth="140.0" text="produktiv seit:" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="1">
+														</Label>
+														<Label alignment="CENTER_RIGHT" layoutX="618.0" layoutY="74.0" prefHeight="17.0" prefWidth="140.0" text="produktiv bis:" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="2">
+														</Label>
+														<TextArea fx:id="tfEdiBeschreibung" prefHeight="124.0" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="2">
+															<GridPane.margin>
+																<Insets top="10.0" />
+															</GridPane.margin>
+														</TextArea>
+														<TextField editable="false" layoutX="753.0" layoutY="13.0" prefHeight="25.0" prefWidth="130.0" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+														<TextField editable="false" layoutX="702.0" layoutY="55.0" prefHeight="25.0" prefWidth="130.0" GridPane.columnIndex="3" GridPane.rowIndex="2" /><Label alignment="CENTER_RIGHT" layoutX="618.0" layoutY="26.0" prefHeight="17.0" prefWidth="140.0" text="letzte Änderung:" textAlignment="CENTER" GridPane.columnIndex="2" />
+													</children>
+												</GridPane>
+												<GridPane prefHeight="145.0">
+													<columnConstraints>
+														<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
+														<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
+														<ColumnConstraints hgrow="SOMETIMES" maxWidth="504.0" minWidth="10.0" />
+													</columnConstraints>
+													<rowConstraints>
+														<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+														<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+														<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+														<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+													</rowConstraints>
+													<children>
+														<Label alignment="CENTER" layoutX="20.0" layoutY="80.0" prefHeight="17.0" text="Sender" />
+														<Label alignment="CENTER" layoutX="179.0" layoutY="80.0" prefHeight="17.0" text="Empfänger" GridPane.columnIndex="1" />
+														<Button fx:id="btnSender" alignment="CENTER" disable="true" mnemonicParsing="false" onAction="#senderButton" prefHeight="25.0" prefWidth="201.0" GridPane.rowIndex="1">
+															<GridPane.margin>
+																<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+															</GridPane.margin>
+														</Button>
+														<Button fx:id="btnEmpfaenger1" alignment="CENTER" disable="true" mnemonicParsing="false" onAction="#empfaengerButton" prefHeight="25.0" prefWidth="376.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+															<GridPane.margin>
+																<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+															</GridPane.margin>
+														</Button>
+														<TextField fx:id="tfDatenart1" alignment="TOP_LEFT" layoutX="359.0" layoutY="97.0" prefHeight="25.0" GridPane.columnIndex="2" GridPane.rowIndex="1" HBox.hgrow="ALWAYS">
+															<HBox.margin>
+																<Insets />
+															</HBox.margin>
+															<GridPane.margin>
+																<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+															</GridPane.margin>
+														</TextField>
+														<Label alignment="CENTER" layoutX="349.0" layoutY="80.0" prefHeight="17.0" prefWidth="308.0" text="Datenart" GridPane.columnIndex="2" />
+														<Button alignment="CENTER" disable="true" layoutX="283.0" layoutY="43.0" mnemonicParsing="false" onAction="#empfaengerButton" prefHeight="25.0" prefWidth="375.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+															<GridPane.margin>
+																<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+															</GridPane.margin>
+														</Button>
+														<TextField alignment="TOP_LEFT" layoutX="560.0" layoutY="43.0" prefHeight="25.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
+															<GridPane.margin>
+																<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+															</GridPane.margin>
+														</TextField>
+														<Button alignment="CENTER" disable="true" layoutX="283.0" layoutY="68.0" mnemonicParsing="false" onAction="#empfaengerButton" prefHeight="25.0" prefWidth="373.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+															<GridPane.margin>
+																<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+															</GridPane.margin>
+														</Button>
+														<TextField alignment="TOP_LEFT" layoutX="560.0" layoutY="68.0" prefHeight="25.0" GridPane.columnIndex="2" GridPane.rowIndex="3">
+															<GridPane.margin>
+																<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+															</GridPane.margin>
+														</TextField>
+													</children>
+												</GridPane>
+											</children>
+										</VBox>
+									</children>
+								</AnchorPane>
+							</content>
+						</TitledPane>
+						<TitledPane animated="false" disable="true" expanded="false" prefHeight="92.0" text="Details">
+							<content>
+								<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="126.0" prefWidth="1181.0" />
+							</content>
+						</TitledPane>
+					</children>
+				</VBox>
+			</items>
+		</SplitPane>
+	</center>
+</BorderPane>
