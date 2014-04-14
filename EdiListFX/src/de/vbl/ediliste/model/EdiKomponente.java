@@ -57,7 +57,13 @@ public class EdiKomponente {
 
 	public String getFullname() {
 		String fullName = ediSystem == null ? "-?-" : ediSystem.getFullname();
-		return fullName + "  " + name.get();
+		return fullName + ASCIItoStr(151) + name.get();
+	}
+	
+	private String ASCIItoStr(int a) {
+		byte[] b = { (byte) a };
+		String ret = new String(b);
+		return "  " + ret + "  ";
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
