@@ -26,7 +26,7 @@ public class EdiSzenario {
 	private long id;
 	private EdiAnbindung ediAnbindung;
 	private Collection<EdiEintrag> ediEintrag;
-	private String bschreibung;
+	private String beschreibung;
 
 	public EdiSzenario() {
 		super();
@@ -78,12 +78,12 @@ public class EdiSzenario {
 	}
 
 	// ------------------------------------------------------------------------
-	public String getBschreibung() {
-		return bschreibung;
+	public String getBeschreibung() { 
+		return beschreibung;
 	}
 	
-	public void setBschreibung(String param) {
-		this.bschreibung = param;
+	public void setBeschreibung(String param) {
+		this.beschreibung = param;
 	}
 	
 }

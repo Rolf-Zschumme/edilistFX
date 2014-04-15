@@ -42,7 +42,7 @@ public class DataBaseInit {
 			if("1".equals("2")) 
 				generateRealObjekts(em);
 			
-			generateTestObjekts(em);
+					generateTestObjekts(em);
 
 			if (ta.isActive()) {
 				System.out.println("Transaction vor commit isActive=TRUE");
@@ -85,16 +85,18 @@ public class DataBaseInit {
 	}
 	
 	private static void generateTestObjekts(EntityManager em) {
+		int zSnr = 0;
+		int zKnr = 0;
 		for (int p=1; p<=50; ++p) {
 			String pNr = toString(p,2);
 			EdiPartner partner = new EdiPartner("Test-P"+ pNr);
 			em.persist(partner);
 			for (int s=1; s<=20; ++s) {
 				EdiSystem system = null;
-				String sNr = toString(s,2);
+				String sNr = toString(++zSnr,3) + "-" + toString(s,2);
 				em.persist(system = newSystem(partner,"Test-S"+ sNr + "vP" + pNr));
 				for (int k=1; k<=10; ++k) {
-					String kNr = toString(k,2);
+					String kNr = toString(++zKnr,4) + "-" +  toString(k,2);
 					em.persist(newKomponente(system,"Test-K"+ kNr + "vS" +sNr+ "P"+ pNr));
 				}
 			}

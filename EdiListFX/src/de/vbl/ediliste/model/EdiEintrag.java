@@ -23,13 +23,13 @@ import static javax.persistence.TemporalType.DATE;
 public class EdiEintrag {
 	private IntegerProperty ediNr = new SimpleIntegerProperty();
 	private StringProperty bezeichnung = new SimpleStringProperty();
+	private StringProperty beschreibung = new SimpleStringProperty();
 	private StringProperty senderName = new SimpleStringProperty();
 	private long id;
 	private EdiSzenario ediSzenario;
 	private EdiKomponente ediKomponente;
 	private Collection<EdiEmpfaenger> ediEmpfaenger;
 	private Collection<EdiDokuLink> ediDokuLink;
-	private String beschreibung;
 	private Date vonDatum;
 	private Date bisDatum; 
 
@@ -56,6 +56,13 @@ public class EdiEintrag {
 	public void setEdiNr(Integer param) {
 		ediNr.set(param);
 	}
+	
+	public String getEdiNrStr() {
+		String ret = Integer.toString(getEdiNr());
+		while(ret.length()<4) ret = "0"+ ret;
+		return ret;
+	}
+	
 
 	// ------------------------------------------------------------------------
 	public StringProperty bezeichnungProperty() {
@@ -71,6 +78,18 @@ public class EdiEintrag {
 		bezeichnung.set(param);
 	}
 
+	// ------------------------------------------------------------------------
+	public StringProperty beschreibungProperty() {
+		return beschreibung;
+	}
+	public String getBeschreibung() {
+		return beschreibung.get();
+	}
+	
+	public void setBeschreibung(String param) {
+		beschreibung.set(param);
+	}
+	
 	// ------------------------------------------------------------------------
 	public StringProperty senderNameProperty() {
 		return senderName;
@@ -115,14 +134,6 @@ public class EdiEintrag {
 
 	public void setEdiDokuLink(Collection<EdiDokuLink> param) {
 		this.ediDokuLink = param;
-	}
-
-	public String getBeschreibung() {
-		return beschreibung;
-	}
-
-	public void setBeschreibung(String param) {
-		this.beschreibung = param;
 	}
 
 	@Temporal(DATE) 

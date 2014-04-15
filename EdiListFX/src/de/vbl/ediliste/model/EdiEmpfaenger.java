@@ -15,12 +15,19 @@ import de.vbl.ediliste.model.EdiEintrag;
  *
  */
 @Entity
-
 public class EdiEmpfaenger {
+
 	private StringProperty datenart = new SimpleStringProperty();
 	private long id;
 	private EdiKomponente ediKomponente;
 	private EdiEintrag ediEintrag;
+
+	public EdiEmpfaenger() {
+	}
+	public EdiEmpfaenger(EdiEintrag param) {
+		ediEintrag = param;
+	}
+	
 	@Id    
 	@GeneratedValue(strategy = IDENTITY)
 	public long getId() {
