@@ -19,7 +19,7 @@ import javax.persistence.OneToMany;
 /**
  * Entity implementation class for Entity: Szenario
  * 
- */
+ */ 
 @Entity
 public class EdiSzenario {
 	private StringProperty name;

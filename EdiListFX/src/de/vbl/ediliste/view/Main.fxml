@@ -11,7 +11,7 @@
 		<MenuBar BorderPane.alignment="CENTER">
 			<menus>
 				<Menu mnemonicParsing="false" text="Datei">
-					<items>
+					<items><MenuItem mnemonicParsing="false" onAction="#btnExportExcel" text="Export nach Excel" />
 						<MenuItem mnemonicParsing="false" text="Beenden" />
 					</items>
 				</Menu>
@@ -113,10 +113,10 @@
 				<VBox maxWidth="1084.0" prefHeight="768.0" prefWidth="1036.0">
 					<children><ToolBar prefWidth="200.0">
   <items>
-    <Button fx:id="btnEdiEintragSpeichern" disable="true" mnemonicParsing="false" onAction="#ediEintragSpeichern" text="Änderungen speichern" />
+    <Button fx:id="btnEdiEintragSpeichern" disable="true" mnemonicParsing="false" onAction="#ediEintragSpeichern" text="Änderungen speichern" /><Button disable="true" mnemonicParsing="false" prefHeight="25.0" prefWidth="148.0" text="Steckbrief drucken" />
   </items>
 </ToolBar>
-						<TitledPane fx:id="paneAnbindung" animated="false" collapsible="false" minWidth="555.0" prefHeight="77.0" text="Integrations-Szenario / Anbindung">
+						<TitledPane fx:id="paneAnbindung" animated="false" collapsible="false" prefHeight="77.0" text="Integrations-Szenario / Anbindung">
 							<content>
 								<AnchorPane minHeight="0.0" minWidth="0.0">
 <children><Label alignment="CENTER_RIGHT" layoutX="14.0" layoutY="17.0" prefHeight="17.0" prefWidth="101.0" text="Name:" /><ComboBox layoutX="126.0" layoutY="13.0" prefHeight="25.0" prefWidth="608.0" />
@@ -173,7 +173,7 @@
 <GridPane.margin>
 <Insets right="5.0" />
 </GridPane.margin></Label>
-														<TextArea fx:id="tfEdiBeschreibung" prefHeight="124.0" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="2">
+														<TextArea fx:id="taEdiBeschreibung" prefHeight="124.0" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="2">
 															<GridPane.margin>
 																<Insets top="5.0" />
 															</GridPane.margin>
@@ -206,7 +206,7 @@
 														<Label alignment="CENTER" layoutX="44.399993896484375" layoutY="-2.0999984741210938" prefHeight="33.0" prefWidth="288.0" text="Sender" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0" GridPane.columnIndex="1" />
 </children>
 </AnchorPane>
-														<TextField fx:id="tfDatenart1" alignment="TOP_LEFT" layoutX="359.0" layoutY="97.0" prefHeight="25.0" GridPane.columnIndex="2" GridPane.rowIndex="1" HBox.hgrow="ALWAYS">
+														<TextField fx:id="tfDatenart1" alignment="TOP_LEFT" disable="true" layoutX="359.0" layoutY="97.0" prefHeight="25.0" GridPane.columnIndex="2" GridPane.rowIndex="1" HBox.hgrow="ALWAYS">
 															<HBox.margin>
 																<Insets />
 															</HBox.margin>
@@ -214,12 +214,12 @@
 																<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
 															</GridPane.margin>
 														</TextField>
-														<TextField fx:id="tfDatenart2" alignment="TOP_LEFT" layoutX="560.0" layoutY="43.0" prefHeight="25.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
+														<TextField fx:id="tfDatenart2" alignment="TOP_LEFT" disable="true" layoutX="560.0" layoutY="43.0" prefHeight="25.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
 															<GridPane.margin>
 																<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
 															</GridPane.margin>
 														</TextField>
-														<TextField fx:id="tfDatenart3" alignment="TOP_LEFT" layoutX="560.0" layoutY="68.0" prefHeight="25.0" GridPane.columnIndex="2" GridPane.rowIndex="3">
+														<TextField fx:id="tfDatenart3" alignment="TOP_LEFT" disable="true" layoutX="560.0" layoutY="68.0" prefHeight="25.0" GridPane.columnIndex="2" GridPane.rowIndex="3">
 															<GridPane.margin>
 																<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
 															</GridPane.margin>

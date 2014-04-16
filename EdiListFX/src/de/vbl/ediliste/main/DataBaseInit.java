@@ -39,10 +39,10 @@ public class DataBaseInit {
 			ta = em.getTransaction();
 			ta.begin();
 
-			if("1".equals("2")) 
-				generateRealObjekts(em);
+			generateRealObjekts(em);
 			
-					generateTestObjekts(em);
+			if("1".equals("2")) 
+				generateTestObjekts(em);
 
 			if (ta.isActive()) {
 				System.out.println("Transaction vor commit isActive=TRUE");

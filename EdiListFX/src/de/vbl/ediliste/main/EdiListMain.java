@@ -20,7 +20,7 @@ public class EdiListMain extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
-		this.primaryStage.setTitle("EdiListe");
+		this.primaryStage.setTitle("EDI-Liste");
 		
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/Main.fxml"));
