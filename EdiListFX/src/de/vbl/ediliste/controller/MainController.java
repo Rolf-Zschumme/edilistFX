@@ -165,7 +165,55 @@ public class MainController {
         				}
         			}
         		}
-        ); 
+        );
+        tfDatenart1.textProperty().addListener(
+        		new ChangeListener<String>() {
+        			@Override
+        			public void changed(ObservableValue<? extends String> o,
+        				String oldValue, String newValue) {
+        				if (aktEmpfaenger[0]!=null) {
+        					if (newValue.equals(aktEmpfaenger[0].getDatenart())==false) {
+        						ediEintragIsChanged.set(true);
+        						System.out.println("aktE[0] :"+ aktEmpfaenger[0].getDatenart());
+        						System.out.println("newValue:"+ newValue);
+        						aktEmpfaenger[0].setDatenart(newValue);
+        					}
+        				}
+        			}
+        		}
+        );
+        tfDatenart2.textProperty().addListener(
+        		new ChangeListener<String>() {
+        			@Override
+        			public void changed(ObservableValue<? extends String> o,
+        				String oldValue, String newValue) {
+        				if (aktEmpfaenger[1]!=null) {
+        					if (newValue.equals(aktEmpfaenger[1].getDatenart())==false) {
+        						ediEintragIsChanged.set(true);
+        						System.out.println("aktE[1] :"+ aktEmpfaenger[1].getDatenart());
+        						System.out.println("newValue:"+ newValue);
+        						aktEmpfaenger[1].setDatenart(newValue);
+        					}
+        				}
+        			}
+        		}
+        );
+        tfDatenart3.textProperty().addListener(
+        		new ChangeListener<String>() {
+        			@Override
+        			public void changed(ObservableValue<? extends String> o,
+        				String oldValue, String newValue) {
+        				if (aktEmpfaenger[2]!=null) {
+        					if (newValue.equals(aktEmpfaenger[2].getDatenart())==false) {
+        						ediEintragIsChanged.set(true);
+        						System.out.println("aktE[2] :"+ aktEmpfaenger[2].getDatenart());
+        						System.out.println("newValue:"+ newValue);
+        						aktEmpfaenger[2].setDatenart(newValue);
+        					}
+        				}
+        			}
+        		}
+        );
         
         tableEdiNrAuswahl.getSelectionModel().selectedItemProperty().addListener(
         		new ChangeListener<EdiNrListElement>() {
@@ -204,6 +252,8 @@ public class MainController {
         						aktEmpfaenger[i] = null;
         						if (empfaengerList.hasNext()) {
         							aktEmpfaenger[i] = empfaengerList.next();
+        							if (aktEmpfaenger[i].getDatenart()==null)
+        								aktEmpfaenger[i].setDatenart("");
         						}
         					}
         					if (aktEmpfaenger[0]!=null) {
@@ -327,7 +377,7 @@ public class MainController {
 		aktEdiEintragSpeichern();
     }
     
-    private void aktEdiEintragSpeichern() {
+    private boolean aktEdiEintragSpeichern() {
 		em.getTransaction().begin();
 		aktEdi.setBezeichnung(tfEdiBezeichnung.getText());
 		aktEdi.setBeschreibung(taEdiBeschreibung.getText());
@@ -337,10 +387,18 @@ public class MainController {
 				aktEdi.getEdiEmpfaenger().add(aktEmpfaenger[i]);
 			}
 		}
-		em.persist(aktEdi);
-		em.getTransaction().commit();
+		try {
+			em.persist(aktEdi);
+			em.getTransaction().commit();
+		} catch (RuntimeException e) {
+			Dialogs.showErrorDialog(primaryStage,
+					"Fehler beim speichern des Eintrags",
+					"Datenbankfehler",APPLICATION_NAME,e);
+			return false;
+		}	
 		ediEintragIsChanged.set(false);
 		System.out.println("Der Eintrag " + aktEdi.getEdiNrStr() + " wurde gespeichert");
+		return true;
 	}
     
 	private void setupBindings() {
@@ -354,8 +412,8 @@ public class MainController {
     	taEdiBeschreibung.disableProperty().bind(Bindings.isNull(tableEdiNrAuswahl.getSelectionModel().selectedItemProperty()));
     	btnSender.disableProperty().bind(Bindings.isNull(tableEdiNrAuswahl.getSelectionModel().selectedItemProperty()));
     	btnEmpfaenger1.disableProperty().bind(Bindings.not(senderIsSelected));
-    	btnEmpfaenger2.disableProperty().bind(Bindings.not(empfaenger1IsSelected));
-    	btnEmpfaenger3.disableProperty().bind(Bindings.not(empfaenger2IsSelected));
+    	btnEmpfaenger2.disableProperty().bind(Bindings.not(datenart1Exist));
+    	btnEmpfaenger3.disableProperty().bind(Bindings.not(datenart2Exist));
     	tfDatenart1.disableProperty().bind(Bindings.not(empfaenger1IsSelected));
     	tfDatenart2.disableProperty().bind(Bindings.not(empfaenger2IsSelected));
     	tfDatenart3.disableProperty().bind(Bindings.not(empfaenger3IsSelected));
@@ -521,7 +579,7 @@ public class MainController {
     	String ret = empfaengerButton(1);
     	if (ret != null) {
 			btnEmpfaenger2.setText(ret);
-			empfaenger3IsSelected.set(true);
+			empfaenger2IsSelected.set(true);
     	}
     }	
     @FXML

@@ -1,5 +1,8 @@
 package de.vbl.ediliste.model;
 
+import static javax.persistence.GenerationType.IDENTITY;
+import static javax.persistence.TemporalType.DATE;
+
 import java.util.Collection;
 import java.util.Date;
 
@@ -8,16 +11,12 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
-import static javax.persistence.GenerationType.IDENTITY;
-import static javax.persistence.TemporalType.DATE;
 
 @Entity
 public class EdiEintrag {
@@ -29,7 +28,6 @@ public class EdiEintrag {
 	private EdiSzenario ediSzenario;
 	private EdiKomponente ediKomponente;
 	private Collection<EdiEmpfaenger> ediEmpfaenger;
-	private Collection<EdiDokuLink> ediDokuLink;
 	private Date vonDatum;
 	private Date bisDatum; 
 
@@ -69,7 +67,6 @@ public class EdiEintrag {
 		return bezeichnung;
 	}
 
-	@Column(length = 40)
 	public String getBezeichnung() {
 		return bezeichnung.get();
 	}
@@ -127,15 +124,6 @@ public class EdiEintrag {
 		this.ediEmpfaenger = param;
 	}
  
-	@ManyToMany
-	public Collection<EdiDokuLink> getEdiDokuLink() {
-		return ediDokuLink;
-	}
-
-	public void setEdiDokuLink(Collection<EdiDokuLink> param) {
-		this.ediDokuLink = param;
-	}
-
 	@Temporal(DATE) 
 	public Date getVonDatum() {
 		return vonDatum;

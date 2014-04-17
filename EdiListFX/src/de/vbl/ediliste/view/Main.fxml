@@ -116,14 +116,14 @@
     <Button fx:id="btnEdiEintragSpeichern" disable="true" mnemonicParsing="false" onAction="#ediEintragSpeichern" text="Änderungen speichern" /><Button disable="true" mnemonicParsing="false" prefHeight="25.0" prefWidth="148.0" text="Steckbrief drucken" />
   </items>
 </ToolBar>
-						<TitledPane fx:id="paneAnbindung" animated="false" collapsible="false" prefHeight="77.0" text="Integrations-Szenario / Anbindung">
+						<TitledPane fx:id="paneAnbindung" animated="false" collapsible="false" prefHeight="77.0" text="Integrationsszenario / Anbindung">
 							<content>
 								<AnchorPane minHeight="0.0" minWidth="0.0">
 <children><Label alignment="CENTER_RIGHT" layoutX="14.0" layoutY="17.0" prefHeight="17.0" prefWidth="101.0" text="Name:" /><ComboBox layoutX="126.0" layoutY="13.0" prefHeight="25.0" prefWidth="608.0" />
 </children></AnchorPane>
 							</content>
 						</TitledPane>
-						<TitledPane fx:id="paneSzenario" animated="false" collapsible="false" minWidth="555.0" prefHeight="77.0" text="Konfigurations-Szenario">
+						<TitledPane fx:id="paneSzenario" animated="false" collapsible="false" minWidth="555.0" prefHeight="77.0" text="Konfiguration">
 							<content>
 								<AnchorPane minHeight="0.0" minWidth="222.0" opacity="0.6" prefHeight="51.0" prefWidth="555.0">
 <children><Label alignment="CENTER_RIGHT" layoutX="20.0" layoutY="17.0" prefHeight="17.0" prefWidth="94.0" text="Name:" /><ComboBox layoutX="127.0" layoutY="13.0" prefHeight="25.0" prefWidth="608.0" />

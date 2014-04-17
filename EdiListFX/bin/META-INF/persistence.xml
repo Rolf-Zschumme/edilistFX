@@ -9,14 +9,16 @@
 		<class>de.vbl.ediliste.model.EdiPartner</class>
 		<class>de.vbl.ediliste.model.EdiSystem</class>
 		<class>de.vbl.ediliste.model.EdiSzenario</class>
+		<class>de.vbl.ediliste.model.Vorhaben</class>
+		<class>de.vbl.ediliste.model.SVN_Repository</class>
 		<properties>
 			<property name="eclipselink.jdbc.batch-writing" value="None"/>
 			<property name="eclipselink.jdbc.native-sql" value="false"/>
 			<property name="eclipselink.jdbc.cache-statements" value="false"/>
-			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://10.0.0.13:3306/ediliste"/>
-			<property name="javax.persistence.jdbc.user" value="ediliste"/>
-			<property name="javax.persistence.jdbc.password" value="1234567"/>
-			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
+			<property name="javax.persistence.jdbc.url" value="jdbc:postgresql://v00011:5432/xidv01"/>
+			<property name="javax.persistence.jdbc.user" value="lyan"/>
+			<property name="javax.persistence.jdbc.password" value="lyan"/>
+			<property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
 		</properties>
 	</persistence-unit>
 </persistence>

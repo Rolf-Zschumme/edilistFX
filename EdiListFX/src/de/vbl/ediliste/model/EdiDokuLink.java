@@ -25,10 +25,10 @@ public class EdiDokuLink implements Serializable {
 	private StringProperty name;
 	private Long id;
 	private static final long serialVersionUID = 1L;
-	private Collection<EdiEintrag> ediEintrag;
 	private String pfad;
 	private Date bisDatum;
 	private Integer revision;
+	private Collection<EdiAnbindung> ediAnbindung;
 	public EdiDokuLink() {
 		super();
 	}
@@ -56,15 +56,6 @@ public class EdiDokuLink implements Serializable {
 		name.set(param);
 	}
 
-	@ManyToMany(mappedBy = "ediDokuLink")
-	public Collection<EdiEintrag> getEdiEintrag() {
-		return ediEintrag;
-	}
-
-	public void setEdiEintrag(Collection<EdiEintrag> param) {
-		this.ediEintrag = param;
-	}
-
 	public String getPfad() {
 		return pfad;
 	}
@@ -88,5 +79,14 @@ public class EdiDokuLink implements Serializable {
 
 	public void setRevision(Integer param) {
 		this.revision = param;
+	}
+
+	@ManyToMany(mappedBy = "ediDokuLink")
+	public Collection<EdiAnbindung> getEdiAnbindung() {
+	    return ediAnbindung;
+	}
+
+	public void setEdiAnbindung(Collection<EdiAnbindung> param) {
+	    this.ediAnbindung = param;
 	}
 }
