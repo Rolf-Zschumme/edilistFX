@@ -4,7 +4,6 @@ import static javax.persistence.GenerationType.IDENTITY;
 import static javax.persistence.TemporalType.DATE;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
 
 import javafx.beans.property.StringProperty;
@@ -12,10 +11,16 @@ import javafx.beans.property.StringProperty;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.Temporal;
+import de.vbl.ediliste.model.EdiAnbindung;
+import java.util.Collection;
+import javax.persistence.ManyToMany;
+import javax.persistence.JoinTable;
+import javax.persistence.JoinColumn;
+import de.vbl.ediliste.model.SVNrepository;
+import javax.persistence.OneToMany;
 
-/**
+/** 
  * Entity implementation class for Entity: Dokumentation
  * 
  */
@@ -29,6 +34,7 @@ public class EdiDokuLink implements Serializable {
 	private Date bisDatum;
 	private Integer revision;
 	private Collection<EdiAnbindung> ediAnbindung;
+	private Collection<SVNrepository> sVNrepository;
 	public EdiDokuLink() {
 		super();
 	}
@@ -81,12 +87,23 @@ public class EdiDokuLink implements Serializable {
 		this.revision = param;
 	}
 
-	@ManyToMany(mappedBy = "ediDokuLink")
+	@ManyToMany
+	@JoinTable(joinColumns = @JoinColumn(name = "ediSzenario_id", referencedColumnName = "ID"))
 	public Collection<EdiAnbindung> getEdiAnbindung() {
 	    return ediAnbindung;
 	}
 
 	public void setEdiAnbindung(Collection<EdiAnbindung> param) {
 	    this.ediAnbindung = param;
+	}
+
+	@OneToMany
+	@JoinTable(name = "SVN_Repostitory", joinColumns = @JoinColumn(name = "EdiDokuLink_id", referencedColumnName = "ID"))
+	public Collection<SVNrepository> getSVNrepository() {
+	    return sVNrepository;
+	}
+
+	public void setSVNrepository(Collection<SVNrepository> param) {
+	    this.sVNrepository = param;
 	}
 }

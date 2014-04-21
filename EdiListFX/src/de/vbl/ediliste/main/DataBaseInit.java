@@ -37,11 +37,13 @@ public class DataBaseInit {
 		
 		try {
 			ta = em.getTransaction();
+			
 			ta.begin();
 
-			generateRealObjekts(em);
 			
-			if("1".equals("2")) 
+			if("1".equals("1")) 
+				generateRealObjekts(em);
+			else
 				generateTestObjekts(em);
 
 			if (ta.isActive()) {

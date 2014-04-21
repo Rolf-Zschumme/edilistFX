@@ -1,12 +1,11 @@
 package de.vbl.ediliste.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.ResourceBundle;
 
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -35,6 +34,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -50,11 +50,12 @@ import de.vbl.ediliste.model.EdiEmpfaenger;
 import de.vbl.ediliste.model.EdiKomponente;
 import de.vbl.ediliste.model.EdiPartner;
 import de.vbl.ediliste.model.EdiSystem;
+import de.vbl.ediliste.tools.ExportToExcel;
 import de.vbl.ediliste.view.EdiNrListElement;
 import de.vbl.ediliste.view.PartnerListElement;
 
 public class MainController {
-	private static final String APPLICATION_NAME = "EDI-Liste";
+	private static final String APPL_NAME = "EDI-Liste";
 	private static final String EDI_PANEL_TITLE = "EDI-Eintrag";
 	private static final String PERSISTENCE_UNIT_NAME = "EdiListFX";
 	private static final String SICHERHEITSABFRAGE = "Sicherheitsabfrage";
@@ -105,6 +106,7 @@ public class MainController {
     @FXML private Button btnSender;
     @FXML private Button btnNewEdiNr;
     @FXML private Button btnDeleteEdiEintrag;
+    @FXML private Button btnExportExcel;
     
     private EntityManager em;
     private ObservableList<EdiNrListElement> ediNrArrayList = FXCollections.observableArrayList();
@@ -132,19 +134,46 @@ public class MainController {
     }
 
     @FXML
-    void btnExportExcel (ActionEvent event) {
-    	Dialogs.showInformationDialog(primaryStage, 
-    			"Leider noch nicht verfügbar (Tel. 225)", 
-    			"Export der EDI-Liste nach Excel", APPLICATION_NAME);
-    }
-    @FXML
     void btnUeber(ActionEvent event) {
     	Dialogs.showInformationDialog(primaryStage, 
-    			"Version 0.2 - 16.04.2014 mit Sender- und Empfänger-Auswahl", 
-    			"VBL-Tool zur Verwaltung der EDI-Liste", APPLICATION_NAME);
+    			"Version 0.3 - 19.04.2014 mit Sender- und Empfänger-Auswahl", 
+    			"VBL-Tool zur Verwaltung der EDI-Liste", APPL_NAME);
     }
     
-    /* ------------------------------------------------------------------------
+    static String initialExportFilePath = System.getProperty("user.home");
+    static String initialExportFileName = "EDI-List-Excel-Export.xlsx";
+ 
+    @FXML
+    void btnExportExcel (ActionEvent event) {
+    	FileChooser fileChooser = new FileChooser();
+    	fileChooser.setTitle("Name und Ablageort der Export-Datei eingeben");
+    	fileChooser.setInitialFileName(initialExportFileName);
+    	fileChooser.getExtensionFilters().add(
+    			new FileChooser.ExtensionFilter("Excel-Arbeitsmappe", "*.xlsx"));
+    	File filepath = new File(initialExportFilePath);
+    	if (filepath.isDirectory()==false)
+    		initialExportFilePath = System.getProperty("user.home");
+   		fileChooser.setInitialDirectory(new File (initialExportFilePath));
+
+   		File file = fileChooser.showSaveDialog(primaryStage);
+   		
+    	if (file != null) {
+			initialExportFilePath = file.getParent();
+			initialExportFileName = file.getName();
+    		ExportToExcel export = new ExportToExcel(em);
+    		try {
+    			int lines = export.write(file);
+				Dialogs.showInformationDialog(primaryStage, 
+						lines + " Zeilen in der Datei " + file.getName() + 
+						" im Verzeichnis " + file.getParent() +" gespeichert",
+						"Hinweis", APPL_NAME);
+			} catch (IOException e1) {
+				Dialogs.showErrorDialog(primaryStage, e1.getMessage(),
+				       "Fehler beim Speichern der Exportdatei", APPL_NAME, e1);
+			}
+    	}
+    }
+	/* ------------------------------------------------------------------------
      * initialize() is the controllers "main"-method 
      * it is called after loading "EdiListe.fxml" 
      * ----------------------------------------------------------------------*/
@@ -226,7 +255,7 @@ public class MainController {
         				if (ediEintragIsChanged.get() == true) {
         					if ( Dialogs.showConfirmDialog(primaryStage, "Soll die Änderungen am EDI-Eintrag " +
         							aktEdi.getEdiNrStr() + " \"" + aktEdi.getBezeichnung() + "\"" +
-        							" gespeichert werden?", SICHERHEITSABFRAGE, APPLICATION_NAME, 
+        							" gespeichert werden?", SICHERHEITSABFRAGE, APPL_NAME, 
         							DialogOptions.OK_CANCEL) == DialogResponse.OK) {
         						aktEdiEintragSpeichern();
         					}
@@ -393,7 +422,7 @@ public class MainController {
 		} catch (RuntimeException e) {
 			Dialogs.showErrorDialog(primaryStage,
 					"Fehler beim speichern des Eintrags",
-					"Datenbankfehler",APPLICATION_NAME,e);
+					"Datenbankfehler",APPL_NAME,e);
 			return false;
 		}	
 		ediEintragIsChanged.set(false);
@@ -638,6 +667,11 @@ public class MainController {
 		return loader;
 	}
 
+//    private void sysprt (String text) {
+//    	System.out.println(text);
+//    }
+    
+    
     private void checkFieldFromView() {
     	assert tabPaneObjekte != null : "fx:id=\"tabPaneObjekte\" was not injected: check your FXML file 'Main.fxml'.";
 
