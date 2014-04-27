@@ -141,4 +141,18 @@ public class EdiEintrag {
 	public void setBisDatum(Date param) {
 		this.bisDatum = param;
 	}
+	
+	public boolean equaels (EdiEintrag tEDI) {
+		if ( (id == tEDI.id)                          								&&
+			 (ediNr.get() == tEDI.ediNr.get())		  							  	&&	
+			 (bezeichnung.getValueSafe().equals(tEDI.bezeichnung.getValueSafe())) 	&&
+		     (beschreibung.getValueSafe().equals(tEDI.beschreibung.getValueSafe()))	&&
+		     (ediSzenario == tEDI.ediSzenario)                  					&&
+		     (ediKomponente == tEDI.ediKomponente)              					&&
+		     (ediEmpfaenger.equals(tEDI.ediEmpfaenger))
+		   ) return true;
+		else
+			 return false;
+			   
+	}
 }

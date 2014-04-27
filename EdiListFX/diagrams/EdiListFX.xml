@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><entities>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE XML>
+<entities>
 	<entity>
 		<entity-name>de.vbl.ediliste.model.EdiSzenario</entity-name>
 		<entity-width>120</entity-width>

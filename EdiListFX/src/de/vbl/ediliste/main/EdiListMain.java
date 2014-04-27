@@ -1,5 +1,6 @@
 package de.vbl.ediliste.main;
 	
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -9,6 +10,9 @@ import de.vbl.ediliste.controller.MainController;
 
 
 public class EdiListMain extends Application {
+	
+	private static final String APPL_NAME = "EDI-Liste";
+
 	
 	private Stage primaryStage;
 	private BorderPane rootLayout;
@@ -26,7 +30,7 @@ public class EdiListMain extends Application {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/Main.fxml"));
 			rootLayout = (BorderPane) loader.load();
 			MainController controller = loader.getController();
-			controller.setStage(primaryStage);
+			controller.start(primaryStage, APPL_NAME);
 			
 			Scene scene = new Scene(rootLayout); 
 			scene.getStylesheets().add(getClass().getResource("../view/application.css").toExternalForm());
