@@ -95,8 +95,8 @@ public class MainController {
     
     private int maxEdiNr;
     private Stage primaryStage;
-    private Pane ediEintragPane;
-    private Pane testAnchorPane;
+    private AnchorPane ediEintragPane;
+    private AnchorPane testAnchorPane;
     
     private EdiEintragController ediEintragController;
 
@@ -205,7 +205,7 @@ public class MainController {
     
      }
 
-     private void showDetailSubPane(Pane pane) {
+     private void showDetailSubPane(AnchorPane pane) {
        	refillPane.getChildren().clear();
        	if (pane != null) {
        		refillPane.getChildren().add(pane);
@@ -213,10 +213,10 @@ public class MainController {
      }
 
     
-	 private Pane loadPane(FXMLLoader loader) {
-		 Pane pane = null;
+	 private AnchorPane loadPane(FXMLLoader loader) {
+		 AnchorPane pane = null;
 		 try {
-			pane = (Pane) loader.load();
+			pane = (AnchorPane) loader.load();
 		 } catch (IOException e) {
 			e.printStackTrace();
 		 }

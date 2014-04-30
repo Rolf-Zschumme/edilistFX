@@ -27,9 +27,9 @@
 		</MenuBar>
 	</top>
 	<center>
-		<SplitPane dividerPositions="0.3624733475479744" prefHeight="542.0" prefWidth="1186.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" BorderPane.alignment="CENTER">
+		<SplitPane dividerPositions="0.3624733475479744" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" BorderPane.alignment="CENTER">
 			<items>
-				<TabPane fx:id="tabPaneObjekte" prefHeight="577.0" prefWidth="409.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+				<TabPane fx:id="tabPaneObjekte" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
 					<tabs>
 						<Tab fx:id="tabEdiNr" text="EDI-Nr.">
 							<content>
@@ -108,11 +108,7 @@
 						</Tab>
 					</tabs>
 				</TabPane>
-<AnchorPane fx:id="refillPane" prefHeight="768.0" prefWidth="892.0">
-<children>
-				<VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
-</children>
-</AnchorPane>
+<AnchorPane fx:id="refillPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
 			</items>
 		</SplitPane>
 	</center>

@@ -5,31 +5,31 @@ import java.lang.String;
 import javax.persistence.*;
 
 /**
- * Entity implementation class for Entity: SVNrepository
+ * Entity implementation class for Entity: SVN_Repository
  *
  */
-@Entity
-@Table(name = "SVN_Repostitory")
-public class SVNrepository implements Serializable {
+@Entity 
+ 
+public class SVN_Repository implements Serializable {
 
 	   
 	@Id
-	private long ID;
+	private long id;
 	private String name;
 	private String url;
-	private String user;
+	private String benutzer;
 	private String passwort;
 	private static final long serialVersionUID = 1L;
 
-	public SVNrepository() {
+	public SVN_Repository() {
 		super();
 	}   
-	public long getID() {
-		return this.ID;
+	public long getId() {
+		return this.id;
 	}
 
-	public void setID(long ID) {
-		this.ID = ID;
+	public void setId(long id) {
+		this.id = id;
 	}   
 	public String getName() {
 		return this.name;
@@ -46,11 +46,11 @@ public class SVNrepository implements Serializable {
 		this.url = url;
 	}   
 	public String getUser() {
-		return this.user;
+		return this.benutzer;
 	}
 
-	public void setUser(String user) {
-		this.user = user;
+	public void setBenutzer(String benutzer) {
+		this.benutzer = benutzer;
 	}   
 	public String getPasswort() {
 		return this.passwort;

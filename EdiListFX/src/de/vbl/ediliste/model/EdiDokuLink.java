@@ -1,9 +1,7 @@
 package de.vbl.ediliste.model;
 
-import static javax.persistence.GenerationType.IDENTITY;
-import static javax.persistence.TemporalType.DATE;
-
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 
 import javafx.beans.property.StringProperty;
@@ -11,20 +9,20 @@ import javafx.beans.property.StringProperty;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Temporal;
-import de.vbl.ediliste.model.EdiAnbindung;
-import java.util.Collection;
-import javax.persistence.ManyToMany;
-import javax.persistence.JoinTable;
 import javax.persistence.JoinColumn;
-import de.vbl.ediliste.model.SVNrepository;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Temporal;
+import static javax.persistence.TemporalType.DATE;
+import static javax.persistence.GenerationType.IDENTITY;
+import de.vbl.ediliste.model.SVN_Repository;
 import javax.persistence.OneToMany;
 
 /** 
  * Entity implementation class for Entity: Dokumentation
  * 
  */
-@Entity
+@Entity 
 public class EdiDokuLink implements Serializable {
 
 	private StringProperty name;
@@ -34,7 +32,7 @@ public class EdiDokuLink implements Serializable {
 	private Date bisDatum;
 	private Integer revision;
 	private Collection<EdiAnbindung> ediAnbindung;
-	private Collection<SVNrepository> sVNrepository;
+	private Collection<SVN_Repository> sVN_Repository;
 	public EdiDokuLink() {
 		super();
 	}
@@ -95,15 +93,15 @@ public class EdiDokuLink implements Serializable {
 
 	public void setEdiAnbindung(Collection<EdiAnbindung> param) {
 	    this.ediAnbindung = param;
-	}
+	} 
 
 	@OneToMany
-	@JoinTable(name = "SVN_Repostitory", joinColumns = @JoinColumn(name = "EdiDokuLink_id", referencedColumnName = "ID"))
-	public Collection<SVNrepository> getSVNrepository() {
-	    return sVNrepository;
+	@JoinColumn
+	public Collection<SVN_Repository> getSVN_Repository() {
+	    return sVN_Repository;
 	}
 
-	public void setSVNrepository(Collection<SVNrepository> param) {
-	    this.sVNrepository = param;
+	public void setSVN_Repository(Collection<SVN_Repository> param) {
+	    this.sVN_Repository = param;
 	}
 }

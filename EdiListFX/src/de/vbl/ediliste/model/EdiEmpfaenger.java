@@ -9,18 +9,22 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import de.vbl.ediliste.model.EdiEintrag;
+import de.vbl.ediliste.model.GeschaeftsObjekt;
+import javax.persistence.JoinColumn;
 
 /**
  * Entity implementation class for Entity: Empfaenger
  *
  */
 @Entity
+
 public class EdiEmpfaenger {
 
-	private StringProperty datenart = new SimpleStringProperty();
+	private StringProperty bemerkung = new SimpleStringProperty();
 	private long id;
 	private EdiKomponente ediKomponente;
 	private EdiEintrag ediEintrag;
+	private GeschaeftsObjekt geschaeftsObjekt;
 
 	public EdiEmpfaenger() {
 	}
@@ -39,16 +43,16 @@ public class EdiEmpfaenger {
 	}
 
 	// ------------------------------------------------------------------------
-	public StringProperty datenartProperty() {
-		return datenart;
+	public StringProperty bemerkungProperty() {
+		return bemerkung;
 	}
 	
-	public String getDatenart() {
-		return datenart.get();
+	public String getBemerkung() {
+		return bemerkung.get();
 	}
 
-	public void setDatenart(String param) {
-		datenart.set(param);
+	public void setBemerkung(String param) {
+		bemerkung.set(param);
 	}
 
 	@ManyToOne
@@ -67,6 +71,14 @@ public class EdiEmpfaenger {
 
 	public void setEdiEintrag(EdiEintrag param) {
 	    this.ediEintrag = param;
+	}
+	@ManyToOne
+	@JoinColumn(name = "geschaeftsObjekt_id", referencedColumnName = "id")
+	public GeschaeftsObjekt getGeschaeftsObjekt() {
+	    return geschaeftsObjekt;
+	}
+	public void setGeschaeftsObjekt(GeschaeftsObjekt param) {
+	    this.geschaeftsObjekt = param;
 	}
 
 

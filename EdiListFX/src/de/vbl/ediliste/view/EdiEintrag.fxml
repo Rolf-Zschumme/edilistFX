@@ -6,182 +6,172 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<Pane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.ediliste.controller.EdiEintragController">
-<children>
-<AnchorPane layoutX="-11.0">
-<children>
-				<VBox maxWidth="1084.0" prefHeight="768.0" prefWidth="1143.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-					<children><ToolBar prefWidth="200.0">
-  <items>
-    <Button fx:id="btnEdiEintragSpeichern" disable="true" mnemonicParsing="false" onAction="#ediEintragSpeichern" text="Änderungen speichern" /><Button disable="true" mnemonicParsing="false" prefHeight="25.0" prefWidth="148.0" text="Steckbrief drucken" />
-  </items>
-</ToolBar>
-						<TitledPane fx:id="paneAnbindung" animated="false" collapsible="false" prefHeight="77.0" text="Integrationsszenario / Anbindung">
+<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="800.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.ediliste.controller.EdiEintragController">
+			<children>
+				<VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+					<children>
+						<ToolBar>
+							<items>
+								<Button fx:id="btnEdiEintragSpeichern" disable="true" mnemonicParsing="false" onAction="#ediEintragSpeichern" text="Änderungen speichern" />
+								<Button disable="true" mnemonicParsing="false" prefHeight="25.0" prefWidth="148.0" text="Steckbrief drucken" />
+							</items>
+<VBox.margin>
+<Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+</VBox.margin>
+						</ToolBar>
+						<TitledPane fx:id="paneAnbindung" animated="false" collapsible="false" minWidth="77.0" text="Integrationsszenario / Anbindung">
 							<content>
-								<AnchorPane minHeight="0.0" minWidth="0.0">
-<children><Label alignment="CENTER_RIGHT" layoutX="14.0" layoutY="17.0" prefHeight="17.0" prefWidth="101.0" text="Name:" /><ComboBox layoutX="126.0" layoutY="13.0" prefHeight="25.0" prefWidth="608.0" />
-</children></AnchorPane>
-							</content>
-						</TitledPane>
-						<TitledPane fx:id="paneSzenario" animated="false" collapsible="false" minWidth="555.0" prefHeight="77.0" text="Konfiguration">
-							<content>
-								<AnchorPane minHeight="0.0" minWidth="222.0" opacity="0.6" prefHeight="51.0" prefWidth="555.0">
-<children><Label alignment="CENTER_RIGHT" layoutX="20.0" layoutY="17.0" prefHeight="17.0" prefWidth="94.0" text="Name:" /><ComboBox layoutX="127.0" layoutY="13.0" prefHeight="25.0" prefWidth="608.0" />
-</children></AnchorPane>
-							</content>
-						</TitledPane>
-						<TitledPane fx:id="paneEdiEintrag" animated="false" collapsible="false" minWidth="555.0" prefHeight="270.0" text="EDI-Eintrag" textOverrun="LEADING_WORD_ELLIPSIS" VBox.vgrow="ALWAYS">
-							<content>
-								<AnchorPane minHeight="-Infinity" minWidth="222.0" prefHeight="244.0" prefWidth="555.0">
+								<AnchorPane>
 									<children>
-										<HBox layoutX="30.0" layoutY="97.0" prefHeight="25.0" spacing="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" />
+										<Label alignment="CENTER_RIGHT" layoutX="14.0" layoutY="17.0" text="Name:" AnchorPane.leftAnchor="14.0" />
+										<ComboBox layoutX="94.0" layoutY="19.0" prefHeight="25.0" prefWidth="466.0" AnchorPane.leftAnchor="85.0" />
+									</children>
+								</AnchorPane>
+							</content>
+						</TitledPane>
+						<TitledPane fx:id="paneSzenario" animated="false" collapsible="false" minWidth="77.0" text="Konfiguration">
+							<content>
+								<AnchorPane opacity="0.6">
+									<children>
+										<Label alignment="CENTER_RIGHT" layoutX="20.0" layoutY="17.0" text="Name:" AnchorPane.leftAnchor="14.0" />
+										<ComboBox layoutX="127.0" layoutY="13.0" prefHeight="25.0" prefWidth="466.0" AnchorPane.leftAnchor="85.0" />
+									</children>
+								</AnchorPane>
+							</content>
+						</TitledPane>
+						<TitledPane fx:id="paneEdiEintrag" animated="false" collapsible="false" text="EDI-Eintrag" textOverrun="LEADING_WORD_ELLIPSIS" VBox.vgrow="ALWAYS">
+							<content>
+								<AnchorPane maxWidth="1.7976931348623157E308">
+									<children>
 										<VBox layoutX="9.600000381469727" layoutY="9.600000381469727" prefHeight="244.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-											<children>
-												<GridPane prefHeight="107.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+<children>
+												<GridPane hgap="8.0" maxWidth="1.7976931348623157E308" vgap="8.0" AnchorPane.leftAnchor="9.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
 													<columnConstraints>
-														<ColumnConstraints hgrow="NEVER" maxWidth="284.0" minWidth="10.0" prefWidth="115.0" />
-														<ColumnConstraints hgrow="SOMETIMES" maxWidth="666.0" minWidth="10.0" prefWidth="611.0" />
-														<ColumnConstraints hgrow="NEVER" maxWidth="217.0" minWidth="0.0" prefWidth="98.0" />
-														<ColumnConstraints hgrow="NEVER" maxWidth="182.0" minWidth="10.0" prefWidth="133.0" />
+														<ColumnConstraints hgrow="NEVER" maxWidth="77.0" minWidth="77.0" />
+														<ColumnConstraints hgrow="SOMETIMES" />
+														<ColumnConstraints hgrow="SOMETIMES" maxWidth="140.0" minWidth="140.0" prefWidth="140.0" />
+														<ColumnConstraints hgrow="NEVER" maxWidth="95.0" minWidth="-Infinity" prefWidth="95.0" />
+														<ColumnConstraints hgrow="NEVER" maxWidth="95.0" minWidth="-Infinity" prefWidth="95.0" />
 													</columnConstraints>
 													<rowConstraints>
-														<RowConstraints maxHeight="29.0" minHeight="10.0" prefHeight="28.0" vgrow="SOMETIMES" />
-														<RowConstraints maxHeight="72.0" minHeight="10.0" prefHeight="33.0" vgrow="SOMETIMES" />
-														<RowConstraints maxHeight="91.66667175292969" minHeight="10.0" prefHeight="37.0" vgrow="SOMETIMES" />
-														<RowConstraints maxHeight="66.33332061767578" minHeight="0.0" prefHeight="0.0" vgrow="SOMETIMES" />
+														<RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+														<RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+														<RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+														<RowConstraints maxHeight="91.66667175292969" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+														<RowConstraints maxHeight="10.0" minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
 													</rowConstraints>
 													<children>
-														<TextField fx:id="tfEdiBezeichnung" alignment="TOP_LEFT" layoutX="113.0" layoutY="28.0" prefHeight="25.0" prefWidth="615.0" GridPane.columnIndex="1">
-<GridPane.margin>
-<Insets top="5.0" />
-</GridPane.margin></TextField>
-														<Label alignment="CENTER_RIGHT" layoutX="30.0048828125" layoutY="31.5" prefHeight="17.0" prefWidth="106.0" text="Bezeichnung:" />
-														<TextField fx:id="ediLastChange" editable="false" layoutX="698.0" layoutY="29.0" prefHeight="25.0" prefWidth="130.0" GridPane.columnIndex="3">
-<GridPane.margin>
-<Insets top="5.0" />
-</GridPane.margin></TextField>
-														<Label alignment="TOP_RIGHT" layoutX="10.0" layoutY="32.0" prefHeight="27.0" prefWidth="105.0" text="Beschreibung:" GridPane.rowIndex="1">
+														<TextField fx:id="tfEdiBezeichnung" alignment="TOP_LEFT" layoutX="113.0" layoutY="28.0" GridPane.columnIndex="1" GridPane.columnSpan="2">
 															<GridPane.margin>
-																<Insets top="12.0" />
+																<Insets />
+															</GridPane.margin>
+														</TextField>
+														<Label alignment="CENTER_RIGHT" layoutX="30.0048828125" layoutY="31.5" text="Bezeichnung:" />
+														<TextField fx:id="ediLastChange" editable="false" layoutX="698.0" layoutY="29.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="4">
+															<GridPane.margin>
+																<Insets />
+															</GridPane.margin>
+														</TextField>
+														<Label alignment="TOP_RIGHT" layoutX="10.0" layoutY="32.0" text="Beschreibung:" GridPane.rowIndex="2">
+															<GridPane.margin>
+																<Insets />
 															</GridPane.margin>
 														</Label>
-														<Label alignment="CENTER_RIGHT" layoutX="618.0" layoutY="26.0" prefHeight="17.0" prefWidth="140.0" text="produktiv seit:" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="1">
-<GridPane.margin>
-<Insets right="5.0" />
-</GridPane.margin></Label>
-														<Label alignment="CENTER_RIGHT" layoutX="618.0" layoutY="74.0" prefHeight="17.0" prefWidth="140.0" text="produktiv bis:" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="2">
-<GridPane.margin>
-<Insets right="5.0" />
-</GridPane.margin></Label>
-														<TextArea fx:id="taEdiBeschreibung" prefHeight="124.0" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="2">
+														
+														<Label alignment="CENTER_RIGHT" layoutX="618.0" layoutY="26.0" maxWidth="1.7976931348623157E308" text="produktiv seit:" textAlignment="CENTER" GridPane.columnIndex="3" GridPane.rowIndex="2">
+														</Label>
+														
+														<Label alignment="CENTER_RIGHT" layoutX="618.0" layoutY="74.0" maxWidth="1.7976931348623157E308" text="produktiv bis:" textAlignment="CENTER" GridPane.columnIndex="3" GridPane.rowIndex="3">
+															<GridPane.margin>
+																<Insets />
+															</GridPane.margin>
+														</Label>
+														<TextArea fx:id="taEdiBeschreibung" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2" GridPane.rowSpan="2">
+															<GridPane.margin>
+																<Insets left="5.0" right="5.0" />
+															</GridPane.margin>
+														</TextArea>
+														<TextField editable="false" layoutX="753.0" layoutY="13.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="4" GridPane.rowIndex="2" />
+														<TextField editable="false" layoutX="702.0" layoutY="55.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+														<Label alignment="CENTER_RIGHT" layoutX="618.0" layoutY="26.0" maxWidth="1.7976931348623157E308" prefHeight="17.0" text="letzte Änderung:" textAlignment="CENTER" GridPane.columnIndex="3">
+															<GridPane.margin>
+																<Insets />
+															</GridPane.margin>
+														</Label>
+														<TextField alignment="TOP_LEFT" layoutX="113.0" layoutY="28.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.rowIndex="1">
 															<GridPane.margin>
 																<Insets top="5.0" />
 															</GridPane.margin>
-														</TextArea>
-														<TextField editable="false" layoutX="753.0" layoutY="13.0" prefHeight="25.0" prefWidth="130.0" GridPane.columnIndex="3" GridPane.rowIndex="1">
-<GridPane.margin>
-<Insets top="5.0" />
-</GridPane.margin></TextField>
-														<TextField editable="false" layoutX="702.0" layoutY="55.0" prefHeight="25.0" prefWidth="130.0" GridPane.columnIndex="3" GridPane.rowIndex="2" /><Label alignment="CENTER_RIGHT" layoutX="618.0" layoutY="26.0" prefHeight="17.0" prefWidth="140.0" text="letzte Änderung:" textAlignment="CENTER" GridPane.columnIndex="2">
-<GridPane.margin>
-<Insets right="5.0" />
-</GridPane.margin></Label>
+														</TextField>
+														<Label alignment="CENTER_RIGHT" layoutX="30.0048828125" layoutY="31.5" maxWidth="1.7976931348623157E308" prefHeight="17.0" text="Ausführungs-Intervall:" GridPane.columnIndex="2" GridPane.rowIndex="1">
+														</Label>
 													</children>
+<padding>
+<Insets left="5.0" right="5.0" />
+</padding>
 												</GridPane>
-												<GridPane prefHeight="145.0">
+												
+												<GridPane hgap="8.0" layoutY="100.0" maxWidth="1.7976931348623157E308" vgap="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 													<columnConstraints>
-														<ColumnConstraints hgrow="SOMETIMES" maxWidth="300" minWidth="-Infinity" />
-														<ColumnConstraints hgrow="SOMETIMES" maxWidth="300" minWidth="-Infinity" />
-														<ColumnConstraints hgrow="SOMETIMES" maxWidth="400.0" minWidth="10.0" />
+														<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" prefWidth="240.0" />
+														<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" prefWidth="240.0" />
+														<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" prefWidth="240.0" />
 													</columnConstraints>
 													<rowConstraints>
-														<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-														<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-														<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-														<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+														<RowConstraints vgrow="SOMETIMES" />
+														<RowConstraints vgrow="SOMETIMES" />
+														<RowConstraints vgrow="SOMETIMES" />
+														<RowConstraints vgrow="SOMETIMES" />
 													</rowConstraints>
 													<children>
-<AnchorPane>
-<children>
-														<Label alignment="CENTER" layoutX="44.399993896484375" layoutY="-2.0999984741210938" prefHeight="33.0" prefWidth="288.0" text="Sender" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0" GridPane.columnIndex="1" />
-</children>
-</AnchorPane>
-														<TextField fx:id="tfDatenart1" alignment="TOP_LEFT" disable="true" layoutX="359.0" layoutY="97.0" prefHeight="25.0" GridPane.columnIndex="2" GridPane.rowIndex="1" HBox.hgrow="ALWAYS">
-															<HBox.margin>
-																<Insets />
-															</HBox.margin>
-															<GridPane.margin>
-																<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-															</GridPane.margin>
-														</TextField>
-														<TextField fx:id="tfDatenart2" alignment="TOP_LEFT" disable="true" layoutX="560.0" layoutY="43.0" prefHeight="25.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
-															<GridPane.margin>
-																<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-															</GridPane.margin>
-														</TextField>
-														<TextField fx:id="tfDatenart3" alignment="TOP_LEFT" disable="true" layoutX="560.0" layoutY="68.0" prefHeight="25.0" GridPane.columnIndex="2" GridPane.rowIndex="3">
-															<GridPane.margin>
-																<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-															</GridPane.margin>
-														</TextField>
-<AnchorPane GridPane.rowIndex="3" /><AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1">
-<children>
-														<Label alignment="CENTER" layoutX="73.99996948242188" layoutY="3.9999771118164062" prefHeight="33.0" prefWidth="300.0" text="Empfänger" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0" GridPane.columnIndex="1" />
-</children></AnchorPane><AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2">
-<children>
-														<Label alignment="CENTER" layoutX="20.0" layoutY="10.0" prefHeight="33.0" prefWidth="347.0" text="Geschäftsobjekt / Datenart" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0" GridPane.columnIndex="2" />
-</children></AnchorPane><AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
-<children>
-														<Button fx:id="btnSender" alignment="CENTER" disable="true" layoutX="3.4000015258789062" layoutY="9.399993896484375" mnemonicParsing="false" onAction="#senderButton" prefHeight="35.0" prefWidth="300.0" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" GridPane.rowIndex="2">
-															<GridPane.margin>
-																<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-															</GridPane.margin>
-														</Button>
-</children></AnchorPane><AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
-<children>
-														<Button fx:id="btnEmpfaenger1" alignment="CENTER" disable="true" layoutX="-24.0" layoutY="1.0" mnemonicParsing="false" onAction="#empfaengerButton1" prefHeight="33.0" prefWidth="352.0" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" GridPane.rowIndex="2">
-															<GridPane.margin>
-																<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-															</GridPane.margin>
-														</Button>
-</children></AnchorPane><AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
-<children>
-														<Button fx:id="btnEmpfaenger2" alignment="CENTER" disable="true" layoutX="-46.600006103515625" layoutY="-1.600006103515625" mnemonicParsing="false" onAction="#empfaengerButton2" prefHeight="33.0" prefWidth="329.0" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" GridPane.rowIndex="2">
-															<GridPane.margin>
-																<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-															</GridPane.margin>
-														</Button>
-</children></AnchorPane><AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
-<children>
-														<Button fx:id="btnEmpfaenger3" alignment="CENTER" disable="true" layoutX="-52.100006103515625" layoutY="14.899993896484375" mnemonicParsing="false" onAction="#empfaengerButton3" prefHeight="40.0" prefWidth="300.0" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
-															<GridPane.margin>
-																<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-															</GridPane.margin>
-														</Button>
-</children></AnchorPane>
+																<Label alignment="CENTER" layoutX="44.399993896484375" layoutY="-2.0999984741210938" maxWidth="1.7976931348623157E308" text="Sender" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+																<Label alignment="CENTER" layoutX="73.99996948242188" layoutY="3.9999771118164062" maxWidth="1.7976931348623157E308" text="Empfänger" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.columnIndex="1" />
+																<Label alignment="CENTER" layoutX="20.0" layoutY="10.0" maxWidth="1.7976931348623157E308" text="Geschäftsobjekt" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.columnIndex="2" />
+																<Button fx:id="btnSender" alignment="CENTER" layoutX="3.4000015258789062" layoutY="9.399993896484375" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#senderButton" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" GridPane.rowIndex="1">
+																	<GridPane.margin>
+																		<Insets />
+																	</GridPane.margin>
+																</Button>
+																<Button fx:id="btnEmpfaenger1" alignment="CENTER" layoutX="-24.0" layoutY="1.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#empfaengerButton1" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+																	<GridPane.margin>
+																		<Insets />
+																	</GridPane.margin>
+																</Button>
+																<Button fx:id="btnEmpfaenger2" alignment="CENTER" layoutX="-46.600006103515625" layoutY="-1.600006103515625" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#empfaengerButton2" visible="false" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+																	<GridPane.margin>
+																		<Insets />
+																	</GridPane.margin>
+																</Button>
+																<Button fx:id="btnEmpfaenger3" alignment="CENTER" layoutX="-52.100006103515625" layoutY="14.899993896484375" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#empfaengerButton3" visible="false" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+																	<GridPane.margin>
+																		<Insets />
+																	</GridPane.margin>
+																</Button><ComboBox fx:id="cbBob1" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="1">
+<GridPane.margin>
+<Insets />
+</GridPane.margin></ComboBox>
+<ComboBox fx:id="cbBob2" layoutX="515.0" layoutY="35.0" maxWidth="1.7976931348623157E308" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+<ComboBox fx:id="cbBob3" layoutX="515.0" layoutY="68.0" maxWidth="1.7976931348623157E308" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="3" />
 													</children>
+<padding>
+<Insets left="5.0" right="5.0" />
+</padding>
 												</GridPane>
-											</children>
+</children>
 										</VBox>
 									</children>
 								</AnchorPane>
 							</content>
-<font>
-<Font name="System Bold" size="12.0" />
-</font>
+							<font>
+								<Font name="System Bold" size="12.0" />
+							</font>
 						</TitledPane>
-						<TitledPane animated="false" collapsible="false" disable="true" text="Details">
+						<TitledPane animated="false" disable="true" maxHeight="1.7976931348623157E308" text="Details">
 							<content>
-								<AnchorPane maxWidth="1111.0" minHeight="0.0" minWidth="0.0" prefHeight="126.0" />
+								<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
 							</content>
-						</TitledPane><TitledPane animated="false" collapsible="false" text="Dokumentation">
-  <content>
-    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="93.0" prefWidth="976.0" />
-  </content>
-</TitledPane>
+						</TitledPane>
 					</children>
 				</VBox>
-</children>
-</AnchorPane>
-</children>
-</Pane>
+			</children>
+		</AnchorPane>

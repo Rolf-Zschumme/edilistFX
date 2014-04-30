@@ -12,6 +12,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialogs;
 import javafx.scene.control.Dialogs.DialogOptions;
 import javafx.scene.control.Dialogs.DialogResponse;
@@ -39,9 +40,9 @@ public class EdiEintragController {
     
     @FXML private TextField tfEdiBezeichnung;
     @FXML private TextArea  taEdiBeschreibung;
-    @FXML private TextField tfDatenart1;
-    @FXML private TextField tfDatenart2;
-    @FXML private TextField tfDatenart3;
+    @FXML private ComboBox<String> cbBob1;
+    @FXML private ComboBox<String> cbBob2;
+    @FXML private ComboBox<String> cbBob3;
     @FXML private TextField ediLastChange;
 
     @FXML private Button btnEdiEintragSpeichern;
@@ -86,9 +87,9 @@ public class EdiEintragController {
 	    	btnEmpfaenger1.disableProperty().unbind();
 	    	btnEmpfaenger2.disableProperty().unbind();
 	    	btnEmpfaenger3.disableProperty().unbind();
-	    	tfDatenart1.disableProperty().unbind();
-	    	tfDatenart2.disableProperty().unbind();
-	    	tfDatenart3.disableProperty().unbind();
+	    	cbBob1.disableProperty().unbind();
+	    	cbBob2.disableProperty().unbind();
+	    	cbBob3.disableProperty().unbind();
 		}
 		aktEdi = selEDI;
 		em.detach(aktEdi);
@@ -108,44 +109,44 @@ public class EdiEintragController {
 			aktEmpfaenger[i] = null;
 			if (empfaengerList.hasNext()) {
 				aktEmpfaenger[i] = empfaengerList.next();
-				if (aktEmpfaenger[i].getDatenart()==null)
-					aktEmpfaenger[i].setDatenart("");
+				if (aktEmpfaenger[i].getBemerkung()==null)
+					aktEmpfaenger[i].setBemerkung("");
 			}
 		}
 		if (aktEmpfaenger[0]!=null) {
 			btnEmpfaenger1.setText(aktEmpfaenger[0].getKomponente().getFullname());
 			empfaenger1IsSelected.set(true);
-			tfDatenart1.setText(aktEmpfaenger[0].getDatenart());
-			datenart1Exist.set(aktEmpfaenger[0].getDatenart()!=null && aktEmpfaenger[0].getDatenart().length()>0);
+			cbBob1.getSelectionModel().select(aktEmpfaenger[0].getBemerkung());
+			datenart1Exist.set(aktEmpfaenger[0].getBemerkung()!=null && aktEmpfaenger[0].getBemerkung().length()>0);
 		}
 		else {
 			btnEmpfaenger1.setText("");
 			empfaenger1IsSelected.set(false);
-			tfDatenart1.setText("");
+			cbBob1.getSelectionModel().select("");
 			datenart1Exist.set(false);
 		}
 		if (aktEmpfaenger[1]!=null) {
 			btnEmpfaenger2.setText(aktEmpfaenger[1].getKomponente().getFullname());
 			empfaenger2IsSelected.set(true);
-			tfDatenart2.setText(aktEmpfaenger[1].getDatenart());
-			datenart2Exist.set(aktEmpfaenger[1].getDatenart()!=null && aktEmpfaenger[1].getDatenart().length()>0);
+			cbBob2.getSelectionModel().select(aktEmpfaenger[1].getBemerkung());
+			datenart2Exist.set(aktEmpfaenger[1].getBemerkung()!=null && aktEmpfaenger[1].getBemerkung().length()>0);
 		}
 		else {
 			btnEmpfaenger2.setText("");
 			empfaenger2IsSelected.set(false);
-			tfDatenart2.setText("");
+			cbBob2.getSelectionModel().select("");
 			datenart2Exist.set(false);
 		}
 		if (aktEmpfaenger[2]!=null) {
 			btnEmpfaenger3.setText(aktEmpfaenger[2].getKomponente().getFullname());
 			empfaenger3IsSelected.set(true);
-			tfDatenart3.setText(aktEmpfaenger[2].getDatenart());
-			datenart3Exist.set(aktEmpfaenger[2].getDatenart()!=null && aktEmpfaenger[2].getDatenart().length()>0);
+			cbBob3.getSelectionModel().select(aktEmpfaenger[2].getBemerkung());
+			datenart3Exist.set(aktEmpfaenger[2].getBemerkung()!=null && aktEmpfaenger[2].getBemerkung().length()>0);
 		}
 		else {
 			btnEmpfaenger3.setText("");
 			empfaenger3IsSelected.set(false);
-			tfDatenart3.setText("");
+			cbBob3.getSelectionModel().select("");
 			datenart3Exist.set(false);
 		}
 ////		btnEmpfaenger1.setText(aktEmpfaenger[0]==null ? "" : aktEmpfaenger[0].getKomponente().getFullname());
@@ -161,9 +162,9 @@ public class EdiEintragController {
     	btnEmpfaenger1.disableProperty().bind(Bindings.not(senderIsSelected));
     	btnEmpfaenger2.disableProperty().bind(Bindings.not(datenart1Exist));
     	btnEmpfaenger3.disableProperty().bind(Bindings.not(datenart2Exist));
-    	tfDatenart1.disableProperty().bind(Bindings.not(empfaenger1IsSelected));
-    	tfDatenart2.disableProperty().bind(Bindings.not(empfaenger2IsSelected));
-    	tfDatenart3.disableProperty().bind(Bindings.not(empfaenger3IsSelected));
+    	cbBob1.disableProperty().bind(Bindings.not(empfaenger1IsSelected));
+    	cbBob2.disableProperty().bind(Bindings.not(empfaenger2IsSelected));
+    	cbBob3.disableProperty().bind(Bindings.not(empfaenger3IsSelected));
     	
     	btnEdiEintragSpeichern.disableProperty().bind(Bindings.not(ediEintragIsChanged));
 
@@ -242,7 +243,7 @@ public class EdiEintragController {
 //        			}
 //        		}
 //        );
-//        tfDatenart1.textProperty().addListener(
+//        cbBob1.textProperty().addListener(
 //        		new ChangeListener<String>() {
 //        			@Override
 //        			public void changed(ObservableValue<? extends String> o,
@@ -258,7 +259,7 @@ public class EdiEintragController {
 //        			}
 //        		}
 //        );
-//        tfDatenart2.textProperty().addListener(
+//        cbBob2.textProperty().addListener(
 //        		new ChangeListener<String>() {
 //        			@Override
 //        			public void changed(ObservableValue<? extends String> o,
@@ -274,7 +275,7 @@ public class EdiEintragController {
 //        			}
 //        		}
 //        );
-//        tfDatenart3.textProperty().addListener(
+//        cbBob3.textProperty().addListener(
 //        		new ChangeListener<String>() {
 //        			@Override
 //        			public void changed(ObservableValue<? extends String> o,
@@ -335,37 +336,37 @@ public class EdiEintragController {
 //        					if (aktEmpfaenger[0]!=null) {
 //        						btnEmpfaenger1.setText(aktEmpfaenger[0].getKomponente().getFullname());
 //        						empfaenger1IsSelected.set(true);
-//        						tfDatenart1.setText(aktEmpfaenger[0].getDatenart());
+//        						cbBob1.setText(aktEmpfaenger[0].getDatenart());
 //        						datenart1Exist.set(aktEmpfaenger[0].getDatenart()!=null && aktEmpfaenger[0].getDatenart().length()>0);
 //        					}
 //        					else {
 //        						btnEmpfaenger1.setText("");
 //        						empfaenger1IsSelected.set(false);
-//        						tfDatenart1.setText("");
+//        						cbBob1.setText("");
 //        						datenart1Exist.set(false);
 //        					}
 //        					if (aktEmpfaenger[1]!=null) {
 //        						btnEmpfaenger2.setText(aktEmpfaenger[1].getKomponente().getFullname());
 //        						empfaenger2IsSelected.set(true);
-//        						tfDatenart2.setText(aktEmpfaenger[1].getDatenart());
+//        						cbBob2.setText(aktEmpfaenger[1].getDatenart());
 //        						datenart2Exist.set(aktEmpfaenger[1].getDatenart()!=null && aktEmpfaenger[1].getDatenart().length()>0);
 //        					}
 //        					else {
 //        						btnEmpfaenger2.setText("");
 //        						empfaenger2IsSelected.set(false);
-//        						tfDatenart2.setText("");
+//        						cbBob2.setText("");
 //        						datenart2Exist.set(false);
 //        					}
 //        					if (aktEmpfaenger[2]!=null) {
 //        						btnEmpfaenger3.setText(aktEmpfaenger[2].getKomponente().getFullname());
 //        						empfaenger3IsSelected.set(true);
-//        						tfDatenart3.setText(aktEmpfaenger[2].getDatenart());
+//        						cbBob3.setText(aktEmpfaenger[2].getDatenart());
 //        						datenart3Exist.set(aktEmpfaenger[2].getDatenart()!=null && aktEmpfaenger[2].getDatenart().length()>0);
 //        					}
 //        					else {
 //        						btnEmpfaenger3.setText("");
 //        						empfaenger3IsSelected.set(false);
-//        						tfDatenart3.setText("");
+//        						cbBob3.setText("");
 //        						datenart3Exist.set(false);
 //        					}
 ////        					btnEmpfaenger1.setText(aktEmpfaenger[0]==null ? "" : aktEmpfaenger[0].getKomponente().getFullname());
@@ -494,15 +495,15 @@ public class EdiEintragController {
 	}
     
     private void checkFieldFromView() {
-        assert paneAnbindung != null : "fx:id=\"paneAnbindung\" was not injected: check your FXML file 'Main.fxml'.";
-        assert paneSzenario != null : "fx:id=\"paneSzenario\" was not injected: check your FXML file 'Main.fxml'.";
-        assert paneEdiEintrag != null : "fx:id=\"paneEdiEintrag\" was not injected: check your FXML file 'Main.fxml'.";
-        assert btnSender != null : "fx:id=\"btnSender\" was not injected: check your FXML file 'Main.fxml'.";
-        assert tfEdiBezeichnung != null : "fx:id=\"tfEdiBezeichnung\" was not injected: check your FXML file 'Main.fxml'.";
-        assert taEdiBeschreibung != null : "fx:id=\"taEdiBeschreibung\" was not injected: check your FXML file 'Main.fxml'.";
-        assert ediLastChange != null : "fx:id=\"ediLastChange\" was not injected: check your FXML file 'Main.fxml'.";
-        assert tfDatenart1 != null : "fx:id=\"tfDatenart1\" was not injected: check your FXML file 'Main.fxml'.";
-        assert btnEmpfaenger1 != null : "fx:id=\"btnEmpfaenger1\" was not injected: check your FXML file 'Main.fxml'.";
-        assert btnEdiEintragSpeichern != null : "fx:id=\"btnEdiEintragSpeichern\" was not injected: check your FXML file 'Main.fxml'.";
+        assert paneAnbindung != null : "fx:id=\"paneAnbindung\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert paneSzenario != null : "fx:id=\"paneSzenario\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert paneEdiEintrag != null : "fx:id=\"paneEdiEintrag\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert btnSender != null : "fx:id=\"btnSender\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert tfEdiBezeichnung != null : "fx:id=\"tfEdiBezeichnung\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert taEdiBeschreibung != null : "fx:id=\"taEdiBeschreibung\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert ediLastChange != null : "fx:id=\"ediLastChange\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert cbBob1 != null : "fx:id=\"cbBob1\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert btnEmpfaenger1 != null : "fx:id=\"btnEmpfaenger1\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert btnEdiEintragSpeichern != null : "fx:id=\"btnEdiEintragSpeichern\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
     }
 }
