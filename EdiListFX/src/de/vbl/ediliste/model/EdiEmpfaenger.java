@@ -1,8 +1,6 @@
 package de.vbl.ediliste.model;
 
 import static javax.persistence.GenerationType.IDENTITY;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,7 +18,6 @@ import javax.persistence.JoinColumn;
 
 public class EdiEmpfaenger {
 
-	private StringProperty bemerkung = new SimpleStringProperty();
 	private long id;
 	private EdiKomponente ediKomponente;
 	private EdiEintrag ediEintrag;
@@ -43,18 +40,6 @@ public class EdiEmpfaenger {
 	}
 
 	// ------------------------------------------------------------------------
-	public StringProperty bemerkungProperty() {
-		return bemerkung;
-	}
-	
-	public String getBemerkung() {
-		return bemerkung.get();
-	}
-
-	public void setBemerkung(String param) {
-		bemerkung.set(param);
-	}
-
 	@ManyToOne
 	public EdiKomponente getKomponente() {
 	    return ediKomponente;
@@ -80,6 +65,4 @@ public class EdiEmpfaenger {
 	public void setGeschaeftsObjekt(GeschaeftsObjekt param) {
 	    this.geschaeftsObjekt = param;
 	}
-
-
 }

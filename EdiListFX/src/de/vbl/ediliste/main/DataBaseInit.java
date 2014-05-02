@@ -13,17 +13,18 @@ import de.vbl.ediliste.model.EdiEintrag;
 import de.vbl.ediliste.model.EdiKomponente;
 import de.vbl.ediliste.model.EdiPartner;
 import de.vbl.ediliste.model.EdiSystem;
+import de.vbl.ediliste.model.GeschaeftsObjekt;
 
 public class DataBaseInit {
 	private static final String PERSISTENCE_UNIT_NAME = "EdiListFX";
 	
 	
-	private static EntityManagerFactory factory;
+	private static EntityManager em = null;
 
 	public static void main(String[] args) {
 		
-		factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-		EntityManager em = factory.createEntityManager();
+		EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+		em = factory.createEntityManager();
 		EntityTransaction ta = null;
 
 		// read the existing entries and write to console
@@ -41,10 +42,12 @@ public class DataBaseInit {
 			ta.begin();
 
 			
-			if("1".equals("1")) 
-				generateRealObjekts(em);
+			if("1".equals("1")) {
+				// generateRealObjekts();
+				generateGeschaeftobjekte();
+			}
 			else
-				generateTestObjekts(em);
+				generateTestObjekts();
 
 			if (ta.isActive()) {
 				System.out.println("Transaction vor commit isActive=TRUE");
@@ -86,7 +89,7 @@ public class DataBaseInit {
 		return ret;
 	}
 	
-	private static void generateTestObjekts(EntityManager em) {
+	private static void generateTestObjekts() {
 		int zSnr = 0;
 		int zKnr = 0;
 		for (int p=1; p<=50; ++p) {
@@ -105,7 +108,7 @@ public class DataBaseInit {
 		}
 	}
 
-	private static void generateRealObjekts(EntityManager em) {
+	private static void generateRealObjekts() {
 		EdiPartner partner = null;
 		EdiSystem system = null;
 
@@ -197,11 +200,23 @@ public class DataBaseInit {
 		
 		partner = new EdiPartner("Bafin");
 		em.persist(partner);
-								
+
 //		EdiAnbindung anbindung = null;
 //		EdiSzenario szenario = null;
 		
 	}
+	
+	
+	private static void generateGeschaeftobjekte() {
+		em.persist(new GeschaeftsObjekt("ZGP-Stammdaten"));
+		em.persist(new GeschaeftsObjekt("ZGP-Beziehungen"));
+		em.persist(new GeschaeftsObjekt("Zahlungsanweisung"));
+		em.persist(new GeschaeftsObjekt("ZA-Protokolle"));
+		em.persist(new GeschaeftsObjekt("ANW-Meldungen"));
+		em.persist(new GeschaeftsObjekt("ANW-Meldungsdokumente"));
+		em.persist(new GeschaeftsObjekt("ZfA-Meldungen"));
+	}
+	
 
 //	private static EdiSzenario newEdiSzenario( 	EdiAnbindung anbindung,	String name) 
 //	{

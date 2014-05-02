@@ -78,6 +78,7 @@ public class EdiEintragController {
     
     private static EdiEintrag aktEdi;
     private EdiEmpfaenger aktEmpfaenger[] = new EdiEmpfaenger[3];
+    private String m_busObjName[] = { "", "", ""};
     
 
     @FXML
@@ -100,25 +101,52 @@ public class EdiEintragController {
 		cmbBuOb1.valueProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> ov, String oldValue, String newValue) {
-				if (aktEmpfaenger[0]!=null) {
+//				if (aktEmpfaenger[0]!=null) {
 					if (newValue.equals(aktEmpfaenger[0].getGeschaeftsObjekt())==false) {
 						ediEintragIsChanged.set(true);
-						System.out.println("aktE[0] :"+ aktEmpfaenger[0].getGeschaeftsObjekt().getName());
+						System.out.println("Gesch.Obj.Changed: aktE[0] :"+ aktEmpfaenger[0].getGeschaeftsObjekt().getName());
 						System.out.println("newValue:"+ newValue);
-						GeschaeftsObjekt go = businessObject.get(newValue.toUpperCase());
-						if (go == null) {
+						GeschaeftsObjekt buOb = businessObject.get(newValue.toUpperCase());
+						if (buOb == null) {
 							aktEmpfaenger[0].setGeschaeftsObjekt(new GeschaeftsObjekt(newValue));
 							aktEmpfaenger[0].getGeschaeftsObjekt().setName(newValue);
 						} else{
-							String old = go.getName();
+							String old = buOb.getName();
 							if (!old.equals(newValue))
-								cmbBuOb1.getSelectionModel().select(go.getName());
-							aktEmpfaenger[0].setGeschaeftsObjekt(go);
+								cmbBuOb1.getSelectionModel().select(buOb.getName());
+							aktEmpfaenger[0].setGeschaeftsObjekt(buOb);
 						}
+					}
+//				}
+			}
+		});
+		taEdiBeschreibung.textProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> o, String oldValue, String newValue) {
+				if (newValue != null) {
+					if (aktEdi.beschreibungProperty().get().equals(newValue) == false) {
+						aktEdi.beschreibungProperty().set(newValue);
+						ediEintragIsChanged.set(true);
+					} else if (ediEintragIsChanged.get()) {
+						ediEintragIsChanged.set(checkForDifference());
 					}
 				}
 			}
 		});
+		
+		
+//      tfEdiBezeichnung.textProperty().addListener(
+//		new ChangeListener<String>() {
+//			@Override
+//			public void changed(ObservableValue<? extends String> o,
+//				String oldValue, String newValue) {
+//				if (newValue.equals(aktEdi.bezeichnungProperty().get())==false) {
+//					ediEintragIsChanged.set(true);
+//				}
+//			}
+//		}
+//);
+		
 	}
 	
 	private void readBusinessObject() {
@@ -131,7 +159,7 @@ public class EdiEintragController {
 			businessObjectName.add(gObject.getName());
 			businessObject.put(gObject.getName().toUpperCase(),gObject);
 		}
-		System.out.println(businessObject.get("BUPA-MAIN").getName());
+//		System.out.println(businessObject.get("BUPA-MAIN").getName());
 		
 	}
 	
@@ -144,12 +172,15 @@ public class EdiEintragController {
 		}
 		aktEdi = selEDI;
 		em.detach(aktEdi);
+		if (aktEdi.getBeschreibung()==null)
+			aktEdi.setBeschreibung("");
 
 		ediEintragIsChanged.set(false);
 		
 		paneEdiEintrag.textProperty().set(EDI_PANEL_TITLE + " "+ aktEdi.getEdiNrStr());
 //		tfEdiBezeichnung.textProperty().bindBidirectional(aktEdi.bezeichnungProperty());
-		taEdiBeschreibung.textProperty().bindBidirectional(aktEdi.beschreibungProperty());
+//		taEdiBeschreibung.textProperty().bindBidirectional(aktEdi.beschreibungProperty());
+		taEdiBeschreibung.textProperty().set(aktEdi.getBeschreibung());
 		btnSender.setText(aktEdi.getKomponente()==null ? "" : aktEdi.getKomponente().getFullname());
 		senderIsSelected.set(aktEdi.getKomponente()!=null);
     	Iterator<EdiEmpfaenger> empfaengerList = aktEdi.getEdiEmpfaenger().iterator();
@@ -234,24 +265,46 @@ public class EdiEintragController {
 		}
 	}
 	
+	private boolean checkForDifference() {
+		EdiEintrag orgEdi = em.find(EdiEintrag.class, aktEdi.getId());
+		if (aktEdi == orgEdi && aktEdi.equaels(orgEdi)) {
+			
+		}
+		return false;
+	}
+	
+	
     @FXML
     void ediEintragSpeichern(ActionEvent event) {
 		aktEdiEintragSpeichern();
     }
     
     private boolean aktEdiEintragSpeichern() {
-		em.getTransaction().begin(); 
 //		aktEdi.setBezeichnung(tfEdiBezeichnung.getText());
 //		aktEdi.setBeschreibung(taEdiBeschreibung.getText());
 //		System.out.println("textfield:"+tfEdiBezeichnung.getText());
 		System.out.println("aktedi   :"+aktEdi.getBezeichnung());
 		aktEdi.getEdiEmpfaenger().clear();
 		for (int i=0; i<3;i++) {
-			if (aktEmpfaenger[i]!=null) {
-				aktEdi.getEdiEmpfaenger().add(aktEmpfaenger[i]);
+			EdiEmpfaenger empf = aktEmpfaenger[i];
+			if (empf != null) {    // mindestens die Komponente ist vorhanden 
+				if (empf.getGeschaeftsObjekt() == null || 
+					empf.getGeschaeftsObjekt().getName() == null ||
+					empf.getGeschaeftsObjekt().getName().length() < 1 ) {
+					String m = "Bitte zum Empfänger \"" + empf.getKomponente().getFullname() + "\""  +
+							  " auch ein Geschäftsobjekt eintragen/auswählen";
+					Dialogs.showInformationDialog(primaryStage, m, "Korrektur-Hinweis", applName);
+					return false;
+				}
+				String buObName = empf.getGeschaeftsObjekt().getName();
+				
+				if (empf.getGeschaeftsObjekt() == null)
+//					empf.getGeschaeftsObjekt().getName().equals(m_busObjName[i]))
+				aktEdi.getEdiEmpfaenger().add(empf);
 			}
 		}
 		try {
+			em.getTransaction().begin(); 
 			em.merge(aktEdi);
 			em.getTransaction().commit();
 		} catch (RuntimeException e) {

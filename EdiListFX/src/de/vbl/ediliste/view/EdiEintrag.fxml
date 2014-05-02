@@ -21,13 +21,13 @@
 				</ToolBar>
 				<TitledPane fx:id="paneAnbindung" animated="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="EDI-Anbindung">
 					<content>
-						<AnchorPane maxHeight="1.7976931348623157E308">
+						<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
 							<children>
-								<GridPane hgap="8.0" layoutX="9.600000381469727" layoutY="9.600000381469727" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="898.0" vgap="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+								<GridPane hgap="8.0" layoutX="9.600000381469727" layoutY="9.600000381469727" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" vgap="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 									<columnConstraints>
 										<ColumnConstraints hgrow="SOMETIMES" maxWidth="85.0" minWidth="10.0" />
 										<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" />
-										<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="185.0" />
+										<ColumnConstraints hgrow="NEVER" maxWidth="180.0" minWidth="180.0" prefWidth="180.0" />
 									</columnConstraints>
 									<rowConstraints>
 <RowConstraints minHeight="0.0" prefHeight="10.0" vgrow="SOMETIMES" />
@@ -39,20 +39,20 @@
 									<children>
 										<Label alignment="CENTER_RIGHT" layoutX="9.600000381469727" layoutY="51.60000038146973" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Dokumente:" GridPane.rowIndex="2">
 										</Label>
-										<ComboBox layoutX="9.600000381469727" layoutY="9.600000381469727" maxWidth="1.7976931348623157E308" prefWidth="578.0" promptText="Szenario auswählen..." AnchorPane.leftAnchor="90.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+										<ComboBox layoutX="9.600000381469727" layoutY="9.600000381469727" maxWidth="1.7976931348623157E308" AnchorPane.leftAnchor="90.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 										<Label alignment="CENTER_RIGHT" layoutX="9.600000381469727" layoutY="68.60000038146973" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Konfiguration:" GridPane.rowIndex="3">
 										</Label>
-										<ComboBox disable="true" layoutX="9.600000381469727" layoutY="85.60000038146973" maxWidth="1.7976931348623157E308" prefWidth="578.0" promptText="Konfiguration auswählen..." GridPane.columnIndex="1" GridPane.rowIndex="3" />
+										<ComboBox disable="true" layoutX="9.600000381469727" layoutY="85.60000038146973" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 										<Label alignment="CENTER_RIGHT" layoutX="9.600000381469727" layoutY="34.60000038146973" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Szenario:" AnchorPane.leftAnchor="14.0" GridPane.rowIndex="1">
 										</Label>
-										<TableView maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2">
+										<TableView editable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="120.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2">
 											<columns>
-												<TableColumn prefWidth="73.99999237060547" text="Vorhaben" />
-												<TableColumn maxWidth="1.7976931348623157E308" minWidth="94.99999237060547" prefWidth="486.0000305175781" text="Bezeichnung des Dokuments" />
+												<TableColumn maxWidth="80.0" text="Vorhaben" />
+												<TableColumn maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="500.0" text="Bezeichnung des Dokuments" />
 												<TableColumn editable="false" maxWidth="353.0000305175781" minWidth="61.0" prefWidth="126.0" resizable="false" text="Datum" />
 												<TableColumn editable="false" maxWidth="269.0" minWidth="0.0" prefWidth="128.0" resizable="false" text="Quelle" />
 											</columns>
-										</TableView><Button fx:id="btnNewSzenario" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Neues Szanrio anlegen" GridPane.columnIndex="2" GridPane.rowIndex="1" /><Button fx:id="btnNewConfiguration" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Neue Konfiguration anlegen" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+										</TableView><Button fx:id="btnNewSzenario" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Neues Szanrio anlegen..." GridPane.columnIndex="2" GridPane.rowIndex="1" /><Button fx:id="btnNewConfiguration" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Neue Konfiguration anlegen..." GridPane.columnIndex="2" GridPane.rowIndex="3" />
 									</children>
 <padding>
 <Insets right="8.0" />
@@ -64,70 +64,16 @@
 				</TitledPane>
 				<TitledPane fx:id="paneEdiEintrag" animated="false" collapsible="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="EDI-Eintrag" textOverrun="LEADING_WORD_ELLIPSIS">
 					<content>
-						<AnchorPane maxWidth="1.7976931348623157E308">
+						<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="366.0" prefWidth="948.0">
 							<children>
-								<VBox layoutX="9.600000381469727" layoutY="9.600000381469727" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+								<VBox layoutX="9.600000381469727" layoutY="9.600000381469727" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 									<children>
-										<GridPane hgap="8.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" vgap="8.0" AnchorPane.leftAnchor="9.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-											<columnConstraints>
-												<ColumnConstraints hgrow="NEVER" maxWidth="77.0" />
-												<ColumnConstraints hgrow="SOMETIMES" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" />
-												<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" />
-												<ColumnConstraints hgrow="NEVER" maxWidth="95.0" minWidth="-Infinity" prefWidth="95.0" />
-												<ColumnConstraints hgrow="NEVER" maxWidth="95.0" minWidth="-Infinity" prefWidth="95.0" />
-											</columnConstraints>
-											<rowConstraints>
-												<RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
-												<RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
-												<RowConstraints maxHeight="1.7976931348623157E308" prefHeight="10.0" vgrow="SOMETIMES" />
-												<RowConstraints maxHeight="-Infinity" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
-												<RowConstraints maxHeight="10.0" minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
-											</rowConstraints>
-											<children>
-												<TextField fx:id="ediLastChange" disable="true" editable="false" layoutX="698.0" layoutY="29.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="4">
-													<GridPane.margin>
-														<Insets />
-													</GridPane.margin>
-												</TextField>
-												<Label layoutX="10.0" layoutY="32.0" maxWidth="1.7976931348623157E308" text="Beschreibung:" GridPane.rowIndex="1">
-													<GridPane.margin>
-														<Insets />
-													</GridPane.margin>
-												</Label>
-
-												<Label alignment="CENTER_RIGHT" layoutX="618.0" layoutY="26.0" maxWidth="1.7976931348623157E308" text="produktiv seit:" textAlignment="CENTER" GridPane.columnIndex="3" GridPane.rowIndex="1">
-												</Label>
-
-												<Label alignment="CENTER_RIGHT" layoutX="618.0" layoutY="74.0" maxWidth="1.7976931348623157E308" text="produktiv bis:" textAlignment="CENTER" GridPane.columnIndex="3" GridPane.rowIndex="3">
-													<GridPane.margin>
-														<Insets />
-													</GridPane.margin>
-												</Label>
-												<TextArea fx:id="taEdiBeschreibung" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1" GridPane.rowSpan="3">
-													<GridPane.margin>
-														<Insets />
-													</GridPane.margin>
-												</TextArea>
-												<TextField layoutX="753.0" layoutY="13.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="4" GridPane.rowIndex="1" />
-												<TextField layoutX="702.0" layoutY="55.0" GridPane.columnIndex="4" GridPane.rowIndex="3" />
-												<Label alignment="CENTER_RIGHT" layoutX="618.0" layoutY="26.0" maxWidth="1.7976931348623157E308" prefHeight="17.0" text="letzte Änderung:" textAlignment="CENTER" GridPane.columnIndex="3">
-													<GridPane.margin>
-														<Insets />
-													</GridPane.margin>
-												</Label>
-												<Label alignment="BASELINE_LEFT" layoutX="30.0048828125" layoutY="31.5" maxWidth="1.7976931348623157E308" text="Ausführungs-Intervall:" GridPane.columnSpan="2">
-												</Label><ComboBox fx:id="cmbIntervall" editable="true" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="2" />
-											</children>
-											<padding>
-												<Insets left="5.0" right="8.0" />
-											</padding>
-										</GridPane>
 
 										<GridPane hgap="8.0" layoutY="100.0" maxWidth="1.7976931348623157E308" vgap="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 											<columnConstraints>
 												<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" prefWidth="120.0" />
 												<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" prefWidth="120.0" />
-												<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="120.0" />
+												<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="90.0" />
 											</columnConstraints>
 											<rowConstraints>
 												<RowConstraints vgrow="SOMETIMES" />
@@ -139,7 +85,7 @@
 												<Label alignment="CENTER" layoutX="44.399993896484375" layoutY="-2.0999984741210938" maxWidth="1.7976931348623157E308" text="Sender" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
 												<Label alignment="CENTER" layoutX="73.99996948242188" layoutY="3.9999771118164062" maxWidth="1.7976931348623157E308" text="Empfänger" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.columnIndex="1" />
 												<Label alignment="CENTER" layoutX="20.0" layoutY="10.0" maxWidth="1.7976931348623157E308" text="Geschäftsobjekt" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.columnIndex="2" />
-												<Button fx:id="btnSender" alignment="CENTER" layoutX="3.4000015258789062" layoutY="9.399993896484375" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#senderButton" text="Sender auswählen / anlegen" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" GridPane.rowIndex="1">
+												<Button fx:id="btnSender" alignment="CENTER" layoutX="3.4000015258789062" layoutY="9.399993896484375" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#senderButton" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" GridPane.rowIndex="1">
 													<GridPane.margin>
 														<Insets />
 													</GridPane.margin>
@@ -168,6 +114,59 @@
 												<ComboBox fx:id="cmbBuOb3" editable="true" layoutX="515.0" layoutY="68.0" maxWidth="1.7976931348623157E308" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="3" /><ComboBox prefWidth="150.0" promptText="kein 2. Empfänger" visible="false" GridPane.halignment="RIGHT" GridPane.hgrow="NEVER" GridPane.rowIndex="2" GridPane.vgrow="NEVER" />
 											</children>
 											<padding>
+												<Insets bottom="5.0" left="5.0" right="8.0" top="5.0" />
+											</padding>
+										</GridPane>
+										<GridPane hgap="8.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" vgap="8.0" AnchorPane.leftAnchor="9.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" VBox.vgrow="ALWAYS">
+											<columnConstraints>
+												<ColumnConstraints hgrow="NEVER" prefWidth="120.0" />
+												<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" />
+												<ColumnConstraints hgrow="NEVER" maxWidth="95.0" minWidth="-Infinity" prefWidth="95.0" />
+												<ColumnConstraints hgrow="NEVER" maxWidth="95.0" minWidth="-Infinity" prefWidth="95.0" />
+											</columnConstraints>
+											<rowConstraints>
+												<RowConstraints maxHeight="30.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+												<RowConstraints maxHeight="30.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+												<RowConstraints maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefHeight="0.0" vgrow="SOMETIMES" />
+												<RowConstraints maxHeight="-Infinity" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+												<RowConstraints maxHeight="10.0" minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
+											</rowConstraints>
+											<children>
+												<TextField fx:id="ediLastChange" disable="true" editable="false" layoutX="698.0" layoutY="29.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="3">
+													<GridPane.margin>
+														<Insets />
+													</GridPane.margin>
+												</TextField>
+												<Label alignment="CENTER_RIGHT" layoutX="10.0" layoutY="32.0" maxWidth="1.7976931348623157E308" text="Beschreibung:" GridPane.rowIndex="1">
+													<GridPane.margin>
+														<Insets />
+													</GridPane.margin>
+												</Label>
+
+												<Label alignment="CENTER_RIGHT" layoutX="618.0" layoutY="26.0" maxWidth="1.7976931348623157E308" text="produktiv seit:" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="1">
+												</Label>
+
+												<Label alignment="CENTER_RIGHT" layoutX="618.0" layoutY="74.0" maxWidth="1.7976931348623157E308" text="produktiv bis:" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="3">
+													<GridPane.margin>
+														<Insets />
+													</GridPane.margin>
+												</Label>
+												<TextArea fx:id="taEdiBeschreibung" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="3">
+													<GridPane.margin>
+														<Insets />
+													</GridPane.margin>
+												</TextArea>
+												<TextField layoutX="753.0" layoutY="13.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+												<TextField layoutX="702.0" layoutY="55.0" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+												<Label alignment="CENTER_RIGHT" layoutX="618.0" layoutY="26.0" maxWidth="1.7976931348623157E308" prefHeight="17.0" text="letzte Änderung:" textAlignment="CENTER" GridPane.columnIndex="2">
+													<GridPane.margin>
+														<Insets />
+													</GridPane.margin>
+												</Label>
+												<Label alignment="CENTER_RIGHT" layoutX="30.0048828125" layoutY="31.5" maxWidth="1.7976931348623157E308" text="Ausführungs-Intervall:">
+												</Label><ComboBox fx:id="cmbIntervall" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" />
+											</children>
+											<padding>
 												<Insets left="5.0" right="8.0" />
 											</padding>
 										</GridPane>
@@ -180,9 +179,11 @@
 						<Font name="System Bold" size="14.0" />
 					</font>
 				</TitledPane>
-				<TitledPane animated="false" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Details">
+				<TitledPane animated="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Details">
 					<content>
-						<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
+						<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+<children><Label layoutX="118.0" layoutY="69.0" AnchorPane.bottomAnchor="20.0" AnchorPane.topAnchor="69.0" /><Label layoutX="118.0" layoutY="39.0" prefHeight="37.0" prefWidth="705.0" text="Hier werden die Zwischenschritte zur aktuell ausgewählten Sender-Empfänger-Geschäftsobjekt-Transfer verwaltet" AnchorPane.bottomAnchor="29.0" AnchorPane.leftAnchor="88.0" AnchorPane.topAnchor="70.0" />
+</children></AnchorPane>
 					</content>
 				</TitledPane>
 			</children>

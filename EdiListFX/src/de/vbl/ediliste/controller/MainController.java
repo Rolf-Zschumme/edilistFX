@@ -186,7 +186,8 @@ public class MainController {
         			public void changed(
         					ObservableValue<? extends EdiNrListElement> observable,
         					EdiNrListElement oldValue, EdiNrListElement newValue) {
-        				System.out.println("oldValue=" + ((oldValue == null) ? "null" : oldValue.ediNrProperty().get()) 
+        				System.out.println("MainController: oldValue=" + 
+        						((oldValue == null) ? "null" : oldValue.ediNrProperty().get()) 
         						+ "  newValue=" + ((newValue == null) ? "null" : newValue.ediNrProperty().get()) );
         				if (oldValue != null) {
         					if (tableEdiNrAuswahl.getItems().contains(oldValue)) 
@@ -199,7 +200,7 @@ public class MainController {
         					}
         				}
         				else {
-        					System.out.println("tableEdiNrAuswahl.ChangeListener " + observable.getValue() );
+//        					System.out.println("tableEdiNrAuswahl.ChangeListener " + observable.getValue() );
         					tableEdiNrAuswahl.getSelectionModel().clearSelection();
         					showSplitPane(null);	
         				}
