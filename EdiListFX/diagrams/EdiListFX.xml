@@ -101,7 +101,7 @@
 	<entity>
 		<entity-name>de.vbl.ediliste.model.EdiDokuLink</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>181</entity-height>
+		<entity-height>156</entity-height>
 		<entity-X-Coordinate>565</entity-X-Coordinate>
 		<entity-Y-Coordinate>-15</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>

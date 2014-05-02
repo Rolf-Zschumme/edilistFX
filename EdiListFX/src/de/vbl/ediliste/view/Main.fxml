@@ -27,7 +27,7 @@
 		</MenuBar>
 	</top>
 	<center>
-		<SplitPane dividerPositions="0.3624733475479744" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" BorderPane.alignment="CENTER">
+		<SplitPane fx:id="splitPane" dividerPositions="0.3624733475479744" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" BorderPane.alignment="CENTER">
 			<items>
 				<TabPane fx:id="tabPaneObjekte" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
 					<tabs>
@@ -43,8 +43,8 @@
 										</ToolBar>
 										<TableView fx:id="tableEdiNrAuswahl" prefHeight="704.0" prefWidth="595.0" VBox.vgrow="ALWAYS">
 											<columns>
-												<TableColumn fx:id="tColAuswahlEdiNr" editable="false" minWidth="20.0" prefWidth="50.0" text="Nr." />
-												<TableColumn fx:id="tColAuswahlEdiNrBezeichnung" editable="false" maxWidth="500.0" minWidth="70.0" prefWidth="177.0" text="Bezeichnung" />
+												<TableColumn fx:id="tColAuswahlEdiNr" editable="false" minWidth="20.0" prefWidth="63.0" text="Nr." />
+												<TableColumn fx:id="tColAuswahlEdiNrBezeichnung" editable="false" maxWidth="500.0" minWidth="70.0" prefWidth="421.0" text="Bezeichnung" />
 											</columns>
 										</TableView>
 									</children>
@@ -108,7 +108,6 @@
 						</Tab>
 					</tabs>
 				</TabPane>
-<AnchorPane fx:id="refillPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
 			</items>
 		</SplitPane>
 	</center>

@@ -73,6 +73,7 @@ public class KomponentenAuswahlController {
 	}
 	
 	public void setKomponente(KomponentenTyp typ, Long komponentenID) {
+    	System.out.println(getClass().getName()+".setKomponenten called");
 
 		if (typ == KomponentenTyp.SENDER)
 			lbSenderReseiver.setText("Sender");
@@ -424,11 +425,6 @@ public class KomponentenAuswahlController {
     	}
 		return false;
 	}
-
-	@FXML
-    void ff0808(ActionEvent event) {
-
-    }
 
     private void unbind() {
 //    	tfEdiNr.textProperty().unbindBidirectional(ediEintrag.ediNrProperty());

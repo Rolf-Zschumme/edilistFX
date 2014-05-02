@@ -23,6 +23,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Dialogs;
 import javafx.scene.control.Dialogs.DialogOptions;
 import javafx.scene.control.Dialogs.DialogResponse;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
@@ -30,6 +31,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -83,7 +85,7 @@ public class MainController {
     @FXML private Button btnDeleteEdiEintrag;
     @FXML private Button btnExportExcel;
 
-    @FXML private AnchorPane refillPane;
+    @FXML private SplitPane splitPane;
     
     
     private static String applName;
@@ -95,8 +97,8 @@ public class MainController {
     
     private int maxEdiNr;
     private Stage primaryStage;
-    private AnchorPane ediEintragPane;
-    private AnchorPane testAnchorPane;
+    private Pane ediEintragPane;
+    private Pane testAnchorPane;
     
     private EdiEintragController ediEintragController;
 
@@ -163,16 +165,16 @@ public class MainController {
 						});
         				new Thread(task).start();
 						if (akttab.equals(tabEdiNr)) {
-							showDetailSubPane(ediEintragPane);
+							showSplitPane(ediEintragPane);
 						}
 						else if (akttab.equals(tabPartner)) {
-							showDetailSubPane(testAnchorPane);
+							showSplitPane(testAnchorPane);
 						}
 						else if(akttab.equals(tabSysteme)) {
-							showDetailSubPane(null);
+							showSplitPane(null);
 						}
 						else if(akttab.equals(tabKomponenten)) {
-							showDetailSubPane(null);
+							showSplitPane(null);
 						}
         			}
 				}
@@ -192,12 +194,14 @@ public class MainController {
         				}
         				if (newValue != null) {
         					ediEintragController.setSelection(em.find(EdiEintrag.class, newValue.getEdiId()));
-        					if (refillPane.getChildren().contains(ediEintragPane) == false) {
-	        					showDetailSubPane(ediEintragPane);	
+        					if (splitPane.getItems().contains(ediEintragPane) == false) {
+	        					showSplitPane(ediEintragPane);	
         					}
         				}
         				else {
-        					showDetailSubPane(null);	
+        					System.out.println("tableEdiNrAuswahl.ChangeListener " + observable.getValue() );
+        					tableEdiNrAuswahl.getSelectionModel().clearSelection();
+        					showSplitPane(null);	
         				}
         			}
         		}
@@ -205,11 +209,34 @@ public class MainController {
     
      }
 
-     private void showDetailSubPane(AnchorPane pane) {
-       	refillPane.getChildren().clear();
-       	if (pane != null) {
+     static double[] dividers;
+
+     private void showSplitPane(Pane pane) {
+    	if (splitPane.getItems().size() < 2) {
+    		if (pane != null) {
+    			final StackPane sp = new StackPane();
+    			sp.getChildren().add(pane);
+    			splitPane.getItems().add(sp);
+    			if (dividers != null) 
+    				splitPane.setDividerPositions(dividers);
+    		}
+    	}
+   		else {
+			if (pane == null) {
+				dividers = splitPane.getDividerPositions();
+				splitPane.getItems().remove(1);
+			}
+			else {
+				splitPane.getItems().set(1, pane);
+			}	
+   		}
+       		/*
        		refillPane.getChildren().add(pane);
-       	}
+       		AnchorPane.setRightAnchor(pane, (double) 0);
+       		AnchorPane.setLeftAnchor(pane, (double) 0);
+       		AnchorPane.setTopAnchor(pane, (double) 0);
+       		AnchorPane.setBottomAnchor(pane, (double) 0);
+       		*/
      }
 
     

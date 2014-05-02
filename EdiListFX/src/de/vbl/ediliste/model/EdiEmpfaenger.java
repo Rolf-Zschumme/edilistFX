@@ -16,7 +16,7 @@ import javax.persistence.JoinColumn;
  * Entity implementation class for Entity: Empfaenger
  *
  */
-@Entity
+@Entity 
 
 public class EdiEmpfaenger {
 

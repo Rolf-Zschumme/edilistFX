@@ -9,7 +9,8 @@
 		<class>de.vbl.ediliste.model.EdiPartner</class>
 		<class>de.vbl.ediliste.model.EdiSystem</class>
 		<class>de.vbl.ediliste.model.EdiSzenario</class>
-		<class>de.vbl.ediliste.model.SVNrepository</class>
+		<class>de.vbl.ediliste.model.GeschaeftsObjekt</class>
+		<class>de.vbl.ediliste.model.SVN_Repository</class>
 		<class>de.vbl.ediliste.model.Vorhaben</class>
 		<properties>
 			<property name="eclipselink.jdbc.batch-writing" value="None"/>

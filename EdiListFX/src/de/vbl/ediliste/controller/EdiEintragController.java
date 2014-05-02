@@ -1,11 +1,18 @@
 package de.vbl.ediliste.controller;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -24,11 +31,13 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 
 import de.vbl.ediliste.controller.KomponentenAuswahlController.KomponentenTyp;
 import de.vbl.ediliste.model.EdiEintrag;
 import de.vbl.ediliste.model.EdiEmpfaenger;
 import de.vbl.ediliste.model.EdiKomponente;
+import de.vbl.ediliste.model.GeschaeftsObjekt;
 
 public class EdiEintragController {
 	private static final String EDI_PANEL_TITLE = "EDI-Eintrag";
@@ -38,11 +47,10 @@ public class EdiEintragController {
     @FXML private TitledPane paneAnbindung;
     @FXML private TitledPane paneEdiEintrag;
     
-    @FXML private TextField tfEdiBezeichnung;
     @FXML private TextArea  taEdiBeschreibung;
-    @FXML private ComboBox<String> cbBob1;
-    @FXML private ComboBox<String> cbBob2;
-    @FXML private ComboBox<String> cbBob3;
+    @FXML private ComboBox<String> cmbBuOb1;
+    @FXML private ComboBox<String> cmbBuOb2;
+    @FXML private ComboBox<String> cmbBuOb3;
     @FXML private TextField ediLastChange;
 
     @FXML private Button btnEdiEintragSpeichern;
@@ -60,10 +68,13 @@ public class EdiEintragController {
     private BooleanProperty empfaenger1IsSelected = new SimpleBooleanProperty(false);
     private BooleanProperty empfaenger2IsSelected = new SimpleBooleanProperty(false);
     private BooleanProperty empfaenger3IsSelected = new SimpleBooleanProperty(false);
-    private BooleanProperty datenart1Exist = new SimpleBooleanProperty(false);
-    private BooleanProperty datenart2Exist = new SimpleBooleanProperty(false);
-    private BooleanProperty datenart3Exist = new SimpleBooleanProperty(false);
+    private BooleanProperty buOb1Exist = new SimpleBooleanProperty(false);
+    private BooleanProperty buOb2Exist = new SimpleBooleanProperty(false);
+    private BooleanProperty buOb3Exist = new SimpleBooleanProperty(false);
     private BooleanProperty readOnlyAccess = new SimpleBooleanProperty(false);
+    
+    private Map<String,GeschaeftsObjekt> businessObject = new HashMap<String,GeschaeftsObjekt>(); 
+    private ObservableList<String> businessObjectName = FXCollections.observableArrayList();
     
     private static EdiEintrag aktEdi;
     private EdiEmpfaenger aktEmpfaenger[] = new EdiEmpfaenger[3];
@@ -71,36 +82,73 @@ public class EdiEintragController {
 
     @FXML
     void initialize() {
+    	System.out.println("EdiEintragController.initialize()");
     	checkFieldFromView();
     }	
     	
 	public void setInitial(Stage stage, String applikationName, EntityManager entityManager) {
+    	System.out.println("EdiEintragController.setInitial()");
 		primaryStage = stage;
 		applName = applikationName;
 		em = entityManager;
 		readOnlyAccess.set(false);
+		
+		readBusinessObject();
+		
+		cmbBuOb1.setItems(businessObjectName);
+		
+		cmbBuOb1.valueProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> ov, String oldValue, String newValue) {
+				if (aktEmpfaenger[0]!=null) {
+					if (newValue.equals(aktEmpfaenger[0].getGeschaeftsObjekt())==false) {
+						ediEintragIsChanged.set(true);
+						System.out.println("aktE[0] :"+ aktEmpfaenger[0].getGeschaeftsObjekt().getName());
+						System.out.println("newValue:"+ newValue);
+						GeschaeftsObjekt go = businessObject.get(newValue.toUpperCase());
+						if (go == null) {
+							aktEmpfaenger[0].setGeschaeftsObjekt(new GeschaeftsObjekt(newValue));
+							aktEmpfaenger[0].getGeschaeftsObjekt().setName(newValue);
+						} else{
+							String old = go.getName();
+							if (!old.equals(newValue))
+								cmbBuOb1.getSelectionModel().select(go.getName());
+							aktEmpfaenger[0].setGeschaeftsObjekt(go);
+						}
+					}
+				}
+			}
+		});
+	}
+	
+	private void readBusinessObject() {
+		businessObject.clear();
+		businessObjectName.clear();
+		TypedQuery<GeschaeftsObjekt> tq = em.createQuery(
+				"SELECT g FROM GeschaeftsObjekt g ORDER BY g.name", GeschaeftsObjekt.class);
+		List<GeschaeftsObjekt> gList = tq.getResultList();
+		for (GeschaeftsObjekt gObject : gList) {
+			businessObjectName.add(gObject.getName());
+			businessObject.put(gObject.getName().toUpperCase(),gObject);
+		}
+		System.out.println(businessObject.get("BUPA-MAIN").getName());
+		
 	}
 	
     public void setSelection( EdiEintrag selEDI) {
-    	System.out.println("EdiEintragController.show()");
+    	System.out.println("EdiEintragController.setSelection()");
 		if (aktEdi!=null) {
 	    	btnEmpfaenger1.disableProperty().unbind();
 	    	btnEmpfaenger2.disableProperty().unbind();
 	    	btnEmpfaenger3.disableProperty().unbind();
-	    	cbBob1.disableProperty().unbind();
-	    	cbBob2.disableProperty().unbind();
-	    	cbBob3.disableProperty().unbind();
 		}
 		aktEdi = selEDI;
 		em.detach(aktEdi);
-		
-		tfEdiBezeichnung.disableProperty().bind(readOnlyAccess);
-    	taEdiBeschreibung.disableProperty().bind(readOnlyAccess);
-    	btnSender.disableProperty().bind(readOnlyAccess);
 
 		ediEintragIsChanged.set(false);
+		
 		paneEdiEintrag.textProperty().set(EDI_PANEL_TITLE + " "+ aktEdi.getEdiNrStr());
-		tfEdiBezeichnung.textProperty().bindBidirectional(aktEdi.bezeichnungProperty());
+//		tfEdiBezeichnung.textProperty().bindBidirectional(aktEdi.bezeichnungProperty());
 		taEdiBeschreibung.textProperty().bindBidirectional(aktEdi.beschreibungProperty());
 		btnSender.setText(aktEdi.getKomponente()==null ? "" : aktEdi.getKomponente().getFullname());
 		senderIsSelected.set(aktEdi.getKomponente()!=null);
@@ -109,45 +157,45 @@ public class EdiEintragController {
 			aktEmpfaenger[i] = null;
 			if (empfaengerList.hasNext()) {
 				aktEmpfaenger[i] = empfaengerList.next();
-				if (aktEmpfaenger[i].getBemerkung()==null)
-					aktEmpfaenger[i].setBemerkung("");
+				if (aktEmpfaenger[i].getGeschaeftsObjekt()==null)
+					aktEmpfaenger[i].setGeschaeftsObjekt(new GeschaeftsObjekt());
 			}
 		}
 		if (aktEmpfaenger[0]!=null) {
 			btnEmpfaenger1.setText(aktEmpfaenger[0].getKomponente().getFullname());
 			empfaenger1IsSelected.set(true);
-			cbBob1.getSelectionModel().select(aktEmpfaenger[0].getBemerkung());
-			datenart1Exist.set(aktEmpfaenger[0].getBemerkung()!=null && aktEmpfaenger[0].getBemerkung().length()>0);
+			cmbBuOb1.getSelectionModel().select(aktEmpfaenger[0].getGeschaeftsObjekt().getName());
+			buOb1Exist.set(aktEmpfaenger[0].getGeschaeftsObjekt()!=null);
 		}
 		else {
 			btnEmpfaenger1.setText("");
 			empfaenger1IsSelected.set(false);
-			cbBob1.getSelectionModel().select("");
-			datenart1Exist.set(false);
+			cmbBuOb1.getSelectionModel().select(null);
+			buOb1Exist.set(false);
 		}
 		if (aktEmpfaenger[1]!=null) {
 			btnEmpfaenger2.setText(aktEmpfaenger[1].getKomponente().getFullname());
 			empfaenger2IsSelected.set(true);
-			cbBob2.getSelectionModel().select(aktEmpfaenger[1].getBemerkung());
-			datenart2Exist.set(aktEmpfaenger[1].getBemerkung()!=null && aktEmpfaenger[1].getBemerkung().length()>0);
+			cmbBuOb2.getSelectionModel().select(aktEmpfaenger[1].getGeschaeftsObjekt().getName());
+			buOb2Exist.set(aktEmpfaenger[1].getGeschaeftsObjekt()!=null);
 		}
 		else {
 			btnEmpfaenger2.setText("");
 			empfaenger2IsSelected.set(false);
-			cbBob2.getSelectionModel().select("");
-			datenart2Exist.set(false);
+			cmbBuOb2.getSelectionModel().select(null);
+			buOb2Exist.set(false);
 		}
 		if (aktEmpfaenger[2]!=null) {
 			btnEmpfaenger3.setText(aktEmpfaenger[2].getKomponente().getFullname());
 			empfaenger3IsSelected.set(true);
-			cbBob3.getSelectionModel().select(aktEmpfaenger[2].getBemerkung());
-			datenart3Exist.set(aktEmpfaenger[2].getBemerkung()!=null && aktEmpfaenger[2].getBemerkung().length()>0);
+			cmbBuOb3.getSelectionModel().select(aktEmpfaenger[2].getGeschaeftsObjekt().getName());
+			buOb3Exist.set(aktEmpfaenger[2].getGeschaeftsObjekt()!=null);
 		}
 		else {
 			btnEmpfaenger3.setText("");
 			empfaenger3IsSelected.set(false);
-			cbBob3.getSelectionModel().select("");
-			datenart3Exist.set(false);
+			cmbBuOb3.getSelectionModel().select(null);
+			buOb3Exist.set(false);
 		}
 ////		btnEmpfaenger1.setText(aktEmpfaenger[0]==null ? "" : aktEmpfaenger[0].getKomponente().getFullname());
 ////		btnEmpfaenger2.setText(aktEmpfaenger[1]==null ? "" : aktEmpfaenger[1].getKomponente().getFullname());
@@ -160,11 +208,11 @@ public class EdiEintragController {
 ////		datenart2Exist.set(aktEmpfaenger[2]!=null && aktEmpfaenger[2].get..()!=null);
 		
     	btnEmpfaenger1.disableProperty().bind(Bindings.not(senderIsSelected));
-    	btnEmpfaenger2.disableProperty().bind(Bindings.not(datenart1Exist));
-    	btnEmpfaenger3.disableProperty().bind(Bindings.not(datenart2Exist));
-    	cbBob1.disableProperty().bind(Bindings.not(empfaenger1IsSelected));
-    	cbBob2.disableProperty().bind(Bindings.not(empfaenger2IsSelected));
-    	cbBob3.disableProperty().bind(Bindings.not(empfaenger3IsSelected));
+    	btnEmpfaenger2.disableProperty().bind(Bindings.not(buOb1Exist));
+    	btnEmpfaenger3.disableProperty().bind(Bindings.not(buOb2Exist));
+    	cmbBuOb1.disableProperty().bind(Bindings.not(empfaenger1IsSelected));
+    	cmbBuOb2.disableProperty().bind(Bindings.not(empfaenger2IsSelected));
+    	cmbBuOb3.disableProperty().bind(Bindings.not(empfaenger3IsSelected));
     	
     	btnEdiEintragSpeichern.disableProperty().bind(Bindings.not(ediEintragIsChanged));
 
@@ -195,7 +243,7 @@ public class EdiEintragController {
 		em.getTransaction().begin(); 
 //		aktEdi.setBezeichnung(tfEdiBezeichnung.getText());
 //		aktEdi.setBeschreibung(taEdiBeschreibung.getText());
-		System.out.println("textfield:"+tfEdiBezeichnung.getText());
+//		System.out.println("textfield:"+tfEdiBezeichnung.getText());
 		System.out.println("aktedi   :"+aktEdi.getBezeichnung());
 		aktEdi.getEdiEmpfaenger().clear();
 		for (int i=0; i<3;i++) {
@@ -218,10 +266,6 @@ public class EdiEintragController {
 	}
 
 	
-//	public void setSelection(EdiEintrag newEdiEintrag) {
-//		System.out.println("EdiEintragController.setSelection " + newEdiEintrag.getEdiNrStr());
-//	}
-
 //    @FXML
 //    void initialize() {
 //    	System.out.println("EdiEintragController.initialize() - vor checkFieldFrimView()");
@@ -499,10 +543,9 @@ public class EdiEintragController {
         assert paneSzenario != null : "fx:id=\"paneSzenario\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
         assert paneEdiEintrag != null : "fx:id=\"paneEdiEintrag\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
         assert btnSender != null : "fx:id=\"btnSender\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert tfEdiBezeichnung != null : "fx:id=\"tfEdiBezeichnung\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
         assert taEdiBeschreibung != null : "fx:id=\"taEdiBeschreibung\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
         assert ediLastChange != null : "fx:id=\"ediLastChange\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert cbBob1 != null : "fx:id=\"cbBob1\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert cmbBuOb1 != null : "fx:id=\"cmbBuOb1\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
         assert btnEmpfaenger1 != null : "fx:id=\"btnEmpfaenger1\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
         assert btnEdiEintragSpeichern != null : "fx:id=\"btnEdiEintragSpeichern\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
     }

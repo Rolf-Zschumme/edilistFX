@@ -24,6 +24,9 @@ public class GeschaeftsObjekt implements Serializable {
 	public GeschaeftsObjekt() {
 		super();
 	}   
+	public GeschaeftsObjekt(String name) {
+		this.name = name;
+	}
 	@Id    
 	@GeneratedValue(strategy = IDENTITY)
 	public long getId() {
