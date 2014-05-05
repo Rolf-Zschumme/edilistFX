@@ -41,13 +41,13 @@ public class DataBaseInit {
 			
 			ta.begin();
 
-			
-			if("1".equals("1")) {
-				// generateRealObjekts();
-				generateGeschaeftobjekte();
+			for (int i=3; i<4 ; ++i) {
+				switch(i) {
+					case 1:		generateRealObjekts();
+					case 2: 	generateTestObjekts();
+					case 3: 	generateGeschaeftobjekte();
+				}
 			}
-			else
-				generateTestObjekts();
 
 			if (ta.isActive()) {
 				System.out.println("Transaction vor commit isActive=TRUE");

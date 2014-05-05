@@ -190,8 +190,11 @@ public class MainController {
         						((oldValue == null) ? "null" : oldValue.ediNrProperty().get()) 
         						+ "  newValue=" + ((newValue == null) ? "null" : newValue.ediNrProperty().get()) );
         				if (oldValue != null) {
-        					if (tableEdiNrAuswahl.getItems().contains(oldValue)) 
-        						ediEintragController.checkForChanges();
+        					if (tableEdiNrAuswahl.getItems().contains(oldValue))  // only if not delete 
+        						if (ediEintragController.checkForChanges(oldValue.getEdiId()) == false) {
+        							System.out.println("oldValue wird gesetzt");
+        							tableEdiNrAuswahl.getSelectionModel().select(oldValue);
+        						}
         				}
         				if (newValue != null) {
         					ediEintragController.setSelection(em.find(EdiEintrag.class, newValue.getEdiId()));
