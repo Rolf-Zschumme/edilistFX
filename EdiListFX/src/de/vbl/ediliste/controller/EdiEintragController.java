@@ -100,19 +100,6 @@ public class EdiEintragController {
 		em = entityManager;
 		readOnlyAccess.set(false);
 
-    	paneEdiEintrag.focusedProperty().addListener(new ChangeListener<Boolean>() {
-    		@Override
-    		public void changed(ObservableValue<? extends Boolean> ob, Boolean oldValue, Boolean newValue) {
-    			System.out.println("Hallo hallo");
-    			if (newValue==true) {
-    				syspr("focusChanged", "newValue=true");
-    			}
-    			if (oldValue==true) {
-    				syspr("focusChanged", "oldValue=true");
-    			}
-    		}
-		});
-		
 		readBusinessObject();
 
 		cmbBuOb1.setItems(businessObjectName);
@@ -220,14 +207,17 @@ public class EdiEintragController {
 	}
 	
     public void setSelection( EdiEintrag selEDI) {
-    	System.out.println("EdiEintragController.setSelection()");
-		if (aktEdi!=null) {
+    	System.out.println("EdiEintragController.setSelection(" + selEDI.getEdiNrStr() + ")");
+		if (aktEdi!=null && aktEdi.getId()!=selEDI.getId() ) {
+	    	System.out.println("\t EdiEintrag von zuvor : prev: " + aktEdi.getEdiNrStr());
 	    	btnEmpfaenger1.disableProperty().unbind();
 	    	btnEmpfaenger2.disableProperty().unbind();
 	    	btnEmpfaenger3.disableProperty().unbind();
 		}
-		aktEdi = selEDI;
-		em.detach(aktEdi);
+		if (aktEdi==null || aktEdi.getId()!=selEDI.getId() ) {
+			aktEdi = selEDI;
+			em.detach(aktEdi);
+		}	
 		if (aktEdi.getBeschreibung() == null)
 			aktEdi.setBeschreibung("");
 		paneEdiEintrag.textProperty().set(EDI_PANEL_TITLE + " "+ aktEdi.getEdiNrStr());
@@ -305,24 +295,20 @@ public class EdiEintragController {
 		ediEintragIsChanged.set(false);
     }
 	
-	public boolean checkForChanges(Long id) {
-		syspr("checkForChanges(1)", "mit id " + id);
-		if (aktEdi != null && aktEdi.getId() == id) {
-			syspr("checkForChanges(2)", "mit id " + id);
-			EdiEintrag orgEdi = em.find(EdiEintrag.class, aktEdi.getId());
-			if (aktEdi != orgEdi && aktEdi.equaels(orgEdi) == false) {
-				String msg = "Soll die Änderungen am EDI-Eintrag " + aktEdi.getEdiNrStr() + 
-						   " \"" + aktEdi.getBezeichnung() + "\" gespeichert werden?";
-				if ( Dialogs.showConfirmDialog(primaryStage, msg , SICHERHEITSABFRAGE, applName, 
-						                       DialogOptions.YES_NO) == DialogResponse.YES) {
-					aktEdiEintragSpeichern();
-					Dialogs.showInformationDialog(primaryStage, "Die Änderungen wurden gespeichert", "Info", applName);
-				} else {
-					return false;
-				}
+	public boolean checkForContinueEditing() {
+		if (aktEdi != null && checkForDifference() == true) {
+			String msg = "Soll die Änderungen am EDI-Eintrag " + aktEdi.getEdiNrStr() + 
+					   " \"" + aktEdi.getBezeichnung() + "\" gespeichert werden?";
+			DialogResponse res = Dialogs.showConfirmDialog(primaryStage, msg , SICHERHEITSABFRAGE, 
+											  applName, DialogOptions.YES_NO_CANCEL);
+			if (res == DialogResponse.YES) {
+				aktEdiEintragSpeichern();
+				Dialogs.showInformationDialog(primaryStage, "Die Änderungen wurden gespeichert", "Info", applName);
+			} else if (res != DialogResponse.NO) {
+				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 	
 	private boolean checkForDifference() {
@@ -340,8 +326,10 @@ public class EdiEintragController {
     }
     
     private boolean aktEdiEintragSpeichern() {
+    	setBezeichnung();
 		System.out.println("aktedi   :"+aktEdi.getBezeichnung());
 		aktEdi.getEdiEmpfaenger().clear();
+		em.getTransaction().begin(); 
 		for (int i=0; i<MAX_EMPFAENGER; ++i) {
 			EdiEmpfaenger empf = aktEmpfaenger[i];
 			if (empf != null) {    // mindestens die Empfänger-Komponente ist vorhanden 
@@ -352,16 +340,17 @@ public class EdiEintragController {
 					return false;
 				}
 				empf.setGeschaeftsObjekt(businessObjectMap.get(busObjName[i].toUpperCase()));
+				if(empf.getKomponente().getId()==0L) 
+					em.persist(empf);
 				aktEdi.getEdiEmpfaenger().add(empf);
 			}
 		}
 		try {
-			em.getTransaction().begin(); 
 			em.merge(aktEdi);
 			em.getTransaction().commit();
 		} catch (RuntimeException e) {
 			Dialogs.showErrorDialog(primaryStage,
-					"Fehler beim speichern des Eintrags",
+					"Fehler beim Speichern des Eintrags",
 					"Datenbankfehler",applName,e);
 			return false;
 		}	
@@ -371,7 +360,26 @@ public class EdiEintragController {
 	}
 
 	
-//    @FXML
+    private void setBezeichnung() {
+    	String senderName = "S:?";
+    	String empf1Name = "E:?";
+    	String geOb1Name = "G:?";
+    	if (aktEdi.getKomponente() != null) {
+    		senderName = aktEdi.getKomponente().getFullname();
+    	}
+    	if (aktEdi.getEdiEmpfaenger().size()>0) {
+    		EdiEmpfaenger e1 = aktEdi.getEdiEmpfaenger().iterator().next();
+    		if (e1.getKomponente() != null) {
+    			empf1Name = e1.getKomponente().getFullname();
+    		}
+    		if (e1.getGeschaeftsObjekt() != null) {
+    			geOb1Name = e1.getGeschaeftsObjekt().getName();
+    		}
+    	}	
+    	aktEdi.setBezeichnung(senderName + " - " + empf1Name + " - " + geOb1Name);
+    }
+    
+    //    @FXML
 //    void initialize() {
 //    	System.out.println("EdiEintragController.initialize() - vor checkFieldFrimView()");
 //    	checkFieldFromView();
@@ -612,9 +620,9 @@ public class EdiEintragController {
     	if (komponentenAuswahlController.getResponse() == DialogResponse.OK ) {
     		Long selEmpfaengerID = komponentenAuswahlController.getSelectedKomponentenId();
     		if (aktEmpfaengerId != selEmpfaengerID) {
-    			if (aktEmpfaenger[btnNr]==null) {
+    			if (aktEmpfaenger[btnNr] == null) {
     				aktEmpfaenger[btnNr] = new EdiEmpfaenger(aktEdi);
-    				em.persist(aktEmpfaenger[btnNr]);
+//    				em.persist(aktEmpfaenger[btnNr]);
     			}
     			aktEmpfaenger[btnNr].setKomponente(em.find(EdiKomponente.class,selEmpfaengerID));
     			ret = aktEmpfaenger[btnNr].getKomponente().getFullname();

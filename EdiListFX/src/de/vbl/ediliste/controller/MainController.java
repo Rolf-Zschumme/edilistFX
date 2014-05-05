@@ -29,6 +29,8 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -120,6 +122,12 @@ public class MainController {
      * it is called after loading "EdiListe.fxml" 
      * ----------------------------------------------------------------------*/
     @FXML
+    void scrollstarted(ActionEvent event) {
+    	System.out.println("Scrollstarted");
+    }
+    
+    
+    @FXML
     void initialize() {
     	setupEntityManager();
 		FXMLLoader loader; 
@@ -129,7 +137,6 @@ public class MainController {
 		
 		loader = new FXMLLoader(getClass().getResource("../view/TestAnchorPane.fxml"));
 		testAnchorPane = loadPane(loader);
-//		testAnchorPaneController = loader.getController();
 		
     	checkFieldFromView();
         
@@ -180,35 +187,41 @@ public class MainController {
 				}
         );
 
+        tableEdiNrAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+			public void handle(MouseEvent mouseEvent) {
+				if (ediEintragController.checkForContinueEditing()==true) {
+					mouseEvent.consume();
+				}
+			}
+		});
+
+		tableEdiNrAuswahl.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+			public void handle(KeyEvent keyEvent) {
+				if (ediEintragController.checkForContinueEditing()==true) {
+					keyEvent.consume();
+				}
+			}
+		});
+        
         tableEdiNrAuswahl.getSelectionModel().selectedItemProperty().addListener(
-        		new ChangeListener<EdiNrListElement>() {
-        			@Override
-        			public void changed(
-        					ObservableValue<? extends EdiNrListElement> observable,
-        					EdiNrListElement oldValue, EdiNrListElement newValue) {
-        				System.out.println("MainController: oldValue=" + 
-        						((oldValue == null) ? "null" : oldValue.ediNrProperty().get()) 
-        						+ "  newValue=" + ((newValue == null) ? "null" : newValue.ediNrProperty().get()) );
-        				if (oldValue != null) {
-        					if (tableEdiNrAuswahl.getItems().contains(oldValue))  // only if not delete 
-        						if (ediEintragController.checkForChanges(oldValue.getEdiId()) == false) {
-        							System.out.println("oldValue wird gesetzt");
-        							tableEdiNrAuswahl.getSelectionModel().select(oldValue);
-        						}
-        				}
-        				if (newValue != null) {
-        					ediEintragController.setSelection(em.find(EdiEintrag.class, newValue.getEdiId()));
-        					if (splitPane.getItems().contains(ediEintragPane) == false) {
-	        					showSplitPane(ediEintragPane);	
-        					}
-        				}
-        				else {
-//        					System.out.println("tableEdiNrAuswahl.ChangeListener " + observable.getValue() );
-        					tableEdiNrAuswahl.getSelectionModel().clearSelection();
-        					showSplitPane(null);	
-        				}
-        			}
-        		}
+        		
+    		new ChangeListener<EdiNrListElement>() {
+    			@Override
+    			public void changed(
+    					ObservableValue<? extends EdiNrListElement> observable,
+    					EdiNrListElement oldValue, EdiNrListElement newValue) {
+    				if (newValue != null) {
+    					ediEintragController.setSelection(em.find(EdiEintrag.class, newValue.getEdiId()));
+    					if (splitPane.getItems().contains(ediEintragPane) == false) {
+        					showSplitPane(ediEintragPane);	
+    					}
+    				}
+    				else {
+    					tableEdiNrAuswahl.getSelectionModel().clearSelection();
+    					showSplitPane(null);	
+    				}
+    			}
+    		}
         );
     
      }
