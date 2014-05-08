@@ -63,9 +63,20 @@ public class EdiKomponente {
 	private String ASCIItoStr(int a) {
 		byte[] b = { (byte) a };
 		String ret = new String(b);
-		return "  " + ret + "  ";
+		return " " + ret + " ";
 	}
 
+//	public String getBezName() {
+//		String ret = "?";
+//		if (ediSystem != null) {
+//			if (ediSystem.getEdiPartner() != null) {
+//				ret = ediSystem.getEdiPartner().getName();
+//			}
+//			ret += "-" + ediSystem.getName();
+//		}
+//		return ret + "-" + name.get();
+//	}
+	
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
 	@ManyToOne
 	@JoinColumn(name = "ediSystem_id", referencedColumnName = "id")

@@ -65,4 +65,18 @@ public class EdiEmpfaenger {
 	public void setGeschaeftsObjekt(GeschaeftsObjekt param) {
 	    this.geschaeftsObjekt = param;
 	}
+	
+	public boolean equaels (EdiEmpfaenger empf) {
+		if ( this.getId() == empf.getId()) {
+			Long eKompId = empf.getKomponente() == null ? -1 : empf.getKomponente().getId();
+			Long tKompId = this.getKomponente() == null ? -1 : this.getKomponente().getId();
+			Long eGeObId = empf.getGeschaeftsObjekt() == null ? -1 : empf.getGeschaeftsObjekt().getId();
+			Long tGeObId = this.getGeschaeftsObjekt() == null ? -1 : this.getGeschaeftsObjekt().getId();
+			if ((eKompId == tKompId) &&
+				(eGeObId == tGeObId)  ) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

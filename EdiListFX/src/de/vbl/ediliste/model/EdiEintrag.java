@@ -5,6 +5,7 @@ import static javax.persistence.TemporalType.DATE;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -20,6 +21,7 @@ import javax.persistence.Temporal;
 
 @Entity
 public class EdiEintrag {
+	public static final int EDI_NR_MIN_LEN = 3;
 	private IntegerProperty ediNr = new SimpleIntegerProperty();
 	private StringProperty bezeichnung = new SimpleStringProperty();
 	private StringProperty beschreibung = new SimpleStringProperty();
@@ -57,7 +59,7 @@ public class EdiEintrag {
 	
 	public String getEdiNrStr() {
 		String ret = Integer.toString(getEdiNr());
-		while(ret.length()<4) ret = "0"+ ret;
+		while(ret.length()<EDI_NR_MIN_LEN) ret = "0"+ ret;
 		return ret;
 	}
 	
@@ -145,14 +147,45 @@ public class EdiEintrag {
 	public boolean equaels (EdiEintrag tEDI) {
 		if ( (id == tEDI.id)                          								&&
 			 (ediNr.get() == tEDI.ediNr.get())		  							  	&&	
-			 (bezeichnung.getValueSafe().equals(tEDI.bezeichnung.getValueSafe())) 	&&
 		     (beschreibung.getValueSafe().equals(tEDI.beschreibung.getValueSafe()))	&&
 		     (ediSzenario == tEDI.ediSzenario)                  					&&
-		     (ediKomponente == tEDI.ediKomponente)              					&&
-		     (ediEmpfaenger.equals(tEDI.ediEmpfaenger))
-		   ) return true;
-		else
-			 return false;
-			   
+		     (ediKomponente == tEDI.ediKomponente)									&&
+		     (empfaengerListIsEqual(ediEmpfaenger,tEDI.ediEmpfaenger)) 	) {
+		     		return true;
+		}
+		return false;
 	}
+
+	private boolean empfaengerListIsEqual( Collection<EdiEmpfaenger> empf1,
+										   Collection<EdiEmpfaenger> empf2) {
+		if (empf1.size() == empf2.size()) {
+			Iterator<EdiEmpfaenger> i1 = empf1.iterator();
+			Iterator<EdiEmpfaenger> i2 = empf2.iterator();
+			while (i1.hasNext()) {
+				if (! i1.next().equaels(i2.next()) )
+						return false;
+			}
+		}
+		return true;
+	}
+	
+    public String bezeichnung() {
+    	String intSzeName = "I??";
+    	String senderName = "S??";
+    	String empf01Name = "E??";
+    	String geOb01Name = "G??";
+    	if (ediKomponente != null) { 
+    		senderName = ediKomponente.getFullname();
+    	}
+    	if (ediEmpfaenger.size() > 0) {
+    		EdiEmpfaenger e01 = ediEmpfaenger.iterator().next();
+    		if (e01.getKomponente() != null) {
+    			empf01Name = e01.getKomponente().getFullname();
+    		}
+    		if (e01.getGeschaeftsObjekt() != null) {
+    			geOb01Name = e01.getGeschaeftsObjekt().getName();
+    		}
+    	}	
+    	return intSzeName + "  [" + senderName + "  >>  " + empf01Name + ": " + geOb01Name + "]";
+    }
 }

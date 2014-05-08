@@ -20,7 +20,7 @@ public class NeuerEdiEintragController {
 	private static final String PERSISTENCE_UNIT_NAME = "EdiListFX";
     
     @FXML private TextField tfEdiNr;
-    @FXML private TextField tfKurzbez;
+//  @FXML private TextField tfKurzbez;
     @FXML private Label fehlertext;
     
 	private EntityManager em;
@@ -50,7 +50,6 @@ public class NeuerEdiEintragController {
     
     private void setupBindings() {
     	tfEdiNr.textProperty().bindBidirectional(ediEintrag.ediNrProperty(),new NumberStringConverter());
-    	tfKurzbez.textProperty().bindBidirectional(ediEintrag.bezeichnungProperty());
 	}
     	
     private void setupEntityManager() {
@@ -66,12 +65,6 @@ public class NeuerEdiEintragController {
     	}
     	else if (isEdiNrUsed(ediNr)) {
     		fehlertext.setText("Die Nummer " + ediNr + " ist bereits vergeben - bitte ändern");
-    	}
-    	else if (ediEintrag.getBezeichnung() == null) {
-    		fehlertext.setText("Bitte eine Bezeichnung eingeben");
-    	}
-    	else if (ediEintrag.getBezeichnung().length() < 3) {
-    		fehlertext.setText("Bitte eine Bezeichnung mit mindesten 3 Zeichen eingeben");
     	}
     	else {
     		em.getTransaction().begin();
@@ -92,7 +85,6 @@ public class NeuerEdiEintragController {
     
     private void unbind() {
     	tfEdiNr.textProperty().unbindBidirectional(ediEintrag.ediNrProperty());
-    	tfKurzbez.textProperty().unbindBidirectional(ediEintrag.bezeichnungProperty());
     }
     
     private void close(ActionEvent event) {
@@ -127,7 +119,6 @@ public class NeuerEdiEintragController {
     
     private void checkFieldFromView() {
         assert tfEdiNr != null : "fx:id=\"tfEdiNr\" was not injected: check your FXML file 'NeuerEdiEintrag.fxml'.";
-        assert tfKurzbez != null : "fx:id=\"tfKurzbez\" was not injected: check your FXML file 'NeuerEdiEintrag.fxml'.";
         assert fehlertext != null : "fx:id=\"fehlertext\" was not injected: check your FXML file 'NeuerEdiEintrag.fxml'.";
 	}
 }

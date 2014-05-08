@@ -40,23 +40,4 @@ public class EdiListMain extends Application {
 			e.printStackTrace();
 		}
 	}
-	
-//	public Stage getPrimaryStage() {
-//		return primaryStage;
-//	}
-	
-//	public void showEdiListe() {
-//		try {
-//			FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/EdiListe.fxml"));
-//			AnchorPane ediListView = (AnchorPane) loader.load();
-//			rootLayout.setCenter(ediListView);
-//			
-//			xxController controller = loader.getController();
-//			controller.setStage(primaryStage);
-//			
-//		} catch(Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
-	
 }

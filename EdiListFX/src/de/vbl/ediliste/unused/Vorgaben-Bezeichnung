@@ -1,0 +1,35 @@
+Schema:
+<Integrationsszenario> [<Sender>  >>  <Receiver >  :  <Business-Objekt>]
+
+
+
+Integrationsszenario:	ZGP Replikation
+
+Sender:				VBL – SAP CRM – ZGP
+Receiver:			VBL – SAP ERP – ZGP
+Business-Objekt:	ZGP Stammdaten
+
+Generierte Bezeichnung EDI-Eintrag:
+
+ZGP Replikation  [VBL – SAP CRM – ZGP  >>  VBL – SAP ERP – ZGP  :  ZGP Stammdaten]
+
+
+
+
+
+-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
+ALT
+
+
+
+
+
+
+Integrationsszenario:                 DPAG Rentenservice
+
+Sender:                                                           VBL - SAP_ERP - LSTG
+Receiver:                                                         DPAG - Rentenservice - FTP
+Business-Objekt:                                  Zahlungsanweisung
+
+Generierte Bezeichnung EDI-Eintrag :
+DPAG Rentenservice [VBL-SAP_ERP-LSTG >> DPAG-Rentenservice-FTP: Zahlungsanweisung]

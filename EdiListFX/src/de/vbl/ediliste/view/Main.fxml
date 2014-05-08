@@ -41,10 +41,10 @@
 												<Button fx:id="btnDeleteEdiEintrag" disable="true" mnemonicParsing="false" onAction="#deleteEdiEintrag" text="Löschen" />
 											</items>
 										</ToolBar>
-										<TableView fx:id="tableEdiNrAuswahl" prefHeight="704.0" prefWidth="595.0" VBox.vgrow="ALWAYS">
+										<TableView fx:id="tableEdiNrAuswahl" tableMenuButtonVisible="true" VBox.vgrow="ALWAYS">
 											<columns>
-												<TableColumn fx:id="tColAuswahlEdiNr" editable="false" minWidth="20.0" prefWidth="63.0" text="Nr." />
-												<TableColumn fx:id="tColAuswahlEdiNrBezeichnung" editable="false" maxWidth="500.0" minWidth="70.0" prefWidth="421.0" text="Bezeichnung" />
+												<TableColumn fx:id="tColAuswahlEdiNr" editable="false" maxWidth="120.0" minWidth="0.0" prefWidth="35.0" text="Nr." />
+												<TableColumn fx:id="tColAuswahlEdiNrBezeichnung" editable="false" maxWidth="1.7976931348623157E308" minWidth="80.0" prefWidth="600.0" text="Bezeichnung" />
 											</columns>
 										</TableView>
 									</children>
@@ -55,11 +55,11 @@
 							<content>
 								<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
 									<children>
-										<TableView fx:id="tablePartnerAuswahl" prefHeight="471.0" prefWidth="246.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+										<TableView fx:id="tablePartnerAuswahl" editable="true" maxWidth="1.7976931348623157E308" prefHeight="471.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 											<columns>
 												<TableColumn fx:id="tColAuswahlPartnerName" prefWidth="116.0" text="Partner" />
-												<TableColumn fx:id="tColAuswahlPartnerSysteme" prefWidth="65.0" text="Systeme" />
-												<TableColumn fx:id="tColAuswahlPartnerKomponenten" prefWidth="91.0" text="Komponenten" />
+												<TableColumn fx:id="tColAuswahlPartnerSysteme" editable="false" prefWidth="65.0" text="Systeme" />
+												<TableColumn fx:id="tColAuswahlPartnerKomponenten" editable="false" prefWidth="91.0" text="Komponenten" />
 											</columns>
 										</TableView>
 									</children>
@@ -70,11 +70,11 @@
 							<content>
 								<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
 									<children>
-										<TableView fx:id="tableSystemAuswahl" prefHeight="471.0" prefWidth="306.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+										<TableView fx:id="tableSystemAuswahl" editable="true" prefHeight="471.0" prefWidth="306.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 											<columns>
 												<TableColumn fx:id="tColSelSystemSystemName" prefWidth="126.0" text="System" />
-												<TableColumn fx:id="tColSelSystemPartnerName" prefWidth="123.0" text="Partner" />
-												<TableColumn fx:id="tColSelSystemKomponenten" prefWidth="103.0" text="Komponenten" />
+												<TableColumn fx:id="tColSelSystemPartnerName" editable="false" prefWidth="123.0" text="Partner" />
+												<TableColumn fx:id="tColSelSystemKomponenten" editable="false" prefWidth="103.0" text="Komponenten" />
 											</columns>
 										</TableView>
 									</children>
@@ -85,18 +85,18 @@
 							<content>
 								<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
 									<children>
-										<TableView fx:id="tableKomponentenAuswahl" prefHeight="471.0" prefWidth="306.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+										<TableView fx:id="tableKomponentenAuswahl" editable="true" prefHeight="471.0" prefWidth="306.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 											<columns>
 												<TableColumn fx:id="tColSelKompoKomponten" prefWidth="113.0" text="Komponente" />
-												<TableColumn fx:id="tColSelKompoSysteme" prefWidth="117.0" text="System" />
-												<TableColumn fx:id="tColSelKompoPartner" prefWidth="145.0" text="Partner" />
+												<TableColumn fx:id="tColSelKompoSysteme" editable="false" prefWidth="117.0" text="System" />
+												<TableColumn fx:id="tColSelKompoPartner" editable="false" prefWidth="145.0" text="Partner" />
 											</columns>
 										</TableView>
 									</children>
 								</AnchorPane>
 							</content>
 						</Tab>
-						<Tab disable="true" text="Anwendungen">
+						<Tab disable="true" text="Anbindungen">
 							<content>
 								<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
 							</content>
@@ -105,7 +105,18 @@
 							<content>
 								<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
 							</content>
-						</Tab>
+						</Tab><Tab fx:id="tabGeschaeftsobjekt" text="Geschäftsobjekte">
+  <content>
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+<children><TableView fx:id="tableGeschaeftsobjektAuswahl" editable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+  <columns>
+    <TableColumn fx:id="tColAuswahlGeschaeftsobjektName" maxWidth="1.7976931348623157E308" minWidth="110.0" prefWidth="250.0" text="Geschäftsobjekt" />
+    <TableColumn fx:id="tColAuswahlGeschaeftsobjektAnzahl" editable="false" maxWidth="1.7976931348623157E308" minWidth="120.0" prefWidth="-1.0" text="Verwendungen" />
+  </columns>
+</TableView>
+</children></AnchorPane>
+  </content>
+</Tab>
 					</tabs>
 				</TabPane>
 			</items>

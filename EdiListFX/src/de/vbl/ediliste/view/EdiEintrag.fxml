@@ -62,14 +62,14 @@
 						</AnchorPane>
 					</content>
 				</TitledPane>
-				<TitledPane fx:id="paneEdiEintrag" animated="false" collapsible="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="EDI-Eintrag" textOverrun="LEADING_WORD_ELLIPSIS">
+				<TitledPane fx:id="paneEdiEintrag" animated="false" collapsible="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="314.0" prefWidth="950.0" text="EDI-Eintrag" textOverrun="LEADING_WORD_ELLIPSIS">
 					<content>
 						<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="366.0" prefWidth="948.0">
 							<children>
 								<VBox layoutX="9.600000381469727" layoutY="9.600000381469727" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 									<children>
 
-										<GridPane hgap="8.0" layoutY="100.0" maxWidth="1.7976931348623157E308" vgap="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+										<GridPane hgap="8.0" maxWidth="1.7976931348623157E308" vgap="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 											<columnConstraints>
 												<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" prefWidth="120.0" />
 												<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" prefWidth="120.0" />
@@ -111,13 +111,13 @@
 													</GridPane.margin>
 												</ComboBox>
 												<ComboBox fx:id="cmbBuOb2" editable="true" layoutX="515.0" layoutY="35.0" maxWidth="1.7976931348623157E308" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-												<ComboBox fx:id="cmbBuOb3" editable="true" layoutX="515.0" layoutY="68.0" maxWidth="1.7976931348623157E308" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="3" /><ComboBox prefWidth="150.0" promptText="kein 2. Empfänger" visible="false" GridPane.halignment="RIGHT" GridPane.hgrow="NEVER" GridPane.rowIndex="2" GridPane.vgrow="NEVER" />
+												<ComboBox fx:id="cmbBuOb3" editable="true" layoutX="515.0" layoutY="68.0" maxWidth="1.7976931348623157E308" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="3" /><ComboBox fx:id="cmb2empf" prefWidth="150.0" promptText="kein 2. Empfänger" visible="false" GridPane.halignment="RIGHT" GridPane.hgrow="NEVER" GridPane.rowIndex="2" GridPane.vgrow="NEVER" />
 											</children>
 											<padding>
 												<Insets bottom="5.0" left="5.0" right="8.0" top="5.0" />
 											</padding>
 										</GridPane>
-										<GridPane hgap="8.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" vgap="8.0" AnchorPane.leftAnchor="9.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" VBox.vgrow="ALWAYS">
+										<GridPane hgap="8.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="136.0" prefWidth="926.0" vgap="8.0" AnchorPane.leftAnchor="9.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" VBox.vgrow="ALWAYS">
 											<columnConstraints>
 												<ColumnConstraints hgrow="NEVER" prefWidth="120.0" />
 												<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" />

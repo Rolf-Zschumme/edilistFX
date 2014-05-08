@@ -2,9 +2,15 @@ package de.vbl.ediliste.model;
 
 import java.io.Serializable;
 import java.lang.String;
+
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+
 import javax.persistence.*;
+
 import static javax.persistence.GenerationType.IDENTITY;
 import de.vbl.ediliste.model.EdiEmpfaenger;
+
 import java.util.Collection;
 
 /**
@@ -20,6 +26,7 @@ public class GeschaeftsObjekt implements Serializable {
 	private String name;
 	private static final long serialVersionUID = 1L;
 	private Collection<EdiEmpfaenger> ediEmpfaenger;
+	private IntegerProperty anzVerwendungen = new SimpleIntegerProperty();
 
 	public GeschaeftsObjekt() {
 		super();
@@ -51,4 +58,8 @@ public class GeschaeftsObjekt implements Serializable {
 	    this.ediEmpfaenger = param;
 	}
    
+	public IntegerProperty anzVerwendungenProperty () {
+		anzVerwendungen.set(ediEmpfaenger.size());
+		return anzVerwendungen;
+	}
 }

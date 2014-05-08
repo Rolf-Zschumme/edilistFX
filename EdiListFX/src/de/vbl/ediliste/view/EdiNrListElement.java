@@ -1,20 +1,24 @@
 package de.vbl.ediliste.view;
 
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.LongProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import de.vbl.ediliste.model.EdiEintrag;
 
 public class EdiNrListElement    {
 	private LongProperty ediId;
-	private IntegerProperty ediNr;
+	private StringProperty ediNr;
 	private StringProperty bezeichnung;
 	
 	public EdiNrListElement(long id, Integer nr, String kurzBez) {
 		this.ediId = new SimpleLongProperty(id);
-		this.ediNr = new SimpleIntegerProperty(nr);
+		
+		String nrStr = Integer.toString(nr);
+		while(nrStr.length()<EdiEintrag.EDI_NR_MIN_LEN) 
+			nrStr = "0"+ nrStr;
+
+		this.ediNr = new SimpleStringProperty(nrStr);
 		this.bezeichnung = new SimpleStringProperty(kurzBez);
 	}
 	
@@ -22,7 +26,7 @@ public class EdiNrListElement    {
 		return ediId.getValue();
 	}
 
-	public IntegerProperty ediNrProperty() {
+	public StringProperty ediNrProperty() {
 		return ediNr;
 	}
 	
