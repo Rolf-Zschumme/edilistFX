@@ -27,7 +27,7 @@ public class EdiEintrag {
 	private StringProperty beschreibung = new SimpleStringProperty();
 	private StringProperty senderName = new SimpleStringProperty();
 	private long id;
-	private EdiSzenario ediSzenario;
+	private Konfiguration konfiguration;
 	private EdiKomponente ediKomponente;
 	private Collection<EdiEmpfaenger> ediEmpfaenger;
 	private Date vonDatum;
@@ -100,12 +100,12 @@ public class EdiEintrag {
 
 	// ------------------------------------------------------------------------
 	@ManyToOne
-	public EdiSzenario getEdiSzenario() {
-		return ediSzenario;
+	public Konfiguration getEdiSzenario() {
+		return konfiguration;
 	}
 
-	public void setEdiSzenario(EdiSzenario param) {
-		this.ediSzenario = param;
+	public void setEdiSzenario(Konfiguration param) {
+		this.konfiguration = param;
 	}
 
 	@ManyToOne
@@ -148,7 +148,7 @@ public class EdiEintrag {
 		if ( (id == tEDI.id)                          								&&
 			 (ediNr.get() == tEDI.ediNr.get())		  							  	&&	
 		     (beschreibung.getValueSafe().equals(tEDI.beschreibung.getValueSafe()))	&&
-		     (ediSzenario == tEDI.ediSzenario)                  					&&
+		     (konfiguration == tEDI.konfiguration)                  					&&
 		     (ediKomponente == tEDI.ediKomponente)									&&
 		     (empfaengerListIsEqual(ediEmpfaenger,tEDI.ediEmpfaenger)) 	) {
 		     		return true;
@@ -162,8 +162,10 @@ public class EdiEintrag {
 			Iterator<EdiEmpfaenger> i1 = empf1.iterator();
 			Iterator<EdiEmpfaenger> i2 = empf2.iterator();
 			while (i1.hasNext()) {
-				if (! i1.next().equaels(i2.next()) )
-						return false;
+				EdiEmpfaenger e1 = i1.next();
+				EdiEmpfaenger e2 = i2.next();
+				if ( !e1.equaels(e2) )
+					return false;
 			}
 		}
 		return true;

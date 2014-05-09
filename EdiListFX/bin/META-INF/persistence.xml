@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
 	<persistence-unit name="EdiListFX" transaction-type="RESOURCE_LOCAL">
-		<class>de.vbl.ediliste.model.EdiAnbindung</class>
-		<class>de.vbl.ediliste.model.EdiDokuLink</class>
+		<class>de.vbl.ediliste.model.Integration</class>
+		<class>de.vbl.ediliste.model.DokuLink</class>
 		<class>de.vbl.ediliste.model.EdiEintrag</class>
 		<class>de.vbl.ediliste.model.EdiEmpfaenger</class>
 		<class>de.vbl.ediliste.model.EdiKomponente</class>
 		<class>de.vbl.ediliste.model.EdiPartner</class>
 		<class>de.vbl.ediliste.model.EdiSystem</class>
-		<class>de.vbl.ediliste.model.EdiSzenario</class>
+		<class>de.vbl.ediliste.model.Konfiguration</class>
 		<class>de.vbl.ediliste.model.GeschaeftsObjekt</class>
 		<class>de.vbl.ediliste.model.SVN_Repository</class>
 		<class>de.vbl.ediliste.model.Vorhaben</class>

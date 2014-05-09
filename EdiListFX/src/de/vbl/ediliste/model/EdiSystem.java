@@ -73,12 +73,12 @@ public class EdiSystem {
 
 	public String getFullname() {
 		String partnerName = ediPartner == null ? "-?-" : ediPartner.getName();
-		return partnerName + ASCIItoStr(151) + name.get();
+		return partnerName + ASCIItoStr(42) + name.get();   // 151
 	}
 	private String ASCIItoStr(int a) {
 		byte[] b = { (byte) a };
 		String ret = new String(b);
-		return "  " + ret + "  ";
+		return " " + ret + " ";
 	}
 
 	@ManyToOne

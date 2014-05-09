@@ -23,7 +23,7 @@ import javax.persistence.OneToMany;
  * 
  */
 @Entity 
-public class EdiDokuLink implements Serializable {
+public class DokuLink implements Serializable {
 
 	private StringProperty name;
 	private Long id;
@@ -31,9 +31,9 @@ public class EdiDokuLink implements Serializable {
 	private String pfad;
 	private Date bisDatum;
 	private Integer revision;
-	private Collection<EdiAnbindung> ediAnbindung;
+	private Collection<Integration> integration;
 	private Collection<SVN_Repository> sVN_Repository;
-	public EdiDokuLink() {
+	public DokuLink() {
 		super();
 	}
 
@@ -87,12 +87,12 @@ public class EdiDokuLink implements Serializable {
 
 	@ManyToMany
 	@JoinTable(joinColumns = @JoinColumn(name = "ediSzenario_id", referencedColumnName = "ID"))
-	public Collection<EdiAnbindung> getEdiAnbindung() {
-	    return ediAnbindung;
+	public Collection<Integration> getEdiAnbindung() {
+	    return integration;
 	}
 
-	public void setEdiAnbindung(Collection<EdiAnbindung> param) {
-	    this.ediAnbindung = param;
+	public void setEdiAnbindung(Collection<Integration> param) {
+	    this.integration = param;
 	} 
 
 	@OneToMany

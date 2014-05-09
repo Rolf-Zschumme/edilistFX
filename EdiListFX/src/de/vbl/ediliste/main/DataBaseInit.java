@@ -8,7 +8,7 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
-import de.vbl.ediliste.model.EdiAnbindung;
+import de.vbl.ediliste.model.Integration;
 import de.vbl.ediliste.model.EdiEintrag;
 import de.vbl.ediliste.model.EdiKomponente;
 import de.vbl.ediliste.model.EdiPartner;
@@ -28,10 +28,10 @@ public class DataBaseInit {
 		EntityTransaction ta = null;
 
 		// read the existing entries and write to console
- 		Query q = em.createQuery("select a from EdiAnbindung a");
+ 		Query q = em.createQuery("select a from Integration a");
 		@SuppressWarnings("unchecked")
-		List<EdiAnbindung> anbindungsList = q.getResultList();
-		for (EdiAnbindung anbindung : anbindungsList) {
+		List<Integration> anbindungsList = q.getResultList();
+		for (Integration anbindung : anbindungsList) {
 		   System.out.println(anbindung);
 		}
 		System.out.println("Anzahl Anbindungen: " + anbindungsList.size());
@@ -41,10 +41,10 @@ public class DataBaseInit {
 			
 			ta.begin();
 
-			for (int i=3; i<4 ; ++i) {
+			for (int i=2; i<3 ; ++i) {
 				switch(i) {
-					case 1:		generateRealObjekts();
-					case 2: 	generateTestObjekts();
+					case 1: 	generateTestObjekts();
+					case 2:		generateRealObjekts();
 					case 3: 	generateGeschaeftobjekte();
 				}
 			}
@@ -201,8 +201,8 @@ public class DataBaseInit {
 		partner = new EdiPartner("Bafin");
 		em.persist(partner);
 
-//		EdiAnbindung anbindung = null;
-//		EdiSzenario szenario = null;
+//		Integration anbindung = null;
+//		Konfiguration szenario = null;
 		
 	}
 	
@@ -218,9 +218,9 @@ public class DataBaseInit {
 	}
 	
 
-//	private static EdiSzenario newEdiSzenario( 	EdiAnbindung anbindung,	String name) 
+//	private static Konfiguration newEdiSzenario( 	Integration anbindung,	String name) 
 //	{
-//		EdiSzenario szenario = new EdiSzenario();
+//		Konfiguration szenario = new Konfiguration();
 //		szenario.setName(name);
 //		szenario.setAnbindung(anbindung);
 //		return szenario;

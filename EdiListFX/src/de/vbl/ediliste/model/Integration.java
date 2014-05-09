@@ -11,21 +11,21 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import de.vbl.ediliste.model.EdiDokuLink;
+import de.vbl.ediliste.model.DokuLink;
 
 /**
  * Entity implementation class for Entity: Anbindung
  * 
  */
 @Entity 
-public class EdiAnbindung {
+public class Integration {
 
 	private StringProperty name;
 	private long id;
-	private Collection<EdiSzenario> ediSzenario;
+	private Collection<Konfiguration> konfiguration;
 	private String beschreibung;
 	private Collection<Vorhaben> vorhaben;
-	private Collection<EdiDokuLink> ediDokuLink;
+	private Collection<DokuLink> dokuLink;
 
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
@@ -61,12 +61,12 @@ public class EdiAnbindung {
 
 	// ------------------------------------------------------------------------ 
 	@OneToMany(mappedBy = "ediAnbindung")
-	public Collection<EdiSzenario> getEdiSzenario() {
-		return ediSzenario;
+	public Collection<Konfiguration> getEdiSzenario() {
+		return konfiguration;
 	}
 
-	public void setEdiSzenario(Collection<EdiSzenario> ediSzenario) {
-		this.ediSzenario = ediSzenario;
+	public void setEdiSzenario(Collection<Konfiguration> konfiguration) {
+		this.konfiguration = konfiguration;
 	}
 
 	@ManyToMany(mappedBy = "ediAnbindung")
@@ -79,12 +79,12 @@ public class EdiAnbindung {
 	}
 
 	@ManyToMany(mappedBy = "ediAnbindung")
-	public Collection<EdiDokuLink> getEdiDokuLink() {
-	    return ediDokuLink;
+	public Collection<DokuLink> getEdiDokuLink() {
+	    return dokuLink;
 	}
 
-	public void setEdiDokuLink(Collection<EdiDokuLink> param) {
-	    this.ediDokuLink = param;
+	public void setEdiDokuLink(Collection<DokuLink> param) {
+	    this.dokuLink = param;
 	}
 
 

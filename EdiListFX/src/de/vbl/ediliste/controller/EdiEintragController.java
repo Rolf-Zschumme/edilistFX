@@ -92,6 +92,20 @@ public class EdiEintragController {
     	System.out.println("EdiEintragController.initialize()");
     	checkFieldFromView();
     	
+    	btnEmpfaenger1.disableProperty().bind(Bindings.not(senderIsSelected));
+    	btnEmpfaenger2.disableProperty().bind(Bindings.not(buOb1Exist));
+    	btnEmpfaenger3.disableProperty().bind(Bindings.not(buOb2Exist));
+    	cmbBuOb1.disableProperty().bind(Bindings.not(empfaenger1IsSelected));
+    	cmbBuOb2.disableProperty().bind(Bindings.not(empfaenger2IsSelected));
+    	cmbBuOb3.disableProperty().bind(Bindings.not(empfaenger3IsSelected));
+    	
+    	btnEmpfaenger2.visibleProperty().bind(buOb1Exist);
+    	cmbBuOb2.visibleProperty().bind(buOb1Exist);
+    	
+    	btnEmpfaenger3.visibleProperty().bind(buOb2Exist);
+    	cmbBuOb3.visibleProperty().bind(buOb2Exist);
+    	
+    	btnEdiEintragSpeichern.disableProperty().bind(Bindings.not(ediEintragIsChanged));
     }	
     	
 	public void setInitial(MainController main, Stage stage, String applikationName, EntityManager entityManager) {
@@ -112,10 +126,10 @@ public class EdiEintragController {
 					String checkedName = checkBusinessObject(newValue, aktEmpfaenger[0], busObjName[0]);
 					if (checkedName != null ) {
 						busObjName[0] = checkedName;
-						if (checkedName.equals(newValue) == false) {
-							// falls der persistierte Name andere Groﬂ-/Kleinschrift hat -> anpassen 
-							cmbBuOb1.getSelectionModel().select(busObjName[0]);
+						if (checkedName.equals(newValue) == false) {  
+							cmbBuOb1.getSelectionModel().select(busObjName[0]); // wegen Groﬂ-/Kleinschrift
 						}
+						buOb1Exist.set(true);
 					}
 				}	
 			}
@@ -129,10 +143,10 @@ public class EdiEintragController {
 					if (checkedName != null ) {
 						busObjName[1] = checkedName;
 						if (checkedName.equals(newValue) == false) {
-							// falls der persistierte Name andere Groﬂ-/Kleinschrift hat -> anpassen 
-							cmbBuOb2.getSelectionModel().select(busObjName[1]);
+							cmbBuOb2.getSelectionModel().select(busObjName[1]); // wegen Groﬂ-/Kleinschrift
 						}
 					}
+					buOb2Exist.set(true);
 				}	
 			}
 		});
@@ -145,10 +159,10 @@ public class EdiEintragController {
 					if (checkedName != null ) {
 						busObjName[2] = checkedName;
 						if (checkedName.equals(newValue) == false) {
-							// falls der persistierte Name andere Groﬂ-/Kleinschrift hat -> anpassen 
-							cmbBuOb3.getSelectionModel().select(busObjName[2]);
+							cmbBuOb3.getSelectionModel().select(busObjName[2]); // wegen Groﬂ-/Kleinschrift
 						}
 					}
+					buOb3Exist.set(true);
 				}	
 			}
 		});
@@ -294,20 +308,6 @@ public class EdiEintragController {
 			buOb3Exist.set(false);
 		}
 		
-    	btnEmpfaenger1.disableProperty().bind(Bindings.not(senderIsSelected));
-    	btnEmpfaenger2.disableProperty().bind(Bindings.not(buOb1Exist));
-    	btnEmpfaenger3.disableProperty().bind(Bindings.not(buOb2Exist));
-    	cmbBuOb1.disableProperty().bind(Bindings.not(empfaenger1IsSelected));
-    	cmbBuOb2.disableProperty().bind(Bindings.not(empfaenger2IsSelected));
-    	cmbBuOb3.disableProperty().bind(Bindings.not(empfaenger3IsSelected));
-    	
-    	btnEmpfaenger2.setVisible(buOb1Exist.get());
-    	cmbBuOb2.setVisible(buOb1Exist.get());
-    	
-    	btnEmpfaenger3.setVisible(buOb2Exist.get());
-    	cmbBuOb3.setVisible(buOb2Exist.get());
-    	
-    	btnEdiEintragSpeichern.disableProperty().bind(Bindings.not(ediEintragIsChanged));
 
 		ediEintragIsChanged.set(false);
     }
@@ -393,6 +393,7 @@ public class EdiEintragController {
 			if (aktEdi.getBezeichnung().equals(tmpEdiBezeichnung)==false) {
 				aktEdi.setBezeichnung(tmpEdiBezeichnung);
 				mainController.refreshEdiNrListBezeichnung(aktEdi.getId(), tmpEdiBezeichnung);
+				paneEdiEintrag.textProperty().set(EDI_PANEL_TITLE + " "+ aktEdi.getEdiNrStr() + "  " + aktEdi.bezeichnung() );
 			}
 			em.merge(aktEdi);
 			em.getTransaction().commit();
@@ -405,6 +406,7 @@ public class EdiEintragController {
 		ediEintragIsChanged.set(false);
 		return true;
 	}
+    
 	
     //    @FXML
 //    void initialize() {

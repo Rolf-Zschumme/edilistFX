@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.lang.String;
 import javax.persistence.*;
 import static javax.persistence.GenerationType.IDENTITY;
-import de.vbl.ediliste.model.EdiAnbindung;
+import de.vbl.ediliste.model.Integration;
 import java.util.Collection;
 
 /**
@@ -18,7 +18,7 @@ public class Vorhaben implements Serializable {
 	private String nummer;
 	private String name;
 	private static final long serialVersionUID = 1L;
-	private Collection<EdiAnbindung> ediAnbindung;
+	private Collection<Integration> integration;
 
 	public Vorhaben() {
 		super();
@@ -37,12 +37,12 @@ public class Vorhaben implements Serializable {
 	/* ====================================================================== */
 	@ManyToMany
 	@JoinTable(joinColumns = @JoinColumn(name = "ediSzenario_id", referencedColumnName = "ID"))
-	public Collection<EdiAnbindung> getEdiAnbindung() {
-		return ediAnbindung;
+	public Collection<Integration> getEdiAnbindung() {
+		return integration;
 	}
 
-	public void setEdiAnbindung(Collection<EdiAnbindung> param) {
-		this.ediAnbindung = param;
+	public void setEdiAnbindung(Collection<Integration> param) {
+		this.integration = param;
 	}
 
 	/* ---------------------------------------------------------------------- */

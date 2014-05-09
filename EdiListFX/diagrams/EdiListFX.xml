@@ -1,21 +1,23 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><entities>
-	<entity>
-		<entity-name>de.vbl.ediliste.model.EdiSzenario</entity-name>
-		<entity-width>120</entity-width>
-		<entity-height>116</entity-height>
-		<entity-X-Coordinate>287</entity-X-Coordinate>
-		<entity-Y-Coordinate>182</entity-Y-Coordinate>
-		<primary-collapsed>true</primary-collapsed>
-		<relation-collapsed>true</relation-collapsed>
-		<basic-collapsed>false</basic-collapsed>
-	</entity>
-
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE project>
+<entities>
 	<entity>
 		<entity-name>de.vbl.ediliste.model.EdiEintrag</entity-name>
 		<entity-width>120</entity-width>
 		<entity-height>176</entity-height>
 		<entity-X-Coordinate>287</entity-X-Coordinate>
 		<entity-Y-Coordinate>379</entity-Y-Coordinate>
+		<primary-collapsed>true</primary-collapsed>
+		<relation-collapsed>true</relation-collapsed>
+		<basic-collapsed>false</basic-collapsed>
+	</entity>
+
+	<entity>
+		<entity-name>de.vbl.ediliste.model.Konfiguration</entity-name>
+		<entity-width>120</entity-width>
+		<entity-height>116</entity-height>
+		<entity-X-Coordinate>287</entity-X-Coordinate>
+		<entity-Y-Coordinate>193</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
@@ -57,9 +59,9 @@
 	<entity>
 		<entity-name>de.vbl.ediliste.model.EdiEmpfaenger</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>96</entity-height>
+		<entity-height>58</entity-height>
 		<entity-X-Coordinate>558</entity-X-Coordinate>
-		<entity-Y-Coordinate>541</entity-Y-Coordinate>
+		<entity-Y-Coordinate>560</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
@@ -88,17 +90,6 @@
 	</entity>
 
 	<entity>
-		<entity-name>de.vbl.ediliste.model.EdiAnbindung</entity-name>
-		<entity-width>120</entity-width>
-		<entity-height>116</entity-height>
-		<entity-X-Coordinate>287</entity-X-Coordinate>
-		<entity-Y-Coordinate>5</entity-Y-Coordinate>
-		<primary-collapsed>true</primary-collapsed>
-		<relation-collapsed>true</relation-collapsed>
-		<basic-collapsed>false</basic-collapsed>
-	</entity>
-
-	<entity>
 		<entity-name>de.vbl.ediliste.model.EdiDokuLink</entity-name>
 		<entity-width>120</entity-width>
 		<entity-height>156</entity-height>
@@ -115,6 +106,17 @@
 		<entity-height>96</entity-height>
 		<entity-X-Coordinate>550</entity-X-Coordinate>
 		<entity-Y-Coordinate>379</entity-Y-Coordinate>
+		<primary-collapsed>true</primary-collapsed>
+		<relation-collapsed>true</relation-collapsed>
+		<basic-collapsed>false</basic-collapsed>
+	</entity>
+
+	<entity>
+		<entity-name>de.vbl.ediliste.model.Integration</entity-name>
+		<entity-width>120</entity-width>
+		<entity-height>116</entity-height>
+		<entity-X-Coordinate>287</entity-X-Coordinate>
+		<entity-Y-Coordinate>5</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>

@@ -57,7 +57,7 @@ public class EdiKomponente {
 
 	public String getFullname() {
 		String fullName = ediSystem == null ? "-?-" : ediSystem.getFullname();
-		return fullName + ASCIItoStr(151) + name.get();
+		return fullName + ASCIItoStr(42) + name.get();  // 151
 	}
 	
 	private String ASCIItoStr(int a) {

@@ -13,7 +13,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 import javax.persistence.JoinColumn;
 
-import de.vbl.ediliste.model.EdiAnbindung;
+import de.vbl.ediliste.model.Integration;
 import javax.persistence.OneToMany;
 
 /**
@@ -21,14 +21,14 @@ import javax.persistence.OneToMany;
  * 
  */ 
 @Entity
-public class EdiSzenario {
+public class Konfiguration {
 	private StringProperty name;
 	private long id;
-	private EdiAnbindung ediAnbindung;
+	private Integration integration;
 	private Collection<EdiEintrag> ediEintrag;
 	private String beschreibung;
 
-	public EdiSzenario() {
+	public Konfiguration() {
 		super();
 	}
 
@@ -59,12 +59,12 @@ public class EdiSzenario {
 	// ------------------------------------------------------------------------
 	@ManyToOne
 	@JoinColumn(referencedColumnName = "id", nullable = false)
-	public EdiAnbindung getEdiAnbindung() {
-		return ediAnbindung;
+	public Integration getEdiAnbindung() {
+		return integration;
 	}
 
-	public void setEdiAnbindung(EdiAnbindung param) {
-		this.ediAnbindung = param;
+	public void setEdiAnbindung(Integration param) {
+		this.integration = param;
 	}
  
 	// ------------------------------------------------------------------------
