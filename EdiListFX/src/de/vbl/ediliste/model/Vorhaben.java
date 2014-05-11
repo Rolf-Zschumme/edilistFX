@@ -1,11 +1,16 @@
 package de.vbl.ediliste.model;
 
-import java.io.Serializable;
-import java.lang.String;
-import javax.persistence.*;
 import static javax.persistence.GenerationType.IDENTITY;
-import de.vbl.ediliste.model.Integration;
+
+import java.io.Serializable;
 import java.util.Collection;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 
 /**
  * Entity implementation class for Entity: Vorhaben

@@ -1,8 +1,9 @@
 package de.vbl.ediliste.model;
 
 import java.io.Serializable;
-import java.lang.String;
-import javax.persistence.*;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 /**
  * Entity implementation class for Entity: SVN_Repository

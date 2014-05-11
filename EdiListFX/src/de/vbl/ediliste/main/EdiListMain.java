@@ -1,8 +1,11 @@
 package de.vbl.ediliste.main;
 	
 
+import java.io.IOException;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -12,32 +15,40 @@ import de.vbl.ediliste.controller.MainController;
 public class EdiListMain extends Application {
 	
 	private static final String APPL_NAME = "EDI-Liste";
-
 	
-	private Stage primaryStage;
-	private BorderPane rootLayout;
+	private static Stage primaryStage;  
 	
 	public static void main(String[] args) {
 		launch(args);
 	}
 	
 	@Override
-	public void start(Stage primaryStage) {
-		this.primaryStage = primaryStage;
-		this.primaryStage.setTitle("EDI-Liste");
+	public void start(Stage stage) {
+		primaryStage = stage;
+
+		Parent root = loadAndStartController();
 		
+		Scene scene = new Scene(root); 
+		scene.getStylesheets().add(getClass().getResource("../view/application.css").toExternalForm());
+		primaryStage.setScene(scene);
+		primaryStage.show();
+	}
+	
+
+	public Parent loadAndStartController() {
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/Main.fxml"));
+		Parent root = null;
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/Main.fxml"));
-			rootLayout = (BorderPane) loader.load();
-			MainController controller = loader.getController();
-			controller.start(primaryStage, APPL_NAME);
-			
-			Scene scene = new Scene(rootLayout); 
-			scene.getStylesheets().add(getClass().getResource("../view/application.css").toExternalForm());
-			primaryStage.setScene(scene);
-			primaryStage.show();
-		} catch(Exception e) {
+			root = (Parent) loader.load();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		MainController controller = loader.getController();
+		if (primaryStage == null) {
+			primaryStage = new Stage();
+		}
+		controller.start(primaryStage, APPL_NAME);
+		return root;
 	}
+	
 }

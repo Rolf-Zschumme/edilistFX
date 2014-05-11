@@ -109,7 +109,6 @@ public class EdiEintragController {
     }	
     	
 	public void setInitial(MainController main, Stage stage, String applikationName, EntityManager entityManager) {
-    	System.out.println("EdiEintragController.setInitial()");
     	mainController = main;
 		primaryStage = stage;
 		applName = applikationName;
@@ -241,14 +240,6 @@ public class EdiEintragController {
 	}
 	
     public void setSelection( EdiEintrag selEDI) {
-		if (aktEdi != null && aktEdi.getId() != selEDI.getId() ) {
-	    	btnEmpfaenger1.disableProperty().unbind();
-	    	btnEmpfaenger2.disableProperty().unbind();
-	    	btnEmpfaenger3.disableProperty().unbind();
-	    	cmbBuOb1.disableProperty().unbind();
-	    	cmbBuOb2.disableProperty().unbind();
-	    	cmbBuOb3.disableProperty().unbind();
-		}
 		if (aktEdi == null || aktEdi.getId() != selEDI.getId() ) {
 			aktEdi = selEDI;
 			em.detach(aktEdi);
@@ -395,8 +386,9 @@ public class EdiEintragController {
 				mainController.refreshEdiNrListBezeichnung(aktEdi.getId(), tmpEdiBezeichnung);
 				paneEdiEintrag.textProperty().set(EDI_PANEL_TITLE + " "+ aktEdi.getEdiNrStr() + "  " + aktEdi.bezeichnung() );
 			}
-			em.merge(aktEdi);
+			aktEdi = em.merge(aktEdi);
 			em.getTransaction().commit();
+			em.detach(aktEdi);
 		} catch (RuntimeException e) {
 			Dialogs.showErrorDialog(primaryStage,
 					"Fehler beim Speichern des Eintrags",
@@ -476,7 +468,6 @@ public class EdiEintragController {
     	FXMLLoader loader = loadKomponentenAuswahl(dialog, 400, 350); 
     	
     	KomponentenAuswahlController komponentenAuswahlController = loader.getController();
-    	System.out.println(btnNr + " Empfänger:" + aktEmpfaenger[btnNr]);
     	Long aktEmpfaengerId = (aktEmpfaenger[btnNr]==null ? 0L : aktEmpfaenger[btnNr].getKomponente().getId());
     	komponentenAuswahlController.setKomponente(KomponentenTyp.RECEIVER, aktEmpfaengerId);
     	dialog.showAndWait();
@@ -485,8 +476,6 @@ public class EdiEintragController {
     		if (aktEmpfaengerId != selEmpfaengerID) {
     			if (aktEmpfaenger[btnNr] == null) {
     				aktEmpfaenger[btnNr] = new EdiEmpfaenger(aktEdi);
-    				syspr("empfaengerButton()","aktEmpfaenger ("+btnNr+") neu angelegt für "+ selEmpfaengerID);
-//    				em.persist(aktEmpfaenger[btnNr]);
     			}
     			aktEmpfaenger[btnNr].setKomponente(em.find(EdiKomponente.class,selEmpfaengerID));
     			ret = aktEmpfaenger[btnNr].getKomponente().getFullname();

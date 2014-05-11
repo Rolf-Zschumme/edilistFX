@@ -1,5 +1,7 @@
 package de.vbl.ediliste.model;
 
+import static javax.persistence.GenerationType.IDENTITY;
+
 import java.util.Collection;
 
 import javafx.beans.property.StringProperty;
@@ -7,13 +9,8 @@ import javafx.beans.property.StringProperty;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-
-import static javax.persistence.GenerationType.IDENTITY;
-
 import javax.persistence.JoinColumn;
-
-import de.vbl.ediliste.model.Integration;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 /**

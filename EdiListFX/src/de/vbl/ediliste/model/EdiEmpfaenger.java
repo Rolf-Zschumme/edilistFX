@@ -5,10 +5,8 @@ import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import de.vbl.ediliste.model.EdiEintrag;
-import de.vbl.ediliste.model.GeschaeftsObjekt;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 /**
  * Entity implementation class for Entity: Empfaenger

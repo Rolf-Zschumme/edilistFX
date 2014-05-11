@@ -1,5 +1,8 @@
 package de.vbl.ediliste.model;
 
+import static javax.persistence.GenerationType.IDENTITY;
+import static javax.persistence.TemporalType.DATE;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
@@ -12,11 +15,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.Temporal;
-import static javax.persistence.TemporalType.DATE;
-import static javax.persistence.GenerationType.IDENTITY;
-import de.vbl.ediliste.model.SVN_Repository;
 import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
 
 /** 
  * Entity implementation class for Entity: Dokumentation

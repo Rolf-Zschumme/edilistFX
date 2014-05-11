@@ -1,17 +1,17 @@
 package de.vbl.ediliste.model;
 
+import static javax.persistence.GenerationType.IDENTITY;
+
 import java.io.Serializable;
-import java.lang.String;
+import java.util.Collection;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
-import javax.persistence.*;
-
-import static javax.persistence.GenerationType.IDENTITY;
-import de.vbl.ediliste.model.EdiEmpfaenger;
-
-import java.util.Collection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 /**
  * Entity implementation class for Entity: GeschaeftsObjekt

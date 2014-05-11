@@ -11,7 +11,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import de.vbl.ediliste.model.DokuLink;
 
 /**
  * Entity implementation class for Entity: Anbindung

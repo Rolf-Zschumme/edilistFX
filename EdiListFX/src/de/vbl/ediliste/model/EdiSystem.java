@@ -1,6 +1,9 @@
 package de.vbl.ediliste.model;
 
 import static javax.persistence.GenerationType.IDENTITY;
+
+import java.util.Collection;
+
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -9,16 +12,8 @@ import javafx.beans.property.StringProperty;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-
-import de.vbl.ediliste.model.EdiPartner;
-
-import javax.persistence.ManyToOne;
 import javax.persistence.JoinColumn;
-
-import de.vbl.ediliste.model.EdiKomponente;
-
-import java.util.Collection;
-
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 @Entity

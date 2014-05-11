@@ -8,12 +8,12 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
-import de.vbl.ediliste.model.Integration;
 import de.vbl.ediliste.model.EdiEintrag;
 import de.vbl.ediliste.model.EdiKomponente;
 import de.vbl.ediliste.model.EdiPartner;
 import de.vbl.ediliste.model.EdiSystem;
 import de.vbl.ediliste.model.GeschaeftsObjekt;
+import de.vbl.ediliste.model.Integration;
 
 public class DataBaseInit {
 	private static final String PERSISTENCE_UNIT_NAME = "EdiListFX";
