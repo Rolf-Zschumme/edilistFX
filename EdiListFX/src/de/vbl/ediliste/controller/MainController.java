@@ -234,6 +234,23 @@ public class MainController {
     			}
     		}
         );
+        
+        tableKomponentenAuswahl.getSelectionModel().selectedItemProperty().addListener(
+    		new ChangeListener<EdiKomponente>() {
+    			@Override
+    			public void changed(
+    					ObservableValue<? extends EdiKomponente> observable,
+    					EdiKomponente oldValue, EdiKomponente newValue) {
+    				if (newValue != null) { 
+    					//toDo
+    				}
+    				else {
+    					tableEdiNrAuswahl.getSelectionModel().clearSelection();
+    					showSplitPane(null);	
+    				}
+    			}
+			}
+    	);
     
      }
 
