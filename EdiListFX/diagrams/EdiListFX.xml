@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE project>
-<entities>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><entities>
 	<entity>
 		<entity-name>de.vbl.ediliste.model.EdiEintrag</entity-name>
 		<entity-width>120</entity-width>
@@ -18,6 +16,17 @@
 		<entity-height>116</entity-height>
 		<entity-X-Coordinate>287</entity-X-Coordinate>
 		<entity-Y-Coordinate>193</entity-Y-Coordinate>
+		<primary-collapsed>true</primary-collapsed>
+		<relation-collapsed>true</relation-collapsed>
+		<basic-collapsed>false</basic-collapsed>
+	</entity>
+
+	<entity>
+		<entity-name>de.vbl.ediliste.model.Integration</entity-name>
+		<entity-width>120</entity-width>
+		<entity-height>116</entity-height>
+		<entity-X-Coordinate>287</entity-X-Coordinate>
+		<entity-Y-Coordinate>5</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
@@ -71,8 +80,8 @@
 		<entity-name>de.vbl.ediliste.model.SVN_Repository</entity-name>
 		<entity-width>120</entity-width>
 		<entity-height>143</entity-height>
-		<entity-X-Coordinate>565</entity-X-Coordinate>
-		<entity-Y-Coordinate>207</entity-Y-Coordinate>
+		<entity-X-Coordinate>558</entity-X-Coordinate>
+		<entity-Y-Coordinate>205</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>false</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
@@ -90,17 +99,6 @@
 	</entity>
 
 	<entity>
-		<entity-name>de.vbl.ediliste.model.EdiDokuLink</entity-name>
-		<entity-width>120</entity-width>
-		<entity-height>156</entity-height>
-		<entity-X-Coordinate>565</entity-X-Coordinate>
-		<entity-Y-Coordinate>-15</entity-Y-Coordinate>
-		<primary-collapsed>true</primary-collapsed>
-		<relation-collapsed>true</relation-collapsed>
-		<basic-collapsed>false</basic-collapsed>
-	</entity>
-
-	<entity>
 		<entity-name>de.vbl.ediliste.model.GeschaeftsObjekt</entity-name>
 		<entity-width>135</entity-width>
 		<entity-height>96</entity-height>
@@ -112,11 +110,11 @@
 	</entity>
 
 	<entity>
-		<entity-name>de.vbl.ediliste.model.Integration</entity-name>
+		<entity-name>de.vbl.ediliste.model.DokuLink</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>116</entity-height>
-		<entity-X-Coordinate>287</entity-X-Coordinate>
-		<entity-Y-Coordinate>5</entity-Y-Coordinate>
+		<entity-height>156</entity-height>
+		<entity-X-Coordinate>558</entity-X-Coordinate>
+		<entity-Y-Coordinate>-15</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>

@@ -33,9 +33,7 @@ import de.vbl.ediliste.model.EdiPartner;
 import de.vbl.ediliste.model.EdiSystem;
 
 public class KomponentenAuswahlController {
-	public static enum KomponentenTyp { 
-					   					SENDER, RECEIVER 
-					   				  };
+	public static enum KomponentenTyp {	SENDER, RECEIVER };
 	private static final String APPL_TITLE = "EdiListe";
 	private static final String PERSISTENCE_UNIT_NAME = "EdiListFX";
 	private static EntityManager em; 

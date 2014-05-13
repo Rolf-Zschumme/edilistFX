@@ -23,25 +23,25 @@ public class MainControllerTest extends GuiTest {
 		return ediListMain.loadAndStartController();
 	}
 	
-//	@Test
-//	public void ediEintragNeuanlage1Empfaenger() {
-//		click("#btnNewEdiNr");
-//		click("OK");
-//		exists("#btnEdiEintragSpeichern");
-//		click("#btnSender");
-//		click("#partnerCB").click("VBL");
-//		click("#systemCB").click("SAP CRM");
-//		click("#komponenteCB").click("Zulage");
-//		click("OK");
-//		click("#btnEmpfaenger1");
-//		click("#partnerCB").click("Finanzamt");
-//		click("#systemCB").click("ZfA-Server");
-//		click("#komponenteCB").click("MQ: MAV");
-//		click("OK");
-//		click("#cmbBuOb1").type("ZfA-Meldungen");
-//		click("#btnEdiEintragSpeichern");
-//		verifyThat("#tableEdiNrAuswahl", containsCell("001"));
-//	}
+	@Test
+	public void ediEintragNeuanlage1Empfaenger() {
+		click("#btnNewEdiNr");
+		click("OK");
+		exists("#btnEdiEintragSpeichern");
+		click("#btnSender");
+		click("#partnerCB").click("VBL");
+		click("#systemCB").click("SAP CRM");
+		click("#komponenteCB").click("Zulage");
+		click("OK");
+		click("#btnEmpfaenger1");
+		click("#partnerCB").click("Finanzamt");
+		click("#systemCB").click("ZfA-Server");
+		click("#komponenteCB").click("MQ: MAV");
+		click("OK");
+		click("#cmbBuOb1").type("ZfA-Meldungen");
+		click("#btnEdiEintragSpeichern");
+		verifyThat("#tableEdiNrAuswahl", containsCell("001"));
+	}
 	  
 	@Test
 	public void ediEintragNeuanlage2Empfaenger() {
