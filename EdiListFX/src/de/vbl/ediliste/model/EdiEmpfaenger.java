@@ -1,12 +1,13 @@
 package de.vbl.ediliste.model;
 
-import static javax.persistence.GenerationType.IDENTITY;
+import javafx.beans.property.StringProperty;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import static javax.persistence.GenerationType.IDENTITY;
 
 /**
  * Entity implementation class for Entity: Empfaenger
@@ -64,6 +65,12 @@ public class EdiEmpfaenger {
 	    this.geschaeftsObjekt = param;
 	}
 	
+	// ------------------------------------------------------------------------
+	public StringProperty senderNameProperty() {
+		return ediEintrag.senderNameProperty();
+	}
+	
+	// ------------------------------------------------------------------------
 	public boolean equaels (EdiEmpfaenger empf) {
 		if ( this.getId() == empf.getId()) {
 			Long eKompId = empf.getKomponente() == null ? -1 : empf.getKomponente().getId();

@@ -114,6 +114,8 @@ public class EdiEintrag {
 	}
 
 	public void setKomponente(EdiKomponente param) {
+		String senderName = (param == null) ? "" : param.getFullname(); 
+   		this.senderNameProperty().set(senderName);
 		this.ediKomponente = param;
 	}
 

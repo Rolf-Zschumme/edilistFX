@@ -110,9 +110,11 @@ public class MainController {
     private int maxEdiNr;
     private Stage primaryStage;
     private Pane ediEintragPane;
+    private Pane ediKomponentePane;
     private Pane testAnchorPane;
     
     private EdiEintragController ediEintragController;
+    private EdiKomponenteController ediKomponenteController;
 
     public void start(Stage stage, String applikationName) {
     	primaryStage = stage;
@@ -139,6 +141,12 @@ public class MainController {
 		loader = new FXMLLoader(getClass().getResource("../view/EdiEintrag.fxml"));
 		ediEintragPane = loadPane(loader);
 		ediEintragController = loader.getController();
+		
+		loader = new FXMLLoader(getClass().getResource("../view/EdiKomponente.fxml"));
+		ediKomponentePane = loadPane(loader);
+		ediKomponenteController = loader.getController();
+		ediKomponenteController.setInitial(this, primaryStage, applName, em);
+
 		
 		loader = new FXMLLoader(getClass().getResource("../view/TestAnchorPane.fxml"));
 		testAnchorPane = loadPane(loader);
@@ -189,7 +197,7 @@ public class MainController {
 							showSplitPane(null);
 						}
 						else if(akttab.equals(tabKomponenten)) {
-							showSplitPane(null);
+							showSplitPane(ediKomponentePane);
 						} 
 						else if(akttab.equals(tabGeschaeftsobjekt)) {
 							showSplitPane(testAnchorPane);
@@ -241,7 +249,12 @@ public class MainController {
     			public void changed(
     					ObservableValue<? extends EdiKomponente> observable,
     					EdiKomponente oldValue, EdiKomponente newValue) {
-    				if (newValue != null) { 
+    				if (newValue != null) {
+//    					EdiKomponente k = em.find(EdiKomponente.class, newValue.getId());
+    					if (ediKomponenteController == null) {
+    						System.out.println("ediController ist null");
+    					}
+    					ediKomponenteController.setSelection(newValue);
     					//toDo
     				}
     				else {
