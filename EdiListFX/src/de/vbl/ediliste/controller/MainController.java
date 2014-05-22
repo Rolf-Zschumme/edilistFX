@@ -147,7 +147,7 @@ public class MainController {
 		loader = new FXMLLoader(getClass().getResource("../view/EdiKomponente.fxml"));
 		ediKomponentePane = loadPane(loader);
 		ediKomponenteController = loader.getController();
-		ediKomponenteController.setInitial(this, primaryStage, applName, em);
+///		ediKomponenteController.setInitial(this, primaryStage, applName, em);
 
 		
 		loader = new FXMLLoader(getClass().getResource("../view/TestAnchorPane.fxml"));
@@ -263,7 +263,7 @@ public class MainController {
     					if (ediKomponenteController == null) {
     						System.out.println("ediController ist null");
     					}
-    					ediKomponenteController.setSelection(newValue);
+///    					ediKomponenteController.setSelection(newValue);
     					//toDo
     				}
     				else {

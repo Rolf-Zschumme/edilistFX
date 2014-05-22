@@ -14,8 +14,9 @@ public class EdiListMainTest extends GuiTest {
 	
 	@Override
 	public Parent getRootNode() {
-		EdiListMain ediListMain = new EdiListMain(); 
-		return ediListMain.loadAndStartController();
+//		EdiListMain ediListMain = new EdiListMain(); 
+//		return ediListMain.loadAndStartController();
+		return null;
 	  }
 	
 	  @Test

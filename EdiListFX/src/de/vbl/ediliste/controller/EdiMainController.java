@@ -4,6 +4,34 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Dialogs;
+import javafx.scene.control.Dialogs.DialogOptions;
+import javafx.scene.control.Dialogs.DialogResponse;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
+import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -17,29 +45,6 @@ import de.vbl.ediliste.model.GeschaeftsObjekt;
 import de.vbl.ediliste.tools.ExportToExcel;
 import de.vbl.ediliste.view.EdiNrListElement;
 import de.vbl.ediliste.view.PartnerListElement;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Dialogs;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.Dialogs.DialogOptions;
-import javafx.scene.control.Dialogs.DialogResponse;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
-import javafx.stage.FileChooser;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-
 
 
 public class EdiMainController {
@@ -85,30 +90,126 @@ public class EdiMainController {
     @FXML private AnchorPane ediEintragSplitPane;
     @FXML private AnchorPane komponenteSplitPane;
     
+    @FXML private Pane ediEintrag;
     
+    @FXML private EdiKomponenteController ediKomponenteController ;
+    @FXML private EdiEintragController ediEintragController;
     
 	private static String applName;
 	private Stage primaryStage;
     private EntityManager em;
     private ObservableList<EdiNrListElement> ediNrArrayList = FXCollections.observableArrayList();
+    private ObservableList<EdiKomponente> ediKomponentenList = FXCollections.observableArrayList();    
     private int maxEdiNr;
 
-//  private EdiEintragController ediEintragController;
 	
-    public void start(Stage stage, String applikationName) {
-    	primaryStage = stage;
-    	applName = applikationName;
+//    public void start(Stage stage, String applikationName) {
+//    	primaryStage = stage;
+//    	applName = applikationName;
 //    	ediEintragController.setInitial(this, primaryStage, applName, em);
-    }
+//    }
 
     @FXML
 	private void initialize () {
 		System.out.println("EdiMainController.initialize()");
+		System.out.println("ediEintragController:" + ediEintragController);
+		System.out.println("ediKomponenteController:" + ediKomponenteController);
 		setupEntityManager();
 		checkFieldsFromView();
     	loadEdiNrListData();
-		
-	}	
+        setupBindings();		
+    }	
+
+    private void setupBindings() {
+    	
+        tableEdiNrAuswahl.setItems(ediNrArrayList);
+    	tColAuswahlEdiNr.setCellValueFactory(new PropertyValueFactory<EdiNrListElement,String>("ediNr"));
+    	tColAuswahlEdiNrBezeichnung.setCellValueFactory(new PropertyValueFactory<EdiNrListElement,String>("bezeichnung"));
+    	
+    	btnDeleteEdiEintrag.disableProperty().bind(
+    			Bindings.isNull(tableEdiNrAuswahl.getSelectionModel().selectedItemProperty()));
+    	ediEintrag.disableProperty().bind(
+    			Bindings.isNull(tableEdiNrAuswahl.getSelectionModel().selectedItemProperty()));
+//    	btnDeleteGeschaeftsobjekt.disableProperty().bind(
+//    			Bindings.isNull(tableGeschaeftsobjektAuswahl.getSelectionModel().selectedItemProperty()));
+//    	tablePartnerAuswahl.setItems(ediPartnerList);
+//    	tColAuswahlPartnerName.setCellValueFactory(new PropertyValueFactory<PartnerListElement,String>("name"));
+//    	tColAuswahlPartnerSysteme.setCellValueFactory(new PropertyValueFactory<PartnerListElement,Integer>("anzSysteme"));
+//    	tColAuswahlPartnerKomponenten.setCellValueFactory(new PropertyValueFactory<PartnerListElement,Integer>("anzKomponenten"));
+//    	
+//    	tableSystemAuswahl.setItems(ediSystemList);
+//    	tColSelSystemSystemName.setCellValueFactory(new PropertyValueFactory<EdiSystem,String>("name"));
+//    	tColSelSystemPartnerName.setCellValueFactory(new PropertyValueFactory<EdiSystem,String>("partnerName"));
+//    	tColSelSystemKomponenten.setCellValueFactory(new PropertyValueFactory<EdiSystem,Integer>("AnzKomponenten"));
+//    	
+    	tableKomponentenAuswahl.setItems(ediKomponentenList);
+    	tColSelKompoKomponten.setCellValueFactory(new PropertyValueFactory<EdiKomponente,String>("name"));
+    	tColSelKompoSysteme.setCellValueFactory(new PropertyValueFactory<EdiKomponente,String>("systemName"));
+    	tColSelKompoPartner.setCellValueFactory(new PropertyValueFactory<EdiKomponente,String>("partnerName"));
+    	
+    	System.out.println("ediKomponenteController:" + ediKomponenteController);
+    	ediKomponenteController.komponenteProperty().bind(tableKomponentenAuswahl.getSelectionModel().selectedItemProperty());
+    	
+//    	tableGeschaeftsobjektAuswahl.setItems(geschaeftsobjektList);
+//    	tColAuswahlGeschaeftsobjektName.setCellValueFactory(new PropertyValueFactory<GeschaeftsObjekt,String>("name"));
+//    	tColAuswahlGeschaeftsobjektAnzahl.setCellValueFactory(new PropertyValueFactory<GeschaeftsObjekt,Integer>("anzVerwendungen"));
+    	
+        tabPaneObjekte.getSelectionModel().selectedItemProperty().addListener(
+        		new ChangeListener<Tab>() {
+        			@Override
+        			public void changed(ObservableValue<? extends Tab> ov, Tab talt, Tab tneu) {
+        				final Tab akttab = tneu;
+//        				primaryStage.getScene().setCursor(Cursor.WAIT);
+//        				Task<Void> task = new Task<Void>() {
+//        					@Override
+//        					protected Void call() throws Exception {
+//        						if (akttab.equals(tabPartner)) {
+//        							loadPartnerListData();
+//        						}
+//        						else if(akttab.equals(tabSysteme)) {
+//        							loadSystemListData();
+//        						}
+        						if(akttab.equals(tabKomponenten)) {
+        							loadKomponentenListData();
+        						}
+//        						else if(akttab.equals(tabGeschaeftsobjekt)) {
+//        							loadGeschaeftobjektListData();
+//        						}
+//        						return null;
+//        					}
+//        				};
+//        				task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+//							@Override
+//							public void handle(WorkerStateEvent event) {
+//		        				primaryStage.getScene().setCursor(Cursor.DEFAULT);
+//							}
+//						});
+//        				new Thread(task).start();
+        				System.out.println("tabPane.changed() " + akttab);
+//						if (akttab.equals(tabEdiNr)) {
+//							showSplitPane(ediEintragSplitPane, ediEintragPane);
+//						}
+//						else if (akttab.equals(tabPartner)) {
+//							loadPartnerListData();
+//							showSplitPane(testAnchorPane);
+//						}
+//						else if(akttab.equals(tabSysteme)) {
+//							loadSystemListData();
+//							showSplitPane(testAnchorPane);
+//						}
+//						else if(akttab.equals(tabKomponenten)) {
+//							loadKomponentenListData();
+//							showSplitPane(ediKomponentePane);
+//						} 
+//						else if(akttab.equals(tabGeschaeftsobjekt)) {
+//							loadGeschaeftobjektListData();
+//							showSplitPane(testAnchorPane);
+//						}
+        			}
+				}
+        ); 		
+    	
+    }
 
 	private void loadEdiNrListData() {
     	Query query = em.createQuery("SELECT e.id, e.ediNr, e.bezeichnung FROM EdiEintrag e ORDER BY e.ediNr");
@@ -121,10 +222,19 @@ public class EdiMainController {
     	}	
     	maxEdiNr = max;
 	}
-    
-    
+        	    
+	private void loadKomponentenListData() {
+		ediKomponentenList.clear();
+		Query query = em.createQuery("SELECT k FROM EdiKomponente k ORDER BY k.name");
+		for (Object k : query.getResultList()) {
+			ediKomponentenList.add((EdiKomponente)k);
+		}	
+	}
+	
+	
 	@FXML
     void btnUeber(ActionEvent event) {
+		Dialogs.showInformationDialog(primaryStage, "Hallo");
     	Dialogs.showInformationDialog(primaryStage, 
     			"Version 0.5 - 08.05.2014 mit Geschäftsobjekt", 
     			"VBL-Tool zur Verwaltung der EDI-Liste", applName);
@@ -169,6 +279,7 @@ public class EdiMainController {
     	em = factory.createEntityManager();
     }
     
+    @FXML    
     void deleteEdiEintrag(ActionEvent event) {
     	EdiNrListElement selectedlistElement = tableEdiNrAuswahl.getSelectionModel().getSelectedItem();
     	if (selectedlistElement != null) {
@@ -197,7 +308,6 @@ public class EdiMainController {
     		}
     	}
     }
-    
     
     static String initialExportFilePath = System.getProperty("user.home");
     static String initialExportFileName = "EDI-List-Excel-Export.xlsx";
@@ -232,6 +342,7 @@ public class EdiMainController {
 			}
     	}
     }
+    
     private void checkFieldsFromView() {
         assert tabEdiNr != null : "fx:id=\"tabEdiNr\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tColSelKompoKomponten != null : "fx:id=\"tColSelKompoKomponten\" was not injected: check your FXML file 'EdiMain.fxml'.";
@@ -263,6 +374,4 @@ public class EdiMainController {
         assert komponenteSplitPane != null : "fx:id=\"komponenteSplitPane\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tColAuswahlGeschaeftsobjektAnzahl != null : "fx:id=\"tColAuswahlGeschaeftsobjektAnzahl\" was not injected: check your FXML file 'EdiMain.fxml'.";
 	}
-
-    
 }
