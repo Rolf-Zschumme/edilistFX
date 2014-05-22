@@ -97,6 +97,8 @@ public class MainController {
     @FXML private Button btnExportExcel;
 
     @FXML private SplitPane splitPane;
+    @FXML private AnchorPane ediEintragSplitPane;
+    @FXML private AnchorPane komponenteSplitPane;
     
     
     private static String applName;
@@ -153,7 +155,7 @@ public class MainController {
 		
     	checkFieldFromView();
         
-        loadEdiNrListData();
+    	loadEdiNrListData();
         setupBindings();
 
         tabPaneObjekte.getSelectionModel().selectedItemProperty().addListener(
@@ -161,48 +163,54 @@ public class MainController {
         			@Override
         			public void changed(ObservableValue<? extends Tab> ov, Tab talt, Tab tneu) {
         				final Tab akttab = tneu;
-        				primaryStage.getScene().setCursor(Cursor.WAIT);
-        				Task<Void> task = new Task<Void>() {
-        					@Override
-        					protected Void call() throws Exception {
-        						if (akttab.equals(tabPartner)) {
-        							loadPartnerListData();
-        						}
-        						else if(akttab.equals(tabSysteme)) {
-        							loadSystemListData();
-        						}
-        						else if(akttab.equals(tabKomponenten)) {
-        							loadKomponentenListData();
-        						}
-        						else if(akttab.equals(tabGeschaeftsobjekt)) {
-        							loadGeschaeftobjektListData();
-        						}
-        						return null;
-        					}
-        				};
-        				task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-							@Override
-							public void handle(WorkerStateEvent event) {
-		        				primaryStage.getScene().setCursor(Cursor.DEFAULT);
-							}
-						});
-        				new Thread(task).start();
+//        				primaryStage.getScene().setCursor(Cursor.WAIT);
+//        				Task<Void> task = new Task<Void>() {
+//        					@Override
+//        					protected Void call() throws Exception {
+//        						if (akttab.equals(tabPartner)) {
+//        							loadPartnerListData();
+//        						}
+//        						else if(akttab.equals(tabSysteme)) {
+//        							loadSystemListData();
+//        						}
+//        						else if(akttab.equals(tabKomponenten)) {
+//        							loadKomponentenListData();
+//        						}
+//        						else if(akttab.equals(tabGeschaeftsobjekt)) {
+//        							loadGeschaeftobjektListData();
+//        						}
+//        						return null;
+//        					}
+//        				};
+//        				task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+//							@Override
+//							public void handle(WorkerStateEvent event) {
+//		        				primaryStage.getScene().setCursor(Cursor.DEFAULT);
+//							}
+//						});
+//        				new Thread(task).start();
+        				System.out.println("tabPane.changed() " + akttab);
 						if (akttab.equals(tabEdiNr)) {
-							showSplitPane(ediEintragPane);
+							showSplitPane(ediEintragSplitPane, ediEintragPane);
 						}
 						else if (akttab.equals(tabPartner)) {
+							loadPartnerListData();
 							showSplitPane(testAnchorPane);
 						}
 						else if(akttab.equals(tabSysteme)) {
-							showSplitPane(null);
+							loadSystemListData();
+							showSplitPane(testAnchorPane);
 						}
 						else if(akttab.equals(tabKomponenten)) {
+							loadKomponentenListData();
 							showSplitPane(ediKomponentePane);
 						} 
 						else if(akttab.equals(tabGeschaeftsobjekt)) {
+							loadGeschaeftobjektListData();
 							showSplitPane(testAnchorPane);
 						}
         			}
+
 				}
         );
 
@@ -236,6 +244,7 @@ public class MainController {
     					}
     				}
     				else {
+    					System.out.println("tableEdiNrAuswahl.changed() mit new=null old=" + oldValue);
     					tableEdiNrAuswahl.getSelectionModel().clearSelection();
     					showSplitPane(null);	
     				}
@@ -259,6 +268,7 @@ public class MainController {
     				}
     				else {
     					tableEdiNrAuswahl.getSelectionModel().clearSelection();
+    					System.out.println("tableKomponentenAuswahl.changed() mit new=null old=" + oldValue);
     					showSplitPane(null);	
     				}
     			}
@@ -267,36 +277,32 @@ public class MainController {
     
      }
 
-    
-    
-     private static double[] dividers;   // Merker für Splitpane Teiler-Prozentsätze
+    private void showSplitPane(AnchorPane targetPane, Pane sourcePane) {
+    	System.out.println("target:" + targetPane + " source:" + sourcePane);
+    	System.out.println("Size:" + targetPane.getChildren().size());
+    	if (targetPane.getChildren().size() == 0 ) {
+			final StackPane sp = new StackPane();
+			sp.getChildren().add(sourcePane);
+			sourcePane.getChildren().add(sp);
+    	}
+    }
 
      private void showSplitPane(Pane pane) {
-    	if (splitPane.getItems().size() < 2) {
-    		if (pane != null) {
-    			final StackPane sp = new StackPane();
-    			sp.getChildren().add(pane);
-    			splitPane.getItems().add(sp);
-    			if (dividers != null) 
-    				splitPane.setDividerPositions(dividers);
-    		}
-    	}
-   		else {
-			if (pane == null) {
-				dividers = splitPane.getDividerPositions();
-				splitPane.getItems().remove(1);
-			}
-			else {
-				splitPane.getItems().set(1, pane);
-			}	
-   		}
-       		/*
-       		refillPane.getChildren().add(pane);
-       		AnchorPane.setRightAnchor(pane, (double) 0);
-       		AnchorPane.setLeftAnchor(pane, (double) 0);
-       		AnchorPane.setTopAnchor(pane, (double) 0);
-       		AnchorPane.setBottomAnchor(pane, (double) 0);
-       		*/
+    	 
+//    	System.out.println("Size:" + splitPane.getItems().size() + " pane:" +  pane);
+//    	if (splitPane.getItems().size() < 2) {
+//    		if (pane != null) {
+//    			final StackPane sp = new StackPane();
+//    			sp.getChildren().add(pane);
+//    			splitPane.getItems().add(sp);
+//    		}
+//    	}
+//   		else {
+//   			splitPane.getItems().remove(1);
+//			if (pane != null) {
+//    			splitPane.getItems().add(pane);
+//			}	
+//   		}
      }
 
     

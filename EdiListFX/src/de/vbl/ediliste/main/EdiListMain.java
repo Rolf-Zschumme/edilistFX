@@ -3,13 +3,12 @@ package de.vbl.ediliste.main;
 
 import java.io.IOException;
 
+import de.vbl.ediliste.controller.EdiMainController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import de.vbl.ediliste.controller.MainController;
 
 
 public class EdiListMain extends Application {
@@ -36,14 +35,14 @@ public class EdiListMain extends Application {
 	
 
 	public Parent loadAndStartController() {
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/Main.fxml"));
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/EdiMain.fxml"));
 		Parent root = null;
 		try {
 			root = (Parent) loader.load();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		MainController controller = loader.getController();
+		EdiMainController controller = loader.getController();
 		if (primaryStage == null) {
 			primaryStage = new Stage();
 		}
