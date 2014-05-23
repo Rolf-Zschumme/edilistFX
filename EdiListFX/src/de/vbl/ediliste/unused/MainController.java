@@ -1,4 +1,4 @@
-package de.vbl.ediliste.controller;
+package de.vbl.ediliste.unused;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,13 +11,10 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -45,6 +42,9 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
+import de.vbl.ediliste.controller.EdiEintragController;
+import de.vbl.ediliste.controller.EdiKomponenteController;
+import de.vbl.ediliste.controller.NeuerEdiEintragController;
 import de.vbl.ediliste.model.EdiEintrag;
 import de.vbl.ediliste.model.EdiEmpfaenger;
 import de.vbl.ediliste.model.EdiKomponente;
@@ -121,7 +121,7 @@ public class MainController {
     public void start(Stage stage, String applikationName) {
     	primaryStage = stage;
     	applName = applikationName;
-    	ediEintragController.setInitial(this, primaryStage, applName, em);
+ //   	ediEintragController.setInitial(this, primaryStage, applName, em);
     }
 
     @FXML

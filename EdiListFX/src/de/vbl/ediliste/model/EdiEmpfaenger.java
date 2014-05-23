@@ -69,6 +69,12 @@ public class EdiEmpfaenger {
 	public StringProperty senderNameProperty() {
 		return ediEintrag.senderNameProperty();
 	}
+
+	public StringProperty empfaengerNameProperty() {
+		System.out.println("ediKomponente.fullname"+ ediKomponente.fullnameProperty().getName());
+		return ediKomponente.fullnameProperty();
+	}
+	
 	
 	// ------------------------------------------------------------------------
 	public boolean equaels (EdiEmpfaenger empf) {

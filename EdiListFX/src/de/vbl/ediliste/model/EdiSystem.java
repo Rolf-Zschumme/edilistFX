@@ -59,6 +59,7 @@ public class EdiSystem {
 
 	public void setName(String param) {
 		name.set(param);
+		
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --

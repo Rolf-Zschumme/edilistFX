@@ -91,6 +91,7 @@ public class EdiMainController {
     @FXML private AnchorPane komponenteSplitPane;
     
     @FXML private Pane ediEintrag;
+    @FXML private Pane ediKomponente;
     
     @FXML private EdiKomponenteController ediKomponenteController ;
     @FXML private EdiEintragController ediEintragController;
@@ -112,8 +113,8 @@ public class EdiMainController {
     @FXML
 	private void initialize () {
 		System.out.println("EdiMainController.initialize()");
-		System.out.println("ediEintragController:" + ediEintragController);
-		System.out.println("ediKomponenteController:" + ediKomponenteController);
+		System.out.println("	ediEintragController   :" + ediEintragController);
+		System.out.println("	ediKomponenteController:" + ediKomponenteController);
 		setupEntityManager();
 		checkFieldsFromView();
     	loadEdiNrListData();
@@ -148,7 +149,11 @@ public class EdiMainController {
     	tColSelKompoPartner.setCellValueFactory(new PropertyValueFactory<EdiKomponente,String>("partnerName"));
     	
     	System.out.println("ediKomponenteController:" + ediKomponenteController);
+    	System.out.println("ediKomponente          :" + ediKomponente);
+    	ediKomponenteController.setEntityManager(em);
     	ediKomponenteController.komponenteProperty().bind(tableKomponentenAuswahl.getSelectionModel().selectedItemProperty());
+    	ediKomponente.disableProperty().bind(
+    			Bindings.isNull(tableKomponentenAuswahl.getSelectionModel().selectedItemProperty()));
     	
 //    	tableGeschaeftsobjektAuswahl.setItems(geschaeftsobjektList);
 //    	tColAuswahlGeschaeftsobjektName.setCellValueFactory(new PropertyValueFactory<GeschaeftsObjekt,String>("name"));

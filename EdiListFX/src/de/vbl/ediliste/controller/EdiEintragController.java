@@ -65,7 +65,7 @@ public class EdiEintragController {
     @FXML private Button btnEmpfaenger3;
     @FXML private Button btnSender;
     
-    private static MainController mainController;
+//  private static MainController mainController;
     private static Stage primaryStage;
     private static String applName;
     private static EntityManager em;
@@ -108,8 +108,8 @@ public class EdiEintragController {
     	btnEdiEintragSpeichern.disableProperty().bind(Bindings.not(ediEintragIsChanged));
     }	
     	
-	public void setInitial(MainController main, Stage stage, String applikationName, EntityManager entityManager) {
-    	mainController = main;
+	public void setInitial(Stage stage, String applikationName, EntityManager entityManager) {
+//    	mainController = main;
 		primaryStage = stage;
 		applName = applikationName;
 		em = entityManager;
@@ -383,7 +383,7 @@ public class EdiEintragController {
 			}
 			if (aktEdi.getBezeichnung().equals(tmpEdiBezeichnung)==false) {
 				aktEdi.setBezeichnung(tmpEdiBezeichnung);
-				mainController.refreshEdiNrListBezeichnung(aktEdi.getId(), tmpEdiBezeichnung);
+//				mainController.refreshEdiNrListBezeichnung(aktEdi.getId(), tmpEdiBezeichnung);
 				paneEdiEintrag.textProperty().set(EDI_PANEL_TITLE + " "+ aktEdi.getEdiNrStr() + "  " + aktEdi.bezeichnung() );
 			}
 			aktEdi = em.merge(aktEdi);
@@ -504,12 +504,12 @@ public class EdiEintragController {
 		return loader;
 	}
 
-    private void syspr(String methode, String text) {
-		String classname = getClass().getName() + "." + methode;
-		while (classname.length()< 60)
-			classname += " ";
-		System.out.println(classname + " " + text);
-	}
+//    private void syspr(String methode, String text) {
+//		String classname = getClass().getName() + "." + methode;
+//		while (classname.length()< 60)
+//			classname += " ";
+//		System.out.println(classname + " " + text);
+//	}
     
     private void checkFieldFromView() {
         assert paneAnbindung != null : "fx:id=\"paneAnbindung\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
