@@ -15,9 +15,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Dialogs;
-import javafx.scene.control.Dialogs.DialogOptions;
-import javafx.scene.control.Dialogs.DialogResponse;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -36,6 +33,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
+
+import org.controlsfx.control.action.Action;
+import org.controlsfx.dialog.Dialog;
+import org.controlsfx.dialog.Dialog.Actions;
+import org.controlsfx.dialog.Dialogs;
 
 import de.vbl.ediliste.model.EdiEintrag;
 import de.vbl.ediliste.model.EdiEmpfaenger;
@@ -239,10 +241,11 @@ public class EdiMainController {
 	
 	@FXML
     void btnUeber(ActionEvent event) {
-		Dialogs.showInformationDialog(primaryStage, "Hallo");
-    	Dialogs.showInformationDialog(primaryStage, 
-    			"Version 0.5 - 08.05.2014 mit Geschäftsobjekt", 
-    			"VBL-Tool zur Verwaltung der EDI-Liste", applName);
+		Dialogs.create()
+			.owner(primaryStage).title(applName)
+			.masthead("VBL-Tool zur Verwaltung der EDI-Liste")
+			.message("Version 0.5 - 08.05.2014 mit Geschäftsobjekt")
+			.showInformation();
     }
 
     @FXML
@@ -269,7 +272,7 @@ public class EdiMainController {
     	dialog.setY(primaryStage.getY() + 100);
     	dialog.showAndWait();
 
-    	if (dialogController.getResponse() == DialogResponse.OK) {
+    	if (dialogController.getResponse() == Dialog.Actions.OK) {
     		EdiEintrag newEE = dialogController.getNewEdiEintrag();
 			EdiNrListElement newListElement = new EdiNrListElement(newEE.getId(),newEE.getEdiNr(),newEE.getBezeichnung());
 			ediNrArrayList.add(newListElement);
@@ -289,10 +292,13 @@ public class EdiMainController {
     	EdiNrListElement selectedlistElement = tableEdiNrAuswahl.getSelectionModel().getSelectedItem();
     	if (selectedlistElement != null) {
     		String ediNr = selectedlistElement.ediNrProperty().get();
-    		DialogResponse response = Dialogs.showConfirmDialog(primaryStage, 
-    				"EDI-Eintrag mit der Nr. " + ediNr + " wirklich löschen?",
-    				SICHERHEITSABFRAGE,"", DialogOptions.OK_CANCEL);
-    		if (response == DialogResponse.OK) {
+    		Action response = Dialogs.create()
+    				.owner(primaryStage).title(applName)
+    				.actions(Dialog.Actions.OK, Dialog.Actions.CANCEL)
+    				.masthead(SICHERHEITSABFRAGE)
+    				.message("EDI-Eintrag mit der Nr. " + ediNr + " wirklich löschen?")
+    				.showConfirm();
+    		if (response == Dialog.Actions.OK) {
     			EdiEintrag ediEintrag = em.find(EdiEintrag.class, selectedlistElement.getEdiId());
     			if (ediEintrag==null) {
     				System.out.println("FEHLER: EDI-Eintrag " + ediNr + " ist nicht (mehr) gespeichert");
@@ -306,7 +312,9 @@ public class EdiMainController {
 	        		}
 	        		em.remove(ediEintrag);
 	        		em.getTransaction().commit();
-	        		Dialogs.showInformationDialog(primaryStage, "Edi-Eintrag " + ediNr + " erfolgreich gelöscht");
+	        		Dialogs.create().owner(primaryStage).masthead(null)
+	        				.message("Edi-Eintrag " + ediNr + " erfolgreich gelöscht")
+	        				.showInformation();
     			}	
     			ediNrArrayList.remove(selectedlistElement);
     			tableEdiNrAuswahl.getSelectionModel().clearSelection();
@@ -337,13 +345,16 @@ public class EdiMainController {
     		ExportToExcel export = new ExportToExcel(em);
     		try {
     			int lines = export.write(file);
-				Dialogs.showInformationDialog(primaryStage, 
-						lines + " Zeilen in der Datei " + file.getName() + 
-						" im Verzeichnis " + file.getParent() +" gespeichert",
-						"Hinweis", applName);
+    			Dialogs.create().owner(applName).title(applName)
+    					.masthead(null)
+    					.message(lines + " Zeilen in der Datei " + file.getName() + 
+    							" im Verzeichnis " + file.getParent() +" gespeichert")
+    					.showInformation();		
 			} catch (IOException e1) {
-				Dialogs.showErrorDialog(primaryStage, e1.getMessage(),
-				       "Fehler beim Speichern der Exportdatei", applName, e1);
+				Dialogs.create().owner(primaryStage).title(applName)
+						.masthead("FEHLER")
+						.message("Fehler beim Speichern der Exportdatei")
+						.showException(e1);
 			}
     	}
     }

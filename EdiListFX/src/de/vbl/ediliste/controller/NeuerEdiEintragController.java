@@ -3,7 +3,6 @@ package de.vbl.ediliste.controller;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Dialogs.DialogResponse;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -13,6 +12,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
+
+import org.controlsfx.dialog.Dialog;
 
 import de.vbl.ediliste.model.EdiEintrag;
 
@@ -24,10 +25,10 @@ public class NeuerEdiEintragController {
     @FXML private Label fehlertext;
     
 	private EntityManager em;
-	private DialogResponse response = DialogResponse.CANCEL;
+	private Dialog.Actions response = Dialog.Actions.CANCEL;
 	private EdiEintrag ediEintrag;
 
-	public DialogResponse getResponse() {
+	public Dialog.Actions getResponse() {
 		return response; 
 	}
 	public EdiEintrag getNewEdiEintrag () {
@@ -70,7 +71,7 @@ public class NeuerEdiEintragController {
     		em.getTransaction().begin();
     		em.persist(ediEintrag);
     		em.getTransaction().commit();
-    		response = DialogResponse.OK;
+    		response = Dialog.Actions.OK;
     		unbind();
     		close(event);
     	}

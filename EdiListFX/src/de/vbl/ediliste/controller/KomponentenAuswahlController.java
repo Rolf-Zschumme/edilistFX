@@ -15,8 +15,6 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Dialogs;
-import javafx.scene.control.Dialogs.DialogResponse;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -27,6 +25,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
+
+import org.controlsfx.dialog.Dialogs;
+import org.controlsfx.dialog.Dialog.Actions;
 
 import de.vbl.ediliste.model.EdiKomponente;
 import de.vbl.ediliste.model.EdiPartner;
@@ -59,11 +60,11 @@ public class KomponentenAuswahlController {
 	private ObservableList<EdiSystem> 		systemList;      //  = FXCollections.observableArrayList(); 
 	private ObservableList<EdiKomponente>   komponentenList; //  = FXCollections.observableArrayList(); 
 
-	public DialogResponse getResponse () {
-		if (ediKomponentenId==null || ediKomponentenId.get()==0L)
-			return DialogResponse.CANCEL;
+	public Actions getResponse () {
+		if (ediKomponentenId == null || ediKomponentenId.get()==0L)
+			return Actions.CANCEL;
 		else
-			return DialogResponse.OK;
+			return Actions.OK;
 	}
 
 	public Long getSelectedKomponentenId() {
@@ -280,21 +281,24 @@ public class KomponentenAuswahlController {
     	Stage stage = (Stage) source.getScene().getWindow();
     	String name = "";
     	while(true) {
-    		name = Dialogs.showInputDialog(stage,
-    				"Bezeichnung des Partners:",
-    				"Neuen EdiPartner anlegen",APPL_TITLE,name);
+			name = Dialogs.create().owner(stage).title(APPL_TITLE)
+					.masthead("Neuen EdiPartner anlegen")
+					.message("Bezeichnung des Partners:")
+					.showTextInput(name);
     		if (name == null)	
     			break;
     		if (name.length() < 3) {
-    			Dialogs.showInformationDialog(stage, 
-    					"Bitte einen Namen mit mind. 3 Zeichen eingeben",
-    					"Korrektur erforderlich",APPL_TITLE);
+    			Dialogs.create().owner(stage).title(APPL_TITLE)
+    				.masthead("Korrektur erforderlich")
+    				.message("Bitte einen Namen mit mind. 3 Zeichen eingeben")
+    				.showWarning();
     			continue;
     		}
     		if (partnerNameExist(name)) {
-    			Dialogs.showInformationDialog(stage, 
-    					"Ein EdiPartner mit diesem Namen ist bereits vorhanden",
-    					"Duplikatsprüfung",APPL_TITLE);
+    			Dialogs.create().owner(stage).title(APPL_TITLE)
+    				.masthead("Duplikatsprüfung")
+    				.message("Ein Partner mit diesem Namen ist bereits vorhanden")
+    				.showWarning();
     			continue;
     		}
     		EdiPartner ediPartner = new EdiPartner(name);
@@ -305,9 +309,10 @@ public class KomponentenAuswahlController {
     			partnerList.add(ediPartner);
     			partnerCB.getSelectionModel().select(ediPartner);
     		} catch (RuntimeException e) {
-    			Dialogs.showErrorDialog(stage,
-    					"Fehler beim speichern des Partners",
-    					"Datenbankfehler",APPL_TITLE,e);
+    			Dialogs.create().owner(stage).title(APPL_TITLE)
+					.masthead("Datenbankfehler")
+					.message("Fehler beim Anlegen des Partners")
+					.showException(e);
     			continue;
     		}
     		break;
@@ -331,21 +336,24 @@ public class KomponentenAuswahlController {
     	EdiPartner aktPartner = partnerCB.getSelectionModel().getSelectedItem();
     	String partnerName = aktPartner.getName();
     	while(true) {
-    		name = Dialogs.showInputDialog(stage,
-    				"Bezeichnung des neuen Systems:",
-    				"Neues System für EdiPartner " + partnerName + " anlegen" ,APPL_TITLE,name);
+			name = Dialogs.create().owner(stage).title(APPL_TITLE)
+					.masthead("Neues System für Partner " + partnerName + " anlegen")
+					.message("Bezeichnung des neuen Systems:")
+					.showTextInput(name);
     		if (name == null)	
     			break;
     		if (name.length() < 3) {
-    			Dialogs.showInformationDialog(stage, 
-    					"Der System-Name muß mindestens 3 Zeichen lang sein",
-    					"Korrektur erforderlich",APPL_TITLE);
+    			Dialogs.create().owner(stage).title(APPL_TITLE)
+					.masthead("Korrektur erforderlich")
+					.message("Der System-Name muß mindestens 3 Zeichen lang sein")
+					.showWarning();
     			continue;
     		}
     		if (systemNameExist(name)) {
-    			Dialogs.showInformationDialog(stage, 
-    					"Für den EdiPartner " + partnerName + " ist bereits ein gleichnamiges System vorhanden",
-    					"Duplikatsprüfung",APPL_TITLE);
+    			Dialogs.create().owner(stage).title(APPL_TITLE)
+					.masthead("Duplikatsprüfung")
+					.message("Für den Partner " + partnerName + " ist bereits ein gleichnamiges System vorhanden")
+					.showWarning();
     			continue;
     		}
     		EdiSystem ediSystem = new EdiSystem(name, aktPartner);
@@ -354,9 +362,10 @@ public class KomponentenAuswahlController {
     			em.persist(ediSystem);
     			em.getTransaction().commit();
     		} catch (RuntimeException e) {
-    			Dialogs.showErrorDialog(stage,
-    					"Fehler beim Anlegen des Systems",
-    					"Datenbankfehler",APPL_TITLE,e);
+    			Dialogs.create().owner(stage).title(APPL_TITLE)
+					.masthead("Datenbankfehler")
+					.message("Fehler beim Anlegen des Systems")
+					.showException(e);
     			continue;
     		}
     		systemList.add(ediSystem);
@@ -381,21 +390,24 @@ public class KomponentenAuswahlController {
     	EdiSystem aktSystem = systemCB.getSelectionModel().getSelectedItem();
     	String systemName = aktSystem.getFullname();
     	while(true) {
-    		name = Dialogs.showInputDialog(stage,
-    				"Bezeichnung der neuen Komponente:",
-    				"Neue Komponente für das System " + systemName + " anlegen" ,APPL_TITLE,name);
+			name = Dialogs.create().owner(stage).title(APPL_TITLE)
+					.masthead("Neue Komponente für das System " + systemName + " anlegen")
+					.message("Bezeichnung der neuen Komponente:")
+					.showTextInput(name);
     		if (name == null)	
     			break;
     		if (name.length() < 3) {
-    			Dialogs.showInformationDialog(stage, 
-    					"Der System-Name muß mindestens 3 Zeichen lang sein",
-    					"Korrektur erforderlich",APPL_TITLE);
+    			Dialogs.create().owner(stage).title(APPL_TITLE)
+					.masthead("Korrektur erforderlich")
+					.message("Der Komponenten-Name muß mindestens 3 Zeichen lang sein")
+					.showWarning();
     			continue;
     		}
     		if (komponentenNameExist(name)) {
-    			Dialogs.showInformationDialog(stage, 
-    					"Für den System " + systemName + " ist bereits eine gleichnamige Komponente vorhanden",
-    					"Duplikatsprüfung",APPL_TITLE);
+    			Dialogs.create().owner(stage).title(APPL_TITLE)
+					.masthead("Duplikatsprüfung")
+					.message("Für das System " + systemName + " ist bereits eine gleichnamige Komponente vorhanden")
+					.showWarning();
     			continue;
     		} 
     		EdiKomponente ediKomponente = new EdiKomponente(name, aktSystem);
@@ -404,9 +416,10 @@ public class KomponentenAuswahlController {
     			em.persist(ediKomponente);
     			em.getTransaction().commit();
     		} catch (RuntimeException e) {
-    			Dialogs.showErrorDialog(stage,
-    					"Fehler beim Anlegen der Komponente",
-    					"Datenbankfehler",APPL_TITLE,e);
+    			Dialogs.create().owner(stage).title(APPL_TITLE)
+					.masthead("Datenbankfehler")
+					.message("Fehler beim Anlegen der Komponente")
+					.showException(e);
     			continue;
     		}
     		komponentenList.add(ediKomponente);

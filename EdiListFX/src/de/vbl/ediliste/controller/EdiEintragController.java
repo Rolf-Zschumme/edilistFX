@@ -20,9 +20,18 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Dialogs;
-import javafx.scene.control.Dialogs.DialogOptions;
-import javafx.scene.control.Dialogs.DialogResponse;
+
+import org.controlsfx.control.action.Action;
+import org.controlsfx.dialog.Dialog;
+import org.controlsfx.dialog.Dialog.Actions;
+import org.controlsfx.dialog.Dialogs;
+
+
+
+
+//import javafx.scene.control.Dialogs;
+//import javafx.scene.control.Dialogs.DialogOptions;
+//import javafx.scene.control.Dialogs.DialogResponse;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
@@ -201,24 +210,33 @@ public class EdiEintragController {
 				aktName = buOb.getName();
 				ediEintragIsChanged.set(true);
 			} else {
-				String msg = "Soll das folgende Geschäftsobjekt neu angelegt werden?"; 
-				newName = Dialogs.showInputDialog(primaryStage, msg, null, applName, newName);
+				newName = Dialogs.create().owner(primaryStage).title(applName)
+						.message("Soll das folgende Geschäftsobjekt neu angelegt werden?")
+						.showTextInput(newName);
+//				newName = Dialogs.showInputDialog(primaryStage, msg, null, applName, newName);
 				if (newName != null) {
 					GeschaeftsObjekt newBusObj = new GeschaeftsObjekt(newName);
 					try {
 						em.getTransaction().begin();
 						em.persist(newBusObj);
 						em.getTransaction().commit();
-						msg = "Geschäftsobjekt \"" + newBusObj.getName() + "\" erfolgreich gespeichert";
-						Dialogs.showInformationDialog(primaryStage, msg);
+						String msg = "Das Geschäftsobjekt \"" + newBusObj.getName() + "\" wurde erfolgreich gespeichert";
+						Dialogs.create().owner(primaryStage)
+							   .title(applName).masthead(null)
+							   .message(msg).showInformation();
+//						Dialogs.showInformationDialog(primaryStage, msg);
 						businessObjectName.add(newName);
 						businessObjectMap.put(newName.toUpperCase(), newBusObj);
 						aktName = newName;
 						ediEintragIsChanged.set(true);
 					} catch (RuntimeException er) {
-						Dialogs.showErrorDialog(primaryStage,
-								"Fehler beim speichern des Geschäftsobjektes",
-								"Datenbankfehler",applName,er);
+						Dialogs.create().owner(primaryStage)
+						   .title(applName).masthead("Datenbankfehler")
+						   .message("Fehler beim speichern des Geschäftsobjektes")
+						   .showException(er);
+//						Dialogs.showErrorDialog(primaryStage,
+//								"Fehler beim speichern des Geschäftsobjektes",
+//								"Datenbankfehler",applName,er);
 					}
 				}	
 			}
@@ -305,15 +323,22 @@ public class EdiEintragController {
 	
 	public boolean checkForContinueEditing() {
 		if (aktEdi != null && aktEdiEqualPersistence() == false) {
-			String msg = "Soll die Änderungen am EDI-Eintrag " + aktEdi.getEdiNrStr() + 
-					   " \"" + aktEdi.getBezeichnung() + "\" gespeichert werden?";
-			DialogResponse res = Dialogs.showConfirmDialog(primaryStage, msg , SICHERHEITSABFRAGE, 
-											  applName, DialogOptions.YES_NO_CANCEL);
-			if (res == DialogResponse.YES) {
+			Action response = Dialogs.create().owner(primaryStage)
+					.title(applName).masthead(SICHERHEITSABFRAGE)
+					.message("Soll die Änderungen am EDI-Eintrag " + aktEdi.getEdiNrStr() + 
+					   " \"" + aktEdi.getBezeichnung() + "\" gespeichert werden?")
+					.showConfirm();
+//			DialogResponse res = Dialogs.showConfirmDialog(primaryStage, msg , SICHERHEITSABFRAGE, 
+//											  applName, DialogOptions.YES_NO_CANCEL);
+			if (response == Dialog.Actions.YES) {
 				if (aktEdiEintragSpeichern()==false)
 					return true;
-				Dialogs.showInformationDialog(primaryStage, "Die Änderungen wurden gespeichert", "Info", applName);
-			} else if (res != DialogResponse.NO) {
+				Dialogs.create().owner(primaryStage)
+					   .title(applName).masthead(null)
+					   .message("Die Änderungen wurden gespeichert")
+					   .showInformation();
+//				Dialogs.showInformationDialog(primaryStage, "Die Änderungen wurden gespeichert", "Info", applName);
+			} else if (response != Dialog.Actions.NO) {
 				return true;
 			}
 		}
@@ -336,8 +361,10 @@ public class EdiEintragController {
     private boolean aktEdiEintragSpeichern() {
 		// Prüfungen
     	if (aktEdi.getKomponente()==null) {
-			String msg = "Sender ist erforderlich";
-			Dialogs.showInformationDialog(primaryStage, msg, "Korrektur-Hinweis", applName);
+			Dialogs.create().owner(primaryStage)
+					.title(applName).masthead("Korrektur-Hinweis")
+					.message("Sender ist erforderlich")
+					.showWarning();
 			btnSender.requestFocus();
 			return false;
     	}
@@ -345,16 +372,20 @@ public class EdiEintragController {
 			EdiEmpfaenger empf = aktEmpfaenger[i];
 			if (empf == null) {
 				if (i==0) {
-					String msg = "Empfänger ist erforderlich";
-					Dialogs.showInformationDialog(primaryStage, msg, "Korrektur-Hinweis", applName);
+					Dialogs.create().owner(primaryStage)
+							.title(applName).masthead("Korrektur-Hinweis")
+							.message("Empfänger ist erforderlich")
+							.showWarning();
 					btnEmpfaenger1.requestFocus();
 					return false;
 				}
 			} else {  
 				if (busObjName[i].length() < 1) {
-					String msg = "Bitte zum Empfänger \"" + empf.getKomponente().getFullname() + "\""  +
-							    " auch ein Geschäftsobjekt eintragen/auswählen";
-					Dialogs.showInformationDialog(primaryStage, msg, "Korrektur-Hinweis", applName);
+					Dialogs.create().owner(primaryStage)
+							.title(applName).masthead("Korrektur-Hinweis")
+							.message("Bitte zum Empfänger \"" + empf.getKomponente().getFullname() + "\""  +
+								    " auch ein Geschäftsobjekt eintragen/auswählen")
+							.showWarning();
 					switch(i) {
 						case 0: cmbBuOb1.requestFocus(); break;
 						case 1: cmbBuOb2.requestFocus(); break;
@@ -390,9 +421,10 @@ public class EdiEintragController {
 			em.getTransaction().commit();
 			em.detach(aktEdi);
 		} catch (RuntimeException e) {
-			Dialogs.showErrorDialog(primaryStage,
-					"Fehler beim Speichern des Eintrags",
-					"Datenbankfehler",applName,e);
+			Dialogs.create().owner(primaryStage)
+			   .title(applName).masthead("Datenbankfehler")
+			   .message("Fehler beim speichern des Geschäftsobjektes")
+			   .showException(e);
 			return false;
 		}	
 		ediEintragIsChanged.set(false);
@@ -426,7 +458,7 @@ public class EdiEintragController {
     	Long aktSenderId = (aktEdi.getKomponente()==null) ? 0L : aktEdi.getKomponente().getId();
     	komponentenAuswahlController.setKomponente(KomponentenTyp.SENDER, aktSenderId);
     	dialog.showAndWait();
-    	if (komponentenAuswahlController.getResponse() == DialogResponse.OK ) {
+    	if (komponentenAuswahlController.getResponse() == Actions.OK ) {
 	    	Long selKomponentenID = komponentenAuswahlController.getSelectedKomponentenId();
     	    if (aktSenderId != selKomponentenID	) {
    	    		aktEdi.setKomponente(em.find(EdiKomponente.class, selKomponentenID));
@@ -471,7 +503,7 @@ public class EdiEintragController {
     	Long aktEmpfaengerId = (aktEmpfaenger[btnNr]==null ? 0L : aktEmpfaenger[btnNr].getKomponente().getId());
     	komponentenAuswahlController.setKomponente(KomponentenTyp.RECEIVER, aktEmpfaengerId);
     	dialog.showAndWait();
-    	if (komponentenAuswahlController.getResponse() == DialogResponse.OK ) {
+    	if (komponentenAuswahlController.getResponse() == Actions.OK ) {
     		Long selEmpfaengerID = komponentenAuswahlController.getSelectedKomponentenId();
     		if (aktEmpfaengerId != selEmpfaengerID) {
     			if (aktEmpfaenger[btnNr] == null) {

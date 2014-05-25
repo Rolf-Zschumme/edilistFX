@@ -3,7 +3,6 @@ package de.vbl.ediliste.main;
 
 import java.io.IOException;
 
-import de.vbl.ediliste.controller.EdiMainController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
