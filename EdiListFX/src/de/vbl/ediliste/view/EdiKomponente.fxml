@@ -3,64 +3,38 @@
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane fx:id="ediKomponente" xmlns="http://javafx.com/javafx/8"
-	xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.ediliste.controller.EdiKomponenteController">
+<AnchorPane fx:id="ediKomponente" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.ediliste.controller.EdiKomponenteController">
 	<children>
-		<SplitPane dividerPositions="0.35" focusTraversable="true"
-			orientation="VERTICAL" prefHeight="400.0" prefWidth="600.0"
-			AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-			AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+		<SplitPane dividerPositions="0.35" focusTraversable="true" orientation="VERTICAL" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 			<items>
-				<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0"
-					prefWidth="160.0">
+				<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
 					<children>
-						<TitledPane animated="false" prefHeight="146.0"
-							prefWidth="298.0" text="Eigenschaften der Komponente"
-							AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-							AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+						<TitledPane animated="false" prefHeight="146.0" prefWidth="298.0" text="Eigenschaften der Komponente" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 							<content>
-								<AnchorPane minHeight="0.0" minWidth="0.0"
-									prefHeight="180.0" prefWidth="200.0">
+								<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
 									<children>
-										<TextField fx:id="tfBezeichnung" layoutX="86.0"
-											layoutY="11.0" prefHeight="25.0" AnchorPane.leftAnchor="80.0"
-											AnchorPane.rightAnchor="15.0" />
+										<TextField fx:id="tfBezeichnung" layoutX="86.0" layoutY="11.0" prefHeight="25.0" AnchorPane.leftAnchor="80.0" AnchorPane.rightAnchor="15.0" />
 										<Label layoutX="8.0" layoutY="15.0" text="Bezeichnung:" />
-										<Label layoutX="6.0" layoutY="52.0" text="Beschreibung:"
-											AnchorPane.topAnchor="40.0" />
-										<TextArea fx:id="taBeschreibung" layoutX="90.0"
-											layoutY="47.0" prefHeight="54.0" prefWidth="480.0"
-											AnchorPane.bottomAnchor="9.0" AnchorPane.leftAnchor="80.0"
-											AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="40.0" />
+										<Label layoutX="6.0" layoutY="52.0" text="Beschreibung:" AnchorPane.topAnchor="40.0" /><TextFlow layoutX="90.0" layoutY="43.0" prefHeight="58.0" prefWidth="480.0" />
 									</children>
 								</AnchorPane>
 							</content>
 						</TitledPane>
 					</children>
 				</AnchorPane>
-				<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0"
-					prefWidth="160.0">
+				<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
 					<children>
-						<TitledPane animated="false" layoutX="38.0" layoutY="-11.0"
-							prefHeight="146.0" prefWidth="298.0" text="Verwendungen"
-							AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-							AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+						<TitledPane animated="false" layoutX="38.0" layoutY="-11.0" prefHeight="146.0" prefWidth="298.0" text="Verwendungen" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 							<content>
-								<AnchorPane minHeight="0.0" minWidth="0.0"
-									prefHeight="180.0" prefWidth="200.0">
+								<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
 									<children>
-										<TableView fx:id="tvVerwendungen" prefHeight="120.0"
-											prefWidth="296.0" AnchorPane.bottomAnchor="0.0"
-											AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-											AnchorPane.topAnchor="5.0">
+										<TableView fx:id="tvVerwendungen" prefHeight="120.0" prefWidth="296.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
 											<columns>
-												<TableColumn fx:id="tcEdiNr" prefWidth="75.0"
-													text="Edi-Nr." />
-												<TableColumn fx:id="tcSender" prefWidth="144.99996185302734"
-													text="Edi-Sender" />
-												<TableColumn fx:id="tcEmpfaenger" prefWidth="153.0"
-													text="Edi-Empfänger" />
+												<TableColumn fx:id="tcEdiNr" prefWidth="75.0" text="Edi-Nr." />
+												<TableColumn fx:id="tcSender" maxWidth="500.0" prefWidth="160.0" text="Edi-Sender" />
+												<TableColumn fx:id="tcEmpfaenger" maxWidth="500.0" prefWidth="160.0" text="Edi-Empfänger" />
 												<TableColumn fx:id="tcDatumBis" text="Start-Datum" />
 												<TableColumn text="Ende-Datum" />
 											</columns>

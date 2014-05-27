@@ -3,6 +3,7 @@ package de.vbl.ediliste.controller;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
@@ -32,11 +33,10 @@ import javafx.stage.StageStyle;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
-import org.controlsfx.dialog.Dialog.Actions;
 import org.controlsfx.dialog.Dialogs;
 
 import de.vbl.ediliste.model.EdiEintrag;
@@ -45,9 +45,7 @@ import de.vbl.ediliste.model.EdiKomponente;
 import de.vbl.ediliste.model.EdiSystem;
 import de.vbl.ediliste.model.GeschaeftsObjekt;
 import de.vbl.ediliste.tools.ExportToExcel;
-import de.vbl.ediliste.view.EdiNrListElement;
 import de.vbl.ediliste.view.PartnerListElement;
-
 
 public class EdiMainController {
 	private static final String PERSISTENCE_UNIT_NAME = "EdiListFX";
@@ -56,9 +54,9 @@ public class EdiMainController {
     @FXML private TextField txtInfoZeile;
     @FXML private TabPane tabPaneObjekte;    
     @FXML private Tab tabEdiNr;
-    @FXML private TableView<EdiNrListElement> tableEdiNrAuswahl;
-    @FXML private TableColumn<EdiNrListElement, String> tColAuswahlEdiNr;
-    @FXML private TableColumn<EdiNrListElement, String> tColAuswahlEdiNrBezeichnung;
+    @FXML private TableView<EdiEintrag> tableEdiNrAuswahl;
+    @FXML private TableColumn<EdiEintrag, String> tColAuswahlEdiNr;
+    @FXML private TableColumn<EdiEintrag, String> tColAuswahlEdiNrBezeichnung;
 
     @FXML private Tab tabPartner;
     @FXML private TableView<PartnerListElement> tablePartnerAuswahl;
@@ -100,39 +98,44 @@ public class EdiMainController {
     
 	private static String applName;
 	private Stage primaryStage;
-    private EntityManager em;
-    private ObservableList<EdiNrListElement> ediNrArrayList = FXCollections.observableArrayList();
+    private EntityManager entityManager;
+    private ObservableList<EdiEintrag> ediEintraegeList = FXCollections.observableArrayList();
     private ObservableList<EdiKomponente> ediKomponentenList = FXCollections.observableArrayList();    
     private int maxEdiNr;
 
 	
-//    public void start(Stage stage, String applikationName) {
-//    	primaryStage = stage;
-//    	applName = applikationName;
-//    	ediEintragController.setInitial(this, primaryStage, applName, em);
-//    }
+    public void start(Stage stage, String applikationName) {
+    	System.out.println("EdiMainController.start() stage:"+stage);
+    	primaryStage = stage;
+    	applName = applikationName;
+//    	ediEintragController.setInitial(this, primaryStage, applName, entityManager);
+    }
 
     @FXML
 	private void initialize () {
 		System.out.println("EdiMainController.initialize()");
 		System.out.println("	ediEintragController   :" + ediEintragController);
+		System.out.println("	ediEintrag             :" + ediEintrag);
 		System.out.println("	ediKomponenteController:" + ediKomponenteController);
-		setupEntityManager();
+		System.out.println("	ediKomponente          :" + ediKomponente);
+		
 		checkFieldsFromView();
-    	loadEdiNrListData();
+		setupEntityManager();
+    	loadEdiEintragListData();
         setupBindings();		
     }	
 
     private void setupBindings() {
     	
-        tableEdiNrAuswahl.setItems(ediNrArrayList);
-    	tColAuswahlEdiNr.setCellValueFactory(new PropertyValueFactory<EdiNrListElement,String>("ediNr"));
-    	tColAuswahlEdiNrBezeichnung.setCellValueFactory(new PropertyValueFactory<EdiNrListElement,String>("bezeichnung"));
+        tableEdiNrAuswahl.setItems(ediEintraegeList);
+    	tColAuswahlEdiNr.setCellValueFactory(new PropertyValueFactory<EdiEintrag,String>("ediNr"));
+    	tColAuswahlEdiNrBezeichnung.setCellValueFactory(new PropertyValueFactory<EdiEintrag,String>("bezeichnung"));
     	
     	btnDeleteEdiEintrag.disableProperty().bind(
     			Bindings.isNull(tableEdiNrAuswahl.getSelectionModel().selectedItemProperty()));
     	ediEintrag.disableProperty().bind(
     			Bindings.isNull(tableEdiNrAuswahl.getSelectionModel().selectedItemProperty()));
+    	ediEintragController.setEntityManager(entityManager);
 //    	btnDeleteGeschaeftsobjekt.disableProperty().bind(
 //    			Bindings.isNull(tableGeschaeftsobjektAuswahl.getSelectionModel().selectedItemProperty()));
 //    	tablePartnerAuswahl.setItems(ediPartnerList);
@@ -150,9 +153,7 @@ public class EdiMainController {
     	tColSelKompoSysteme.setCellValueFactory(new PropertyValueFactory<EdiKomponente,String>("systemName"));
     	tColSelKompoPartner.setCellValueFactory(new PropertyValueFactory<EdiKomponente,String>("partnerName"));
     	
-    	System.out.println("ediKomponenteController:" + ediKomponenteController);
-    	System.out.println("ediKomponente          :" + ediKomponente);
-    	ediKomponenteController.setEntityManager(em);
+    	ediKomponenteController.setEntityManager(entityManager);
     	ediKomponenteController.komponenteProperty().bind(tableKomponentenAuswahl.getSelectionModel().selectedItemProperty());
     	ediKomponente.disableProperty().bind(
     			Bindings.isNull(tableKomponentenAuswahl.getSelectionModel().selectedItemProperty()));
@@ -218,26 +219,29 @@ public class EdiMainController {
     	
     }
 
-	private void loadEdiNrListData() {
-    	Query query = em.createQuery("SELECT e.id, e.ediNr, e.bezeichnung FROM EdiEintrag e ORDER BY e.ediNr");
-    	ediNrArrayList.clear();
-    	Integer max = 0;
-    	for (Object zeile  : query.getResultList()) {
-    		Object[] obj = (Object[]) zeile;
-			ediNrArrayList.add(new EdiNrListElement( (Long) obj[0], (Integer) obj[1], (String) obj[2]));
-			max = (Integer) obj[1]; 
-    	}	
-    	maxEdiNr = max;
+	private void loadEdiEintragListData() {
+    	ediEintraegeList.clear();
+    	TypedQuery<EdiEintrag> tq = entityManager.createQuery(
+				"SELECT e FROM EdiEintrag e ORDER BY e.ediNr", EdiEintrag.class);
+		List<EdiEintrag> ediList = tq.getResultList();
+		ediEintraegeList.addAll(ediList);
+		maxEdiNr = 0;
+		for(EdiEintrag e : ediList ) {
+	    	if (e.getEdiNr() > maxEdiNr) maxEdiNr = e.getEdiNr();
+		}
 	}
         	    
 	private void loadKomponentenListData() {
 		ediKomponentenList.clear();
-		Query query = em.createQuery("SELECT k FROM EdiKomponente k ORDER BY k.name");
-		for (Object k : query.getResultList()) {
-			ediKomponentenList.add((EdiKomponente)k);
-		}	
+		TypedQuery<EdiKomponente> tq = entityManager.createQuery(
+				"SELECT k FROM EdiKomponente k ORDER BY k.name", EdiKomponente.class);
+		ediKomponentenList.addAll(tq.getResultList());
+		
+//		Query query = entityManager.createQuery("SELECT k FROM EdiKomponente k ORDER BY k.name");
+//		for (Object k : query.getResultList()) {
+//			ediKomponentenList.add((EdiKomponente)k);
+//		}	
 	}
-	
 	
 	@FXML
     void btnUeber(ActionEvent event) {
@@ -274,24 +278,23 @@ public class EdiMainController {
 
     	if (dialogController.getResponse() == Dialog.Actions.OK) {
     		EdiEintrag newEE = dialogController.getNewEdiEintrag();
-			EdiNrListElement newListElement = new EdiNrListElement(newEE.getId(),newEE.getEdiNr(),newEE.getBezeichnung());
-			ediNrArrayList.add(newListElement);
+			ediEintraegeList.add(newEE);
 			if (newEE.getEdiNr() > maxEdiNr) 
 				maxEdiNr = newEE.getEdiNr();
-			tableEdiNrAuswahl.getSelectionModel().select(newListElement);
+			tableEdiNrAuswahl.getSelectionModel().select(newEE);
     	}
     }    
 
     private void setupEntityManager() {
     	EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-    	em = factory.createEntityManager();
+    	entityManager = factory.createEntityManager();
     }
     
     @FXML    
     void deleteEdiEintrag(ActionEvent event) {
-    	EdiNrListElement selectedlistElement = tableEdiNrAuswahl.getSelectionModel().getSelectedItem();
+    	EdiEintrag selectedlistElement = tableEdiNrAuswahl.getSelectionModel().getSelectedItem();
     	if (selectedlistElement != null) {
-    		String ediNr = selectedlistElement.ediNrProperty().get();
+    		String ediNr = Integer.toString(selectedlistElement.ediNrProperty().get());
     		Action response = Dialogs.create()
     				.owner(primaryStage).title(applName)
     				.actions(Dialog.Actions.OK, Dialog.Actions.CANCEL)
@@ -299,24 +302,24 @@ public class EdiMainController {
     				.message("EDI-Eintrag mit der Nr. " + ediNr + " wirklich löschen?")
     				.showConfirm();
     		if (response == Dialog.Actions.OK) {
-    			EdiEintrag ediEintrag = em.find(EdiEintrag.class, selectedlistElement.getEdiId());
+    			EdiEintrag ediEintrag = entityManager.find(EdiEintrag.class, selectedlistElement.getId());
     			if (ediEintrag==null) {
     				System.out.println("FEHLER: EDI-Eintrag " + ediNr + " ist nicht (mehr) gespeichert");
     			}
     			else {
-	        		em.getTransaction().begin();
+	        		entityManager.getTransaction().begin();
 	        		Iterator<EdiEmpfaenger> empf = ediEintrag.getEdiEmpfaenger().iterator();
 	        		while (empf.hasNext()) {
-	        			em.remove(empf.next());
+	        			entityManager.remove(empf.next());
 	        			empf.remove();
 	        		}
-	        		em.remove(ediEintrag);
-	        		em.getTransaction().commit();
+	        		entityManager.remove(ediEintrag);
+	        		entityManager.getTransaction().commit();
 	        		Dialogs.create().owner(primaryStage).masthead(null)
 	        				.message("Edi-Eintrag " + ediNr + " erfolgreich gelöscht")
 	        				.showInformation();
     			}	
-    			ediNrArrayList.remove(selectedlistElement);
+    			ediEintraegeList.remove(selectedlistElement);
     			tableEdiNrAuswahl.getSelectionModel().clearSelection();
     		}
     	}
@@ -342,7 +345,7 @@ public class EdiMainController {
     	if (file != null) {
 			initialExportFilePath = file.getParent();
 			initialExportFileName = file.getName();
-    		ExportToExcel export = new ExportToExcel(em);
+    		ExportToExcel export = new ExportToExcel(entityManager);
     		try {
     			int lines = export.write(file);
     			Dialogs.create().owner(applName).title(applName)

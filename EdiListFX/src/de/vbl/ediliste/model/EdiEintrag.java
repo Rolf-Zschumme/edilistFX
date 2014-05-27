@@ -113,10 +113,10 @@ public class EdiEintrag {
 		return ediKomponente;
 	}
 
-	public void setKomponente(EdiKomponente param) {
-		String senderName = (param == null) ? "" : param.getFullname(); 
-   		this.senderNameProperty().set(senderName);
-		this.ediKomponente = param;
+	public void setKomponente(EdiKomponente kompo) {
+		String senderName = (kompo == null) ? "?k?" : kompo.getFullname(); 
+   		this.senderName.set(senderName);
+		this.ediKomponente = kompo;
 	}
 
 	@OneToMany(mappedBy = "ediEintrag")

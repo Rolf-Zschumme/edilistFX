@@ -13,17 +13,19 @@ import javax.persistence.ManyToOne;
 @Entity
 public class EdiKomponente {
 	private StringProperty name = new SimpleStringProperty();
-	private StringProperty fullname = new SimpleStringProperty();
+	private StringProperty fullname; // = new SimpleStringProperty();
 	private long id;
 	private EdiSystem ediSystem;
 	private String beschreibung;
 
 	public EdiKomponente() {
+		fullname = new SimpleStringProperty();
 	}
 
 	public EdiKomponente(String name, EdiSystem system) {
-		this.name.set(name);
+		this();
 		this.ediSystem = system;
+		this.setName(name);
 	}
 
 	// ------------------------------------------------------------------------
@@ -48,17 +50,24 @@ public class EdiKomponente {
 
 	public void setName(String param) {
 		name.set(param);
+//		System.out.println("Edikomponente.setName:" + param + " system:" + ediSystem);
+		String tmpName = ediSystem == null ? "-?-" : ediSystem.getFullname();
+		fullname.set(tmpName + ASCIItoStr(42) + name.get());
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
 	public StringProperty fullnameProperty() {
+//		System.out.println("EdiKomponente.fullnameProperty() called for " + fullname.get() + " system:" + ediSystem.getFullname());
 		return fullname;
 	}
 
 	public String getFullname() {
+//		return fullname.get();
 		String fullName = ediSystem == null ? "-?-" : ediSystem.getFullname();
 		return fullName + ASCIItoStr(42) + name.get();  // 151
 	}
+
+	
 	
 	private String ASCIItoStr(int a) {
 		byte[] b = { (byte) a };

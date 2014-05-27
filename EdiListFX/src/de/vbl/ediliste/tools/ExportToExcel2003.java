@@ -4,11 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
 
-import javafx.scene.control.Dialogs;
 import javafx.stage.Stage;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+
+import org.controlsfx.dialog.Dialogs;
 
 import jxl.CellView;
 import jxl.Workbook;
@@ -58,29 +59,35 @@ public class ExportToExcel2003 {
 		try {
 			workbook = Workbook.createWorkbook(file, wbSettings);
 		} catch (IOException e) {
-			Dialogs.showErrorDialog(primaryStage, "Fehler bei Dateianlage", "?", appl_title, e);
+			showErrorDialog("Fehler bei Dateianlage", e);
 		}
 		try {
 			createExcelSheets(workbook);
 		} catch (WriteException e) {
-			Dialogs.showErrorDialog(primaryStage, "Fehler beim Excelsheet füllen", "?", appl_title, e);
+			showErrorDialog("Fehler beim Excelsheet füllen", e);
 		}
-		
 		try {
 			workbook.write();
 			workbook.close();
 		} catch (IOException e) {
-			Dialogs.showErrorDialog(primaryStage, "Fehler bei Dateischreiben", "?", appl_title, e);
+			showErrorDialog("Fehler bei Dateischreiben", e);
 		} catch (WriteException e) {
-			Dialogs.showErrorDialog(primaryStage, "Fehler bei Datei-Schließen", "?", appl_title, e);
+			showErrorDialog("Fehler bei Datei-Schließen", e);
 		}
-		
-		Dialogs.showInformationDialog(primaryStage, 
-				"Information", 
-				"Export erstellt", appl_title);
-	
+		Dialogs.create().owner(primaryStage).title(appl_title)
+			   .masthead("Information")
+			   .message("Export erstellt")
+			   .showInformation();
 	}
-	
+	private void showErrorDialog(String message, Exception e) {
+		Dialogs.create()
+			   .owner(primaryStage)
+			   .title(appl_title)
+			   .masthead("Excel-2003-Export")
+			   .message(message)
+			   .showException(e);
+	}
+
 	private void createExcelSheets(WritableWorkbook wb) throws RowsExceededException, WriteException {
     	wb.createSheet(PARTNER_SHEET,0);
     	WritableSheet p_Sheet = wb.getSheet(0);

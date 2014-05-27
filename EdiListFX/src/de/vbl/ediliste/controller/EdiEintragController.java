@@ -8,7 +8,9 @@ import java.util.Map;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -25,8 +27,6 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialog.Actions;
 import org.controlsfx.dialog.Dialogs;
-
-
 
 
 //import javafx.scene.control.Dialogs;
@@ -55,6 +55,8 @@ public class EdiEintragController {
 	private static final String SICHERHEITSABFRAGE = "Sicherheitsabfrage";
 	private static final Integer MAX_EMPFAENGER = 3;
 
+	private final ObjectProperty<EdiEintrag> ediEintrag;
+	
 	@FXML private AnchorPane rightsplitpane;
     @FXML private VBox eintragVBox;
 
@@ -74,10 +76,9 @@ public class EdiEintragController {
     @FXML private Button btnEmpfaenger3;
     @FXML private Button btnSender;
     
-//  private static MainController mainController;
     private static Stage primaryStage;
     private static String applName;
-    private static EntityManager em;
+    private static EntityManager entityManager;
 
     private BooleanProperty ediEintragIsChanged = new SimpleBooleanProperty(false);
     private BooleanProperty senderIsSelected = new SimpleBooleanProperty(false);
@@ -96,6 +97,15 @@ public class EdiEintragController {
     private EdiEmpfaenger aktEmpfaenger[] = new EdiEmpfaenger[MAX_EMPFAENGER];
     private String busObjName[] = { "", "", ""};
 
+	public EdiEintragController() {
+    	this.entityManager = null;
+    	this.ediEintrag = new SimpleObjectProperty<>(this, "ediEintrag", null);
+	}
+
+	public void setEntityManager(EntityManager entityManager) {
+		this.entityManager = entityManager;
+	}
+	
     @FXML
     void initialize() {
     	System.out.println("EdiEintragController.initialize()");
@@ -117,11 +127,11 @@ public class EdiEintragController {
     	btnEdiEintragSpeichern.disableProperty().bind(Bindings.not(ediEintragIsChanged));
     }	
     	
-	public void setInitial(Stage stage, String applikationName, EntityManager entityManager) {
+	public void setInitial(Stage stage, String applikationName) { // , EntityManager entityManager) {
 //    	mainController = main;
 		primaryStage = stage;
 		applName = applikationName;
-		em = entityManager;
+//		entityManager = entityManager;
 		readOnlyAccess.set(false);
 
 		readBusinessObject();
@@ -217,9 +227,9 @@ public class EdiEintragController {
 				if (newName != null) {
 					GeschaeftsObjekt newBusObj = new GeschaeftsObjekt(newName);
 					try {
-						em.getTransaction().begin();
-						em.persist(newBusObj);
-						em.getTransaction().commit();
+						entityManager.getTransaction().begin();
+						entityManager.persist(newBusObj);
+						entityManager.getTransaction().commit();
 						String msg = "Das Geschäftsobjekt \"" + newBusObj.getName() + "\" wurde erfolgreich gespeichert";
 						Dialogs.create().owner(primaryStage)
 							   .title(applName).masthead(null)
@@ -247,7 +257,7 @@ public class EdiEintragController {
 	private void readBusinessObject() {
 		businessObjectMap.clear();
 		businessObjectName.clear();
-		TypedQuery<GeschaeftsObjekt> tq = em.createQuery(
+		TypedQuery<GeschaeftsObjekt> tq = entityManager.createQuery(
 				"SELECT g FROM GeschaeftsObjekt g ORDER BY g.name", GeschaeftsObjekt.class);
 		List<GeschaeftsObjekt> gList = tq.getResultList();
 		for (GeschaeftsObjekt gObject : gList) {
@@ -260,7 +270,7 @@ public class EdiEintragController {
     public void setSelection( EdiEintrag selEDI) {
 		if (aktEdi == null || aktEdi.getId() != selEDI.getId() ) {
 			aktEdi = selEDI;
-			em.detach(aktEdi);
+			entityManager.detach(aktEdi);
 		}	
 		if (aktEdi.getBeschreibung() == null) {
 			aktEdi.setBeschreibung("");
@@ -346,7 +356,7 @@ public class EdiEintragController {
 	}
 	
 	private boolean aktEdiEqualPersistence() {
-		EdiEintrag orgEdi = em.find(EdiEintrag.class, aktEdi.getId());
+		EdiEintrag orgEdi = entityManager.find(EdiEintrag.class, aktEdi.getId());
 		if (aktEdi.equaels(orgEdi)) {
 			return true;
 		}
@@ -397,13 +407,13 @@ public class EdiEintragController {
 			}
 		}
 		try {
-			em.getTransaction().begin(); 
+			entityManager.getTransaction().begin(); 
 			aktEdi.getEdiEmpfaenger().clear();
 			for (int i=0; i<MAX_EMPFAENGER; ++i) {
 				EdiEmpfaenger empf = aktEmpfaenger[i];
 				if (empf != null) {
 					if (empf.getKomponente().getId() == 0L) {
-						em.persist(empf);
+						entityManager.persist(empf);
 					}
 					aktEdi.getEdiEmpfaenger().add(empf);
 				}	
@@ -417,9 +427,9 @@ public class EdiEintragController {
 //				mainController.refreshEdiNrListBezeichnung(aktEdi.getId(), tmpEdiBezeichnung);
 				paneEdiEintrag.textProperty().set(EDI_PANEL_TITLE + " "+ aktEdi.getEdiNrStr() + "  " + aktEdi.bezeichnung() );
 			}
-			aktEdi = em.merge(aktEdi);
-			em.getTransaction().commit();
-			em.detach(aktEdi);
+			aktEdi = entityManager.merge(aktEdi);
+			entityManager.getTransaction().commit();
+			entityManager.detach(aktEdi);
 		} catch (RuntimeException e) {
 			Dialogs.create().owner(primaryStage)
 			   .title(applName).masthead("Datenbankfehler")
@@ -430,23 +440,6 @@ public class EdiEintragController {
 		ediEintragIsChanged.set(false);
 		return true;
 	}
-    
-	
-    //    @FXML
-//    void initialize() {
-//
-//        tfEdiBezeichnung.textProperty().addListener(
-//        		new ChangeListener<String>() {
-//        			@Override
-//        			public void changed(ObservableValue<? extends String> o,
-//        				String oldValue, String newValue) {
-//        				if (newValue.equals(aktEdi.bezeichnungProperty().get())==false) {
-//        					ediEintragIsChanged.set(true);
-//        				}
-//        			}
-//        		}
-//        );
-    
     
     @FXML
     void senderButton(ActionEvent event) {
@@ -461,7 +454,7 @@ public class EdiEintragController {
     	if (komponentenAuswahlController.getResponse() == Actions.OK ) {
 	    	Long selKomponentenID = komponentenAuswahlController.getSelectedKomponentenId();
     	    if (aktSenderId != selKomponentenID	) {
-   	    		aktEdi.setKomponente(em.find(EdiKomponente.class, selKomponentenID));
+   	    		aktEdi.setKomponente(entityManager.find(EdiKomponente.class, selKomponentenID));
    	    		senderIsSelected.set(true);
     	    	btnSender.setText(aktEdi.getKomponente().getFullname());
     	    	ediEintragIsChanged.set(true);
@@ -509,7 +502,7 @@ public class EdiEintragController {
     			if (aktEmpfaenger[btnNr] == null) {
     				aktEmpfaenger[btnNr] = new EdiEmpfaenger(aktEdi);
     			}
-    			aktEmpfaenger[btnNr].setKomponente(em.find(EdiKomponente.class,selEmpfaengerID));
+    			aktEmpfaenger[btnNr].setKomponente(entityManager.find(EdiKomponente.class,selEmpfaengerID));
     			ret = aktEmpfaenger[btnNr].getKomponente().getFullname();
     	    	ediEintragIsChanged.set(true);
     		}
@@ -535,14 +528,19 @@ public class EdiEintragController {
     	dialog.setY(primaryStage.getY() + yOffset);
 		return loader;
 	}
-
-//    private void syspr(String methode, String text) {
-//		String classname = getClass().getName() + "." + methode;
-//		while (classname.length()< 60)
-//			classname += " ";
-//		System.out.println(classname + " " + text);
-//	}
     
+	public final ObjectProperty<EdiEintrag> ediEintragProperty() {
+		return ediEintrag;
+	}
+	
+	public final EdiEintrag getEdiEintrag() {
+		return ediEintrag.get() ;
+	}
+	
+	public final void setEintrag(EdiEintrag ediEintrag) {
+		this.ediEintrag.set(ediEintrag);
+	}
+
     private void checkFieldFromView() {
         assert paneAnbindung != null : "fx:id=\"paneAnbindung\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
         assert paneSzenario != null : "fx:id=\"paneSzenario\" was not injected: check your FXML file 'EdiEintrag.fxml'.";

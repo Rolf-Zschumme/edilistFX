@@ -1,5 +1,7 @@
 package de.vbl.ediliste.model;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import javax.persistence.Entity;
@@ -7,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+
 import static javax.persistence.GenerationType.IDENTITY;
 
 /**
@@ -17,14 +20,17 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 public class EdiEmpfaenger {
 
+	private StringProperty empfaengerName;	
 	private long id;
 	private EdiKomponente ediKomponente;
 	private EdiEintrag ediEintrag;
 	private GeschaeftsObjekt geschaeftsObjekt;
 
 	public EdiEmpfaenger() {
+		empfaengerName = new SimpleStringProperty();
 	}
 	public EdiEmpfaenger(EdiEintrag param) {
+		this();
 		ediEintrag = param;
 	}
 	
@@ -44,8 +50,10 @@ public class EdiEmpfaenger {
 	    return ediKomponente;
 	}
 
-	public void setKomponente(EdiKomponente param) {
-	    this.ediKomponente = param;
+	public void setKomponente(EdiKomponente kompo) {
+		String fullName = (kompo == null) ? "?e?" : kompo.getFullname(); 
+		this.empfaengerName.set(fullName);
+	    this.ediKomponente = kompo;
 	}
 
 	@ManyToOne
@@ -66,15 +74,17 @@ public class EdiEmpfaenger {
 	}
 	
 	// ------------------------------------------------------------------------
+	public IntegerProperty ediNrProperty() {
+		return ediEintrag.ediNrProperty();
+	}
+	
 	public StringProperty senderNameProperty() {
 		return ediEintrag.senderNameProperty();
 	}
 
 	public StringProperty empfaengerNameProperty() {
-		System.out.println("ediKomponente.fullname"+ ediKomponente.fullnameProperty().getName());
-		return ediKomponente.fullnameProperty();
+		return this.empfaengerName;
 	}
-	
 	
 	// ------------------------------------------------------------------------
 	public boolean equaels (EdiEmpfaenger empf) {

@@ -279,6 +279,7 @@ public class KomponentenAuswahlController {
     void newPartnerPressed(ActionEvent event) {
     	Node source = (Node) event.getSource();
     	Stage stage = (Stage) source.getScene().getWindow();
+    	System.out.println("KomponentenAuswahlController.newPartnerPressed() stage:"+stage);
     	String name = "";
     	while(true) {
 			name = Dialogs.create().owner(stage).title(APPL_TITLE)

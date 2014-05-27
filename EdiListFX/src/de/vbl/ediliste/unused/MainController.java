@@ -46,7 +46,7 @@ import de.vbl.ediliste.model.EdiKomponente;
 import de.vbl.ediliste.model.EdiPartner;
 import de.vbl.ediliste.model.EdiSystem;
 import de.vbl.ediliste.model.GeschaeftsObjekt;
-import de.vbl.ediliste.view.EdiNrListElement;
+//import de.vbl.ediliste.view.EdiNrListElement;
 import de.vbl.ediliste.view.PartnerListElement;
 
 public class MainController {
