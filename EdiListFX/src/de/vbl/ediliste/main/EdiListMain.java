@@ -24,7 +24,6 @@ public class EdiListMain extends Application {
 //		launch(args);
 //	}
 	
-	private static final String APPL_NAME = "EDI-Liste";
 	
 	private static Stage primaryStage;  
 	
@@ -57,7 +56,7 @@ public class EdiListMain extends Application {
 		if (primaryStage == null) {
 			primaryStage = new Stage();
 		}
-		controller.start(primaryStage, APPL_NAME);
+		controller.start(primaryStage);
 		return root;
 	}
 	

@@ -29,10 +29,11 @@ public class EdiEmpfaenger {
 	public EdiEmpfaenger() {
 		empfaengerName = new SimpleStringProperty();
 	}
-	public EdiEmpfaenger(EdiEintrag param) {
-		this();
-		ediEintrag = param;
-	}
+
+//	public EdiEmpfaenger(EdiEintrag param) {
+//		this();
+//		ediEintrag = param;
+//	}
 	
 	@Id    
 	@GeneratedValue(strategy = IDENTITY)

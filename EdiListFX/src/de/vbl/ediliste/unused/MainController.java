@@ -208,43 +208,43 @@ public class MainController {
 				}
         );
 
-        tableEdiNrAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
-			public void handle(MouseEvent mouseEvent) {
-				if (ediEintragController.checkForContinueEditing()==true) {
-					mouseEvent.consume();
-				}
-			}
-		});
-
-		tableEdiNrAuswahl.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
-			public void handle(KeyEvent keyEvent) {
-				if (ediEintragController.checkForContinueEditing()==true) {
-					keyEvent.consume();
-				}
-			}
-		});
-        
-        tableEdiNrAuswahl.getSelectionModel().selectedItemProperty().addListener(
-        		
-    		new ChangeListener<EdiNrListElement>() {
-    			@Override
-    			public void changed(
-    					ObservableValue<? extends EdiNrListElement> observable,
-    					EdiNrListElement oldValue, EdiNrListElement newValue) {
-    				if (newValue != null) {
-    					ediEintragController.setSelection(em.find(EdiEintrag.class, newValue.getEdiId()));
-    					if (splitPane.getItems().contains(ediEintragPane) == false) {
-        					showSplitPane(ediEintragPane);	
-    					}
-    				}
-    				else {
-    					System.out.println("tableEdiNrAuswahl.changed() mit new=null old=" + oldValue);
-    					tableEdiNrAuswahl.getSelectionModel().clearSelection();
-    					showSplitPane(null);	
-    				}
-    			}
-    		}
-        );
+//        tableEdiNrAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+//			public void handle(MouseEvent mouseEvent) {
+//				if (ediEintragController.checkForContinueEditing()==true) {
+//					mouseEvent.consume();
+//				}
+//			}
+//		});
+//
+//		tableEdiNrAuswahl.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+//			public void handle(KeyEvent keyEvent) {
+//				if (ediEintragController.checkForContinueEditing()==true) {
+//					keyEvent.consume();
+//				}
+//			}
+//		});
+//        
+//        tableEdiNrAuswahl.getSelectionModel().selectedItemProperty().addListener(
+//        		
+//    		new ChangeListener<EdiNrListElement>() {
+//    			@Override
+//    			public void changed(
+//    					ObservableValue<? extends EdiNrListElement> observable,
+//    					EdiNrListElement oldValue, EdiNrListElement newValue) {
+//    				if (newValue != null) {
+//    					ediEintragController.setSelection(em.find(EdiEintrag.class, newValue.getEdiId()));
+//    					if (splitPane.getItems().contains(ediEintragPane) == false) {
+//        					showSplitPane(ediEintragPane);	
+//    					}
+//    				}
+//    				else {
+//    					System.out.println("tableEdiNrAuswahl.changed() mit new=null old=" + oldValue);
+//    					tableEdiNrAuswahl.getSelectionModel().clearSelection();
+//    					showSplitPane(null);	
+//    				}
+//    			}
+//    		}
+//        );
         
         tableKomponentenAuswahl.getSelectionModel().selectedItemProperty().addListener(
     		new ChangeListener<EdiKomponente>() {
