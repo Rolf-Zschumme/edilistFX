@@ -1,4 +1,4 @@
-package de.vbl.ediliste.view;
+package de.vbl.ediliste.unused;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;

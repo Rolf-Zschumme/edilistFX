@@ -55,7 +55,6 @@ public class EdiEintragController {
 	private static final Integer MAX_EMPFAENGER = 3;
 
 	private final ObjectProperty<EdiEintrag> ediEintrag;
-//  private static EdiEintrag aktEdi;
     private EdiEmpfaenger aktEmpfaenger[] = new EdiEmpfaenger[MAX_EMPFAENGER];
     private String busObjName[] = { "", "", ""};
 
@@ -102,6 +101,7 @@ public class EdiEintragController {
 	public EdiEintragController() {
 		this.entityManager = null;
     	this.ediEintrag = new SimpleObjectProperty<>(this, "ediEintrag", null);
+		readOnlyAccess.set(false);
 	}
 
 	public void setEntityManager(EntityManager entityManager) {
@@ -115,14 +115,16 @@ public class EdiEintragController {
 
     @FXML
     void initialize() {
-    	System.out.println("EdiEintragController.initialize()");
+    	System.out.println("EdiEintragController.initialize() called");
     	checkFieldFromView();
     	
     	ediEintrag.addListener(new ChangeListener<EdiEintrag>() {
     		@Override
     		public void changed (ObservableValue<? extends EdiEintrag> ov,
     				EdiEintrag oldEintrag, EdiEintrag newEintrag) {
-    			if (oldEintrag != null) {
+    			if (oldEintrag == null) {
+    		    	setupLocalBindings();
+    			} else {	
     				System.out.println("oldEintrag-Nr: " + oldEintrag.getEdiNrStr());
     				taEdiBeschreibung.setText("");
     				btnSender.setText("");
@@ -149,31 +151,15 @@ public class EdiEintragController {
     				ediEintragIsChanged.set(false);
     			}
     		}
+
 		});
-    	
-    	btnEmpfaenger1.disableProperty().bind(Bindings.not(senderIsSelected));
-    	btnEmpfaenger2.disableProperty().bind(Bindings.not(buOb1Exist));
-    	btnEmpfaenger3.disableProperty().bind(Bindings.not(buOb2Exist));
-    	cmbBuOb1.disableProperty().bind(Bindings.not(empfaenger1IsSelected));
-    	cmbBuOb2.disableProperty().bind(Bindings.not(empfaenger2IsSelected));
-    	cmbBuOb3.disableProperty().bind(Bindings.not(empfaenger3IsSelected));
-    	
-    	btnEmpfaenger2.visibleProperty().bind(buOb1Exist);
-    	cmbBuOb2.visibleProperty().bind(buOb1Exist);
-    	
-    	btnEmpfaenger3.visibleProperty().bind(buOb2Exist);
-    	cmbBuOb3.visibleProperty().bind(buOb2Exist);
-    	
-    	btnEdiEintragSpeichern.disableProperty().bind(Bindings.not(ediEintragIsChanged));
     }	
-    	
-	public void setInitial(Stage stage, String applikationName) {
-		primaryStage = stage;
-		applName = applikationName;
-		readOnlyAccess.set(false);
 
+	private void setupLocalBindings() {
+		if (businessObjectMap.size() > 0) {
+			return;
+		}
 		readBusinessObject();
-
 		cmbBuOb1.setItems(businessObjectName);
 		cmbBuOb1.valueProperty().addListener(new ChangeListener<String>() {
 			@Override
@@ -235,6 +221,21 @@ public class EdiEintragController {
 				}
 			}
 		});
+    	
+    	btnEmpfaenger1.disableProperty().bind(Bindings.not(senderIsSelected));
+    	btnEmpfaenger2.disableProperty().bind(Bindings.not(buOb1Exist));
+    	btnEmpfaenger3.disableProperty().bind(Bindings.not(buOb2Exist));
+    	cmbBuOb1.disableProperty().bind(Bindings.not(empfaenger1IsSelected));
+    	cmbBuOb2.disableProperty().bind(Bindings.not(empfaenger2IsSelected));
+    	cmbBuOb3.disableProperty().bind(Bindings.not(empfaenger3IsSelected));
+    	
+    	btnEmpfaenger2.visibleProperty().bind(buOb1Exist);
+    	cmbBuOb2.visibleProperty().bind(buOb1Exist);
+
+    	btnEmpfaenger3.visibleProperty().bind(buOb2Exist);
+    	cmbBuOb3.visibleProperty().bind(buOb2Exist);
+    	
+    	btnEdiEintragSpeichern.disableProperty().bind(Bindings.not(ediEintragIsChanged));
 		
 	}
 
@@ -561,13 +562,13 @@ public class EdiEintragController {
 		return ediEintrag;
 	}
 	
-	public final EdiEintrag getEdiEintrag() {
-		return ediEintrag.get() ;
-	}
-	
-	public final void setEdiEintrag(EdiEintrag ediEintrag) {
-		this.ediEintrag.set(ediEintrag);
-	}
+//	public final EdiEintrag getEdiEintrag() {
+//		return ediEintrag.get() ;
+//	}
+//	
+//	public final void setEdiEintrag(EdiEintrag ediEintrag) {
+//		this.ediEintrag.set(ediEintrag);
+//	}
 
     private void checkFieldFromView() {
         assert paneAnbindung != null : "fx:id=\"paneAnbindung\" was not injected: check your FXML file 'EdiEintrag.fxml'.";

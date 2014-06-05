@@ -26,10 +26,11 @@ public class GeschaeftsObjekt implements Serializable {
 	private String name;
 	private static final long serialVersionUID = 1L;
 	private Collection<EdiEmpfaenger> ediEmpfaenger;
-	private IntegerProperty anzVerwendungen = new SimpleIntegerProperty();
+	private IntegerProperty anzVerwendungen;
 
 	public GeschaeftsObjekt() {
 		super();
+		anzVerwendungen = new SimpleIntegerProperty();
 	}   
 	public GeschaeftsObjekt(String name) {
 		this.name = name;

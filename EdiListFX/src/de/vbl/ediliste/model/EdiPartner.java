@@ -4,6 +4,8 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 import java.util.Collection;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -20,6 +22,8 @@ import javax.persistence.OneToMany;
 @Entity
 public class EdiPartner {
 	private StringProperty name = new SimpleStringProperty();
+	private IntegerProperty anzSysteme;
+	private IntegerProperty anzKomponenten;
 
 	private long id;
 	private Collection<EdiSystem> ediSystem;
@@ -27,6 +31,8 @@ public class EdiPartner {
 	private String beschreibung;
 
 	public EdiPartner() {
+		anzSysteme = new SimpleIntegerProperty();
+		anzKomponenten = new SimpleIntegerProperty();
 	}
 
 	public EdiPartner(String name) {
@@ -77,5 +83,20 @@ public class EdiPartner {
 		this.beschreibung = param;
 	}
 
-	// ------------------------------------------------------------------------
+	// Properties -----------------------------------------------------------------------
+	public IntegerProperty anzSystemeProperty() {
+		anzSysteme.set(getEdiSystem().size());
+		return anzSysteme;
+	}
+
+	public IntegerProperty anzKomponentenProperty() {
+		int anzK = 0;
+		for ( EdiSystem s : getEdiSystem() ) {
+			anzK += s.getEdiKomponente().size();
+		}
+		anzKomponenten.set(anzK);
+		return anzKomponenten;
+	}
+	
+	
 }
