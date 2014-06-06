@@ -27,6 +27,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
@@ -129,6 +131,7 @@ public class EdiMainController {
     	primaryStage = stage;
     	primaryStage.setTitle(APPL_NAME);
     	EdiEintragController.setPrimaryStage(primaryStage);
+    	EdiKomponenteController.start(primaryStage, txtInfoZeile, entityManager);
     }
     
     private void setupBindings() {
@@ -171,11 +174,36 @@ public class EdiMainController {
 						});
         				new Thread(task).start();
         				System.out.println("tabPane.changed() " + akttab);
-//						}
         			}
 				}
-        ); 		
-    	
+        );
+        tableKomponentenAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+        	public void handle(MouseEvent mouseEvent) {
+        		if (ediKomponenteController.checkForChangesOk(true) == false) {
+        			mouseEvent.consume();
+        		}
+        	}
+		});
+        tableKomponentenAuswahl.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+			public void handle(KeyEvent keyEvent) {
+        		if (ediKomponenteController.checkForChangesOk(true) == false) {
+        			keyEvent.consume();
+        		}
+			}
+		});
+//      tableEdiNrAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+//			public void handle(MouseEvent mouseEvent) {
+//				if (ediEintragController.checkForContinueEditing()==true) {
+//					mouseEvent.consume();
+//				}
+//			}
+//		});
+//		tableEdiNrAuswahl.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+//			public void handle(KeyEvent keyEvent) {
+//				if (ediEintragController.checkForContinueEditing()==true) {
+//					keyEvent.consume();
+//			}
+//		});
     }
 
 	private void setupEdiEintragPane() {
@@ -212,7 +240,7 @@ public class EdiMainController {
     	tColSelKompoSysteme.setCellValueFactory(new PropertyValueFactory<EdiKomponente,String>("systemName"));
     	tColSelKompoPartner.setCellValueFactory(new PropertyValueFactory<EdiKomponente,String>("partnerName"));
     	
-    	ediKomponenteController.setEntityManager(entityManager);
+//    	ediKomponenteController.setEntityManager(entityManager);
     	ediKomponenteController.komponenteProperty().bind(
     			tableKomponentenAuswahl.getSelectionModel().selectedItemProperty());
     	ediKomponente.disableProperty().bind(
@@ -276,7 +304,7 @@ public class EdiMainController {
 		Dialogs.create()
 			.owner(primaryStage).title(applName)
 			.masthead("VBL-Tool zur Verwaltung der EDI-Liste")
-			.message("Version 0.5 - 08.05.2014 mit Geschäftsobjekt")
+			.message("Version 0.5a - 06.06.2014 mit Komponenten-Editor")
 			.showInformation();
     }
 

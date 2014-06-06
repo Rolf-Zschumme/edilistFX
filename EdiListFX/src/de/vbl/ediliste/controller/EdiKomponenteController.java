@@ -10,6 +10,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -17,19 +18,26 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+
+import org.controlsfx.control.action.Action;
+import org.controlsfx.dialog.Dialog;
+import org.controlsfx.dialog.Dialogs;
 
 import de.vbl.ediliste.model.EdiEintrag;
 import de.vbl.ediliste.model.EdiEmpfaenger;
 import de.vbl.ediliste.model.EdiKomponente;
 
 public class EdiKomponenteController {
+	private static Stage primaryStage = null;
+	private static TextField infoField;
+	private static EntityManager entityManager;
 	private final ObjectProperty<EdiKomponente> edikomponente;
-	private String beschreibung;
-	private EntityManager entityManager;
 	private final ObservableList<EdiEmpfaenger> ediKomponenteList = FXCollections.observableArrayList();
+	private EdiKomponente aktKompo = null;
 	
 	@FXML private ResourceBundle resources;
     @FXML private URL location;
@@ -43,11 +51,16 @@ public class EdiKomponenteController {
     @FXML private TableColumn<EdiEmpfaenger, ?> tcDatumBis;
     
     public EdiKomponenteController() {
-    	this.entityManager = null;
     	this.edikomponente = new SimpleObjectProperty<>(this, "edikomponente", null);
-    	this.beschreibung = "";
     }
-	
+
+	public static void start(Stage primaryStage, TextField infoTextField, EntityManager entityManager) {
+		EdiKomponenteController.primaryStage = primaryStage;
+		EdiKomponenteController.infoField = infoTextField; 
+		EdiKomponenteController.entityManager = entityManager;
+	}
+
+	@FXML
 	public void initialize() {
 		System.out.println("EdiKomponenteController.initialize()");
 		checkFieldsFromView();
@@ -59,15 +72,19 @@ public class EdiKomponenteController {
 				System.out.println("EdiKomponenteController.ChangeListener(edikomponente):"
 									+ oldKomponente + " " +newKomponente);
 				if (oldKomponente != null) {
-					checkForChanges();
+					checkForChangesOk(true);
 					ediKomponenteList.clear();
-					tfBezeichnung.textProperty().unbindBidirectional(oldKomponente.nameProperty());
+					if (newKomponente == null) {
+						tfBezeichnung.setText("");
+						taBeschreibung.setText("");
+					}
 				}
 				if (newKomponente != null) {
+					infoField.setText("");
+					aktKompo = newKomponente;
 					readEdiListeforKomponete(newKomponente);
-					tfBezeichnung.textProperty().bindBidirectional(newKomponente.nameProperty());
-//					taBeschreibung.setText(newKomponente.getBeschreibung());
-					beschreibung = newKomponente.getBeschreibung();
+					tfBezeichnung.setText(newKomponente.getName());
+					taBeschreibung.setText(newKomponente.getBeschreibung());
 				}
 			}
 	
@@ -79,23 +96,61 @@ public class EdiKomponenteController {
 		tcEmpfaenger.setCellValueFactory(new PropertyValueFactory<EdiEmpfaenger, String>("empfaengerName"));
 	}
 
-	public void setEntityManager(EntityManager entityManager) {
-		this.entityManager = entityManager;
-	}
-	
-	public boolean checkForChanges() {
-		if (beschreibung != null) {
-			String orgBeschreibung = edikomponente.get().getBeschreibung();
-			if(!orgBeschreibung.equals(beschreibung)) {
-				entityManager.getTransaction().begin();
-				edikomponente.get().setBeschreibung(beschreibung);
-				entityManager.getTransaction().commit();
+	public boolean checkForChangesOk(boolean askForUpdate) {
+		if (aktKompo == null ) {
+			System.out.println(this.getClass().getName() + " checkForChanges() ohne aktKompo");
+			return true;
+		}
+		String orgName = aktKompo.getName();
+		String newName = tfBezeichnung.getText();
+		String orgBeschreibung = (aktKompo.getBeschreibung()==null) ? "" : aktKompo.getBeschreibung();
+		String newBeschreibung = (taBeschreibung.getText()==null) ? "" : taBeschreibung.getText();
+		if (!orgName.equals(newName) ||
+			!orgBeschreibung.equals(newBeschreibung) ) {
+			if (askForUpdate) {
+				Action response = Dialogs.create()
+    				.owner(primaryStage).title(primaryStage.getTitle())
+    				.actions(Dialog.Actions.OK, Dialog.Actions.CANCEL)
+    				.message("Sollen die Änderungen an der Komponente " + orgName + " gespeichert werden")
+    				.showConfirm();
+	    		if (response != Dialog.Actions.OK) {
+	    			return false;
+	    		}	
+			}	
+			if (checkName(newName) == false) {
+				infoField.setText("Fehler: Eine andere Komponente heißt bereits so!");
+				return false;
 			}
+			System.out.println("checkForChanges() - Änderung erkannt -> update");
+			entityManager.getTransaction().begin();
+			aktKompo.setName(newName);
+			aktKompo.setBeschreibung(newBeschreibung);
+			entityManager.getTransaction().commit();
+			infoField.setText("Komponente wurde gespeichert");
 		}
 		return true;
 	}
 	
-	
+	private boolean checkName(String newName) {
+		TypedQuery<EdiKomponente> tq = entityManager.createQuery(
+				"SELECT k FROM EdiKomponente k WHERE LOWER(k.name) = LOWER(:n)",EdiKomponente.class);
+		tq.setParameter("n", newName);
+		List<EdiKomponente> kompoList = tq.getResultList();
+		for (EdiKomponente k : kompoList ) {
+			if (k.getId() != aktKompo.getId() &&
+				k.getEdiSystem().getId() == aktKompo.getEdiSystem().getId())  {
+				if (k.getName().equalsIgnoreCase(newName)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	@FXML
+	void speichern(ActionEvent event) {
+		checkForChangesOk(false);
+	}
 	
 	private void readEdiListeforKomponete( EdiKomponente selKomponente) {
 		TypedQuery<EdiEintrag> tq = entityManager.createQuery(
@@ -120,7 +175,6 @@ public class EdiKomponenteController {
 		this.edikomponente.set(komponente);
 	}
     
-    @FXML
     void checkFieldsFromView() {
     	assert ediKomponente != null : "fx:id=\"ediKomponente\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
     	assert tfBezeichnung != null : "fx:id=\"tfBezeichnung\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
@@ -131,5 +185,5 @@ public class EdiKomponenteController {
         assert tcDatumBis != null : "fx:id=\"tcDatumBis\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
         assert tvVerwendungen != null : "fx:id=\"tvVerwendungen\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
     }
-
+    
 }

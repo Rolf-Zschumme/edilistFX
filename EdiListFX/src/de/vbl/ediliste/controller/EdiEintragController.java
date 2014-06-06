@@ -51,7 +51,7 @@ import de.vbl.ediliste.model.GeschaeftsObjekt;
 
 public class EdiEintragController {
 	private static final String EDI_PANEL_TITLE = "EDI-Eintrag";
-	private static final String SICHERHEITSABFRAGE = "Sicherheitsabfrage";
+//	private static final String SICHERHEITSABFRAGE = "Sicherheitsabfrage";
 	private static final Integer MAX_EMPFAENGER = 3;
 
 	private final ObjectProperty<EdiEintrag> ediEintrag;
