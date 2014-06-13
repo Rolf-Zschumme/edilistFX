@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+// import java.time.LocalDate;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
@@ -63,6 +64,7 @@ public class EdiMainController {
     @FXML private Tab tabEdiNr;
     @FXML private TableView<EdiEintrag> tableEdiNrAuswahl;
     @FXML private TableColumn<EdiEintrag, String> tColAuswahlEdiNr;
+    @FXML private TableColumn<EdiEintrag, String> tColAuswahlEdiNrSender;
     @FXML private TableColumn<EdiEintrag, String> tColAuswahlEdiNrBezeichnung;
 
     @FXML private Tab tabPartner;
@@ -209,6 +211,8 @@ public class EdiMainController {
 	private void setupEdiEintragPane() {
     	tableEdiNrAuswahl.setItems(ediEintraegeList);
     	tColAuswahlEdiNr.setCellValueFactory(new PropertyValueFactory<EdiEintrag,String>("ediNr"));
+//    	tColAuswahlEdiNrBezeichnung.setCellValueFactory(e -> e.senderNameProperty().get());
+    	tColAuswahlEdiNrBezeichnung.setCellValueFactory(new PropertyValueFactory<EdiEintrag,String>("komponente"));
     	tColAuswahlEdiNrBezeichnung.setCellValueFactory(new PropertyValueFactory<EdiEintrag,String>("bezeichnung"));
     	
     	btnDeleteEdiEintrag.disableProperty().bind(
@@ -431,6 +435,7 @@ public class EdiMainController {
         assert tColAuswahlGeschaeftsobjektName != null : "fx:id=\"tColAuswahlGeschaeftsobjektName\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert btnDeleteEdiEintrag != null : "fx:id=\"btnDeleteEdiEintrag\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tablePartnerAuswahl != null : "fx:id=\"tablePartnerAuswahl\" was not injected: check your FXML file 'EdiMain.fxml'.";
+        assert tColAuswahlEdiNrSender != null : "fx:id=\"tColAuswahlEdiNrSender\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tColAuswahlEdiNrBezeichnung != null : "fx:id=\"tColAuswahlEdiNrBezeichnung\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tableKomponentenAuswahl != null : "fx:id=\"tableKomponentenAuswahl\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tColAuswahlPartnerKomponenten != null : "fx:id=\"tColAuswahlPartnerKomponenten\" was not injected: check your FXML file 'EdiMain.fxml'.";

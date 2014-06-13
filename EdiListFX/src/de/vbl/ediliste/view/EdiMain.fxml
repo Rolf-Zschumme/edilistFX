@@ -39,7 +39,7 @@
 					<content>
 						<AnchorPane>
 							<children>
-								<SplitPane dividerPositions="0.2857142857142857" prefHeight="739.0" prefWidth="1407.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+								<SplitPane dividerPositions="0.33972992181947403" prefHeight="739.0" prefWidth="1407.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 									<items>
 										<VBox prefHeight="739.0" prefWidth="1407.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 											<children>
@@ -51,8 +51,8 @@
 												</ToolBar>
 												<TableView fx:id="tableEdiNrAuswahl" prefHeight="702.0" prefWidth="535.0" tableMenuButtonVisible="true" VBox.vgrow="ALWAYS">
 													<columns>
-														<TableColumn fx:id="tColAuswahlEdiNr" editable="false" maxWidth="120.0" minWidth="0.0" prefWidth="35.0" text="Nr." />
-														<TableColumn fx:id="tColAuswahlEdiNrBezeichnung" editable="false" maxWidth="1.7976931348623157E308" minWidth="80.0" prefWidth="600.0" text="Bezeichnung" />
+														<TableColumn fx:id="tColAuswahlEdiNr" editable="false" maxWidth="120.0" minWidth="0.0" prefWidth="35.0" text="Nr." /><TableColumn fx:id="tColAuswahlEdiNrSender" prefWidth="137.0" text="Sender" />
+														<TableColumn fx:id="tColAuswahlEdiNrBezeichnung" editable="false" maxWidth="1.7976931348623157E308" minWidth="200.0" prefWidth="-1.0" text="Bezeichnung" />
 													</columns>
 												</TableView>
 											</children>
@@ -114,7 +114,7 @@
 												</TableView>
 											</children>
 										</AnchorPane>
-										<fx:include fx:id="ediKomponente" source="EdiKomponente.fxml"/>
+										<fx:include fx:id="ediKomponente" source="EdiKomponente.fxml" />
 									</items>
 								</SplitPane>
 							</children>

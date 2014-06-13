@@ -3,6 +3,7 @@ package de.vbl.ediliste.model;
 import static javax.persistence.GenerationType.IDENTITY;
 import static javax.persistence.TemporalType.DATE;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -94,10 +95,10 @@ public class EdiEintrag {
 		return senderName;
 	}
 
-	// public void setSenderName(String param) {
-	// senderName.set(param);
-	// } 
-
+	 public void setSenderName(String param) {
+	 senderName.set(param);
+	 }
+	 
 	// ------------------------------------------------------------------------
 	@ManyToOne
 	public Konfiguration getEdiSzenario() {
@@ -156,6 +157,20 @@ public class EdiEintrag {
 		     		return true;
 		}
 		return false;
+	}
+	
+	public void copy (EdiEintrag source) {
+		this.setEdiNr(source.getEdiNr());
+		this.setBezeichnung(source.getBezeichnung());
+		this.setBeschreibung(source.getBeschreibung());
+		this.setSenderName(source.senderName.getName());
+		
+		this.id = source.id;
+		this.konfiguration = source.konfiguration;
+		this.ediKomponente = source.ediKomponente;
+		this.setEdiEmpfaenger(new ArrayList<EdiEmpfaenger>(source.ediEmpfaenger));
+		this.vonDatum = source.vonDatum;
+		this.bisDatum = source.bisDatum;
 	}
 
 	private boolean empfaengerListIsEqual( Collection<EdiEmpfaenger> empf1,
