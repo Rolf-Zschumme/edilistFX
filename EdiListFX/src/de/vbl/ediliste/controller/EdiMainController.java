@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 // import java.time.LocalDate;
 
+
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -24,6 +26,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -45,6 +48,8 @@ import javax.persistence.TypedQuery;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
+
+import com.sun.javafx.scene.layout.region.Margins.Converter;
 
 import de.vbl.ediliste.model.EdiEintrag;
 import de.vbl.ediliste.model.EdiEmpfaenger;
@@ -208,12 +213,31 @@ public class EdiMainController {
 //		});
     }
 
+//    Converter myConverter = Converter();
+//    Callback<TabeColu
+    
 	private void setupEdiEintragPane() {
     	tableEdiNrAuswahl.setItems(ediEintraegeList);
-    	tColAuswahlEdiNr.setCellValueFactory(new PropertyValueFactory<EdiEintrag,String>("ediNr"));
-//    	tColAuswahlEdiNrBezeichnung.setCellValueFactory(e -> e.senderNameProperty().get());
-    	tColAuswahlEdiNrBezeichnung.setCellValueFactory(new PropertyValueFactory<EdiEintrag,String>("komponente"));
-    	tColAuswahlEdiNrBezeichnung.setCellValueFactory(new PropertyValueFactory<EdiEintrag,String>("bezeichnung"));
+//    	tColAuswahlEdiNr.setCellValueFactory(new PropertyValueFactory<EdiEintrag,String>("ediNr"));
+//    	tColAuswahlEdiNr.setCellValueFactory(cellData -> cellData.getValue().ediNrProperty());
+    	tColAuswahlEdiNrBezeichnung.setCellValueFactory(cellData -> cellData.getValue().senderNameProperty());
+    	tColAuswahlEdiNrBezeichnung.setCellValueFactory(cellData -> cellData.getValue().bezeichnungProperty());
+//    	tColAuswahlEdiNrBezeichnung.setCellValueFactory(new PropertyValueFactory<EdiEintrag,String>("bezeichnung"));
+
+//    	tColAuswahlEdiNr.setCellFactory(column -> {
+//    		return new TableCell<EdiEintrag, Integer>() {
+//    			@Override
+//    			protected void updateItem (Integer ediNr, boolean empty) {
+//    				super.updateItem(ediNr,empty);
+//    				if (ediNr == null || empty) {
+//    					setText(null);
+//    				}
+//    				else {
+//    					setText(Integer.toString(ediNr));
+//    				}
+//    			}
+//    		};
+//    	});
     	
     	btnDeleteEdiEintrag.disableProperty().bind(
     			Bindings.isNull(tableEdiNrAuswahl.getSelectionModel().selectedItemProperty()));

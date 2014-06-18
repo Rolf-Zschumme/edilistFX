@@ -24,6 +24,7 @@ import javax.persistence.Temporal;
 public class EdiEintrag {
 	public static final int EDI_NR_MIN_LEN = 3;
 	private IntegerProperty ediNr = new SimpleIntegerProperty();
+//	private StringProperty ediNrStr = new SimpleStringProperty();
 	private StringProperty bezeichnung = new SimpleStringProperty();
 	private StringProperty beschreibung = new SimpleStringProperty();
 	private StringProperty senderName = new SimpleStringProperty();
@@ -63,7 +64,6 @@ public class EdiEintrag {
 		while(ret.length()<EDI_NR_MIN_LEN) ret = "0"+ ret;
 		return ret;
 	}
-	
 
 	// ------------------------------------------------------------------------
 	public StringProperty bezeichnungProperty() {
