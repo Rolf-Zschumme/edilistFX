@@ -19,6 +19,12 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
+import static javax.persistence.CascadeType.PERSIST;
+import static javax.persistence.CascadeType.MERGE;
+import static javax.persistence.CascadeType.REMOVE;
+import static javax.persistence.CascadeType.REFRESH;
+import static javax.persistence.CascadeType.DETACH;
+import static javax.persistence.CascadeType.ALL;
 
 @Entity
 public class EdiEintrag {
@@ -120,7 +126,7 @@ public class EdiEintrag {
 		this.ediKomponente = kompo;
 	}
 
-	@OneToMany(mappedBy = "ediEintrag")
+	@OneToMany(mappedBy = "ediEintrag", cascade = ALL)
 	public Collection<EdiEmpfaenger> getEdiEmpfaenger() {
 		return ediEmpfaenger;
 	}
@@ -163,7 +169,7 @@ public class EdiEintrag {
 		this.setEdiNr(source.getEdiNr());
 		this.setBezeichnung(source.getBezeichnung());
 		this.setBeschreibung(source.getBeschreibung());
-		this.setSenderName(source.senderName.getName());
+		this.setSenderName(source.senderName.get());
 		
 		this.id = source.id;
 		this.konfiguration = source.konfiguration;

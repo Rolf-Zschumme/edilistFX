@@ -219,8 +219,8 @@ public class EdiMainController {
 	private void setupEdiEintragPane() {
     	tableEdiNrAuswahl.setItems(ediEintraegeList);
 //    	tColAuswahlEdiNr.setCellValueFactory(new PropertyValueFactory<EdiEintrag,String>("ediNr"));
-//    	tColAuswahlEdiNr.setCellValueFactory(cellData -> cellData.getValue().ediNrProperty());
-    	tColAuswahlEdiNrBezeichnung.setCellValueFactory(cellData -> cellData.getValue().senderNameProperty());
+    	tColAuswahlEdiNr.setCellValueFactory(cellData -> Bindings.format(" %03d", cellData.getValue().ediNrProperty()));
+    	tColAuswahlEdiNrSender.setCellValueFactory(cellData -> cellData.getValue().senderNameProperty());
     	tColAuswahlEdiNrBezeichnung.setCellValueFactory(cellData -> cellData.getValue().bezeichnungProperty());
 //    	tColAuswahlEdiNrBezeichnung.setCellValueFactory(new PropertyValueFactory<EdiEintrag,String>("bezeichnung"));
 

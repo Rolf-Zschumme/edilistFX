@@ -509,7 +509,7 @@ public class EdiEintragController {
     	FXMLLoader loader = loadKomponentenAuswahl(dialog, 100, 250); 
 
     	KomponentenAuswahlController komponentenAuswahlController = loader.getController();
-    	Long aktSenderId = aktEdi.getKomponente().getId();
+    	Long aktSenderId = aktEdi.getKomponente()==null ? 0L : aktEdi.getKomponente().getId();
     	komponentenAuswahlController.setKomponente(KomponentenTyp.SENDER, aktSenderId);
     	dialog.showAndWait();
     	if (komponentenAuswahlController.getResponse() == Actions.OK ) {
@@ -517,6 +517,7 @@ public class EdiEintragController {
     	    if (aktSenderId != selKomponentenID ) {
     	    	EdiKomponente sender = entityManager.find(EdiKomponente.class, selKomponentenID);
     	    	aktEdi.setKomponente(sender); 
+    	    	System.out.println("aktEdi.senderName :" + aktEdi.senderNameProperty().get());
     	    	btnSender.setText(sender.getFullname());
     	    	ediEintragIsChanged.set(true);
     	    	senderIsSelected.set(true);
