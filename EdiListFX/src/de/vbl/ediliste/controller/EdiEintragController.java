@@ -362,10 +362,10 @@ public class EdiEintragController {
 		}
     }
 
-    private boolean checkForChanges() {
-    	
-    	return true;
-    }
+//    private boolean checkForChanges() {
+//    	
+//    	return true;
+//    }
 //	public boolean checkForContinueEditing() {
 //		if (aktEdi != null && aktEdiEqualPersistence() == false) {
 //			Action response = Dialogs.create().owner(primaryStage)

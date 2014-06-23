@@ -8,8 +8,8 @@ import org.loadui.testfx.GuiTest;
 import org.loadui.testfx.categories.TestFX;
 
 import static javafx.scene.input.KeyCode.*;
-import static org.loadui.testfx.Assertions.verifyThat;
-import static org.loadui.testfx.controls.TableViews.containsCell;
+//import static org.loadui.testfx.Assertions.verifyThat;
+//import static org.loadui.testfx.controls.TableViews.containsCell;
 
 @Category(TestFX.class)
 public class MainControllerTest extends GuiTest {

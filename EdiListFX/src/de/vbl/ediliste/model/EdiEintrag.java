@@ -19,11 +19,6 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
-import static javax.persistence.CascadeType.PERSIST;
-import static javax.persistence.CascadeType.MERGE;
-import static javax.persistence.CascadeType.REMOVE;
-import static javax.persistence.CascadeType.REFRESH;
-import static javax.persistence.CascadeType.DETACH;
 import static javax.persistence.CascadeType.ALL;
 
 @Entity
