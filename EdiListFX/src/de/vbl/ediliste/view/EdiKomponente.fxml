@@ -36,10 +36,10 @@
 										<TableView fx:id="tvVerwendungen" prefHeight="120.0" prefWidth="296.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
 											<columns>
 												<TableColumn fx:id="tcEdiNr" prefWidth="75.0" text="Edi-Nr." />
-												<TableColumn fx:id="tcSender" maxWidth="500.0" prefWidth="160.0" text="Edi-Sender" />
-												<TableColumn fx:id="tcEmpfaenger" maxWidth="500.0" prefWidth="160.0" text="Edi-Empfänger" />
-												<TableColumn fx:id="tcDatumBis" text="Start-Datum" />
-												<TableColumn text="Ende-Datum" />
+												<TableColumn fx:id="tcSender" maxWidth="500.0" prefWidth="198.99999237060547" text="Edi-Sender" />
+												<TableColumn fx:id="tcEmpfaenger" maxWidth="500.0" prefWidth="181.0" text="Edi-Empfänger" />
+												<TableColumn fx:id="tcDatumBis" prefWidth="97.00003051757812" text="Start-Datum" />
+												<TableColumn prefWidth="102.0" text="Ende-Datum" />
 											</columns>
 										</TableView>
 									</children>

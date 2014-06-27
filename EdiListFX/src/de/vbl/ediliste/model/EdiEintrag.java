@@ -1,11 +1,10 @@
 package de.vbl.ediliste.model;
 
 import static javax.persistence.GenerationType.IDENTITY;
-import static javax.persistence.TemporalType.DATE;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 
 import javafx.beans.property.IntegerProperty;
@@ -18,14 +17,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.Temporal;
+
 import static javax.persistence.CascadeType.ALL;
 
 @Entity
 public class EdiEintrag {
 	public static final int EDI_NR_MIN_LEN = 3;
+	public static final String FORMAT_EDINR = " %03d";
 	private IntegerProperty ediNr = new SimpleIntegerProperty();
-//	private StringProperty ediNrStr = new SimpleStringProperty();
 	private StringProperty bezeichnung = new SimpleStringProperty();
 	private StringProperty beschreibung = new SimpleStringProperty();
 	private StringProperty senderName = new SimpleStringProperty();
@@ -33,8 +32,8 @@ public class EdiEintrag {
 	private Konfiguration konfiguration;
 	private EdiKomponente ediKomponente;
 	private Collection<EdiEmpfaenger> ediEmpfaenger;
-	private Date vonDatum;
-	private Date bisDatum; 
+	private LocalDate seitDatum;
+	private LocalDate bisDatum; 
 
 	// ------------------------------------------------------------------------
 	@Id
@@ -102,20 +101,20 @@ public class EdiEintrag {
 	 
 	// ------------------------------------------------------------------------
 	@ManyToOne
-	public Konfiguration getEdiSzenario() {
-		return konfiguration;
+	public Konfiguration getKonfiguration() {
+		return konfiguration; 
 	}
 
-	public void setEdiSzenario(Konfiguration param) {
+	public void setKonfiguration(Konfiguration param) {
 		this.konfiguration = param;
 	}
 
 	@ManyToOne
-	public EdiKomponente getKomponente() {
+	public EdiKomponente getEdiKomponente() {
 		return ediKomponente;
 	}
 
-	public void setKomponente(EdiKomponente kompo) {
+	public void setEdiKomponente(EdiKomponente kompo) {
 		String senderName = (kompo == null) ? "?k?" : kompo.getFullname(); 
    		this.senderName.set(senderName);
 		this.ediKomponente = kompo;
@@ -130,21 +129,19 @@ public class EdiEintrag {
 		this.ediEmpfaenger = param;
 	}
  
-	@Temporal(DATE) 
-	public Date getVonDatum() {
-		return vonDatum;
+	public LocalDate getSeitDatum() {
+		return seitDatum;
 	}
 
-	public void setVonDatum(Date param) {
-		this.vonDatum = param;
+	public void setSeitDatum(LocalDate param) {
+		this.seitDatum = param;
 	}
 
-	@Temporal(DATE) 
-	public Date getBisDatum() {
+	public LocalDate getBisDatum() {
 		return bisDatum;
 	}
 
-	public void setBisDatum(Date param) {
+	public void setBisDatum(LocalDate param) {
 		this.bisDatum = param;
 	}
 	
@@ -152,7 +149,7 @@ public class EdiEintrag {
 		if ( (id == tEDI.id)                          								&&
 			 (ediNr.get() == tEDI.ediNr.get())		  							  	&&	
 		     (beschreibung.getValueSafe().equals(tEDI.beschreibung.getValueSafe()))	&&
-		     (konfiguration == tEDI.konfiguration)                  					&&
+		     (konfiguration == tEDI.konfiguration)                  				&&
 		     (ediKomponente == tEDI.ediKomponente)									&&
 		     (empfaengerListIsEqual(ediEmpfaenger,tEDI.ediEmpfaenger)) 	) {
 		     		return true;
@@ -170,7 +167,10 @@ public class EdiEintrag {
 		this.konfiguration = source.konfiguration;
 		this.ediKomponente = source.ediKomponente;
 		this.setEdiEmpfaenger(new ArrayList<EdiEmpfaenger>(source.ediEmpfaenger));
-		this.vonDatum = source.vonDatum;
+		Iterator<EdiEmpfaenger> i = this.ediEmpfaenger.iterator();
+		while(i.hasNext())
+			i.next().setEdiEintrag(this);
+		this.seitDatum = source.seitDatum;
 		this.bisDatum = source.bisDatum;
 	}
 
@@ -185,8 +185,9 @@ public class EdiEintrag {
 				if ( !e1.equaels(e2) )
 					return false;
 			}
+			return true;
 		}
-		return true;
+		return false;
 	}
 	
     public String bezeichnung() {

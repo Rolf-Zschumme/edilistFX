@@ -14,6 +14,7 @@ import de.vbl.ediliste.model.EdiPartner;
 import de.vbl.ediliste.model.EdiSystem;
 import de.vbl.ediliste.model.GeschaeftsObjekt;
 import de.vbl.ediliste.model.Integration;
+import de.vbl.ediliste.model.Konfiguration;
 
 public class DataBaseInit {
 	private static final String PERSISTENCE_UNIT_NAME = "EdiListFX";
@@ -60,11 +61,11 @@ public class DataBaseInit {
 				System.out.println("transaction.isActive : " + ta.isActive() );
 			}
 			if (ta != null && ta.isActive()) {
-				System.out.println("Rollback wird  durchgeführt \n" + ta.toString() );
+				System.out.println("Rollback wird durchgeführt \n" + ta.toString() );
 				ta.rollback();  // eigentlich nicht notwendig da implizit
 				System.out.println("Rollback wurde durchgeführt \n" + ta.toString() );
 			}
-//			e.printStackTrace();
+			e.printStackTrace();
 		}
 		finally {
 			
@@ -201,9 +202,33 @@ public class DataBaseInit {
 		partner = new EdiPartner("Bafin");
 		em.persist(partner);
 
-//		Integration anbindung = null;
-//		Konfiguration szenario = null;
+		// Integrationen und Konfigurationen 
 		
+		Integration integration = null;
+
+		integration = newIntegration("ANW Meldungsverarbeitung");
+		em.persist(integration);
+		em.persist(newKonfiguration(integration, "CS_ANW_MLD__Meldungseingang"));
+		em.persist(newKonfiguration(integration, "CS_ANW_MLD__Meldungsausgang"));
+
+		integration = newIntegration("LST Zahlungenaufträge");
+		em.persist(integration);
+		em.persist(newKonfiguration(integration, "CS_LSTG_Mitteilung_Leistungstraeger__DPAG_Rentenservice"));
+		em.persist(newKonfiguration(integration, "CS_LSTG_Zahlungsanweisung__DPAG_Rentenservice"));
+		
+		integration = newIntegration("CRM Beschäftspartner-Replikation");
+		em.persist(integration);
+		em.persist(newKonfiguration(integration, "CS_ZGP_Replikation__CRM__to__ERP"));
+		em.persist(newKonfiguration(integration, "CS_ZGP_Replikation__ERP__to__CRM"));
+		
+		integration = newIntegration("FV-Anbindung");
+		em.persist(integration);
+		em.persist(newKonfiguration(integration, "CS_ISIV_Koexistenz"));
+
+		
+		em.persist(newKonfiguration(null, "CS_e-Gov_Portal_Integration"));
+		em.persist(newKonfiguration(null, "CS_FS-CD_eAvis_Beitragseingang__RZ_Arbeitgeber"));
+		em.persist(newKonfiguration(null, "CS_RC_SAS_BNP__Filetransfer"));
 	}
 	
 	
@@ -217,14 +242,19 @@ public class DataBaseInit {
 		em.persist(new GeschaeftsObjekt("ZfA-Meldungen"));
 	}
 	
+	private static Integration newIntegration (String integrationName) {
+		Integration integration = new Integration();
+		integration.setName(integrationName);
+		return integration;
+	}
 
-//	private static Konfiguration newEdiSzenario( 	Integration anbindung,	String name) 
-//	{
-//		Konfiguration szenario = new Konfiguration();
-//		szenario.setName(name);
-//		szenario.setAnbindung(anbindung);
-//		return szenario;
-//	}
+	private static Konfiguration newKonfiguration( Integration integration,	String konfigName) 
+	{
+		Konfiguration konfiguration = new Konfiguration();
+		konfiguration.setName(konfigName);
+		konfiguration.setIntegration(integration);
+		return konfiguration;
+	}
 	
 	private static EdiSystem newSystem(EdiPartner partner, String name) 
 	{

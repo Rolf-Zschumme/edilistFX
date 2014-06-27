@@ -9,8 +9,6 @@ import javafx.stage.Stage;
 import javafx.util.converter.NumberStringConverter;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.Query;
 
 import org.controlsfx.dialog.Dialog;
@@ -18,22 +16,29 @@ import org.controlsfx.dialog.Dialog;
 import de.vbl.ediliste.model.EdiEintrag;
 
 public class NeuerEdiEintragController {
-	private static final String PERSISTENCE_UNIT_NAME = "EdiListFX";
     
     @FXML private TextField tfEdiNr;
-//  @FXML private TextField tfKurzbez;
     @FXML private Label fehlertext;
     
-	private EntityManager em;
+	private EntityManager entityManager;
 	private Dialog.Actions response = Dialog.Actions.CANCEL;
 	private EdiEintrag ediEintrag;
 
+	public void setEntityManager(EntityManager entityManager) {
+		this.entityManager = entityManager;
+	}
+	
 	public Dialog.Actions getResponse() {
 		return response; 
 	}
 	public EdiEintrag getNewEdiEintrag () {
 		return ediEintrag;
 	}
+
+	public void start() {
+		ediEintrag.setEdiNr(getHighestEdiNr()+1);
+	}
+	
 	/* ------------------------------------------------------------------------
      * initialize() is the controllers "main"-method 
      * it is called after loading "....fxml" 
@@ -41,11 +46,8 @@ public class NeuerEdiEintragController {
     @FXML
     void initialize() {
     	checkFieldFromView();
-        setupEntityManager();
-        
-        ediEintrag = new EdiEintrag();        
-        ediEintrag.setEdiNr(getHighestEdiNr()+1);
-        
+    	if (entityManager == null) System.out.println("NeuerEdieintragController.initialize em==null");
+    	ediEintrag = new EdiEintrag();        
         setupBindings();
     }
     
@@ -53,11 +55,6 @@ public class NeuerEdiEintragController {
     	tfEdiNr.textProperty().bindBidirectional(ediEintrag.ediNrProperty(),new NumberStringConverter());
 	}
     	
-    private void setupEntityManager() {
-    	EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-    	em = factory.createEntityManager();
-    }
-    
     @FXML
     void okPressed(ActionEvent event) {
     	int ediNr = ediEintrag.getEdiNr();
@@ -68,9 +65,9 @@ public class NeuerEdiEintragController {
     		fehlertext.setText("Die Nummer " + ediNr + " ist bereits vergeben - bitte ändern");
     	}
     	else {
-    		em.getTransaction().begin();
-    		em.persist(ediEintrag);
-    		em.getTransaction().commit();
+    		entityManager.getTransaction().begin();
+    		entityManager.persist(ediEintrag);
+    		entityManager.getTransaction().commit();
     		response = Dialog.Actions.OK;
     		unbind();
     		close(event);
@@ -98,7 +95,7 @@ public class NeuerEdiEintragController {
 	 * 
 	 * ****************************************************************************/
     private boolean isEdiNrUsed(int nr) {
-    	Query query = em.createQuery("SELECT e.ediNr FROM EdiEintrag e");
+    	Query query = entityManager.createQuery("SELECT e.ediNr FROM EdiEintrag e");
     	for (Object zeile  : query.getResultList()) {
     		Object obj = (Object) zeile;
     		int aktnr = (Integer) obj;
@@ -109,7 +106,7 @@ public class NeuerEdiEintragController {
     }
     
     private Integer getHighestEdiNr() {
-    	Query query = em.createQuery("SELECT e.ediNr FROM EdiEintrag e ORDER BY e.ediNr");
+    	Query query = entityManager.createQuery("SELECT e.ediNr FROM EdiEintrag e ORDER BY e.ediNr");
     	Integer max = 0;
     	for (Object zeile  : query.getResultList()) {
     		Object obj = (Object) zeile;

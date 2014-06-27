@@ -126,15 +126,19 @@ public class EdiMainController {
 //		System.out.println("	ediKomponente          :" + ediKomponente);
 		
 		checkFieldsFromView();
+		System.out.println("nach checkFields");
 		setupEntityManager();
+		System.out.println("nach EntityManager");
         setupBindings();		
+        System.out.println("nach Bindings");
     }	
 
     public void start(Stage stage) {
     	System.out.println("EdiMainController.start() called");
     	primaryStage = stage;
     	primaryStage.setTitle(APPL_NAME);
-    	EdiEintragController.setPrimaryStage(primaryStage);
+//    	EdiEintragController.setPrimaryStage(primaryStage);
+    	EdiEintragController.start(primaryStage, txtInfoZeile, entityManager);
     	EdiKomponenteController.start(primaryStage, txtInfoZeile, entityManager);
     }
     
@@ -210,13 +214,11 @@ public class EdiMainController {
 //		});
     }
 
-//    Converter myConverter = Converter();
-//    Callback<TabeColu
     
 	private void setupEdiEintragPane() {
     	tableEdiNrAuswahl.setItems(ediEintraegeList);
-//    	tColAuswahlEdiNr.setCellValueFactory(new PropertyValueFactory<EdiEintrag,String>("ediNr"));
-    	tColAuswahlEdiNr.setCellValueFactory(cellData -> Bindings.format(" %03d", cellData.getValue().ediNrProperty()));
+    	tColAuswahlEdiNr.setCellValueFactory(
+    			cellData -> Bindings.format(EdiEintrag.FORMAT_EDINR, cellData.getValue().ediNrProperty()));
     	tColAuswahlEdiNrSender.setCellValueFactory(cellData -> cellData.getValue().senderNameProperty());
     	tColAuswahlEdiNrBezeichnung.setCellValueFactory(cellData -> cellData.getValue().bezeichnungProperty());
 //    	tColAuswahlEdiNrBezeichnung.setCellValueFactory(new PropertyValueFactory<EdiEintrag,String>("bezeichnung"));
@@ -240,7 +242,7 @@ public class EdiMainController {
     			Bindings.isNull(tableEdiNrAuswahl.getSelectionModel().selectedItemProperty()));
     	ediEintrag.disableProperty().bind(
     			Bindings.isNull(tableEdiNrAuswahl.getSelectionModel().selectedItemProperty()));
-    	ediEintragController.setEntityManager(entityManager);
+//    	ediEintragController.setEntityManager(entityManager);
     	ediEintragController.ediEintragProperty().bind(
     						    tableEdiNrAuswahl.getSelectionModel().selectedItemProperty());
     }
@@ -351,6 +353,8 @@ public class EdiMainController {
     	dialog.initOwner(primaryStage);
     	
     	NeuerEdiEintragController dialogController = loader.getController();
+    	dialogController.setEntityManager(entityManager);
+    	dialogController.start();
     	
     	dialog.setScene(scene);
     	dialog.setX(primaryStage.getX() + 250);
@@ -397,7 +401,7 @@ public class EdiMainController {
 	        		entityManager.remove(ediEintrag);
 	        		entityManager.getTransaction().commit();
 	        		Dialogs.create().owner(primaryStage).masthead(null)
-	        				.message("Edi-Eintrag " + ediNr + " erfolgreich gelöscht")
+	        				.message("Edi-Eintrag mit der Nr. " + ediNr + " erfolgreich gelöscht")
 	        				.showInformation();
     			}	
     			ediEintraegeList.remove(selectedlistElement);

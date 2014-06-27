@@ -1,14 +1,12 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE project>
-<entities>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><entities>
 	<entity>
 		<entity-name>de.vbl.ediliste.model.EdiEintrag</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>176</entity-height>
+		<entity-height>241</entity-height>
 		<entity-X-Coordinate>287</entity-X-Coordinate>
 		<entity-Y-Coordinate>379</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
-		<relation-collapsed>true</relation-collapsed>
+		<relation-collapsed>false</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
 	</entity>
 
@@ -17,7 +15,7 @@
 		<entity-width>120</entity-width>
 		<entity-height>116</entity-height>
 		<entity-X-Coordinate>287</entity-X-Coordinate>
-		<entity-Y-Coordinate>193</entity-Y-Coordinate>
+		<entity-Y-Coordinate>181</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
@@ -26,11 +24,11 @@
 	<entity>
 		<entity-name>de.vbl.ediliste.model.DokuLink</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>156</entity-height>
+		<entity-height>201</entity-height>
 		<entity-X-Coordinate>558</entity-X-Coordinate>
-		<entity-Y-Coordinate>-15</entity-Y-Coordinate>
+		<entity-Y-Coordinate>-32</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
-		<relation-collapsed>true</relation-collapsed>
+		<relation-collapsed>false</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
 	</entity>
 
@@ -39,7 +37,7 @@
 		<entity-width>120</entity-width>
 		<entity-height>116</entity-height>
 		<entity-X-Coordinate>287</entity-X-Coordinate>
-		<entity-Y-Coordinate>5</entity-Y-Coordinate>
+		<entity-Y-Coordinate>11</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
@@ -59,11 +57,11 @@
 	<entity>
 		<entity-name>de.vbl.ediliste.model.Vorhaben</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>116</entity-height>
+		<entity-height>141</entity-height>
 		<entity-X-Coordinate>19</entity-X-Coordinate>
-		<entity-Y-Coordinate>5</entity-Y-Coordinate>
+		<entity-Y-Coordinate>-2</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
-		<relation-collapsed>true</relation-collapsed>
+		<relation-collapsed>false</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
 	</entity>
 
@@ -94,7 +92,7 @@
 		<entity-width>120</entity-width>
 		<entity-height>143</entity-height>
 		<entity-X-Coordinate>558</entity-X-Coordinate>
-		<entity-Y-Coordinate>205</entity-Y-Coordinate>
+		<entity-Y-Coordinate>224</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>false</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
@@ -116,7 +114,7 @@
 		<entity-width>135</entity-width>
 		<entity-height>96</entity-height>
 		<entity-X-Coordinate>550</entity-X-Coordinate>
-		<entity-Y-Coordinate>379</entity-Y-Coordinate>
+		<entity-Y-Coordinate>401</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>

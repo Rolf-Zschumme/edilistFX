@@ -86,12 +86,12 @@ public class DokuLink implements Serializable {
 	}
 
 	@ManyToMany
-	@JoinTable(joinColumns = @JoinColumn(name = "ediSzenario_id", referencedColumnName = "ID"))
-	public Collection<Integration> getEdiAnbindung() {
+	@JoinTable(joinColumns = @JoinColumn(name = "vorhaben_id", referencedColumnName = "id"))
+	public Collection<Integration> getIntegration() {
 	    return integration;
 	}
 
-	public void setEdiAnbindung(Collection<Integration> param) {
+	public void setIntegration(Collection<Integration> param) {
 	    this.integration = param;
 	} 
 

@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -12,12 +13,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
 import javax.persistence.EntityManager;
@@ -46,7 +49,7 @@ public class EdiKomponenteController {
     @FXML private TextArea taBeschreibung;
     @FXML private TableView<EdiEmpfaenger> tvVerwendungen;
     @FXML private TableColumn<EdiEmpfaenger, String> tcEmpfaenger;
-    @FXML private TableColumn<EdiEmpfaenger, Integer> tcEdiNr;
+    @FXML private TableColumn<EdiEmpfaenger, String> tcEdiNr;
     @FXML private TableColumn<EdiEmpfaenger, String> tcSender;
     @FXML private TableColumn<EdiEmpfaenger, ?> tcDatumBis;
     
@@ -71,6 +74,7 @@ public class EdiKomponenteController {
 					EdiKomponente oldKomponente, EdiKomponente newKomponente) {
 				System.out.println("EdiKomponenteController.ChangeListener(edikomponente):"
 									+ oldKomponente + " " +newKomponente);
+				infoField.setText("");
 				if (oldKomponente != null) {
 					checkForChangesOk(true);
 					ediKomponenteList.clear();
@@ -80,22 +84,57 @@ public class EdiKomponenteController {
 					}
 				}
 				if (newKomponente != null) {
-					infoField.setText("");
 					aktKompo = newKomponente;
 					readEdiListeforKomponete(newKomponente);
 					tfBezeichnung.setText(newKomponente.getName());
 					taBeschreibung.setText(newKomponente.getBeschreibung());
 				}
 			}
-	
 		});
-		tvVerwendungen.setItems(ediKomponenteList);
-		
-		tcEdiNr.setCellValueFactory(new PropertyValueFactory<EdiEmpfaenger, Integer>("ediNr") );
-		tcSender.setCellValueFactory(new PropertyValueFactory<EdiEmpfaenger, String>("senderName"));
-		tcEmpfaenger.setCellValueFactory(new PropertyValueFactory<EdiEmpfaenger, String>("empfaengerName"));
-	}
 
+		tvVerwendungen.setItems(ediKomponenteList);
+		tcEdiNr.setCellValueFactory(cellData -> 
+		Bindings.format(EdiEintrag.FORMAT_EDINR, cellData.getValue().ediNrProperty()));		
+		tcSender.setCellValueFactory(cellData -> cellData.getValue().senderNameProperty());
+		tcEmpfaenger.setCellValueFactory( cellData -> cellData.getValue().empfaengerNameProperty());
+		
+		tcSender.setCellFactory(column -> {
+			return new TableCell<EdiEmpfaenger, String>() {
+				@Override
+				protected void updateItem (String sender, boolean empty) {
+					super.updateItem(sender, empty);
+					if (sender == null || empty) 
+						setText(null); 
+					else {
+						setText(sender);
+						if (sender.equals(aktKompo.getFullname()))
+							setFont(Font.font(null, FontWeight.BOLD, getFont().getSize()));
+						else
+							setFont(Font.font(null, FontWeight.NORMAL,getFont().getSize()));
+					}
+				}
+			};
+		});
+		
+		tcEmpfaenger.setCellFactory(column -> {
+			return new TableCell<EdiEmpfaenger, String>() {
+				@Override
+				protected void updateItem (String empf, boolean empty) {
+					super.updateItem(empf, empty);
+					if (empf == null || empty) 
+						setText(null); 
+					else {
+						setText(empf);
+						if (empf.equals(aktKompo.getFullname()))
+							setFont(Font.font(null, FontWeight.BOLD, getFont().getSize()));
+						else
+							setFont(Font.font(null, FontWeight.NORMAL,getFont().getSize()));
+					}
+				}
+			};
+		});
+	}
+	
 	public boolean checkForChangesOk(boolean askForUpdate) {
 		if (aktKompo == null ) {
 			System.out.println(this.getClass().getName() + " checkForChanges() ohne aktKompo");
@@ -153,14 +192,25 @@ public class EdiKomponenteController {
 	}
 	
 	private void readEdiListeforKomponete( EdiKomponente selKomponente) {
-		TypedQuery<EdiEintrag> tq = entityManager.createQuery(
-				"SELECT e FROM EdiEintrag e WHERE e.komponente = :k", EdiEintrag.class);
-		tq.setParameter("k", selKomponente);
-		List<EdiEintrag> ediList = tq.getResultList();
+		TypedQuery<EdiEintrag> tqS = entityManager.createQuery(
+				"SELECT e FROM EdiEintrag e WHERE e.ediKomponente = :k", EdiEintrag.class);
+		tqS.setParameter("k", selKomponente);
+		List<EdiEintrag> ediList = tqS.getResultList();
 		for(EdiEintrag e : ediList ) {
-	    	ediKomponenteList.addAll(e.getEdiEmpfaenger());
+			if (e.getEdiEmpfaenger().size() > 0)
+				ediKomponenteList.addAll(e.getEdiEmpfaenger());
+			else {
+				EdiEmpfaenger tmpE = new EdiEmpfaenger();
+				tmpE.setEdiEintrag(e);
+				ediKomponenteList.addAll(tmpE);
+			}
 		}
 		System.out.println("KomponenteController:" + ediList.size() + " EDI-Einträge gelesen");
+		TypedQuery<EdiEmpfaenger> tqE = entityManager.createQuery(
+				"SELECT e FROM EdiEmpfaenger e WHERE e.komponente = :k", EdiEmpfaenger.class);
+		tqE.setParameter("k", selKomponente);
+		ediKomponenteList.addAll(tqE.getResultList());
+		System.out.println("KomponenteController:" + tqE.getResultList().size() + " EDI-Empfänger gelesen");
 	}
 	
 	public final ObjectProperty<EdiKomponente> komponenteProperty() {

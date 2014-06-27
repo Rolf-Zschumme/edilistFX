@@ -4,6 +4,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 import java.util.Collection;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import javax.persistence.Entity;
@@ -19,7 +20,7 @@ import javax.persistence.OneToMany;
 @Entity 
 public class Integration {
 
-	private StringProperty name;
+	private StringProperty name = new SimpleStringProperty();
 	private long id;
 	private Collection<Konfiguration> konfiguration;
 	private String beschreibung;
@@ -59,25 +60,25 @@ public class Integration {
 	}
 
 	// ------------------------------------------------------------------------ 
-	@OneToMany(mappedBy = "ediAnbindung")
-	public Collection<Konfiguration> getEdiSzenario() {
+	@OneToMany(mappedBy = "integration")
+	public Collection<Konfiguration> getKonfiguration() {
 		return konfiguration;
 	}
 
-	public void setEdiSzenario(Collection<Konfiguration> konfiguration) {
+	public void setKonfiguration(Collection<Konfiguration> konfiguration) {
 		this.konfiguration = konfiguration;
 	}
 
-	@ManyToMany(mappedBy = "ediAnbindung")
+	@ManyToMany(mappedBy = "integration")
 	public Collection<Vorhaben> getVorhaben() {
-	    return vorhaben;
+	    return vorhaben; 
 	}
 
 	public void setVorhaben(Collection<Vorhaben> param) {
 	    this.vorhaben = param;
 	}
 
-	@ManyToMany(mappedBy = "ediAnbindung")
+	@ManyToMany(mappedBy = "integration")
 	public Collection<DokuLink> getEdiDokuLink() {
 	    return dokuLink;
 	}

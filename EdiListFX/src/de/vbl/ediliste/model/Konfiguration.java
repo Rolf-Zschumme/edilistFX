@@ -4,6 +4,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 import java.util.Collection;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import javax.persistence.Entity;
@@ -19,7 +20,7 @@ import javax.persistence.OneToMany;
  */ 
 @Entity
 public class Konfiguration {
-	private StringProperty name;
+	private StringProperty name = new SimpleStringProperty();
 	private long id;
 	private Integration integration;
 	private Collection<EdiEintrag> ediEintrag;
@@ -55,17 +56,17 @@ public class Konfiguration {
 
 	// ------------------------------------------------------------------------
 	@ManyToOne
-	@JoinColumn(referencedColumnName = "id", nullable = false)
-	public Integration getEdiAnbindung() {
+	@JoinColumn(referencedColumnName = "id")
+	public Integration getIntegration() {
 		return integration;
 	}
 
-	public void setEdiAnbindung(Integration param) {
+	public void setIntegration(Integration param) {
 		this.integration = param;
 	}
  
 	// ------------------------------------------------------------------------
-	@OneToMany(mappedBy = "ediSzenario")
+	@OneToMany(mappedBy = "konfiguration")
 	public Collection<EdiEintrag> getEdiEintrag() {
 		return ediEintrag;
 	}
