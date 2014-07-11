@@ -2,6 +2,10 @@
 package de.vbl.ediliste.controller;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -28,17 +32,20 @@ import org.controlsfx.dialog.Dialog.Actions;
 import org.controlsfx.dialog.Dialogs;
 
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.ListCell;
 //import javafx.scene.control.Dialogs;
 //import javafx.scene.control.Dialogs.DialogOptions;
 //import javafx.scene.control.Dialogs.DialogResponse;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.StringConverter;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -49,6 +56,7 @@ import de.vbl.ediliste.model.EdiEmpfaenger;
 import de.vbl.ediliste.model.EdiKomponente;
 import de.vbl.ediliste.model.GeschaeftsObjekt;
 import de.vbl.ediliste.model.Integration;
+import de.vbl.ediliste.model.Konfiguration;
 
 public class EdiEintragController {
 	private static final String EDI_PANEL_TITLE = "EDI-Eintrag";
@@ -67,7 +75,8 @@ public class EdiEintragController {
     @FXML private TitledPane paneSzenario;
     @FXML private TitledPane paneAnbindung;
     @FXML private TitledPane paneEdiEintrag;
-    @FXML private ComboBox<String> cmbIntegration;
+    @FXML private ComboBox<Konfiguration> cmbKonfiguration;
+    @FXML private ComboBox<Integration> cmbIntegration;
     
     @FXML private TextArea  taEdiBeschreibung;
     @FXML private ComboBox<String> cmbBuOb1;
@@ -98,9 +107,12 @@ public class EdiEintragController {
     private BooleanProperty buOb3Exist = new SimpleBooleanProperty(false);
     private BooleanProperty readOnlyAccess = new SimpleBooleanProperty(false);
     
+    private Integration selIntegration = null;
+    private ObservableList<Integration> cmbIntegrationData = FXCollections.observableArrayList();
+    private ObservableList<Konfiguration> cmbKonfigurationData = FXCollections.observableArrayList();
+
     private Map<String,GeschaeftsObjekt> businessObjectMap; 
     private ObservableList<String> businessObjectName = FXCollections.observableArrayList();
-    private ObservableList<String> integrationName = FXCollections.observableArrayList();
 
     
 	public EdiEintragController() {
@@ -133,15 +145,34 @@ public class EdiEintragController {
     				btnEmpfaenger1.setText("");
     				btnEmpfaenger2.setText("");
     				btnEmpfaenger3.setText("");
+    				ediLastChange.setText("");
     				dpProduktivSeit.setValue(null);
     				dpProduktivBis.setValue(null);
+    				selIntegration = null;
+    				cmbKonfiguration.getSelectionModel().select(null);
     			}
     			if (newEintrag != null) {
     				orgEdi = newEintrag;
     				aktEdi.copy(orgEdi);
+    				if (aktEdi.getKonfiguration() != null) {
+    					selIntegration = aktEdi.getKonfiguration().getIntegration();
+    					readCmbKonfigurationData(selIntegration);
+    					cmbKonfiguration.getSelectionModel().select(aktEdi.getKonfiguration());
+    				}
     				taEdiBeschreibung.setText(aktEdi.getBeschreibung());
-    				dpProduktivSeit.setValue(aktEdi.getSeitDatum());
-    				dpProduktivBis.setValue(aktEdi.getBisDatum());
+    				if (aktEdi.getSeitDatum() != null) {
+    					dpProduktivSeit.setValue(LocalDate.parse(aktEdi.getSeitDatum()));
+    				}
+    				if (aktEdi.getLaeDatum() != null) {
+    					LocalDateTime dt = LocalDateTime.parse(aktEdi.getLaeDatum());
+    					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy"); 
+    					ediLastChange.setText(aktEdi.getLaeUser() + "  " + formatter.format(dt));
+    					String ttt = LocalTime.from(dt).toString().substring(0, 8);
+    					ediLastChange.setTooltip(new Tooltip(ttt));
+    				}
+    				if (aktEdi.getBisDatum() != null) {
+    					dpProduktivBis.setValue(LocalDate.parse(aktEdi.getBisDatum()));
+    				}
     				if (aktEdi.getEdiKomponente() == null) {
     					senderIsSelected.set(false);
     					paneEdiEintrag.textProperty().set(EDI_PANEL_TITLE);
@@ -156,6 +187,7 @@ public class EdiEintragController {
     				setEmpfaenger(aktEdi);
     				ediEintragIsChanged.set(false);
     			}
+    			cmbIntegration.getSelectionModel().select(selIntegration);
     		}
 		});
     }	
@@ -165,7 +197,78 @@ public class EdiEintragController {
 			return;
 		}	
 		readIntegrations();
-		cmbIntegration.setItems(integrationName);
+		cmbIntegration.setItems(cmbIntegrationData);
+		cmbIntegration.setCellFactory((cmbBx) -> {
+			return new ListCell<Integration>() {
+				@Override
+				protected void updateItem(Integration item, boolean empty) {
+					super.updateItem(item, empty);
+					if (item == null || empty) {
+						setText(null);
+					} else {
+						System.out.println("Integration setCellFactory -" + item.getName());
+						setText(item.getName());
+					}
+				}
+			};
+		});
+		cmbIntegration.setConverter(new StringConverter<Integration>() {
+			@Override
+			public String toString(Integration item) {
+				return item==null ? null : item.getName();
+			}
+			@Override
+			public Integration fromString(String string) {
+				return null; // No conversion fromString needed
+			}
+		});
+		cmbIntegration.setOnAction((event) -> {
+			Integration newIntegration = cmbIntegration.getSelectionModel().getSelectedItem();
+			if (newIntegration != selIntegration) {
+				selIntegration = cmbIntegration.getSelectionModel().getSelectedItem();
+				readCmbKonfigurationData(selIntegration);
+				ediEintragIsChanged.set(true);
+			}	
+		});
+		
+		cmbKonfiguration.setCellFactory((cmbBx) -> {
+			return new ListCell<Konfiguration>() {
+				@Override
+				protected void updateItem(Konfiguration item, boolean empty) {
+					super.updateItem(item, empty);
+					System.out.println("KonfigsetCellFactory! " + item);
+					if (item == null || empty) {
+						setText(null);
+					} else {
+						System.out.println("KonfigsetCellFactory -" + item.getName());
+						setText(item.getName());
+					}
+				}
+			};
+		});
+		cmbKonfiguration.setConverter(new StringConverter<Konfiguration>() {
+			@Override
+			public String toString(Konfiguration item) {
+				if (item == null) {
+					return null;
+				} else {
+					return item.getName();
+				}
+			}
+			@Override
+			public Konfiguration fromString(String string) {
+				return null; // No conversion fromString needed
+			}
+		});
+		cmbKonfiguration.setOnAction((event) -> {
+			Konfiguration newKonfiguration = cmbKonfiguration.getSelectionModel().getSelectedItem();
+			System.out.println("cmbKonfiguration setOnAction()");
+			if (newKonfiguration != aktEdi.getKonfiguration()) {
+				aktEdi.setKonfiguration(newKonfiguration);
+				ediEintragIsChanged.set(true);
+			}
+		});
+		cmbKonfiguration.disableProperty().bind(cmbIntegration.getSelectionModel().selectedItemProperty().isNull());
 		
 		businessObjectMap = new HashMap<String,GeschaeftsObjekt>();		
 		readBusinessObject();
@@ -230,7 +333,7 @@ public class EdiEintragController {
 				}
 			}
 		});
-    	
+		
     	btnEmpfaenger1.disableProperty().bind(Bindings.not(senderIsSelected));
     	btnEmpfaenger2.disableProperty().bind(Bindings.not(buOb1Exist));
     	btnEmpfaenger3.disableProperty().bind(Bindings.not(buOb2Exist));
@@ -243,6 +346,27 @@ public class EdiEintragController {
 
     	btnEmpfaenger3.visibleProperty().bind(buOb2Exist);
     	cmbBuOb3.visibleProperty().bind(buOb2Exist);
+    	
+    	dpProduktivSeit.setShowWeekNumbers(true);
+    	dpProduktivBis.setShowWeekNumbers(true);
+    	
+    	dpProduktivSeit.setOnAction(event -> {
+    	    String newDateStr = dpProduktivSeit.getValue() == null ? "" : 
+    		                    dpProduktivSeit.getValue().toString();
+    		if (newDateStr.equals(aktEdi.getSeitDatum()) == false) {
+    			aktEdi.setSeitDatum(newDateStr);
+    			ediEintragIsChanged.set(true);
+    		}
+    	});
+    	dpProduktivBis.setOnAction(event -> {
+    		String newDateStr = dpProduktivBis.getValue() == null ? "" :
+    							dpProduktivBis.getValue().toString();
+    		if (newDateStr.equals(aktEdi.getBisDatum()) == false) {
+    			aktEdi.setBisDatum(newDateStr);
+    			ediEintragIsChanged.set(true);
+    		}
+    	});
+    	
     	
     	btnEdiEintragSpeichern.disableProperty().bind(Bindings.not(ediEintragIsChanged));
 		
@@ -309,16 +433,28 @@ public class EdiEintragController {
 	}
 	
 	private void readIntegrations() {
-		integrationName.clear();
+		cmbIntegrationData.clear();
 		TypedQuery<Integration> tq = entityManager.createQuery(
 				"SELECT i FROM Integration i ORDER BY i.name", Integration.class);
-		List<Integration> iList = tq.getResultList();
-		for (Integration integration : iList) {
-			integrationName.add(integration.getName());
-//			businessObjectMap.put(gObject.getName().toUpperCase(), gObject);
-		}
-		
+		cmbIntegrationData.addAll(tq.getResultList());
 	}
+
+	private void readCmbKonfigurationData(Integration integration) {
+		cmbKonfigurationData.clear();
+		TypedQuery<Konfiguration> tq = entityManager.createQuery(
+				"SELECT k FROM Konfiguration k WHERE k.integration = :i ORDER BY k.name", Konfiguration.class);
+		tq.setParameter("i", integration);
+		cmbKonfigurationData.addAll(tq.getResultList());
+		cmbKonfiguration.setItems(cmbKonfigurationData);
+	}
+
+//	private String printA(ObservableList<Konfiguration> konfigData) {
+//		String ret = "";
+//		for (Konfiguration konfig : konfigData) {
+//			ret += " " + konfig.getName();
+//		}
+//		return ret;
+//	}
 	
 	
     private void setEmpfaenger(EdiEintrag newEintrag) {
@@ -435,8 +571,10 @@ public class EdiEintragController {
 				paneEdiEintrag.textProperty().set(EDI_PANEL_TITLE + " "+ aktEdi.getEdiNrStr() + "  " + aktEdi.bezeichnung() );
 			}
 			orgEdi.copy(aktEdi);
+			orgEdi.setLaeUser(System.getenv("USERNAME").toUpperCase());
+			orgEdi.setLaeDatum(LocalDateTime.now().toString());
 			entityManager.getTransaction().commit();
-			System.out.println("EdiEintragSpeichern commmit ausgeführt");
+//			System.out.println("EdiEintragSpeichern commmit ausgeführt");
 		} catch (RuntimeException e) {
 			Dialogs.create().owner(primaryStage)
 			.title(applName).masthead("Datenbankfehler")
@@ -614,6 +752,7 @@ public class EdiEintragController {
         assert paneEdiEintrag != null : "fx:id=\"paneEdiEintrag\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
         assert paneAnbindung != null : "fx:id=\"paneAnbindung\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
         assert cmbIntegration != null : "fx:id=\"cmbIntegration\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert cmbKonfiguration != null : "fx:id=\"cmbKonfiguration\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
         assert cmbBuOb2 != null : "fx:id=\"cmbBuOb2\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
         assert cmbBuOb3 != null : "fx:id=\"cmbBuOb3\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
         assert btnSender != null : "fx:id=\"btnSender\" was not injected: check your FXML file 'EdiEintrag.fxml'.";

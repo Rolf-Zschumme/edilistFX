@@ -126,11 +126,8 @@ public class EdiMainController {
 //		System.out.println("	ediKomponente          :" + ediKomponente);
 		
 		checkFieldsFromView();
-		System.out.println("nach checkFields");
 		setupEntityManager();
-		System.out.println("nach EntityManager");
         setupBindings();		
-        System.out.println("nach Bindings");
     }	
 
     public void start(Stage stage) {

@@ -2,7 +2,6 @@ package de.vbl.ediliste.model;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -32,8 +31,10 @@ public class EdiEintrag {
 	private Konfiguration konfiguration;
 	private EdiKomponente ediKomponente;
 	private Collection<EdiEmpfaenger> ediEmpfaenger;
-	private LocalDate seitDatum;
-	private LocalDate bisDatum; 
+	private String seitDatum;
+	private String bisDatum;
+	private String laeDatum; 
+	private String laeUser; 
 
 	// ------------------------------------------------------------------------
 	@Id
@@ -129,22 +130,39 @@ public class EdiEintrag {
 		this.ediEmpfaenger = param;
 	}
  
-	public LocalDate getSeitDatum() {
+	public String getSeitDatum() {
 		return seitDatum;
 	}
 
-	public void setSeitDatum(LocalDate param) {
+	public void setSeitDatum(String param) {
 		this.seitDatum = param;
 	}
 
-	public LocalDate getBisDatum() {
+	public String getBisDatum() {
 		return bisDatum;
 	}
 
-	public void setBisDatum(LocalDate param) {
+	public void setBisDatum(String param) {
 		this.bisDatum = param;
 	}
 	
+	public String getLaeDatum() {
+		System.out.println("laeDatum ("+ ediNr.getValue() + "," + ediNr.get() + ") ="  + laeDatum);
+		return laeDatum;
+	}
+
+	public void setLaeDatum(String laeDatum) {
+		this.laeDatum = laeDatum;
+	}
+	
+	public String getLaeUser() {
+		return laeUser;
+	}
+
+	public void setLaeUser(String laeUser) {
+		this.laeUser = laeUser;
+	}
+
 	public boolean equaels (EdiEintrag tEDI) {
 		if ( (id == tEDI.id)                          								&&
 			 (ediNr.get() == tEDI.ediNr.get())		  							  	&&	
@@ -172,6 +190,8 @@ public class EdiEintrag {
 			i.next().setEdiEintrag(this);
 		this.seitDatum = source.seitDatum;
 		this.bisDatum = source.bisDatum;
+		this.laeDatum = source.laeDatum;
+		this.laeUser = source.laeUser;
 	}
 
 	private boolean empfaengerListIsEqual( Collection<EdiEmpfaenger> empf1,
@@ -205,6 +225,12 @@ public class EdiEintrag {
     		}
     		if (e01.getGeschaeftsObjekt() != null) {
     			geOb01Name = e01.getGeschaeftsObjekt().getName();
+    		}
+    	}
+    	if (konfiguration != null) {
+    		if (konfiguration.getIntegration() != null) {
+    			if (konfiguration.getIntegration().getName() != null)
+    				intSzeName = konfiguration.getIntegration().getName();
     		}
     	}	
     	return intSzeName + "  [" + senderName + "  >>  " + empf01Name + ": " + geOb01Name + "]";

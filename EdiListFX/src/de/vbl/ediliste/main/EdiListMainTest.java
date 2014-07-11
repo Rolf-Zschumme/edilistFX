@@ -4,7 +4,6 @@ package de.vbl.ediliste.main;
 import javafx.scene.Parent;
 import javafx.scene.input.KeyCode;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.loadui.testfx.GuiTest;
@@ -23,10 +22,6 @@ public class EdiListMainTest extends GuiTest {
 		System.out.println("nach wait");
 		return root;
     }
-	
-	@Test () 
-	public void ediEintragNeuanlage1Empfaenger() {
-	
 	
 	
 	@Test 

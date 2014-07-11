@@ -114,7 +114,7 @@
 												</TableView>
 											</children>
 										</AnchorPane>
-										<fx:include fx:id="ediKomponente" source="EdiKomponente.fxml" />
+										<fx:include fx:id="ediKomponente" disable="true" source="EdiKomponente.fxml" />
 									</items>
 								</SplitPane>
 							</children>

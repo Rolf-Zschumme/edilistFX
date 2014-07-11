@@ -2,11 +2,11 @@
 	<entity>
 		<entity-name>de.vbl.ediliste.model.EdiEintrag</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>241</entity-height>
+		<entity-height>196</entity-height>
 		<entity-X-Coordinate>287</entity-X-Coordinate>
 		<entity-Y-Coordinate>379</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
-		<relation-collapsed>false</relation-collapsed>
+		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
 	</entity>
 
