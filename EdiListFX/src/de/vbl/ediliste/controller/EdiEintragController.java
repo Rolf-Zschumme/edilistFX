@@ -31,8 +31,11 @@ import javafx.scene.control.ComboBox;
 import org.controlsfx.dialog.Dialog.Actions;
 import org.controlsfx.dialog.Dialogs;
 
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListCell;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 //import javafx.scene.control.Dialogs;
 //import javafx.scene.control.Dialogs.DialogOptions;
 //import javafx.scene.control.Dialogs.DialogResponse;
@@ -59,7 +62,7 @@ import de.vbl.ediliste.model.Integration;
 import de.vbl.ediliste.model.Konfiguration;
 
 public class EdiEintragController {
-	private static final String EDI_PANEL_TITLE = "EDI-Eintrag";
+	private static final String EDI_PANE_PREFIX = "EDI ";
 	private static final Integer MAX_EMPFAENGER = 3;
 
 	private final ObjectProperty<EdiEintrag> ediEintrag;
@@ -75,14 +78,21 @@ public class EdiEintragController {
     @FXML private TitledPane paneSzenario;
     @FXML private TitledPane paneAnbindung;
     @FXML private TitledPane paneEdiEintrag;
+    @FXML private TabPane tabPaneEdiNr;
+    @FXML private Tab tabAktEdiNr;
+    
     @FXML private ComboBox<Konfiguration> cmbKonfiguration;
     @FXML private ComboBox<Integration> cmbIntegration;
+    @FXML private Button btnNewSzenario;
+    @FXML private Button btnNewConfiguration;
     
     @FXML private TextArea  taEdiBeschreibung;
+    @FXML private ComboBox<String> cmbIntervall;
     @FXML private ComboBox<String> cmbBuOb1;
     @FXML private ComboBox<String> cmbBuOb2;
     @FXML private ComboBox<String> cmbBuOb3;
     @FXML private TextField ediLastChange;
+    @FXML private TextField tfBezeichnung;
     @FXML private DatePicker dpProduktivSeit;
     @FXML private DatePicker dpProduktivBis;
 
@@ -91,6 +101,10 @@ public class EdiEintragController {
     @FXML private Button btnEmpfaenger1;
     @FXML private Button btnEmpfaenger2;
     @FXML private Button btnEmpfaenger3;
+    
+    @FXML private ChoiceBox<String> ccbEmpfaenger2;
+    @FXML private ChoiceBox<String> ccbEmpfaenger3;
+
     
     private static Stage primaryStage = null;
     private static String applName = null;
@@ -140,7 +154,7 @@ public class EdiEintragController {
     		    	setupLocalBindings();
     			} else {	
     				taEdiBeschreibung.setText("");
-    				
+    				tfBezeichnung.setText("");
     				btnSender.setText("");
     				btnEmpfaenger1.setText("");
     				btnEmpfaenger2.setText("");
@@ -150,15 +164,23 @@ public class EdiEintragController {
     				dpProduktivBis.setValue(null);
     				selIntegration = null;
     				cmbKonfiguration.getSelectionModel().select(null);
+    				tabAktEdiNr.setText(EDI_PANE_PREFIX + "000");
     			}
     			if (newEintrag != null) {
     				orgEdi = newEintrag;
     				aktEdi.copy(orgEdi);
-    				if (aktEdi.getKonfiguration() != null) {
-    					selIntegration = aktEdi.getKonfiguration().getIntegration();
+    				Konfiguration selKonfiguration = aktEdi.getKonfiguration();
+    				if (selKonfiguration != null) {
+    					selIntegration = selKonfiguration.getIntegration();
     					readCmbKonfigurationData(selIntegration);
-    					cmbKonfiguration.getSelectionModel().select(aktEdi.getKonfiguration());
+    					cmbKonfiguration.getSelectionModel().select(selKonfiguration);
+    					// dodo
+    					if (selKonfiguration.getEdiEintrag().size() > 0) {
+    						
+    					}
     				}
+    				tabAktEdiNr.setText(EDI_PANE_PREFIX +  aktEdi.getEdiNrStr());
+    				tfBezeichnung.setText(aktEdi.getBezeichnung()==null ? "" : aktEdi.getBezeichnung());
     				taEdiBeschreibung.setText(aktEdi.getBeschreibung());
     				if (aktEdi.getSeitDatum() != null) {
     					dpProduktivSeit.setValue(LocalDate.parse(aktEdi.getSeitDatum()));
@@ -175,13 +197,9 @@ public class EdiEintragController {
     				}
     				if (aktEdi.getEdiKomponente() == null) {
     					senderIsSelected.set(false);
-    					paneEdiEintrag.textProperty().set(EDI_PANEL_TITLE);
     					btnSender.setText("");
     				} else {
     					senderIsSelected.set(true);
-    					paneEdiEintrag.textProperty().set(EDI_PANEL_TITLE 
-    							+ "  " + aktEdi.getEdiNrStr() 
-    							+ "  " + aktEdi.bezeichnung() );
     					btnSender.setText(aktEdi.getEdiKomponente().getFullname());
     				}
     				setEmpfaenger(aktEdi);
@@ -457,6 +475,7 @@ public class EdiEintragController {
 //	}
 	
 	
+	
     private void setEmpfaenger(EdiEintrag newEintrag) {
     	Iterator<EdiEmpfaenger> empfaengerList = newEintrag.getEdiEmpfaenger().iterator();
 		for (int i=0; i<MAX_EMPFAENGER; ++i) {
@@ -568,7 +587,7 @@ public class EdiEintragController {
 			}
 			if (aktEdi.getBezeichnung().equals(tmpEdiBezeichnung)==false) {
 				aktEdi.setBezeichnung(tmpEdiBezeichnung);
-				paneEdiEintrag.textProperty().set(EDI_PANEL_TITLE + " "+ aktEdi.getEdiNrStr() + "  " + aktEdi.bezeichnung() );
+				tfBezeichnung.textProperty().set(aktEdi.bezeichnung());
 			}
 			orgEdi.copy(aktEdi);
 			orgEdi.setLaeUser(System.getenv("USERNAME").toUpperCase());
@@ -739,7 +758,7 @@ public class EdiEintragController {
         assert cmbBuOb1 != null : "fx:id=\"cmbBuOb1\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
         assert btnEmpfaenger1 != null : "fx:id=\"btnEmpfaenger1\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
         assert btnEdiEintragSpeichern != null : "fx:id=\"btnEdiEintragSpeichern\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-
+        assert tfBezeichnung != null : "fx:id=\"tfBezeichnung\" was not enjected: check your FXML file 'EdiEintrag.fxml'.";
         assert ediLastChange != null : "fx:id=\"ediLastChange\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
         assert taEdiBeschreibung != null : "fx:id=\"taEdiBeschreibung\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
         assert eintragVBox != null : "fx:id=\"eintragVBox\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
@@ -759,7 +778,33 @@ public class EdiEintragController {
         assert cmbBuOb1 != null : "fx:id=\"cmbBuOb1\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
         assert dpProduktivBis != null : "fx:id=\"dpProduktivBis\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
         assert btnEdiEintragSpeichern != null : "fx:id=\"btnEdiEintragSpeichern\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-    
+
+
+        assert cmbKonfiguration != null : "fx:id=\"cmbKonfiguration\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert ediLastChange != null : "fx:id=\"ediLastChange\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert taEdiBeschreibung != null : "fx:id=\"taEdiBeschreibung\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert btnNewSzenario != null : "fx:id=\"btnNewSzenario\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert eintragVBox != null : "fx:id=\"eintragVBox\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert dpProduktivSeit != null : "fx:id=\"dpProduktivSeit\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert ediEintrag != null : "fx:id=\"ediEintrag\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert btnEmpfaenger1 != null : "fx:id=\"btnEmpfaenger1\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert btnNewConfiguration != null : "fx:id=\"btnNewConfiguration\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert btnEmpfaenger3 != null : "fx:id=\"btnEmpfaenger3\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert btnEmpfaenger2 != null : "fx:id=\"btnEmpfaenger2\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert cmbIntervall != null : "fx:id=\"cmbIntervall\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert paneAnbindung != null : "fx:id=\"paneAnbindung\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert cmbIntegration != null : "fx:id=\"cmbIntegration\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert cmbBuOb2 != null : "fx:id=\"cmbBuOb2\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert tfBezeichnung != null : "fx:id=\"tfBezeichnung\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert cmbBuOb3 != null : "fx:id=\"cmbBuOb3\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert btnSender != null : "fx:id=\"btnSender\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert dpProduktivBis != null : "fx:id=\"dpProduktivBis\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert cmbBuOb1 != null : "fx:id=\"cmbBuOb1\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert ccbEmpfaenger3 != null : "fx:id=\"ccbEmpfaenger3\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert btnEdiEintragSpeichern != null : "fx:id=\"btnEdiEintragSpeichern\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert ccbEmpfaenger2 != null : "fx:id=\"ccbEmpfaenger2\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+
+        
     }
 
     

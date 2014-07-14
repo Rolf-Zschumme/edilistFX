@@ -147,7 +147,6 @@ public class EdiEintrag {
 	}
 	
 	public String getLaeDatum() {
-		System.out.println("laeDatum ("+ ediNr.getValue() + "," + ediNr.get() + ") ="  + laeDatum);
 		return laeDatum;
 	}
 
@@ -169,33 +168,16 @@ public class EdiEintrag {
 		     (beschreibung.getValueSafe().equals(tEDI.beschreibung.getValueSafe()))	&&
 		     (konfiguration == tEDI.konfiguration)                  				&&
 		     (ediKomponente == tEDI.ediKomponente)									&&
+		     (seitDatum == tEDI.seitDatum || (seitDatum != null && seitDatum.equals(tEDI.bisDatum))) &&
+		     (bisDatum == tEDI.bisDatum || (bisDatum != null && bisDatum.equals(tEDI.bisDatum))) &&
 		     (empfaengerListIsEqual(ediEmpfaenger,tEDI.ediEmpfaenger)) 	) {
 		     		return true;
 		}
 		return false;
 	}
 	
-	public void copy (EdiEintrag source) {
-		this.setEdiNr(source.getEdiNr());
-		this.setBezeichnung(source.getBezeichnung());
-		this.setBeschreibung(source.getBeschreibung());
-		this.setSenderName(source.senderName.get());
-		
-		this.id = source.id;
-		this.konfiguration = source.konfiguration;
-		this.ediKomponente = source.ediKomponente;
-		this.setEdiEmpfaenger(new ArrayList<EdiEmpfaenger>(source.ediEmpfaenger));
-		Iterator<EdiEmpfaenger> i = this.ediEmpfaenger.iterator();
-		while(i.hasNext())
-			i.next().setEdiEintrag(this);
-		this.seitDatum = source.seitDatum;
-		this.bisDatum = source.bisDatum;
-		this.laeDatum = source.laeDatum;
-		this.laeUser = source.laeUser;
-	}
-
 	private boolean empfaengerListIsEqual( Collection<EdiEmpfaenger> empf1,
-										   Collection<EdiEmpfaenger> empf2) {
+			Collection<EdiEmpfaenger> empf2) {
 		if (empf1.size() == empf2.size()) {
 			Iterator<EdiEmpfaenger> i1 = empf1.iterator();
 			Iterator<EdiEmpfaenger> i2 = empf2.iterator();
@@ -210,6 +192,46 @@ public class EdiEintrag {
 		return false;
 	}
 	
+	public void copy (EdiEintrag source) {
+		this.setEdiNr(source.getEdiNr());
+		this.setBezeichnung(source.getBezeichnung());
+		this.setBeschreibung(source.getBeschreibung());
+		this.setSenderName(source.senderName.get());
+		
+		this.id = source.id;
+		this.konfiguration = source.konfiguration;
+		this.ediKomponente = source.ediKomponente;
+
+//		Iterator<EdiEmpfaenger> is = source.ediEmpfaenger.iterator();
+//		while(is.hasNext()) {
+//			EdiEmpfaenger e = is.next();
+//			System.out.println("Copy: S-Empf-Id="+ e.getId() +" S-Edi-Id="+ e.getEdiEintrag().getId() + " " + e.getKomponente().getFullname()); 
+//		}	
+		
+		this.setEdiEmpfaenger(new ArrayList<EdiEmpfaenger>(source.ediEmpfaenger));
+
+//		Iterator<EdiEmpfaenger> i = this.ediEmpfaenger.iterator();
+//		while(i.hasNext()) {
+//			i.next().setEdiEintrag(this);
+//		}
+
+//		if (this.ediEmpfaenger == null) {
+//			System.out.println("Copy: T-Empf   = null");
+//		}
+//		else {
+//			Iterator<EdiEmpfaenger> it = this.ediEmpfaenger.iterator();
+//			while(it.hasNext()) {
+//				EdiEmpfaenger e = it.next();
+//				System.out.println("Copy: T-Empf-Id="+ e.getId() +" T-Edi-Id="+ e.getEdiEintrag().getId()+ " " + e.getKomponente().getFullname()); 
+//			}	
+//		}
+		
+		this.seitDatum = source.seitDatum;
+		this.bisDatum = source.bisDatum;
+		this.laeDatum = source.laeDatum;
+		this.laeUser = source.laeUser;
+	}
+
     public String bezeichnung() {
     	String intSzeName = "I??";
     	String senderName = "S??";
