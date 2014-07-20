@@ -13,6 +13,7 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/EdiListFX/libs/testFx-3.1.2-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="libs/mysql/mysql-connector-java-5.1.28-bin.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
 		<attributes>
@@ -22,16 +23,10 @@
 			<accessrule kind="accessible" pattern="javafx/**"/>
 		</accessrules>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/EclipseLink">
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/EclipseLink 2.5.0 - Kepler">
 		<attributes>
-			<attribute name="owner.project.facets" value="jpt.jpa;#system#"/>
+			<attribute name="owner.project.facets" value="jpt.jpa"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/ProgramData/JavaLibs/eclipselink-2.5.1/jlib/moxy/com.sun.tools.xjc_2.2.0.jar"/>
-	<classpathentry kind="lib" path="C:/ProgramData/JavaLibs/eclipselink-2.5.1/jlib/moxy/com.sun.xml.bind_2.2.0.v201004141950.jar"/>
-	<classpathentry kind="lib" path="C:/ProgramData/JavaLibs/eclipselink-2.5.1/jlib/moxy/javax.activation_1.1.0.v201108011116.jar"/>
-	<classpathentry kind="lib" path="C:/ProgramData/JavaLibs/eclipselink-2.5.1/jlib/moxy/javax.mail_1.4.0.v201005080615.jar"/>
-	<classpathentry kind="lib" path="C:/ProgramData/JavaLibs/eclipselink-2.5.1/jlib/moxy/javax.xml.bind_2.2.0.v201105210648.jar"/>
-	<classpathentry kind="lib" path="C:/ProgramData/JavaLibs/eclipselink-2.5.1/jlib/moxy/javax.xml.stream_1.0.1.v201004272200.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

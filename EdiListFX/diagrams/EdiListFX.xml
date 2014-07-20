@@ -2,9 +2,9 @@
 	<entity>
 		<entity-name>de.vbl.ediliste.model.EdiEintrag</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>196</entity-height>
+		<entity-height>216</entity-height>
 		<entity-X-Coordinate>287</entity-X-Coordinate>
-		<entity-Y-Coordinate>379</entity-Y-Coordinate>
+		<entity-Y-Coordinate>411</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
@@ -13,11 +13,11 @@
 	<entity>
 		<entity-name>de.vbl.ediliste.model.Konfiguration</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>116</entity-height>
+		<entity-height>161</entity-height>
 		<entity-X-Coordinate>287</entity-X-Coordinate>
 		<entity-Y-Coordinate>181</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
-		<relation-collapsed>true</relation-collapsed>
+		<relation-collapsed>false</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
 	</entity>
 
@@ -81,7 +81,7 @@
 		<entity-width>120</entity-width>
 		<entity-height>58</entity-height>
 		<entity-X-Coordinate>558</entity-X-Coordinate>
-		<entity-Y-Coordinate>560</entity-Y-Coordinate>
+		<entity-Y-Coordinate>613</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
@@ -103,7 +103,7 @@
 		<entity-width>120</entity-width>
 		<entity-height>116</entity-height>
 		<entity-X-Coordinate>19</entity-X-Coordinate>
-		<entity-Y-Coordinate>531</entity-Y-Coordinate>
+		<entity-Y-Coordinate>584</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>

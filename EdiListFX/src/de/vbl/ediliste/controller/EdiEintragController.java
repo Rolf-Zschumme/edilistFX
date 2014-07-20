@@ -254,11 +254,9 @@ public class EdiEintragController {
 				@Override
 				protected void updateItem(Konfiguration item, boolean empty) {
 					super.updateItem(item, empty);
-					System.out.println("KonfigsetCellFactory! " + item);
 					if (item == null || empty) {
 						setText(null);
 					} else {
-						System.out.println("KonfigsetCellFactory -" + item.getName());
 						setText(item.getName());
 					}
 				}
@@ -278,14 +276,42 @@ public class EdiEintragController {
 				return null; // No conversion fromString needed
 			}
 		});
-		cmbKonfiguration.setOnAction((event) -> {
+		cmbKonfiguration. setOnAction((event) -> {
 			Konfiguration newKonfiguration = cmbKonfiguration.getSelectionModel().getSelectedItem();
-			System.out.println("cmbKonfiguration setOnAction()");
+//			System.out.println("cmbKonfiguration setOnAction()");
 			if (newKonfiguration != aktEdi.getKonfiguration()) {
+				if (newKonfiguration != null) {
+//					if (aktEdi.getKonfiguration() != null) {			
+//						System.out.println("cmbKonfiguration setOnAction() evict old " + aktEdi.getKonfiguration() );
+//						entityManager.getEntityManagerFactory().getCache().evict(Konfiguration.class, aktEdi.getKonfiguration().getId());
+//					}
+//					System.out.println("cmbKonfiguration setOnAction() evict new " + newKonfiguration );
+//					entityManager.getEntityManagerFactory().getCache().evict(Konfiguration.class, newKonfiguration.getId());
+				}
 				aktEdi.setKonfiguration(newKonfiguration);
 				ediEintragIsChanged.set(true);
 			}
+			if (tabPaneEdiNr.getTabs().size() > 1) {
+				tabPaneEdiNr.getTabs().retainAll(tabAktEdiNr);
+			}
+			if (newKonfiguration != null && newKonfiguration.getEdiEintrag() != null) {
+				Iterator<EdiEintrag> i = newKonfiguration.getEdiEintrag().iterator();
+				int index = 0;
+				while (i.hasNext()) {
+					EdiEintrag e = i.next();
+					if (e.getEdiNr() != aktEdi.getEdiNr() ) {
+						Tab extraTab = new Tab(EDI_PANE_PREFIX + e.getEdiNrStr());
+						if (e.getEdiNr() < aktEdi.getEdiNr() ) 
+							tabPaneEdiNr.getTabs().add(index++, extraTab);
+						else
+							tabPaneEdiNr.getTabs().add(++index, extraTab);
+					}
+				}
+//				System.out.println("new Konfiguration " + newKonfiguration + " \t" + newKonfiguration.getName() 
+//        						 + " mit " + newKonfiguration.getEdiEintrag().size() + " EdiNrn");
+			}
 		});
+		
 		cmbKonfiguration.disableProperty().bind(cmbIntegration.getSelectionModel().selectedItemProperty().isNull());
 		
 		businessObjectMap = new HashMap<String,GeschaeftsObjekt>();		
@@ -454,6 +480,7 @@ public class EdiEintragController {
 		cmbIntegrationData.clear();
 		TypedQuery<Integration> tq = entityManager.createQuery(
 				"SELECT i FROM Integration i ORDER BY i.name", Integration.class);
+		tq.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		cmbIntegrationData.addAll(tq.getResultList());
 	}
 
@@ -462,9 +489,16 @@ public class EdiEintragController {
 		TypedQuery<Konfiguration> tq = entityManager.createQuery(
 				"SELECT k FROM Konfiguration k WHERE k.integration = :i ORDER BY k.name", Konfiguration.class);
 		tq.setParameter("i", integration);
+		tq.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		cmbKonfigurationData.addAll(tq.getResultList());
 		cmbKonfiguration.setItems(cmbKonfigurationData);
-	}
+		
+//		Iterator<Konfiguration> iterKonfig = tq.getResultList().iterator();
+//		while (iterKonfig.hasNext()) {
+//			Konfiguration k = iterKonfig.next();
+//			System.out.println("readKonfiguration " + k + " \t" + k.getName() + " mit " + k.getEdiEintrag().size() + " EdiNrn");
+//		}
+	} 
 
 //	private String printA(ObservableList<Konfiguration> konfigData) {
 //		String ret = "";
@@ -593,6 +627,8 @@ public class EdiEintragController {
 			orgEdi.setLaeUser(System.getenv("USERNAME").toUpperCase());
 			orgEdi.setLaeDatum(LocalDateTime.now().toString());
 			entityManager.getTransaction().commit();
+//			entityManager.refresh(orgEdi.getEdiKomponente());
+//			System.out.println("Org-Konfig(nR): " + orgEdi.getKonfiguration() + " mit " + orgEdi.getKonfiguration().getEdiEintrag().size() + " Edis");			
 //			System.out.println("EdiEintragSpeichern commmit ausgeführt");
 		} catch (RuntimeException e) {
 			Dialogs.create().owner(primaryStage)

@@ -17,6 +17,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import javax.persistence.JoinColumn;
 import static javax.persistence.CascadeType.ALL;
 
 @Entity
@@ -101,7 +102,8 @@ public class EdiEintrag {
 	 }
 	 
 	// ------------------------------------------------------------------------
-	@ManyToOne
+	@ManyToOne(cascade = ALL)
+	@JoinColumn(referencedColumnName = "id")
 	public Konfiguration getKonfiguration() {
 		return konfiguration; 
 	}
@@ -230,7 +232,7 @@ public class EdiEintrag {
 		this.bisDatum = source.bisDatum;
 		this.laeDatum = source.laeDatum;
 		this.laeUser = source.laeUser;
-	}
+		}
 
     public String bezeichnung() {
     	String intSzeName = "I??";
