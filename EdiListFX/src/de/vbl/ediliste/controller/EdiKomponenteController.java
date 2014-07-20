@@ -85,6 +85,7 @@ public class EdiKomponenteController {
 				}
 				if (newKomponente != null) {
 					aktKompo = newKomponente;
+					ediKomponenteList.clear();
 					readEdiListeforKomponete(newKomponente);
 					tfBezeichnung.setText(newKomponente.getName());
 					taBeschreibung.setText(newKomponente.getBeschreibung());
@@ -195,6 +196,7 @@ public class EdiKomponenteController {
 		TypedQuery<EdiEintrag> tqS = entityManager.createQuery(
 				"SELECT e FROM EdiEintrag e WHERE e.ediKomponente = :k", EdiEintrag.class);
 		tqS.setParameter("k", selKomponente);
+		tqS.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		List<EdiEintrag> ediList = tqS.getResultList();
 		for(EdiEintrag e : ediList ) {
 			if (e.getEdiEmpfaenger().size() > 0)
@@ -209,6 +211,7 @@ public class EdiKomponenteController {
 		TypedQuery<EdiEmpfaenger> tqE = entityManager.createQuery(
 				"SELECT e FROM EdiEmpfaenger e WHERE e.komponente = :k", EdiEmpfaenger.class);
 		tqE.setParameter("k", selKomponente);
+		tqE.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		ediKomponenteList.addAll(tqE.getResultList());
 		System.out.println("KomponenteController:" + tqE.getResultList().size() + " EDI-Empfänger gelesen");
 	}

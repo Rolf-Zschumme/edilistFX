@@ -281,10 +281,10 @@ public class EdiEintragController {
 //			System.out.println("cmbKonfiguration setOnAction()");
 			if (newKonfiguration != aktEdi.getKonfiguration()) {
 				if (newKonfiguration != null) {
-//					if (aktEdi.getKonfiguration() != null) {			
+					if (aktEdi.getKonfiguration() != null) {			
 //						System.out.println("cmbKonfiguration setOnAction() evict old " + aktEdi.getKonfiguration() );
 //						entityManager.getEntityManagerFactory().getCache().evict(Konfiguration.class, aktEdi.getKonfiguration().getId());
-//					}
+					}
 //					System.out.println("cmbKonfiguration setOnAction() evict new " + newKonfiguration );
 //					entityManager.getEntityManagerFactory().getCache().evict(Konfiguration.class, newKonfiguration.getId());
 				}
@@ -489,7 +489,7 @@ public class EdiEintragController {
 		TypedQuery<Konfiguration> tq = entityManager.createQuery(
 				"SELECT k FROM Konfiguration k WHERE k.integration = :i ORDER BY k.name", Konfiguration.class);
 		tq.setParameter("i", integration);
-		tq.setHint("javax.persistence.cache.storeMode", "REFRESH");
+//		tq.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		cmbKonfigurationData.addAll(tq.getResultList());
 		cmbKonfiguration.setItems(cmbKonfigurationData);
 		
@@ -499,15 +499,6 @@ public class EdiEintragController {
 //			System.out.println("readKonfiguration " + k + " \t" + k.getName() + " mit " + k.getEdiEintrag().size() + " EdiNrn");
 //		}
 	} 
-
-//	private String printA(ObservableList<Konfiguration> konfigData) {
-//		String ret = "";
-//		for (Konfiguration konfig : konfigData) {
-//			ret += " " + konfig.getName();
-//		}
-//		return ret;
-//	}
-	
 	
 	
     private void setEmpfaenger(EdiEintrag newEintrag) {
@@ -623,11 +614,21 @@ public class EdiEintragController {
 				aktEdi.setBezeichnung(tmpEdiBezeichnung);
 				tfBezeichnung.textProperty().set(aktEdi.bezeichnung());
 			}
+			Konfiguration prevKonfiguration = null; 
+			if (orgEdi.getKonfiguration() != aktEdi.getKonfiguration()) {
+				prevKonfiguration = orgEdi.getKonfiguration();
+			}
 			orgEdi.copy(aktEdi);
 			orgEdi.setLaeUser(System.getenv("USERNAME").toUpperCase());
 			orgEdi.setLaeDatum(LocalDateTime.now().toString());
 			entityManager.getTransaction().commit();
-//			entityManager.refresh(orgEdi.getEdiKomponente());
+
+			if (prevKonfiguration != null) {
+				entityManager.refresh(prevKonfiguration);
+				entityManager.refresh(orgEdi.getKonfiguration());
+			}
+			
+//			entityManager.getEntityManagerFactory().getCache().evict(Konfiguration.class, orgEdi.getKonfiguration().getId());
 //			System.out.println("Org-Konfig(nR): " + orgEdi.getKonfiguration() + " mit " + orgEdi.getKonfiguration().getEdiEintrag().size() + " Edis");			
 //			System.out.println("EdiEintragSpeichern commmit ausgeführt");
 		} catch (RuntimeException e) {
@@ -679,6 +680,7 @@ public class EdiEintragController {
     	return true;
     }
     
+ 
     
     
     //Action: Sender-Button is pressed

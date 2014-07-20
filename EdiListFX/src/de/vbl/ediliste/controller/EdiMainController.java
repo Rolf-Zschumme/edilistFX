@@ -309,17 +309,20 @@ public class EdiMainController {
 	}
 
 	private void loadKomponentenListData() {
-		if (ediKomponentenList.size() == 0) {
+//		if (ediKomponentenList.size() == 0) {
+			ediKomponentenList.clear();
 			TypedQuery<EdiKomponente> tq = entityManager.createQuery(
 					"SELECT k FROM EdiKomponente k ORDER BY k.name", EdiKomponente.class);
+			tq.setHint("javax.persistence.cache.storeMode", "REFRESH");
 			ediKomponentenList.addAll(tq.getResultList());
-		}
+//		}
 	}
 
 	private void loadGeschaeftobjektListData() {
 		geschaeftsobjektList.clear();
 		TypedQuery<GeschaeftsObjekt> tq = entityManager.createQuery(
 				"SELECT g FROM GeschaeftsObjekt g ORDER BY g.name", GeschaeftsObjekt.class);
+		tq.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		geschaeftsobjektList.addAll(tq.getResultList());
 	}
 	
