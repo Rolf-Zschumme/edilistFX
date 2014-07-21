@@ -74,6 +74,15 @@ public class Konfiguration {
 	public void setEdiEintrag(Collection<EdiEintrag> ediEintrag) {
 		this.ediEintrag = ediEintrag;
 	}
+	
+//	public void addEdiEintrag(EdiEintrag e) {
+//		this.ediEintrag.add(e);
+//	}
+//	
+//	public void removeEdiEintrag(EdiEintrag e) {
+//		this.ediEintrag.remove(e);
+//	}
+	
 
 	// ------------------------------------------------------------------------
 	public String getBeschreibung() { 

@@ -51,7 +51,7 @@ public class EdiKomponenteController {
     @FXML private TableColumn<EdiEmpfaenger, String> tcEmpfaenger;
     @FXML private TableColumn<EdiEmpfaenger, String> tcEdiNr;
     @FXML private TableColumn<EdiEmpfaenger, String> tcSender;
-    @FXML private TableColumn<EdiEmpfaenger, ?> tcDatumBis;
+    @FXML private TableColumn<EdiEmpfaenger, String> tcDatumBis;
     
     public EdiKomponenteController() {
     	this.edikomponente = new SimpleObjectProperty<>(this, "edikomponente", null);
@@ -95,10 +95,9 @@ public class EdiKomponenteController {
 
 		tvVerwendungen.setItems(ediKomponenteList);
 		tcEdiNr.setCellValueFactory(cellData -> 
-		Bindings.format(EdiEintrag.FORMAT_EDINR, cellData.getValue().ediNrProperty()));		
-		tcSender.setCellValueFactory(cellData -> cellData.getValue().senderNameProperty());
-		tcEmpfaenger.setCellValueFactory( cellData -> cellData.getValue().empfaengerNameProperty());
+					Bindings.format(EdiEintrag.FORMAT_EDINR, cellData.getValue().ediNrProperty()));
 		
+		tcSender.setCellValueFactory(cellData -> cellData.getValue().senderNameProperty());
 		tcSender.setCellFactory(column -> {
 			return new TableCell<EdiEmpfaenger, String>() {
 				@Override
@@ -117,6 +116,7 @@ public class EdiKomponenteController {
 			};
 		});
 		
+		tcEmpfaenger.setCellValueFactory(cellData -> cellData.getValue().empfaengerNameProperty());
 		tcEmpfaenger.setCellFactory(column -> {
 			return new TableCell<EdiEmpfaenger, String>() {
 				@Override
@@ -134,6 +134,8 @@ public class EdiKomponenteController {
 				}
 			};
 		});
+		
+		tcDatumBis.setCellValueFactory(cellData -> cellData.getValue().getEdiEintrag().bisDatumProperty());
 	}
 	
 	public boolean checkForChangesOk(boolean askForUpdate) {
@@ -158,7 +160,7 @@ public class EdiKomponenteController {
 	    		}	
 			}	
 			if (checkName(newName) == false) {
-				infoField.setText("Fehler: Eine andere Komponente heißt bereits so!");
+				infoField.setText("Fehler: Eine andere Komponente des Systems heißt bereits so!");
 				return false;
 			}
 			System.out.println("checkForChanges() - Änderung erkannt -> update");
@@ -196,7 +198,7 @@ public class EdiKomponenteController {
 		TypedQuery<EdiEintrag> tqS = entityManager.createQuery(
 				"SELECT e FROM EdiEintrag e WHERE e.ediKomponente = :k", EdiEintrag.class);
 		tqS.setParameter("k", selKomponente);
-		tqS.setHint("javax.persistence.cache.storeMode", "REFRESH");
+//		tqS.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		List<EdiEintrag> ediList = tqS.getResultList();
 		for(EdiEintrag e : ediList ) {
 			if (e.getEdiEmpfaenger().size() > 0)
@@ -211,7 +213,7 @@ public class EdiKomponenteController {
 		TypedQuery<EdiEmpfaenger> tqE = entityManager.createQuery(
 				"SELECT e FROM EdiEmpfaenger e WHERE e.komponente = :k", EdiEmpfaenger.class);
 		tqE.setParameter("k", selKomponente);
-		tqE.setHint("javax.persistence.cache.storeMode", "REFRESH");
+//		tqE.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		ediKomponenteList.addAll(tqE.getResultList());
 		System.out.println("KomponenteController:" + tqE.getResultList().size() + " EDI-Empfänger gelesen");
 	}

@@ -28,12 +28,12 @@ public class EdiEintrag {
 	private StringProperty bezeichnung = new SimpleStringProperty();
 	private StringProperty beschreibung = new SimpleStringProperty();
 	private StringProperty senderName = new SimpleStringProperty();
+	private StringProperty bisDatum = new SimpleStringProperty();
 	private long id;
 	private Konfiguration konfiguration;
 	private EdiKomponente ediKomponente;
 	private Collection<EdiEmpfaenger> ediEmpfaenger;
 	private String seitDatum;
-	private String bisDatum;
 	private String laeDatum; 
 	private String laeUser; 
 
@@ -135,17 +135,18 @@ public class EdiEintrag {
 	public String getSeitDatum() {
 		return seitDatum;
 	}
-
 	public void setSeitDatum(String param) {
 		this.seitDatum = param;
 	}
 
-	public String getBisDatum() {
+	public StringProperty bisDatumProperty() {
 		return bisDatum;
 	}
-
+	public String getBisDatum() {
+		return bisDatum.get();
+	}
 	public void setBisDatum(String param) {
-		this.bisDatum = param;
+		bisDatum.set(param);
 	}
 	
 	public String getLaeDatum() {
@@ -229,7 +230,7 @@ public class EdiEintrag {
 //		}
 		
 		this.seitDatum = source.seitDatum;
-		this.bisDatum = source.bisDatum;
+		this.setBisDatum(source.bisDatum.get());
 		this.laeDatum = source.laeDatum;
 		this.laeUser = source.laeUser;
 		}

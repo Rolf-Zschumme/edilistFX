@@ -26,12 +26,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-
-import org.controlsfx.dialog.Dialog.Actions;
-import org.controlsfx.dialog.Dialogs;
-
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.Tab;
@@ -52,6 +48,9 @@ import javafx.util.StringConverter;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+
+import org.controlsfx.dialog.Dialog.Actions;
+import org.controlsfx.dialog.Dialogs;
 
 import de.vbl.ediliste.controller.KomponentenAuswahlController.KomponentenTyp;
 import de.vbl.ediliste.model.EdiEintrag;
@@ -192,7 +191,7 @@ public class EdiEintragController {
     					String ttt = LocalTime.from(dt).toString().substring(0, 8);
     					ediLastChange.setTooltip(new Tooltip(ttt));
     				}
-    				if (aktEdi.getBisDatum() != null) {
+    				if (!aktEdi.bisDatumProperty().getValueSafe().equals("")) {
     					dpProduktivBis.setValue(LocalDate.parse(aktEdi.getBisDatum()));
     				}
     				if (aktEdi.getEdiKomponente() == null) {
@@ -276,21 +275,20 @@ public class EdiEintragController {
 				return null; // No conversion fromString needed
 			}
 		});
-		cmbKonfiguration. setOnAction((event) -> {
+		cmbKonfiguration.setOnAction((event) -> {
 			Konfiguration newKonfiguration = cmbKonfiguration.getSelectionModel().getSelectedItem();
 //			System.out.println("cmbKonfiguration setOnAction()");
 			if (newKonfiguration != aktEdi.getKonfiguration()) {
-				if (newKonfiguration != null) {
-					if (aktEdi.getKonfiguration() != null) {			
-//						System.out.println("cmbKonfiguration setOnAction() evict old " + aktEdi.getKonfiguration() );
-//						entityManager.getEntityManagerFactory().getCache().evict(Konfiguration.class, aktEdi.getKonfiguration().getId());
-					}
-//					System.out.println("cmbKonfiguration setOnAction() evict new " + newKonfiguration );
-//					entityManager.getEntityManagerFactory().getCache().evict(Konfiguration.class, newKonfiguration.getId());
+				if (aktEdi.getKonfiguration() != null) {
+					aktEdi.getKonfiguration().getEdiEintrag().remove(aktEdi);
 				}
 				aktEdi.setKonfiguration(newKonfiguration);
+				if (newKonfiguration != null) {
+					newKonfiguration.getEdiEintrag().add(aktEdi);
+				}	
 				ediEintragIsChanged.set(true);
 			}
+			// zusätzliche EdiNr-Reiter aktualisieren (entfernen/ergänzen)
 			if (tabPaneEdiNr.getTabs().size() > 1) {
 				tabPaneEdiNr.getTabs().retainAll(tabAktEdiNr);
 			}
@@ -614,19 +612,20 @@ public class EdiEintragController {
 				aktEdi.setBezeichnung(tmpEdiBezeichnung);
 				tfBezeichnung.textProperty().set(aktEdi.bezeichnung());
 			}
-			Konfiguration prevKonfiguration = null; 
-			if (orgEdi.getKonfiguration() != aktEdi.getKonfiguration()) {
-				prevKonfiguration = orgEdi.getKonfiguration();
-			}
+//			Konfiguration prevKonfiguration = null; 
+//			if (orgEdi.getKonfiguration() != aktEdi.getKonfiguration()) {
+//				prevKonfiguration = orgEdi.getKonfiguration();
+//			}
 			orgEdi.copy(aktEdi);
 			orgEdi.setLaeUser(System.getenv("USERNAME").toUpperCase());
 			orgEdi.setLaeDatum(LocalDateTime.now().toString());
+			
 			entityManager.getTransaction().commit();
 
-			if (prevKonfiguration != null) {
-				entityManager.refresh(prevKonfiguration);
-				entityManager.refresh(orgEdi.getKonfiguration());
-			}
+//			if (prevKonfiguration != null) {
+//				entityManager.refresh(prevKonfiguration);
+//				entityManager.refresh(orgEdi.getKonfiguration());
+//			}
 			
 //			entityManager.getEntityManagerFactory().getCache().evict(Konfiguration.class, orgEdi.getKonfiguration().getId());
 //			System.out.println("Org-Konfig(nR): " + orgEdi.getKonfiguration() + " mit " + orgEdi.getKonfiguration().getEdiEintrag().size() + " Edis");			
