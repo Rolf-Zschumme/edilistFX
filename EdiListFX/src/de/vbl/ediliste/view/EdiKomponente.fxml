@@ -38,8 +38,8 @@
 												<TableColumn fx:id="tcEdiNr" prefWidth="75.0" text="Edi-Nr." />
 												<TableColumn fx:id="tcSender" maxWidth="500.0" prefWidth="198.99999237060547" text="Edi-Sender" />
 												<TableColumn fx:id="tcEmpfaenger" maxWidth="500.0" prefWidth="181.0" text="Edi-Empfänger" />
-												<TableColumn fx:id="tcDatumBis" prefWidth="97.00003051757812" text="Start-Datum" />
-												<TableColumn prefWidth="102.0" text="Ende-Datum" />
+												<TableColumn fx:id="tcDatumAb" prefWidth="97.00003051757812" text="Ab-Datum" />
+												<TableColumn fx:id="tcDatumBis" prefWidth="102.0" text="Bis-Datum" />
 											</columns>
 										</TableView>
 									</children>

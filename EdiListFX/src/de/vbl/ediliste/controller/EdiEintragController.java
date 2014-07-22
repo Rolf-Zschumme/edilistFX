@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -48,12 +49,15 @@ import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
 
 
+
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
 
+
 import org.controlsfx.dialog.Dialog.Actions;
 import org.controlsfx.dialog.Dialogs;
+
 
 
 import de.vbl.ediliste.controller.KomponentenAuswahlController.KomponentenTyp;
@@ -186,19 +190,7 @@ public class EdiEintragController {
     				tabAktEdiNr.setText(EDI_PANE_PREFIX +  aktEdi.getEdiNrStr());
     				tfBezeichnung.setText(aktEdi.getBezeichnung()==null ? "" : aktEdi.getBezeichnung());
     				taEdiBeschreibung.setText(aktEdi.getBeschreibung());
-    				if (aktEdi.getSeitDatum() != null) {
-    					dpProduktivSeit.setValue(LocalDate.parse(aktEdi.getSeitDatum()));
-    				}
-    				if (aktEdi.getLaeDatum() != null) {
-    					LocalDateTime dt = LocalDateTime.parse(aktEdi.getLaeDatum());
-    					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy"); 
-    					ediLastChange.setText(aktEdi.getLaeUser() + "  " + formatter.format(dt));
-    					String ttt = LocalTime.from(dt).toString().substring(0, 8);
-    					ediLastChange.setTooltip(new Tooltip(ttt));
-    				}
-    				if (!aktEdi.bisDatumProperty().getValueSafe().equals("")) {
-    					dpProduktivBis.setValue(LocalDate.parse(aktEdi.getBisDatum()));
-    				}
+    				
     				if (aktEdi.getEdiKomponente() == null) {
     					senderIsSelected.set(false);
     					btnSender.setText("");
@@ -207,6 +199,20 @@ public class EdiEintragController {
     					btnSender.setText(aktEdi.getEdiKomponente().getFullname());
     				}
     				setEmpfaenger(aktEdi);
+    				
+    				if (!aktEdi.seitDatumProperty().getValueSafe().equals("")) {
+    					dpProduktivSeit.setValue(LocalDate.parse(aktEdi.getSeitDatum()));
+    				}
+    				if (!aktEdi.bisDatumProperty().getValueSafe().equals("")) {
+    					dpProduktivBis.setValue(LocalDate.parse(aktEdi.getBisDatum()));
+    				}
+    				if (aktEdi.getLaeDatum() != null) {
+    					LocalDateTime dt = LocalDateTime.parse(aktEdi.getLaeDatum());
+    					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy"); 
+    					ediLastChange.setText(aktEdi.getLaeUser() + "  " + formatter.format(dt));
+    					String ttt = LocalTime.from(dt).toString().substring(0, 8);
+    					ediLastChange.setTooltip(new Tooltip(ttt));
+    				}
     				ediEintragIsChanged.set(false);
     			}
     			cmbIntegration.getSelectionModel().select(selIntegration);
@@ -296,27 +302,27 @@ public class EdiEintragController {
 
 			// zusätzliche EdiNr-Reiter aktualisieren (entfernen/ergänzen)
 			
-			if (tabPaneEdiNr.getTabs().size() > 1) {
+//			if (tabPaneEdiNr.getTabs().size() > 1) {
 				tabPaneEdiNr.getTabs().retainAll(tabAktEdiNr);
-			}
-			System.out.println("tabPaneEdiNr.getTabs().size() <=1 : " + tabPaneEdiNr.getTabs().size());
+//			}
 			if (newKonfiguration != null && newKonfiguration.getEdiEintrag() != null) {
+				HashMap<Integer, Tab> tabMapAfter = new HashMap<Integer,Tab>();				
+				HashMap<Integer, Tab> tabMapBefore = new HashMap<Integer,Tab>();				
 				Iterator<EdiEintrag> i = newKonfiguration.getEdiEintrag().iterator();
-				int index = 0;
+				int aktEdiNr = aktEdi.getEdiNr();
+				Tab extraTab = null;
 				while (i.hasNext()) {
 					EdiEintrag e = i.next();
-					System.out.println("akt i=" + tabPaneEdiNr.getTabs().indexOf(tabAktEdiNr));
-					if (e.getEdiNr() != aktEdi.getEdiNr() ) {
-						Tab extraTab = new Tab(EDI_PANE_PREFIX + e.getEdiNrStr());
-						if (e.getEdiNr() < aktEdi.getEdiNr() ) {
-//							System.out.println(e.getEdiNr() + " < " + aktEdi.getEdiNr() + "  " + index);
-							tabPaneEdiNr.getTabs().add(index++, extraTab);
-						}
-						else {
-//							System.out.println(e.getEdiNr() + " > " + aktEdi.getEdiNr()+ "  " + (index+1));
-							tabPaneEdiNr.getTabs().add(++index, extraTab);
-						}
-					}
+					int iEdiNr = e.getEdiNr();
+					if (iEdiNr != aktEdiNr ) extraTab = new Tab(EDI_PANE_PREFIX + e.getEdiNrStr());
+					if (iEdiNr  < aktEdiNr ) tabMapBefore.put(iEdiNr, extraTab);
+					if (iEdiNr  > aktEdiNr ) tabMapAfter.put(iEdiNr, extraTab);
+				}
+				if (tabMapAfter.size() > 0) {
+					tabPaneEdiNr.getTabs().addAll(1, tabMapAfter.values());
+				}	
+				if (tabMapBefore.size() > 0) {
+					tabPaneEdiNr.getTabs().addAll(0, tabMapBefore.values());
 				}
 			}
 		});
@@ -407,7 +413,7 @@ public class EdiEintragController {
     	    String newDateStr = dpProduktivSeit.getValue() == null ? "" : 
     		                    dpProduktivSeit.getValue().toString();
     		if (newDateStr.equals(aktEdi.getSeitDatum()) == false) {
-    			aktEdi.setSeitDatum(newDateStr);
+    			aktEdi.seitDatumProperty().set(newDateStr);
     			ediEintragIsChanged.set(true);
     		}
     	});
@@ -415,11 +421,10 @@ public class EdiEintragController {
     		String newDateStr = dpProduktivBis.getValue() == null ? "" :
     							dpProduktivBis.getValue().toString();
     		if (newDateStr.equals(aktEdi.getBisDatum()) == false) {
-    			aktEdi.setBisDatum(newDateStr);
+    			aktEdi.bisDatumProperty().set(newDateStr);
     			ediEintragIsChanged.set(true);
     		}
     	});
-    	
     	
     	btnEdiEintragSpeichern.disableProperty().bind(Bindings.not(ediEintragIsChanged));
 		

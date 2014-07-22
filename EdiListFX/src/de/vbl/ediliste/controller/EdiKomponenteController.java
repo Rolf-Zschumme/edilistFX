@@ -51,6 +51,7 @@ public class EdiKomponenteController {
     @FXML private TableColumn<EdiEmpfaenger, String> tcEmpfaenger;
     @FXML private TableColumn<EdiEmpfaenger, String> tcEdiNr;
     @FXML private TableColumn<EdiEmpfaenger, String> tcSender;
+    @FXML private TableColumn<EdiEmpfaenger, String> tcDatumAb;
     @FXML private TableColumn<EdiEmpfaenger, String> tcDatumBis;
     
     public EdiKomponenteController() {
@@ -134,7 +135,7 @@ public class EdiKomponenteController {
 				}
 			};
 		});
-		
+		tcDatumAb.setCellValueFactory(cellData -> cellData.getValue().getEdiEintrag().seitDatumProperty());
 		tcDatumBis.setCellValueFactory(cellData -> cellData.getValue().getEdiEintrag().bisDatumProperty());
 	}
 	

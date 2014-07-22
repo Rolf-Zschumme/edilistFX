@@ -22,7 +22,6 @@ public class EdiListMain extends Application {
 //
 //	public static void main(String[] args) {
 //		launch(args);
-//	}
 	
 	
 	private static Stage primaryStage;  
