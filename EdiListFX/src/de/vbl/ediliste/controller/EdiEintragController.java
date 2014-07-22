@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -46,11 +47,14 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
 
+
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+
 import org.controlsfx.dialog.Dialog.Actions;
 import org.controlsfx.dialog.Dialogs;
+
 
 import de.vbl.ediliste.controller.KomponentenAuswahlController.KomponentenTyp;
 import de.vbl.ediliste.model.EdiEintrag;
@@ -107,7 +111,7 @@ public class EdiEintragController {
     
     private static Stage primaryStage = null;
     private static String applName = null;
-	private static TextField infoField;
+	private static EdiMainController mainController;
     private static EntityManager entityManager = null;
 
     private BooleanProperty ediEintragIsChanged = new SimpleBooleanProperty(false);
@@ -133,11 +137,11 @@ public class EdiEintragController {
 		readOnlyAccess.set(false);
 	}
 
-	public static void start(Stage primaryStage, TextField infoTextField, EntityManager entityManager) {
+	public static void start(Stage primaryStage, EdiMainController mainController, EntityManager entityManager) {
 		EdiEintragController.primaryStage = primaryStage;
-		EdiEintragController.infoField = infoTextField; 
 		EdiEintragController.entityManager = entityManager;
-		infoField.setText("Hallo");
+		EdiEintragController.mainController = mainController; 
+		EdiEintragController.mainController.setInfoText("Hallo");
 	}
 
     @FXML 
@@ -149,6 +153,7 @@ public class EdiEintragController {
     		@Override
     		public void changed (ObservableValue<? extends EdiEintrag> ov,
     				EdiEintrag oldEintrag, EdiEintrag newEintrag) {
+    			mainController.setErrorText("");
     			if (oldEintrag == null) {
     		    	setupLocalBindings();
     			} else {	
@@ -288,25 +293,31 @@ public class EdiEintragController {
 				}	
 				ediEintragIsChanged.set(true);
 			}
+
 			// zusätzliche EdiNr-Reiter aktualisieren (entfernen/ergänzen)
+			
 			if (tabPaneEdiNr.getTabs().size() > 1) {
 				tabPaneEdiNr.getTabs().retainAll(tabAktEdiNr);
 			}
+			System.out.println("tabPaneEdiNr.getTabs().size() <=1 : " + tabPaneEdiNr.getTabs().size());
 			if (newKonfiguration != null && newKonfiguration.getEdiEintrag() != null) {
 				Iterator<EdiEintrag> i = newKonfiguration.getEdiEintrag().iterator();
 				int index = 0;
 				while (i.hasNext()) {
 					EdiEintrag e = i.next();
+					System.out.println("akt i=" + tabPaneEdiNr.getTabs().indexOf(tabAktEdiNr));
 					if (e.getEdiNr() != aktEdi.getEdiNr() ) {
 						Tab extraTab = new Tab(EDI_PANE_PREFIX + e.getEdiNrStr());
-						if (e.getEdiNr() < aktEdi.getEdiNr() ) 
+						if (e.getEdiNr() < aktEdi.getEdiNr() ) {
+//							System.out.println(e.getEdiNr() + " < " + aktEdi.getEdiNr() + "  " + index);
 							tabPaneEdiNr.getTabs().add(index++, extraTab);
-						else
+						}
+						else {
+//							System.out.println(e.getEdiNr() + " > " + aktEdi.getEdiNr()+ "  " + (index+1));
 							tabPaneEdiNr.getTabs().add(++index, extraTab);
+						}
 					}
 				}
-//				System.out.println("new Konfiguration " + newKonfiguration + " \t" + newKonfiguration.getName() 
-//        						 + " mit " + newKonfiguration.getEdiEintrag().size() + " EdiNrn");
 			}
 		});
 		
@@ -416,6 +427,7 @@ public class EdiEintragController {
 
 	// prüft ob das eingegebene BO (newName) in der BO-Tabelle (businessObjektMap) bereits
 	// vorhanden ist. Zuvor wird geprüft ob das BO dem im Empfänger gespeicherten BO entspricht 
+	
 	private String checkBusinessObject(String newName, EdiEmpfaenger e, String aktName) {
 		String orgName = "";
 		if (e.getGeschaeftsObjekt() != null) {
@@ -629,7 +641,7 @@ public class EdiEintragController {
 			
 //			entityManager.getEntityManagerFactory().getCache().evict(Konfiguration.class, orgEdi.getKonfiguration().getId());
 //			System.out.println("Org-Konfig(nR): " + orgEdi.getKonfiguration() + " mit " + orgEdi.getKonfiguration().getEdiEintrag().size() + " Edis");			
-//			System.out.println("EdiEintragSpeichern commmit ausgeführt");
+			mainController.setInfoText("Der EDI-Eintrag wurde gespeichert");
 		} catch (RuntimeException e) {
 			Dialogs.create().owner(primaryStage)
 			.title(applName).masthead("Datenbankfehler")
@@ -675,6 +687,16 @@ public class EdiEintragController {
     			}
     			empf.setGeschaeftsObjekt(businessObjectMap.get(busObjName[i].toUpperCase()));
     		}
+    	}
+    	if(selIntegration == null) {
+    		mainController.setErrorText("Integration muss ausgewählt/zugeordnet werden");
+    		cmbIntegration.requestFocus();
+    		return false;
+    	}
+    	if (aktEdi.getKonfiguration() == null) {
+    		mainController.setErrorText("Konfiguration notwendig auswählen");
+    		cmbKonfiguration.requestFocus();
+    		return false;
     	}
     	return true;
     }

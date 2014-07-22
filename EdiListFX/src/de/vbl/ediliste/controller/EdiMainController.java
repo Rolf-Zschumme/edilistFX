@@ -8,6 +8,8 @@ import java.util.List;
 
 
 
+import java.util.Optional;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -134,9 +136,18 @@ public class EdiMainController {
     	System.out.println("EdiMainController.start() called");
     	primaryStage = stage;
     	primaryStage.setTitle(APPL_NAME);
-//    	EdiEintragController.setPrimaryStage(primaryStage);
-    	EdiEintragController.start(primaryStage, txtInfoZeile, entityManager);
+    	EdiEintragController.start(primaryStage, this, entityManager);
     	EdiKomponenteController.start(primaryStage, txtInfoZeile, entityManager);
+    }
+    
+    public void setInfoText(String txt) {
+    	txtInfoZeile.setStyle("-fx-font-weight: normal;-fx-text-fill: black");
+    	txtInfoZeile.setText(txt);
+    }
+    
+    public void setErrorText(String txt) {
+    	txtInfoZeile.setStyle("-fx-font-weight: bold;-fx-text-fill: red");
+    	txtInfoZeile.setText(txt);
     }
     
     private void setupBindings() {
