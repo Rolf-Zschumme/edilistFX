@@ -6,10 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 // import java.time.LocalDate;
 
-
-
-import java.util.Optional;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -195,14 +191,14 @@ public class EdiMainController {
         );
         tableKomponentenAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
         	public void handle(MouseEvent mouseEvent) {
-        		if (ediKomponenteController.checkForChangesOk(true) == false) {
+        		if (ediKomponenteController.checkForChangesAndAskForSave() == false) {
         			mouseEvent.consume();
         		}
         	}
 		});
         tableKomponentenAuswahl.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
 			public void handle(KeyEvent keyEvent) {
-        		if (ediKomponenteController.checkForChangesOk(true) == false) {
+        		if (ediKomponenteController.checkForChangesAndAskForSave() == false) {
         			keyEvent.consume();
         		}
 			}

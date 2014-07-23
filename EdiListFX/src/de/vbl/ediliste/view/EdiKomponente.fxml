@@ -35,11 +35,11 @@
 									<children>
 										<TableView fx:id="tvVerwendungen" prefHeight="120.0" prefWidth="296.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
 											<columns>
-												<TableColumn fx:id="tcEdiNr" prefWidth="75.0" text="Edi-Nr." />
-												<TableColumn fx:id="tcSender" maxWidth="500.0" prefWidth="198.99999237060547" text="Edi-Sender" />
-												<TableColumn fx:id="tcEmpfaenger" maxWidth="500.0" prefWidth="181.0" text="Edi-Empfänger" />
-												<TableColumn fx:id="tcDatumAb" prefWidth="97.00003051757812" text="Ab-Datum" />
-												<TableColumn fx:id="tcDatumBis" prefWidth="102.0" text="Bis-Datum" />
+												<TableColumn fx:id="tcEdiNr" prefWidth="61.000001549720764" text="Edi-Nr." />
+												<TableColumn fx:id="tcSender" maxWidth="500.0" prefWidth="183.99996185302734" text="Edi-Sender" />
+												<TableColumn fx:id="tcEmpfaenger" maxWidth="500.0" prefWidth="179.0" text="Edi-Empfänger" /><TableColumn fx:id="tcGeschaeftsobjekt" prefWidth="135.00003051757812" text="Geschäftsobjekt" />
+												<TableColumn fx:id="tcDatumAb" prefWidth="63.0" text="Ab-Datum" visible="false" />
+												<TableColumn fx:id="tcDatumBis" prefWidth="75.0" text="Bis-Datum" />
 											</columns>
 										</TableView>
 									</children>

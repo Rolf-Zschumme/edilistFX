@@ -40,7 +40,7 @@ public class EdiKomponenteController {
 	private static EntityManager entityManager;
 	private final ObjectProperty<EdiKomponente> edikomponente;
 	private final ObservableList<EdiEmpfaenger> ediKomponenteList = FXCollections.observableArrayList();
-	private EdiKomponente aktKompo = null;
+	private EdiKomponente aktKomponente = null;
 	
 	@FXML private ResourceBundle resources;
     @FXML private URL location;
@@ -51,6 +51,7 @@ public class EdiKomponenteController {
     @FXML private TableColumn<EdiEmpfaenger, String> tcEmpfaenger;
     @FXML private TableColumn<EdiEmpfaenger, String> tcEdiNr;
     @FXML private TableColumn<EdiEmpfaenger, String> tcSender;
+    @FXML private TableColumn<EdiEmpfaenger, String> tcGeschaeftsobjekt;
     @FXML private TableColumn<EdiEmpfaenger, String> tcDatumAb;
     @FXML private TableColumn<EdiEmpfaenger, String> tcDatumBis;
     
@@ -77,17 +78,17 @@ public class EdiKomponenteController {
 									+ oldKomponente + " " +newKomponente);
 				infoField.setText("");
 				if (oldKomponente != null) {
-					checkForChangesOk(true);
-					ediKomponenteList.clear();
+					if (checkForChangesAndSave(true) == false)
+						throw new IllegalArgumentException("oldKomponente=" + oldKomponente.getFullname()+ " geändert?");
 					if (newKomponente == null) {
+						ediKomponenteList.clear();
 						tfBezeichnung.setText("");
 						taBeschreibung.setText("");
 					}
 				}
 				if (newKomponente != null) {
-					aktKompo = newKomponente;
-					ediKomponenteList.clear();
-					readEdiListeforKomponete(newKomponente);
+					aktKomponente = newKomponente;
+					readEdiListeforKomponete(newKomponente, CacheRefresh.FALSE);
 					tfBezeichnung.setText(newKomponente.getName());
 					taBeschreibung.setText(newKomponente.getBeschreibung());
 				}
@@ -108,7 +109,7 @@ public class EdiKomponenteController {
 						setText(null); 
 					else {
 						setText(sender);
-						if (sender.equals(aktKompo.getFullname()))
+						if (sender.equals(aktKomponente.getFullname()))
 							setFont(Font.font(null, FontWeight.BOLD, getFont().getSize()));
 						else
 							setFont(Font.font(null, FontWeight.NORMAL,getFont().getSize()));
@@ -127,7 +128,7 @@ public class EdiKomponenteController {
 						setText(null); 
 					else {
 						setText(empf);
-						if (empf.equals(aktKompo.getFullname()))
+						if (empf.equals(aktKomponente.getFullname()))
 							setFont(Font.font(null, FontWeight.BOLD, getFont().getSize()));
 						else
 							setFont(Font.font(null, FontWeight.NORMAL,getFont().getSize()));
@@ -135,53 +136,67 @@ public class EdiKomponenteController {
 				}
 			};
 		});
+//		tcGeschaeftsobjekt.setCellValueFactory(cellData -> cellData.getValue().getGeschaeftsObjekt().getName());
 		tcDatumAb.setCellValueFactory(cellData -> cellData.getValue().getEdiEintrag().seitDatumProperty());
 		tcDatumBis.setCellValueFactory(cellData -> cellData.getValue().getEdiEintrag().bisDatumProperty());
 	}
 	
-	public boolean checkForChangesOk(boolean askForUpdate) {
-		if (aktKompo == null ) {
+	@FXML
+	void speichern(ActionEvent event) {
+		checkForChangesAndSave(false);
+	}
+	
+	public boolean checkForChangesAndAskForSave() {
+		return checkForChangesAndSave(true);
+	}
+	
+	private boolean checkForChangesAndSave(boolean askForUpdate) {
+		if (aktKomponente == null ) {
 			System.out.println(this.getClass().getName() + " checkForChanges() ohne aktKompo");
 			return true;
 		}
-		String orgName = aktKompo.getName();
+		String orgName = aktKomponente.getName();
 		String newName = tfBezeichnung.getText();
-		String orgBeschreibung = (aktKompo.getBeschreibung()==null) ? "" : aktKompo.getBeschreibung();
+		String orgBeschreibung = (aktKomponente.getBeschreibung()==null) ? "" : aktKomponente.getBeschreibung();
 		String newBeschreibung = (taBeschreibung.getText()==null) ? "" : taBeschreibung.getText();
 		if (!orgName.equals(newName) ||
 			!orgBeschreibung.equals(newBeschreibung) ) {
 			if (askForUpdate) {
 				Action response = Dialogs.create()
     				.owner(primaryStage).title(primaryStage.getTitle())
-    				.actions(Dialog.Actions.OK, Dialog.Actions.CANCEL)
-    				.message("Sollen die Änderungen an der Komponente " + orgName + " gespeichert werden")
+    				.actions(Dialog.Actions.YES, Dialog.Actions.NO, Dialog.Actions.CANCEL)
+    				.message("Sollen die Änderungen an der Komponente " + orgName + " gespeichert werden ?")
     				.showConfirm();
-	    		if (response != Dialog.Actions.OK) {
+	    		if (response == Dialog.Actions.CANCEL) 	
 	    			return false;
-	    		}	
+	    		if (response == Dialog.Actions.NO) {
+	    			aktKomponente = null;
+	    			return true;
+	    		}
 			}	
-			if (checkName(newName) == false) {
+			if (checkKomponentenName(newName) == false) {
 				infoField.setText("Fehler: Eine andere Komponente des Systems heißt bereits so!");
 				return false;
 			}
 			System.out.println("checkForChanges() - Änderung erkannt -> update");
 			entityManager.getTransaction().begin();
-			aktKompo.setName(newName);
-			aktKompo.setBeschreibung(newBeschreibung);
+			aktKomponente.setName(newName);
+			aktKomponente.setBeschreibung(newBeschreibung);
 			entityManager.getTransaction().commit();
+			readEdiListeforKomponete(aktKomponente, CacheRefresh.TRUE);
 			infoField.setText("Komponente wurde gespeichert");
 		}
 		return true;
 	}
 	
-	private boolean checkName(String newName) {
+	private boolean checkKomponentenName(String newName) {
 		TypedQuery<EdiKomponente> tq = entityManager.createQuery(
 				"SELECT k FROM EdiKomponente k WHERE LOWER(k.name) = LOWER(:n)",EdiKomponente.class);
 		tq.setParameter("n", newName);
 		List<EdiKomponente> kompoList = tq.getResultList();
 		for (EdiKomponente k : kompoList ) {
-			if (k.getId() != aktKompo.getId() &&
-				k.getEdiSystem().getId() == aktKompo.getEdiSystem().getId())  {
+			if (k.getId() != aktKomponente.getId() &&
+				k.getEdiSystem().getId() == aktKomponente.getEdiSystem().getId())  {
 				if (k.getName().equalsIgnoreCase(newName)) {
 					return false;
 				}
@@ -190,17 +205,19 @@ public class EdiKomponenteController {
 		return true;
 	}
 
-	@FXML
-	void speichern(ActionEvent event) {
-		checkForChangesOk(false);
+	private enum CacheRefresh { TRUE, FALSE;
+		CacheRefresh() {}
 	}
 	
-	private void readEdiListeforKomponete( EdiKomponente selKomponente) {
+	private void readEdiListeforKomponete( EdiKomponente selKomponente, CacheRefresh cache) {
 		TypedQuery<EdiEintrag> tqS = entityManager.createQuery(
 				"SELECT e FROM EdiEintrag e WHERE e.ediKomponente = :k", EdiEintrag.class);
 		tqS.setParameter("k", selKomponente);
-//		tqS.setHint("javax.persistence.cache.storeMode", "REFRESH");
+		if (cache == CacheRefresh.TRUE) {
+			tqS.setHint("javax.persistence.cache.storeMode", "REFRESH");
+		}	
 		List<EdiEintrag> ediList = tqS.getResultList();
+		ediKomponenteList.clear();
 		for(EdiEintrag e : ediList ) {
 			if (e.getEdiEmpfaenger().size() > 0)
 				ediKomponenteList.addAll(e.getEdiEmpfaenger());
@@ -214,11 +231,13 @@ public class EdiKomponenteController {
 		TypedQuery<EdiEmpfaenger> tqE = entityManager.createQuery(
 				"SELECT e FROM EdiEmpfaenger e WHERE e.komponente = :k", EdiEmpfaenger.class);
 		tqE.setParameter("k", selKomponente);
-//		tqE.setHint("javax.persistence.cache.storeMode", "REFRESH");
+		if (cache == CacheRefresh.TRUE) {
+			tqE.setHint("javax.persistence.cache.storeMode", "REFRESH");
+		}	
 		ediKomponenteList.addAll(tqE.getResultList());
 		System.out.println("KomponenteController:" + tqE.getResultList().size() + " EDI-Empfänger gelesen");
 	}
-	
+
 	public final ObjectProperty<EdiKomponente> komponenteProperty() {
 		return edikomponente;
 	}

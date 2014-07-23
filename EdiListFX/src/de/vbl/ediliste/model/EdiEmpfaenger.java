@@ -1,6 +1,7 @@
 package de.vbl.ediliste.model;
 
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -20,14 +21,16 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 public class EdiEmpfaenger {
 
-	private StringProperty empfaengerName;	
+	private StringProperty empfaengerName;
+	private ObjectProperty<GeschaeftsObjekt> geschaeftsObjekt;
 	private long id;
 	private EdiKomponente ediKomponente;
 	private EdiEintrag ediEintrag;
-	private GeschaeftsObjekt geschaeftsObjekt;
+//	private GeschaeftsObjekt geschaeftsObjekt;
 
 	public EdiEmpfaenger() {
 		empfaengerName = new SimpleStringProperty();
+//		geschaeftsObjekt = new SimpleStringProperty();
 	}
 
 //	public EdiEmpfaenger(EdiEintrag param) {
@@ -65,13 +68,18 @@ public class EdiEmpfaenger {
 	public void setEdiEintrag(EdiEintrag param) {
 	    this.ediEintrag = param;
 	}
+	
+	public ObjectProperty<GeschaeftsObjekt> geschaeftsObjektProperty () {
+		return this.geschaeftsObjekt;
+	}
+	
 	@ManyToOne
 	@JoinColumn(name = "geschaeftsObjekt_id", referencedColumnName = "id")
 	public GeschaeftsObjekt getGeschaeftsObjekt() {
-	    return geschaeftsObjekt;
+	    return geschaeftsObjekt.get();
 	}
 	public void setGeschaeftsObjekt(GeschaeftsObjekt param) {
-	    this.geschaeftsObjekt = param;
+	    this.geschaeftsObjekt.set(param);
 	}
 	
 	// ------------------------------------------------------------------------
