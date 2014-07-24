@@ -213,9 +213,11 @@ public class EdiEintrag {
 //			EdiEmpfaenger e = is.next();
 //			System.out.println("Copy: S-Empf-Id="+ e.getId() +" S-Edi-Id="+ e.getEdiEintrag().getId() + " " + e.getKomponente().getFullname()); 
 //		}	
-		
-		this.setEdiEmpfaenger(new ArrayList<EdiEmpfaenger>(source.ediEmpfaenger));
-
+		if (source.ediEmpfaenger == null) {
+			this.setEdiEmpfaenger(null);
+		} else {
+			this.setEdiEmpfaenger(new ArrayList<EdiEmpfaenger>(source.ediEmpfaenger));
+		}
 //		Iterator<EdiEmpfaenger> i = this.ediEmpfaenger.iterator();
 //		while(i.hasNext()) {
 //			i.next().setEdiEintrag(this);

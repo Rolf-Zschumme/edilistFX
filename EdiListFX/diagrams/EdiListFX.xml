@@ -1,14 +1,23 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE project>
-<entities>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><entities>
 	<entity>
 		<entity-name>de.vbl.ediliste.model.EdiEintrag</entity-name>
 		<entity-width>120</entity-width>
 		<entity-height>216</entity-height>
-		<entity-X-Coordinate>287</entity-X-Coordinate>
-		<entity-Y-Coordinate>411</entity-Y-Coordinate>
+		<entity-X-Coordinate>558</entity-X-Coordinate>
+		<entity-Y-Coordinate>416</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>true</relation-collapsed>
+		<basic-collapsed>false</basic-collapsed>
+	</entity>
+
+	<entity>
+		<entity-name>de.vbl.ediliste.model.KontaktPerson</entity-name>
+		<entity-width>120</entity-width>
+		<entity-height>103</entity-height>
+		<entity-X-Coordinate>19</entity-X-Coordinate>
+		<entity-Y-Coordinate>629</entity-Y-Coordinate>
+		<primary-collapsed>true</primary-collapsed>
+		<relation-collapsed>false</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
 	</entity>
 
@@ -16,8 +25,8 @@
 		<entity-name>de.vbl.ediliste.model.Konfiguration</entity-name>
 		<entity-width>120</entity-width>
 		<entity-height>161</entity-height>
-		<entity-X-Coordinate>287</entity-X-Coordinate>
-		<entity-Y-Coordinate>181</entity-Y-Coordinate>
+		<entity-X-Coordinate>284</entity-X-Coordinate>
+		<entity-Y-Coordinate>177</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>false</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
@@ -50,7 +59,7 @@
 		<entity-width>120</entity-width>
 		<entity-height>116</entity-height>
 		<entity-X-Coordinate>19</entity-X-Coordinate>
-		<entity-Y-Coordinate>182</entity-Y-Coordinate>
+		<entity-Y-Coordinate>159</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
@@ -72,7 +81,7 @@
 		<entity-width>120</entity-width>
 		<entity-height>116</entity-height>
 		<entity-X-Coordinate>19</entity-X-Coordinate>
-		<entity-Y-Coordinate>350</entity-Y-Coordinate>
+		<entity-Y-Coordinate>315</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
@@ -81,11 +90,11 @@
 	<entity>
 		<entity-name>de.vbl.ediliste.model.EdiEmpfaenger</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>58</entity-height>
-		<entity-X-Coordinate>558</entity-X-Coordinate>
-		<entity-Y-Coordinate>613</entity-Y-Coordinate>
+		<entity-height>123</entity-height>
+		<entity-X-Coordinate>186</entity-X-Coordinate>
+		<entity-Y-Coordinate>547</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
-		<relation-collapsed>true</relation-collapsed>
+		<relation-collapsed>false</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
 	</entity>
 
@@ -105,7 +114,7 @@
 		<entity-width>120</entity-width>
 		<entity-height>116</entity-height>
 		<entity-X-Coordinate>19</entity-X-Coordinate>
-		<entity-Y-Coordinate>584</entity-Y-Coordinate>
+		<entity-Y-Coordinate>466</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
@@ -115,8 +124,8 @@
 		<entity-name>de.vbl.ediliste.model.GeschaeftsObjekt</entity-name>
 		<entity-width>135</entity-width>
 		<entity-height>96</entity-height>
-		<entity-X-Coordinate>550</entity-X-Coordinate>
-		<entity-Y-Coordinate>401</entity-Y-Coordinate>
+		<entity-X-Coordinate>399</entity-X-Coordinate>
+		<entity-Y-Coordinate>610</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>

@@ -1,7 +1,7 @@
 package de.vbl.ediliste.model;
 
+import static javax.persistence.GenerationType.IDENTITY;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -10,8 +10,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-
-import static javax.persistence.GenerationType.IDENTITY;
 
 /**
  * Entity implementation class for Entity: Empfaenger
@@ -22,15 +20,15 @@ import static javax.persistence.GenerationType.IDENTITY;
 public class EdiEmpfaenger {
 
 	private StringProperty empfaengerName;
-	private ObjectProperty<GeschaeftsObjekt> geschaeftsObjekt;
+	private StringProperty geschaeftsObjektName;
 	private long id;
 	private EdiKomponente ediKomponente;
 	private EdiEintrag ediEintrag;
-//	private GeschaeftsObjekt geschaeftsObjekt;
+	private GeschaeftsObjekt geschaeftsObjekt;
 
 	public EdiEmpfaenger() {
 		empfaengerName = new SimpleStringProperty();
-//		geschaeftsObjekt = new SimpleStringProperty();
+		geschaeftsObjektName = new SimpleStringProperty();
 	}
 
 //	public EdiEmpfaenger(EdiEintrag param) {
@@ -69,17 +67,22 @@ public class EdiEmpfaenger {
 	    this.ediEintrag = param;
 	}
 	
-	public ObjectProperty<GeschaeftsObjekt> geschaeftsObjektProperty () {
-		return this.geschaeftsObjekt;
+	public StringProperty geschaeftsObjektNameProperty () {
+		return this.geschaeftsObjektName;
 	}
 	
 	@ManyToOne
 	@JoinColumn(name = "geschaeftsObjekt_id", referencedColumnName = "id")
 	public GeschaeftsObjekt getGeschaeftsObjekt() {
-	    return geschaeftsObjekt.get();
+	    return geschaeftsObjekt;
 	}
 	public void setGeschaeftsObjekt(GeschaeftsObjekt param) {
-	    this.geschaeftsObjekt.set(param);
+		this.geschaeftsObjektName.set(param.getName());
+//		if (ediKomponente == null ) 
+//			System.out.println("GeschaeftsobjektName(E="+this+").set("+param.getName()+")");
+//		else
+//			System.out.println("GeschaeftsobjektName(E="+ ediKomponente.getFullname()+").set("+param.getName()+")");
+	    this.geschaeftsObjekt = param;
 	}
 	
 	// ------------------------------------------------------------------------

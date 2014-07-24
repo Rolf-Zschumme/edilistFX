@@ -9,6 +9,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import de.vbl.ediliste.model.KontaktPerson;
+import java.util.Collection;
+import javax.persistence.ManyToMany;
 
 @Entity
 public class EdiKomponente {
@@ -17,6 +20,7 @@ public class EdiKomponente {
 	private long id;
 	private EdiSystem ediSystem;
 	private String beschreibung;
+	private Collection<KontaktPerson> kontaktPerson;
 
 	public EdiKomponente() {
 		fullname = new SimpleStringProperty();
@@ -111,5 +115,14 @@ public class EdiKomponente {
 
 	public void setBeschreibung(String param) {
 		this.beschreibung = param;
+	}
+
+	@ManyToMany
+	public Collection<KontaktPerson> getKontaktPerson() {
+	    return kontaktPerson;
+	}
+
+	public void setKontaktPerson(Collection<KontaktPerson> param) {
+	    this.kontaktPerson = param;
 	}
 }

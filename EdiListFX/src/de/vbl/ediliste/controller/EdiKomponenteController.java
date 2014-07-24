@@ -136,7 +136,7 @@ public class EdiKomponenteController {
 				}
 			};
 		});
-//		tcGeschaeftsobjekt.setCellValueFactory(cellData -> cellData.getValue().getGeschaeftsObjekt().getName());
+		tcGeschaeftsobjekt.setCellValueFactory(cellData -> cellData.getValue().geschaeftsObjektNameProperty());
 		tcDatumAb.setCellValueFactory(cellData -> cellData.getValue().getEdiEintrag().seitDatumProperty());
 		tcDatumBis.setCellValueFactory(cellData -> cellData.getValue().getEdiEintrag().bisDatumProperty());
 	}
@@ -227,7 +227,8 @@ public class EdiKomponenteController {
 				ediKomponenteList.addAll(tmpE);
 			}
 		}
-		System.out.println("KomponenteController:" + ediList.size() + " EDI-Einträge gelesen");
+		System.out.println("KomponenteController:" + ediList.size() + 
+						  " EDI-Einträge gelesen (Refresh=" + cache+ ")");
 		TypedQuery<EdiEmpfaenger> tqE = entityManager.createQuery(
 				"SELECT e FROM EdiEmpfaenger e WHERE e.komponente = :k", EdiEmpfaenger.class);
 		tqE.setParameter("k", selKomponente);
@@ -235,7 +236,8 @@ public class EdiKomponenteController {
 			tqE.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		}	
 		ediKomponenteList.addAll(tqE.getResultList());
-		System.out.println("KomponenteController:" + tqE.getResultList().size() + " EDI-Empfänger gelesen");
+		System.out.println("KomponenteController:" + tqE.getResultList().size() + 
+						  " EDI-Empfänger gelesen (Refresh=" + cache+ ")");
 	}
 
 	public final ObjectProperty<EdiKomponente> komponenteProperty() {

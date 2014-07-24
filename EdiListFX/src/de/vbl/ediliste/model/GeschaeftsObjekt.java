@@ -21,11 +21,12 @@ import javax.persistence.Column;
 @Entity
 
 public class GeschaeftsObjekt implements Serializable {
-
-	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6212861741600895810L;
 	private long id;
 	private String name;
-	private static final long serialVersionUID = 1L;
 	private Collection<EdiEmpfaenger> ediEmpfaenger;
 	private IntegerProperty anzVerwendungen;
 
