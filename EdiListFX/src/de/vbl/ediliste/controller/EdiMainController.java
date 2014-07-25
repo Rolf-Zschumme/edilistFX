@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 // import java.time.LocalDate;
 
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -26,6 +27,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TableView.TableViewSelectionModel;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
@@ -159,10 +161,12 @@ public class EdiMainController {
         			@Override
         			public void changed(ObservableValue<? extends Tab> ov, Tab talt, Tab tneu) {
         				final Tab akttab = tneu;
-        				primaryStage.getScene().setCursor(Cursor.WAIT);
-        				Task<Void> task = new Task<Void>() {
-        					@Override
-        					protected Void call() throws Exception {
+//        				Task<Void> task = new Task<Void>() {
+//        					@Override
+//        					protected Void call() throws Exception {
+        						System.out.println("tabPane.changed() " + akttab);
+//        						primaryStage.getScene().setCursor(Cursor.WAIT);
+        						
         						if (akttab.equals(tabPartner)) {
         							loadPartnerListData();
         						}
@@ -175,17 +179,16 @@ public class EdiMainController {
         						else if(akttab.equals(tabGeschaeftsobjekt)) {
         							loadGeschaeftobjektListData();
         						}
-        						return null;
-        					}
-        				};
-        				task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-							@Override
-							public void handle(WorkerStateEvent event) {
-		        				primaryStage.getScene().setCursor(Cursor.DEFAULT);
-							}
-						});
-        				new Thread(task).start();
-        				System.out.println("tabPane.changed() " + akttab);
+//        						return null;
+//        					}
+//        				};
+//        				task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+//							@Override
+//							public void handle(WorkerStateEvent event) {
+////		        				primaryStage.getScene().setCursor(Cursor.DEFAULT);
+//							}
+//						});
+//        				new Thread(task).start();
         			}
 				}
         );
@@ -266,7 +269,7 @@ public class EdiMainController {
 	}
 	
 	private void setupKomponentenPane() {
-    	tableKomponentenAuswahl.setItems(ediKomponentenList);
+		tableKomponentenAuswahl.setItems(ediKomponentenList);
     	tColSelKompoKomponten.setCellValueFactory(new PropertyValueFactory<EdiKomponente,String>("name"));
     	tColSelKompoSysteme.setCellValueFactory(new PropertyValueFactory<EdiKomponente,String>("systemName"));
     	tColSelKompoPartner.setCellValueFactory(new PropertyValueFactory<EdiKomponente,String>("partnerName"));
@@ -316,21 +319,41 @@ public class EdiMainController {
 	}
 
 	private void loadKomponentenListData() {
-//		if (ediKomponentenList.size() == 0) {
-			ediKomponentenList.clear();
-			TypedQuery<EdiKomponente> tq = entityManager.createQuery(
-					"SELECT k FROM EdiKomponente k ORDER BY k.name", EdiKomponente.class);
-			tq.setHint("javax.persistence.cache.storeMode", "REFRESH");
-			ediKomponentenList.addAll(tq.getResultList());
+		TypedQuery<EdiKomponente> tq = entityManager.createQuery(
+				"SELECT k FROM EdiKomponente k ORDER BY k.name", EdiKomponente.class);
+		tq.setHint("javax.persistence.cache.storeMode", "REFRESH");
+		if (ediKomponentenList.size() != tq.getResultList().size()) {
+			for ( Iterator<EdiKomponente> i = tq.getResultList().iterator(); i.hasNext(); ) {
+				EdiKomponente e = i.next();
+				if (ediKomponentenList.contains(e) == false) {
+					ediKomponentenList.add(e);
+					System.out.println("EdiKomponenten " + e.getFullname() + " in Liste ergänzt");
+				}
+			}
+			for (Iterator<EdiKomponente> i = ediKomponentenList.iterator(); i.hasNext(); ) {
+				EdiKomponente e = i.next();
+				if (tq.getResultList().contains(e) == false) {
+					ediKomponentenList.remove(e);
+					System.out.println("EdiKomponente " + e.getFullname() + " aus Liste gelöscht");
+				}
+			}
+		}
+//		System.out.println("vor  setAll");
+//		ediKomponentenList.setAll(tq.getResultList());
+//		System.out.println("nach setAll");
+//		System.out.println("vor getKomp");
+//		EdiKomponente k = ediKomponenteController.getKomponente();
+//		System.out.println("sel.Komp = " + k);
+//		if (k != null) {
+//			tableKomponentenAuswahl.getSelectionModel().select(k);
 //		}
 	}
 
 	private void loadGeschaeftobjektListData() {
-		geschaeftsobjektList.clear();
 		TypedQuery<GeschaeftsObjekt> tq = entityManager.createQuery(
 				"SELECT g FROM GeschaeftsObjekt g ORDER BY g.name", GeschaeftsObjekt.class);
 		tq.setHint("javax.persistence.cache.storeMode", "REFRESH");
-		geschaeftsobjektList.addAll(tq.getResultList());
+		geschaeftsobjektList.setAll(tq.getResultList());
 	}
 	
 	@FXML

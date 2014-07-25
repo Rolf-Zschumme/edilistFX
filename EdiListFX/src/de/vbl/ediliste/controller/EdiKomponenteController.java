@@ -210,6 +210,10 @@ public class EdiKomponenteController {
 	}
 	
 	private void readEdiListeforKomponete( EdiKomponente selKomponente, CacheRefresh cache) {
+		ediKomponenteList.clear();
+		/* 1. lese alle EdiEinträge mit Sender = selekierter Komponente 
+		 * 		-> zeige jeweils alle zugehörigen Empfänger, falls kein Empfänger vorhanden dummy erzeugen
+		*/
 		TypedQuery<EdiEintrag> tqS = entityManager.createQuery(
 				"SELECT e FROM EdiEintrag e WHERE e.ediKomponente = :k", EdiEintrag.class);
 		tqS.setParameter("k", selKomponente);
@@ -217,7 +221,6 @@ public class EdiKomponenteController {
 			tqS.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		}	
 		List<EdiEintrag> ediList = tqS.getResultList();
-		ediKomponenteList.clear();
 		for(EdiEintrag e : ediList ) {
 			if (e.getEdiEmpfaenger().size() > 0)
 				ediKomponenteList.addAll(e.getEdiEmpfaenger());
@@ -227,8 +230,14 @@ public class EdiKomponenteController {
 				ediKomponenteList.addAll(tmpE);
 			}
 		}
-		System.out.println("KomponenteController:" + ediList.size() + 
-						  " EDI-Einträge gelesen (Refresh=" + cache+ ")");
+		System.out.println("KomponenteController:" + ediList.size() + " EDI-Einträge" + 
+						  " mit insgesamt " + ediKomponenteList.size() + " Empfänger" + 
+						  " gelesen (Refresh=" + cache+ ")");
+		
+		/* 2. lese alle Empfänger mit Empfänger = selektierte Komponente 
+		 *    -> zeige alle Empfänger  
+		 */
+		
 		TypedQuery<EdiEmpfaenger> tqE = entityManager.createQuery(
 				"SELECT e FROM EdiEmpfaenger e WHERE e.komponente = :k", EdiEmpfaenger.class);
 		tqE.setParameter("k", selKomponente);
