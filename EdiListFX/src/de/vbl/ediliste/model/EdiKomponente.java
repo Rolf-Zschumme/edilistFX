@@ -67,12 +67,10 @@ public class EdiKomponente {
 
 	public String getFullname() {
 //		return fullname.get();
-		String fullName = ediSystem == null ? "-?-" : ediSystem.getFullname();
-		return fullName + ASCIItoStr(42) + name.get();  // 151
+		String fullName = (ediSystem == null) ? "-?-" : ediSystem.getFullname();
+		return fullName + ASCIItoStr(42) + ((name == null) ? "-?-" : name.get());  // 151
 	}
 
-	
-	
 	private String ASCIItoStr(int a) {
 		byte[] b = { (byte) a };
 		String ret = new String(b);
@@ -99,14 +97,6 @@ public class EdiKomponente {
 
 	public void setEdiSystem(EdiSystem param) {
 		this.ediSystem = param;
-	}
-
-	public String getSystemName() {
-		return ediSystem.getName();
-	}
-
-	public String getPartnerName() {
-		return ediSystem.getPartnerName();
 	}
 
 	public String getBeschreibung() {

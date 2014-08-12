@@ -13,6 +13,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -36,7 +37,7 @@ import de.vbl.ediliste.model.EdiKomponente;
 
 public class EdiKomponenteController {
 	private static Stage primaryStage = null;
-	private static TextField infoField;
+	private static EdiMainController mainCtr;
 	private static EntityManager entityManager;
 	private final ObjectProperty<EdiKomponente> edikomponente;
 	private final ObservableList<EdiEmpfaenger> ediKomponenteList = FXCollections.observableArrayList();
@@ -55,13 +56,18 @@ public class EdiKomponenteController {
     @FXML private TableColumn<EdiEmpfaenger, String> tcDatumAb;
     @FXML private TableColumn<EdiEmpfaenger, String> tcDatumBis;
     
+    @FXML private Button btnLoeschen;
+    
     public EdiKomponenteController() {
     	this.edikomponente = new SimpleObjectProperty<>(this, "edikomponente", null);
     }
 
-	public static void start(Stage primaryStage, TextField infoTextField, EntityManager entityManager) {
+	public static void start(Stage 			   primaryStage, 
+							 EdiMainController mainController, 
+							 EntityManager     entityManager) {
+		
 		EdiKomponenteController.primaryStage = primaryStage;
-		EdiKomponenteController.infoField = infoTextField; 
+		EdiKomponenteController.mainCtr = mainController;
 		EdiKomponenteController.entityManager = entityManager;
 	}
 
@@ -74,12 +80,14 @@ public class EdiKomponenteController {
 			@Override
 			public void changed(ObservableValue<? extends EdiKomponente> ov,
 					EdiKomponente oldKomponente, EdiKomponente newKomponente) {
+				EdiKomponente neuKomponente = newKomponente;
 				System.out.println("EdiKomponenteController.ChangeListener(edikomponente):"
-									+ oldKomponente + " " +newKomponente);
-				infoField.setText("");
+					+ ((oldKomponente==null) ? "null" : oldKomponente.getFullname()) + " -> " 
+					+ ((neuKomponente==null) ? "null" : neuKomponente.getFullname()) );
 				if (oldKomponente != null) {
-					if (checkForChangesAndSave(true) == false)
+					if (checkForChangesAndSave(true) == false) {
 						throw new IllegalArgumentException("oldKomponente=" + oldKomponente.getFullname()+ " geändert?");
+					}
 					if (newKomponente == null) {
 						ediKomponenteList.clear();
 						tfBezeichnung.setText("");
@@ -94,7 +102,9 @@ public class EdiKomponenteController {
 				}
 			}
 		});
-
+		
+		btnLoeschen.disableProperty().bind(Bindings.isNotEmpty(ediKomponenteList));
+		
 		tvVerwendungen.setItems(ediKomponenteList);
 		tcEdiNr.setCellValueFactory(cellData -> 
 					Bindings.format(EdiEintrag.FORMAT_EDINR, cellData.getValue().ediNrProperty()));
@@ -140,6 +150,35 @@ public class EdiKomponenteController {
 		tcDatumAb.setCellValueFactory(cellData -> cellData.getValue().getEdiEintrag().seitDatumProperty());
 		tcDatumBis.setCellValueFactory(cellData -> cellData.getValue().getEdiEintrag().bisDatumProperty());
 	}
+
+	@FXML
+	void loeschen(ActionEvent event) {
+		if (ediKomponenteList.size() > 0) {
+			mainCtr.setErrorText("Fehler: Komponente wird verwendet");
+			return;
+		}	
+		String kompoName = "Komponente " + aktKomponente.getName(); 
+		Action response = Dialogs.create()
+				.owner(primaryStage).title(primaryStage.getTitle())
+				.message(kompoName + " wirklich löschen ?")
+				.showConfirm();
+		if (response == Dialog.Actions.YES) {
+			try {
+				entityManager.getTransaction().begin();
+				entityManager.remove(aktKomponente);
+				entityManager.getTransaction().commit();
+				aktKomponente = null;
+				mainCtr.loadKomponentenListData();
+				mainCtr.setInfoText("Die " + kompoName + " wurde erfolgreich gelöscht !");
+			} catch (RuntimeException er) {
+				Dialogs.create()
+					.owner(primaryStage).title(primaryStage.getTitle())
+					.masthead("Datenbankfehler")
+				    .message("Fehler beim Löschen der Komponente")
+				    .showException(er);
+			}
+		}
+	}
 	
 	@FXML
 	void speichern(ActionEvent event) {
@@ -157,8 +196,8 @@ public class EdiKomponenteController {
 		}
 		String orgName = aktKomponente.getName();
 		String newName = tfBezeichnung.getText();
-		String orgBeschreibung = (aktKomponente.getBeschreibung()==null) ? "" : aktKomponente.getBeschreibung();
-		String newBeschreibung = (taBeschreibung.getText()==null) ? "" : taBeschreibung.getText();
+		String orgBeschreibung = aktKomponente.getBeschreibung()==null ? "" : aktKomponente.getBeschreibung();
+		String newBeschreibung = taBeschreibung.getText()==null ? "" : taBeschreibung.getText();
 		if (!orgName.equals(newName) ||
 			!orgBeschreibung.equals(newBeschreibung) ) {
 			if (askForUpdate) {
@@ -175,7 +214,7 @@ public class EdiKomponenteController {
 	    		}
 			}	
 			if (checkKomponentenName(newName) == false) {
-				infoField.setText("Fehler: Eine andere Komponente des Systems heißt bereits so!");
+				mainCtr.setErrorText("Eine andere Komponente des Systems heißt bereits so!");
 				return false;
 			}
 			System.out.println("checkForChanges() - Änderung erkannt -> update");
@@ -184,7 +223,7 @@ public class EdiKomponenteController {
 			aktKomponente.setBeschreibung(newBeschreibung);
 			entityManager.getTransaction().commit();
 			readEdiListeforKomponete(aktKomponente, CacheRefresh.TRUE);
-			infoField.setText("Komponente wurde gespeichert");
+			mainCtr.setInfoText("Komponente wurde gespeichert");
 		}
 		return true;
 	}
@@ -270,6 +309,7 @@ public class EdiKomponenteController {
         assert tcEmpfaenger != null : "fx:id=\"tcEmpfaenger\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
         assert tcDatumBis != null : "fx:id=\"tcDatumBis\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
         assert tvVerwendungen != null : "fx:id=\"tvVerwendungen\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
+        assert btnLoeschen != null : "fx:id=\"btnLoeschen\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
     }
     
 }

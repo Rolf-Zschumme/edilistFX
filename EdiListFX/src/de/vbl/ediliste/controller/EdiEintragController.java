@@ -144,7 +144,7 @@ public class EdiEintragController {
 	public static void start(Stage primaryStage, EdiMainController mainController, EntityManager entityManager) {
 		EdiEintragController.primaryStage = primaryStage;
 		EdiEintragController.entityManager = entityManager;
-		EdiEintragController.mainController = mainController; 
+		EdiEintragController.mainController = mainController;
 		EdiEintragController.mainController.setInfoText("Hallo");
 	}
 
