@@ -73,17 +73,16 @@ public class EdiKomponenteController {
 
 	@FXML
 	public void initialize() {
-		System.out.println("EdiKomponenteController.initialize()");
+		log("initialize","called");
 		checkFieldsFromView();
 		
 		edikomponente.addListener(new ChangeListener<EdiKomponente>() {
 			@Override
 			public void changed(ObservableValue<? extends EdiKomponente> ov,
 					EdiKomponente oldKomponente, EdiKomponente newKomponente) {
-				EdiKomponente neuKomponente = newKomponente;
-				System.out.println("EdiKomponenteController.ChangeListener(edikomponente):"
-					+ ((oldKomponente==null) ? "null" : oldKomponente.getFullname()) + " -> " 
-					+ ((neuKomponente==null) ? "null" : neuKomponente.getFullname()) );
+				log("ChangeListener<EdiKomponente>",
+					((oldKomponente==null) ? "null" : oldKomponente.getFullname()) + " -> " 
+				  + ((newKomponente==null) ? "null" : newKomponente.getFullname()) );
 				if (oldKomponente != null) {
 					if (checkForChangesAndSave(true) == false) {
 						throw new IllegalArgumentException("oldKomponente=" + oldKomponente.getFullname()+ " geändert?");
@@ -188,10 +187,10 @@ public class EdiKomponenteController {
 	public boolean checkForChangesAndAskForSave() {
 		return checkForChangesAndSave(true);
 	}
-	
+
 	private boolean checkForChangesAndSave(boolean askForUpdate) {
 		if (aktKomponente == null ) {
-			System.out.println(this.getClass().getName() + " checkForChanges() ohne aktKompo");
+			log("checkForChanges","aktKompo==null");
 			return true;
 		}
 		String orgName = aktKomponente.getName();
@@ -217,13 +216,16 @@ public class EdiKomponenteController {
 				mainCtr.setErrorText("Eine andere Komponente des Systems heißt bereits so!");
 				return false;
 			}
-			System.out.println("checkForChanges() - Änderung erkannt -> update");
+			log("checkForChanges()","Änderung erkannt -> update");
 			entityManager.getTransaction().begin();
 			aktKomponente.setName(newName);
 			aktKomponente.setBeschreibung(newBeschreibung);
 			entityManager.getTransaction().commit();
 			readEdiListeforKomponete(aktKomponente, CacheRefresh.TRUE);
 			mainCtr.setInfoText("Komponente wurde gespeichert");
+		}
+		else {
+			log("checkForChangesAndSave", "Name und Bezeichnung unverändert");
 		}
 		return true;
 	}
@@ -269,9 +271,9 @@ public class EdiKomponenteController {
 				ediKomponenteList.addAll(tmpE);
 			}
 		}
-		System.out.println("KomponenteController:" + ediList.size() + " EDI-Einträge" + 
-						  " mit insgesamt " + ediKomponenteList.size() + " Empfänger" + 
-						  " gelesen (Refresh=" + cache+ ")");
+		log("readEdiListeforKomponete", ediList.size() + " EDI-Einträge" + 
+		    " mit insgesamt " + ediKomponenteList.size() + " Empfänger" + 
+			" gelesen (Refresh=" + cache+ ")");
 		
 		/* 2. lese alle Empfänger mit Empfänger = selektierte Komponente 
 		 *    -> zeige alle Empfänger  
@@ -284,8 +286,8 @@ public class EdiKomponenteController {
 			tqE.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		}	
 		ediKomponenteList.addAll(tqE.getResultList());
-		System.out.println("KomponenteController:" + tqE.getResultList().size() + 
-						  " EDI-Empfänger gelesen (Refresh=" + cache+ ")");
+		log("readEdiListeforKomponete", tqE.getResultList().size() + 
+		    " EDI-Empfänger gelesen (Refresh=" + cache+ ")");
 	}
 
 	public final ObjectProperty<EdiKomponente> komponenteProperty() {
@@ -300,6 +302,11 @@ public class EdiKomponenteController {
 		this.edikomponente.set(komponente);
 	}
     
+	private void log(String methode, String message) {
+		String className = this.getClass().getName().substring(16);
+		System.out.println(className + "." + methode + "(): " + message); 
+	}
+		
     void checkFieldsFromView() {
     	assert ediKomponente != null : "fx:id=\"ediKomponente\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
     	assert tfBezeichnung != null : "fx:id=\"tfBezeichnung\" was not injected: check your FXML file 'EdiKomponente.fxml'.";

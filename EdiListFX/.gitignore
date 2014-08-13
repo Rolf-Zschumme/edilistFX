@@ -1,0 +1,12 @@
+# Java
+*.class
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Tests
+screenshot*.png
+/de
+/lib

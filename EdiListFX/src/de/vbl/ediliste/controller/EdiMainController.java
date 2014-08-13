@@ -114,19 +114,14 @@ public class EdiMainController {
 
     @FXML
 	private void initialize () {
-		System.out.println("EdiMainController.initialize() called");
-//		System.out.println("	ediEintragController   :" + ediEintragController);
-//		System.out.println("	ediEintrag             :" + ediEintrag);
-//		System.out.println("	ediKomponenteController:" + ediKomponenteController);
-//		System.out.println("	ediKomponente          :" + ediKomponente);
-		
+		log("initialize", "called");
 		checkFieldsFromView();
 		setupEntityManager();
         setupBindings();		
     }	
 
     public void start(Stage stage) {
-    	System.out.println("EdiMainController.start() called");
+    	log("start", "called");
     	primaryStage = stage;
     	primaryStage.setTitle(APPL_NAME);
     	EdiEintragController.start(primaryStage, this, entityManager);
@@ -156,7 +151,7 @@ public class EdiMainController {
         			@Override
         			public void changed(ObservableValue<? extends Tab> ov, Tab talt, Tab tneu) {
         				final Tab akttab = tneu;
-						System.out.println("tabPane.changed() " + akttab.textProperty().get());
+						log("changed<tabPane>", akttab.textProperty().get());
 						primaryStage.getScene().setCursor(Cursor.WAIT);
 						
 						if (akttab.equals(tabEdiNr)) {
@@ -410,7 +405,7 @@ public class EdiMainController {
     		if (response == Dialog.Actions.OK) {
     			EdiEintrag ediEintrag = entityManager.find(EdiEintrag.class, selectedlistElement.getId());
     			if (ediEintrag==null) {
-    				System.out.println("FEHLER: EDI-Eintrag " + ediNr + " ist nicht (mehr) gespeichert");
+    				log("deleteEdieintrag", "FEHLER: EDI-Eintrag " + ediNr + " ist nicht (mehr) gespeichert");
     			}
     			else {
 	        		entityManager.getTransaction().begin();
@@ -467,6 +462,11 @@ public class EdiMainController {
 			}
     	}
     }
+    
+	private void log(String methode, String message) {
+		String className = this.getClass().getName().substring(16);
+		System.out.println(className + "." + methode + "(): " + message); 
+	}
     
     private void checkFieldsFromView() {
         assert tabEdiNr != null : "fx:id=\"tabEdiNr\" was not injected: check your FXML file 'EdiMain.fxml'.";
