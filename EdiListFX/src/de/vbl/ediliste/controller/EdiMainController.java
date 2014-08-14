@@ -175,6 +175,7 @@ public class EdiMainController {
         );
         tableKomponentenAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
         	public void handle(MouseEvent mouseEvent) {
+        		log("tableKompoentenAuswahl<MouseEvent>.handle","called");
         		if (ediKomponenteController.checkForChangesAndAskForSave() == false) {
         			mouseEvent.consume();
         		}
@@ -182,6 +183,7 @@ public class EdiMainController {
 		});
         tableKomponentenAuswahl.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
 			public void handle(KeyEvent keyEvent) {
+				log("tableKompoentenAuswahl<KeyEvent>.handle","called");
         		if (ediKomponenteController.checkForChangesAndAskForSave() == false) {
         			keyEvent.consume();
         		}

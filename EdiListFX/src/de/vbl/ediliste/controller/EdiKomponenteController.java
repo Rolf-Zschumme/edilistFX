@@ -156,10 +156,14 @@ public class EdiKomponenteController {
 			mainCtr.setErrorText("Fehler: Komponente wird verwendet");
 			return;
 		}	
-		String kompoName = "Komponente " + aktKomponente.getName(); 
+		String kompoName1 = "Komponente \"" + aktKomponente.getName() + "\"";
+		String kompoName2 = kompoName1;
+		if (aktKomponente.getName().equals(tfBezeichnung.getText()) == false) {
+			kompoName2 = kompoName1 + " / \"" + tfBezeichnung.getText() + "\"";
+		}
 		Action response = Dialogs.create()
 				.owner(primaryStage).title(primaryStage.getTitle())
-				.message(kompoName + " wirklich löschen ?")
+				.message(kompoName2 + " wirklich löschen ?")
 				.showConfirm();
 		if (response == Dialog.Actions.YES) {
 			try {
@@ -168,12 +172,12 @@ public class EdiKomponenteController {
 				entityManager.getTransaction().commit();
 				aktKomponente = null;
 				mainCtr.loadKomponentenListData();
-				mainCtr.setInfoText("Die " + kompoName + " wurde erfolgreich gelöscht !");
+				mainCtr.setInfoText("Die " + kompoName1 + " wurde erfolgreich gelöscht !");
 			} catch (RuntimeException er) {
 				Dialogs.create()
 					.owner(primaryStage).title(primaryStage.getTitle())
 					.masthead("Datenbankfehler")
-				    .message("Fehler beim Löschen der Komponente")
+				    .message("Fehler beim Löschen der Komponente " + kompoName1)
 				    .showException(er);
 			}
 		}
@@ -189,8 +193,8 @@ public class EdiKomponenteController {
 	}
 
 	private boolean checkForChangesAndSave(boolean askForUpdate) {
+		log("checkForChangesAndSave","aktKompo=" + (aktKomponente==null ? "null" : aktKomponente.getFullname()));
 		if (aktKomponente == null ) {
-			log("checkForChanges","aktKompo==null");
 			return true;
 		}
 		String orgName = aktKomponente.getName();
@@ -216,7 +220,7 @@ public class EdiKomponenteController {
 				mainCtr.setErrorText("Eine andere Komponente des Systems heißt bereits so!");
 				return false;
 			}
-			log("checkForChanges()","Änderung erkannt -> update");
+			log("checkForChangesAndSave","Änderung erkannt -> update");
 			entityManager.getTransaction().begin();
 			aktKomponente.setName(newName);
 			aktKomponente.setBeschreibung(newBeschreibung);
@@ -271,9 +275,9 @@ public class EdiKomponenteController {
 				ediKomponenteList.addAll(tmpE);
 			}
 		}
-		log("readEdiListeforKomponete", ediList.size() + " EDI-Einträge" + 
-		    " mit insgesamt " + ediKomponenteList.size() + " Empfänger" + 
-			" gelesen (Refresh=" + cache+ ")");
+		log("readEdiListeforKomponete", "für "+ selKomponente.getName() + " " + 
+			ediList.size() + " EDI-Einträge" + " mit insgesamt " + 
+			ediKomponenteList.size() + " Empfänger gelesen (Refresh=" + cache+ ")");
 		
 		/* 2. lese alle Empfänger mit Empfänger = selektierte Komponente 
 		 *    -> zeige alle Empfänger  
@@ -286,8 +290,8 @@ public class EdiKomponenteController {
 			tqE.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		}	
 		ediKomponenteList.addAll(tqE.getResultList());
-		log("readEdiListeforKomponete", tqE.getResultList().size() + 
-		    " EDI-Empfänger gelesen (Refresh=" + cache+ ")");
+		log("readEdiListeforKomponete", "für " + selKomponente.getName() + " " + 
+			tqE.getResultList().size() + " EDI-Empfänger gelesen (Refresh=" + cache+ ")");
 	}
 
 	public final ObjectProperty<EdiKomponente> komponenteProperty() {
