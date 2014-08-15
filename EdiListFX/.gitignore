@@ -1,5 +1,6 @@
 # Java
 *.class
+/bin
 
 # Eclipse
 .classpath
@@ -8,3 +9,4 @@
 
 # Tests
 screenshot*.png
+
