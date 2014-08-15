@@ -83,10 +83,15 @@ public class EdiKomponenteController {
 				log("ChangeListener<EdiKomponente>",
 					((oldKomponente==null) ? "null" : oldKomponente.getFullname()) + " -> " 
 				  + ((newKomponente==null) ? "null" : newKomponente.getFullname()) );
-				if (oldKomponente != null && newKomponente == null) {
+				if (oldKomponente != null) {
+					if (checkForChangesAndSave(true) == false) {
+						throw new IllegalArgumentException("oldKomponente=" + oldKomponente.getFullname()+ " geändert?");
+					}
+					if (newKomponente == null) {
 						ediKomponenteList.clear();
 						tfBezeichnung.setText("");
 						taBeschreibung.setText("");
+					}
 				}
 				if (newKomponente != null) {
 					aktKomponente = newKomponente;

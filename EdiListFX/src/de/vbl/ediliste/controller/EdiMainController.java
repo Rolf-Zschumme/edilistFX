@@ -11,7 +11,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
@@ -173,30 +173,38 @@ public class EdiMainController {
         			}
 				}
         );
-
-        tabPaneObjekte.addEventFilter(MouseEvent.MOUSE_PRESSED, e ->  {
-        	log("tabPaneObjekte.addEventFiler  ", "MOUSE_PRESSED " + e.toString());
-        	checkForChanges(e);
-        });
-        
-//        tableKomponentenAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkForChanges(e) );
-//        tableKomponentenAuswahl.addEventFilter(KeyEvent.KEY_PRESSED, e -> checkForChanges(e) );
-//        
-//        tableEdiNrAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkForChanges(e) );
-//		tableEdiNrAuswahl.addEventFilter(KeyEvent.KEY_PRESSED, e -> checkForChanges(e) );
+        tableKomponentenAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+        	public void handle(MouseEvent mouseEvent) {
+        		log("tableKompoentenAuswahl<MouseEvent>.handle","called");
+        		if (ediKomponenteController.checkForChangesAndAskForSave() == false) {
+        			mouseEvent.consume();
+        		}
+        	}
+		});
+        tableKomponentenAuswahl.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+			public void handle(KeyEvent keyEvent) {
+				log("tableKompoentenAuswahl<KeyEvent>.handle","called");
+        		if (ediKomponenteController.checkForChangesAndAskForSave() == false) {
+        			keyEvent.consume();
+        		}
+			}
+		});
+//      tableEdiNrAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+//			public void handle(MouseEvent mouseEvent) {
+//				if (ediEintragController.checkForContinueEditing()==true) {
+//					mouseEvent.consume();
+//				}
+//			}
+//		});
+//		tableEdiNrAuswahl.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+//			public void handle(KeyEvent keyEvent) {
+//				if (ediEintragController.checkForContinueEditing()==true) {
+//					keyEvent.consume();
+//			}
+//		});
     }
-    
-	private void checkForChanges(Event e) {
-    	log("checkForChanges", "called " + e);
-    	Tab selTab = tabPaneObjekte.getSelectionModel().selectedItemProperty().get();
-    	if(selTab.equals(tabKomponenten)) {
-			if (ediKomponenteController.checkForChangesAndAskForSave() == false) e.consume();
-		}	
-//    	if (tabEdiNr.equals(selTab)) {
-//    		if (ediEintragController.checkForContinueEditing() == true) e.consume();
-//    	}
-	}
 
+    
 	private void setupEdiEintragPane() {
     	tableEdiNrAuswahl.setItems(ediEintraegeList);
     	tColAuswahlEdiNr.setCellValueFactory(cellData -> Bindings.format(EdiEintrag.FORMAT_EDINR, 
@@ -206,6 +214,21 @@ public class EdiMainController {
     	tColAuswahlEdiNrBezeichnung.setCellValueFactory(cellData -> 
     			cellData.getValue().bezeichnungProperty());
 
+//    	tColAuswahlEdiNr.setCellFactory(column -> {
+//    		return new TableCell<EdiEintrag, Integer>() {
+//    			@Override
+//    			protected void updateItem (Integer ediNr, boolean empty) {
+//    				super.updateItem(ediNr,empty);
+//    				if (ediNr == null || empty) {
+//    					setText(null);
+//    				}
+//    				else {
+//    					setText(Integer.toString(ediNr));
+//    				}
+//    			}
+//    		};
+//    	});
+    	
     	btnDeleteEdiEintrag.disableProperty().bind(
     			Bindings.isNull(tableEdiNrAuswahl.getSelectionModel().selectedItemProperty()));
     	ediEintrag.disableProperty().bind(
