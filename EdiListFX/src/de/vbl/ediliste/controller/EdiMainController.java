@@ -152,6 +152,7 @@ public class EdiMainController {
         			public void changed(ObservableValue<? extends Tab> ov, Tab talt, Tab tneu) {
         				final Tab akttab = tneu;
 						log("changed<tabPane>", akttab.textProperty().get());
+
 						primaryStage.getScene().setCursor(Cursor.WAIT);
 						
 						if (akttab.equals(tabEdiNr)) {
@@ -173,25 +174,26 @@ public class EdiMainController {
         			}
 				}
         );
-  
-        tableKomponentenAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkForChanges(e) );
-        tableKomponentenAuswahl.addEventFilter(KeyEvent.KEY_PRESSED, e -> checkForChanges(e) );
-        
-        tableEdiNrAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkForChanges(e) );
-		tableEdiNrAuswahl.addEventFilter(KeyEvent.KEY_PRESSED, e -> checkForChanges(e) );
+
+        tableKomponentenAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkKomponente(e) );
+		tableKomponentenAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkKomponente(e) );
+		
+        tableEdiNrAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkKomponente(e) );
+		tableEdiNrAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkKomponente(e) );
     }
     
-	private void checkForChanges(Event e) {
-    	log("checkForChanges","called");
-    	Tab selTab = tabPaneObjekte.getSelectionModel().selectedItemProperty().get();
-    	if(tabKomponenten.equals(selTab)) {
-			if (ediKomponenteController.checkForChangesAndAskForSave() == false) e.consume();
+	private void checkKomponente(Event event) {
+		if (ediKomponenteController.checkForChangesAndAskForSave() == false) {
+			event.consume();
 		}	
+	}
+
+//	private void checkEdiEintrag(Event event) {
 //    	if (tabEdiNr.equals(selTab)) {
 //    		if (ediEintragController.checkForContinueEditing() == true) e.consume();
 //    	}
-	}
-
+//	}
+	
 	private void setupEdiEintragPane() {
     	tableEdiNrAuswahl.setItems(ediEintraegeList);
     	tColAuswahlEdiNr.setCellValueFactory(cellData -> Bindings.format(EdiEintrag.FORMAT_EDINR, 

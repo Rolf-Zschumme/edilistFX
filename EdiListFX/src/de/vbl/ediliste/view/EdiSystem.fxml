@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+	<children>
+		<SplitPane dividerPositions="0.1, 0.4" focusTraversable="true" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+  			<items>
+  				<ToolBar layoutX="205.0" layoutY="185.5" prefWidth="200.0">
+					<items>
+						<Button mnemonicParsing="false" onAction="#speichern" text="Änderungen speichern" />
+						<Button mnemonicParsing="false" onAction="#loeschen" text="System löschen" />
+					</items>
+				</ToolBar>
+    			<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+					<children>
+						<TextArea layoutX="89.0" layoutY="58.0" prefHeight="117.0" prefWidth="465.0" />
+						<Label layoutX="8.0" layoutY="15.0" prefWidth="81.0" text="Bezeichnung:" />
+						<Label layoutX="8.0" layoutY="58.0" text="Beschreibung:" />
+						<TextField layoutX="89.0" layoutY="11.0" prefHeight="25.0" prefWidth="200.0" />
+					</children>
+				</AnchorPane>
+    			<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
+			</items>
+		</SplitPane>
+	</children>
+</AnchorPane>
