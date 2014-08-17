@@ -57,9 +57,10 @@
 												</TableView>
 											</children>
 										</VBox>
-<!--									 <AnchorPane fx:id="ediEintragSplitPane" />   --> 
-										 <Pane>
-										 	<fx:include fx:id="ediEintrag" disable="true" source="EdiEintrag.fxml" />
+										<Pane>
+										   <children>
+   											 	<fx:include fx:id="ediEintrag" disable="true" source="EdiEintrag.fxml" />
+										   </children>
 										 </Pane>
 									</items>
 								</SplitPane>
@@ -86,13 +87,22 @@
 					<content>
 						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
 							<children>
-								<TableView fx:id="tableSystemAuswahl" editable="true" prefHeight="471.0" prefWidth="306.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-									<columns>
-										<TableColumn fx:id="tColSelSystemSystemName" prefWidth="126.0" text="System" />
-										<TableColumn fx:id="tColSelSystemPartnerName" editable="false" prefWidth="123.0" text="Partner" />
-										<TableColumn fx:id="tColSelSystemKomponenten" editable="false" prefWidth="103.0" text="Komponenten" />
-									</columns>
-								</TableView>
+                        <SplitPane dividerPositions="0.3" layoutX="7.0" prefHeight="716.0" prefWidth="1409.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <items>
+                              <AnchorPane>
+                                 <children>
+            								<TableView fx:id="tableSystemAuswahl" editable="true" prefHeight="471.0" prefWidth="306.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            									<columns>
+            										<TableColumn fx:id="tColSelSystemSystemName" prefWidth="159.0" text="System" />
+            										<TableColumn fx:id="tColSelSystemPartnerName" editable="false" prefWidth="153.0" text="Partner" />
+            										<TableColumn fx:id="tColSelSystemKomponenten" editable="false" prefWidth="106.0" text="Komponenten" />
+            									</columns>
+            								</TableView>
+                                 </children>
+                              </AnchorPane>
+							  <fx:include fx:id="ediSystem" disable="true" source="EdiSystem.fxml" />
+                           </items>
+                        </SplitPane>
 							</children>
 						</AnchorPane>
 					</content>

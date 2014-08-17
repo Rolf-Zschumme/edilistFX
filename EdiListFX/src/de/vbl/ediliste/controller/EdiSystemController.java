@@ -33,19 +33,19 @@ import org.controlsfx.dialog.Dialogs;
 
 import de.vbl.ediliste.model.EdiEintrag;
 import de.vbl.ediliste.model.EdiEmpfaenger;
-import de.vbl.ediliste.model.EdiKomponente;
+import de.vbl.ediliste.model.EdiSystem;
 
-public class EdiKomponenteController {
+public class EdiSystemController {
 	private static Stage primaryStage = null;
 	private static EdiMainController mainCtr;
 	private static EntityManager entityManager;
-	private final ObjectProperty<EdiKomponente> edikomponente;
-	private final ObservableList<EdiEmpfaenger> ediKomponenteList = FXCollections.observableArrayList();
-	private EdiKomponente aktKomponente = null;
+	private final ObjectProperty<EdiSystem> ediSystem;
+	private final ObservableList<EdiEmpfaenger> ediKomponentenList = FXCollections.observableArrayList();
+	private EdiSystem aktSystem = null;
 	
 	@FXML private ResourceBundle resources;
     @FXML private URL location;
-    @FXML private AnchorPane ediKomponentePane;
+    @FXML private AnchorPane ediSystemPane;
     @FXML private TextField tfBezeichnung;
     @FXML private TextArea taBeschreibung;
     @FXML private TableView<EdiEmpfaenger> tvVerwendungen;
@@ -58,17 +58,17 @@ public class EdiKomponenteController {
     
     @FXML private Button btnLoeschen;
     
-    public EdiKomponenteController() {
-    	this.edikomponente = new SimpleObjectProperty<>(this, "edikomponente", null);
+    public EdiSystemController() {
+    	this.ediSystem = new SimpleObjectProperty<>(this, "ediSystem", null);
     }
 
 	public static void start(Stage 			   primaryStage, 
 							 EdiMainController mainController, 
 							 EntityManager     entityManager) {
 		log("start","called");
-		EdiKomponenteController.primaryStage = primaryStage;
-		EdiKomponenteController.mainCtr = mainController;
-		EdiKomponenteController.entityManager = entityManager;
+		EdiSystemController.primaryStage = primaryStage;
+		EdiSystemController.mainCtr = mainController;
+		EdiSystemController.entityManager = entityManager;
 	}
 
 	@FXML
@@ -76,30 +76,31 @@ public class EdiKomponenteController {
 		log("initialize","called");
 		checkFieldsFromView();
 		
-		edikomponente.addListener(new ChangeListener<EdiKomponente>() {
+		ediSystem.addListener(new ChangeListener<EdiSystem>() {
 			@Override
-			public void changed(ObservableValue<? extends EdiKomponente> ov,
-					EdiKomponente oldKomponente, EdiKomponente newKomponente) {
-				log("ChangeListener<EdiKomponente>",
-					((oldKomponente==null) ? "null" : oldKomponente.getFullname()) + " -> " 
-				  + ((newKomponente==null) ? "null" : newKomponente.getFullname()) );
-				if (oldKomponente != null && newKomponente == null) {
-						ediKomponenteList.clear();
+			public void changed(ObservableValue<? extends EdiSystem> ov,
+					EdiSystem oldSystem, EdiSystem newSystem) {
+				log("ChangeListener<EdiSystem>",
+					((oldSystem==null) ? "null" : oldSystem.getFullname()) + " -> " 
+				  + ((newSystem==null) ? "null" : newSystem.getFullname()) );
+				if (oldSystem != null && newSystem == null) {
+						ediKomponentenList.clear();
 						tfBezeichnung.setText("");
 						taBeschreibung.setText("");
 				}
-				if (newKomponente != null) {
-					aktKomponente = newKomponente;
-					readEdiListeforKomponete(newKomponente, CacheRefresh.FALSE);
-					tfBezeichnung.setText(newKomponente.getName());
-					taBeschreibung.setText(newKomponente.getBeschreibung());
+				if (newSystem != null) {
+					aktSystem = newSystem;
+					log("ediSystemListner.changed", "newSystem.Name="+ newSystem.getName());
+					readEdiListeforSystem(newSystem, CacheRefresh.FALSE);
+					tfBezeichnung.setText(newSystem.getName());
+//					taBeschreibung.setText(newSystem.getBeschreibung());
 				}
 			}
 		});
 		
-		btnLoeschen.disableProperty().bind(Bindings.isNotEmpty(ediKomponenteList));
+		btnLoeschen.disableProperty().bind(Bindings.isNotEmpty(ediKomponentenList));
 		
-		tvVerwendungen.setItems(ediKomponenteList);
+		tvVerwendungen.setItems(ediKomponentenList);
 		tcEdiNr.setCellValueFactory(cellData -> 
 					Bindings.format(EdiEintrag.FORMAT_EDINR, cellData.getValue().ediNrProperty()));
 		
@@ -113,9 +114,10 @@ public class EdiKomponenteController {
 						setText(null); 
 					else {
 						setText(sender);
-						if (sender.equals(aktKomponente.getFullname()))
-							setFont(Font.font(null, FontWeight.BOLD, getFont().getSize()));
-						else
+// todo						
+//						if (sender.equals(aktSysten.getFullname()))
+//							setFont(Font.font(null, FontWeight.BOLD, getFont().getSize()));
+//						else
 							setFont(Font.font(null, FontWeight.NORMAL,getFont().getSize()));
 					}
 				}
@@ -132,9 +134,9 @@ public class EdiKomponenteController {
 						setText(null); 
 					else {
 						setText(empf);
-						if (empf.equals(aktKomponente.getFullname()))
-							setFont(Font.font(null, FontWeight.BOLD, getFont().getSize()));
-						else
+// todo						if (empf.equals(aktKomponente.getFullname()))
+//							setFont(Font.font(null, FontWeight.BOLD, getFont().getSize()));
+//						else
 							setFont(Font.font(null, FontWeight.NORMAL,getFont().getSize()));
 					}
 				}
@@ -147,32 +149,32 @@ public class EdiKomponenteController {
 
 	@FXML
 	void loeschen(ActionEvent event) {
-		if (ediKomponenteList.size() > 0) {
+		if (ediKomponentenList.size() > 0) {
 			mainCtr.setErrorText("Fehler: Komponente wird verwendet");
 			return;
 		}	
-		String kompoName1 = "Komponente \"" + aktKomponente.getName() + "\"";
-		String kompoName2 = kompoName1;
-		if (aktKomponente.getName().equals(tfBezeichnung.getText()) == false) {
-			kompoName2 = kompoName1 + " / \"" + tfBezeichnung.getText() + "\"";
+		String aktName = "Komponente \"" + aktSystem.getName() + "\"";
+		String neuName = aktName;
+		if (aktSystem.getName().equals(tfBezeichnung.getText()) == false) {
+			neuName = aktName + " / \"" + tfBezeichnung.getText() + "\"";
 		}
 		Action response = Dialogs.create()
 				.owner(primaryStage).title(primaryStage.getTitle())
-				.message(kompoName2 + " wirklich löschen ?")
+				.message(neuName + " wirklich löschen ?")
 				.showConfirm();
 		if (response == Dialog.Actions.YES) {
 			try {
 				entityManager.getTransaction().begin();
-				entityManager.remove(aktKomponente);
+				entityManager.remove(aktSystem);
 				entityManager.getTransaction().commit();
-				aktKomponente = null;
-				mainCtr.loadKomponentenListData();
-				mainCtr.setInfoText("Die " + kompoName1 + " wurde erfolgreich gelöscht !");
+				aktSystem = null;
+				mainCtr.loadSystemListData();
+				mainCtr.setInfoText("Die " + aktName + " wurde erfolgreich gelöscht !");
 			} catch (RuntimeException er) {
 				Dialogs.create()
 					.owner(primaryStage).title(primaryStage.getTitle())
 					.masthead("Datenbankfehler")
-				    .message("Fehler beim Löschen der Komponente " + kompoName1)
+				    .message("Fehler beim Löschen der Komponente " + aktName)
 				    .showException(er);
 			}
 		}
@@ -188,13 +190,13 @@ public class EdiKomponenteController {
 	}
 
 	private boolean checkForChangesAndSave(boolean askForUpdate) {
-		log("checkForChangesAndSave","aktKompo=" + (aktKomponente==null ? "null" : aktKomponente.getFullname()));
-		if (aktKomponente == null ) {
+		log("checkForChangesAndSave","aktSystem=" + (aktSystem==null ? "null" : aktSystem.getFullname()));
+		if (aktSystem == null ) {
 			return true;
 		}
-		String orgName = aktKomponente.getName();
+		String orgName = aktSystem.getName();
 		String newName = tfBezeichnung.getText();
-		String orgBeschreibung = aktKomponente.getBeschreibung()==null ? "" : aktKomponente.getBeschreibung();
+		String orgBeschreibung = aktSystem.getBeschreibung()==null ? "" : aktSystem.getBeschreibung();
 		String newBeschreibung = taBeschreibung.getText()==null ? "" : taBeschreibung.getText();
 		if (!orgName.equals(newName) ||
 			!orgBeschreibung.equals(newBeschreibung) ) {
@@ -202,26 +204,26 @@ public class EdiKomponenteController {
 				Action response = Dialogs.create()
     				.owner(primaryStage).title(primaryStage.getTitle())
     				.actions(Dialog.Actions.YES, Dialog.Actions.NO, Dialog.Actions.CANCEL)
-    				.message("Sollen die Änderungen an der Komponente " + orgName + " gespeichert werden ?")
+    				.message("Sollen die Änderungen an dem System " + orgName + " gespeichert werden ?")
     				.showConfirm();
 	    		if (response == Dialog.Actions.CANCEL) 	
 	    			return false;
 	    		if (response == Dialog.Actions.NO) {
-	    			aktKomponente = null;
+	    			aktSystem = null;
 	    			return true;
 	    		}
 			}	
-			if (checkKomponentenName(newName) == false) {
-				mainCtr.setErrorText("Eine andere Komponente des Systems heißt bereits so!");
+			if (checkSystemName(newName) == false) {
+				mainCtr.setErrorText("Eine anderes System des Partners heißt bereits so!");
 				return false;
 			}
 			log("checkForChangesAndSave","Änderung erkannt -> update");
 			entityManager.getTransaction().begin();
-			aktKomponente.setName(newName);
-			aktKomponente.setBeschreibung(newBeschreibung);
+			aktSystem.setName(newName);
+			aktSystem.setBeschreibung(newBeschreibung);
 			entityManager.getTransaction().commit();
-			readEdiListeforKomponete(aktKomponente, CacheRefresh.TRUE);
-			mainCtr.setInfoText("Komponente wurde gespeichert");
+			readEdiListeforSystem(aktSystem, CacheRefresh.TRUE);
+			mainCtr.setInfoText("Das System " + orgName + " wurde gespeichert");
 		}
 		else {
 			log("checkForChangesAndSave", "Name und Bezeichnung unverändert");
@@ -229,15 +231,15 @@ public class EdiKomponenteController {
 		return true;
 	}
 	
-	private boolean checkKomponentenName(String newName) {
-		TypedQuery<EdiKomponente> tq = entityManager.createQuery(
-				"SELECT k FROM EdiKomponente k WHERE LOWER(k.name) = LOWER(:n)",EdiKomponente.class);
+	private boolean checkSystemName(String newName) {
+		TypedQuery<EdiSystem> tq = entityManager.createQuery(
+				"SELECT s FROM EdiSystem s WHERE LOWER(s.name) = LOWER(:n)",EdiSystem.class);
 		tq.setParameter("n", newName);
-		List<EdiKomponente> kompoList = tq.getResultList();
-		for (EdiKomponente k : kompoList ) {
-			if (k.getId() != aktKomponente.getId() &&
-				k.getEdiSystem().getId() == aktKomponente.getEdiSystem().getId())  {
-				if (k.getName().equalsIgnoreCase(newName)) {
+		List<EdiSystem> systemList = tq.getResultList();
+		for (EdiSystem s : systemList ) {
+			if (s.getId() != aktSystem.getId() &&
+				s.getEdiPartner().getId() == aktSystem.getEdiPartner().getId())  {
+				if (s.getName().equalsIgnoreCase(newName)) {
 					return false;
 				}
 			}
@@ -249,73 +251,73 @@ public class EdiKomponenteController {
 		CacheRefresh() {}
 	}
 	
-	private void readEdiListeforKomponete( EdiKomponente selKomponente, CacheRefresh cache) {
-		ediKomponenteList.clear();
+	private void readEdiListeforSystem( EdiSystem selSystem, CacheRefresh cache) {
+		ediKomponentenList.clear();
 		/* 1. lese alle EdiEinträge mit Sender = selekierter Komponente 
 		 * 		-> zeige jeweils alle zugehörigen Empfänger, falls kein Empfänger vorhanden dummy erzeugen
 		*/
 		TypedQuery<EdiEintrag> tqS = entityManager.createQuery(
-				"SELECT e FROM EdiEintrag e WHERE e.ediKomponente = :k", EdiEintrag.class);
-		tqS.setParameter("k", selKomponente);
+				"SELECT e FROM EdiEintrag e WHERE e.ediKomponente.ediSystem = :s", EdiEintrag.class);
+		tqS.setParameter("s", selSystem);
 		if (cache == CacheRefresh.TRUE) {
 			tqS.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		}	
 		List<EdiEintrag> ediList = tqS.getResultList();
 		for(EdiEintrag e : ediList ) {
 			if (e.getEdiEmpfaenger().size() > 0)
-				ediKomponenteList.addAll(e.getEdiEmpfaenger());
+				ediKomponentenList.addAll(e.getEdiEmpfaenger());
 			else {
 				EdiEmpfaenger tmpE = new EdiEmpfaenger();
 				tmpE.setEdiEintrag(e);
-				ediKomponenteList.addAll(tmpE);
+				ediKomponentenList.addAll(tmpE);
 			}
 		}
-		log("readEdiListeforKomponete", "für "+ selKomponente.getName() + " " + 
+		log("readEdiListeforKomponete", "für "+ selSystem.getName() + " " + 
 			ediList.size() + " EDI-Einträge" + " mit insgesamt " + 
-			ediKomponenteList.size() + " Empfänger gelesen (Refresh=" + cache+ ")");
+			ediKomponentenList.size() + " Empfänger gelesen (Refresh=" + cache+ ")");
 		
 		/* 2. lese alle Empfänger mit Empfänger = selektierte Komponente 
 		 *    -> zeige alle Empfänger  
 		 */
 		
-		TypedQuery<EdiEmpfaenger> tqE = entityManager.createQuery(
-				"SELECT e FROM EdiEmpfaenger e WHERE e.komponente = :k", EdiEmpfaenger.class);
-		tqE.setParameter("k", selKomponente);
-		if (cache == CacheRefresh.TRUE) {
-			tqE.setHint("javax.persistence.cache.storeMode", "REFRESH");
-		}	
-		ediKomponenteList.addAll(tqE.getResultList());
-		log("readEdiListeforKomponete", "für " + selKomponente.getName() + " " + 
-			tqE.getResultList().size() + " EDI-Empfänger gelesen (Refresh=" + cache+ ")");
+//		TypedQuery<EdiEmpfaenger> tqE = entityManager.createQuery(
+//				"SELECT e FROM EdiEmpfaenger e WHERE e.komponente = :k", EdiEmpfaenger.class);
+//		tqE.setParameter("k", selSystem);
+//		if (cache == CacheRefresh.TRUE) {
+//			tqE.setHint("javax.persistence.cache.storeMode", "REFRESH");
+//		}	
+//		ediKomponentenList.addAll(tqE.getResultList());
+//		log("readEdiListeforKomponete", "für " + selSystem.getName() + " " + 
+//			tqE.getResultList().size() + " EDI-Empfänger gelesen (Refresh=" + cache+ ")");
 	}
 
-	public final ObjectProperty<EdiKomponente> komponenteProperty() {
-		return edikomponente;
+	public final ObjectProperty<EdiSystem> ediSystemProperty() {
+		return ediSystem;
 	}
 	
-	public final EdiKomponente getKomponente() {
-		return edikomponente.get() ;
+	public final EdiSystem getEdiSystem() {
+		return ediSystem.get() ;
 	}
 	
-	public final void setKomponente(EdiKomponente komponente) {
-		this.edikomponente.set(komponente);
+	public final void setEdiSystem(EdiSystem ediSystem) {
+		this.ediSystem.set(ediSystem);
 	}
     
 	private static void log(String methode, String message) {
-		String className = EdiKomponenteController.class.getName().substring(16);
+		String className = EdiSystemController.class.getName().substring(16);
 		System.out.println(className + "." + methode + "(): " + message); 
 	}
 		
     void checkFieldsFromView() {
-    	assert ediKomponentePane != null : "fx:id=\"ediKomponente\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
-    	assert tfBezeichnung != null : "fx:id=\"tfBezeichnung\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
-    	assert taBeschreibung != null : "fx:id=\"taBeschreibung\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
-    	assert tcEdiNr != null : "fx:id=\"tcEdiNr\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
-    	assert tcSender != null : "fx:id=\"tcSender\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
-        assert tcEmpfaenger != null : "fx:id=\"tcEmpfaenger\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
-        assert tcDatumBis != null : "fx:id=\"tcDatumBis\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
-        assert tvVerwendungen != null : "fx:id=\"tvVerwendungen\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
-        assert btnLoeschen != null : "fx:id=\"btnLoeschen\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
+    	assert ediSystemPane != null : "fx:id=\"ediSystemPane\" was not injected: check your FXML file 'EdiSystem.fxml'.";
+    	assert tfBezeichnung != null : "fx:id=\"tfBezeichnung\" was not injected: check your FXML file 'EdiSystem.fxml'.";
+    	assert taBeschreibung != null : "fx:id=\"taBeschreibung\" was not injected: check your FXML file 'EdiSystem.fxml'.";
+    	assert tcEdiNr != null : "fx:id=\"tcEdiNr\" was not injected: check your FXML file 'EdiSystem.fxml'.";
+    	assert tcSender != null : "fx:id=\"tcSender\" was not injected: check your FXML file 'EdiSystem.fxml'.";
+        assert tcEmpfaenger != null : "fx:id=\"tcEmpfaenger\" was not injected: check your FXML file 'EdiSystem.fxml'.";
+        assert tcDatumBis != null : "fx:id=\"tcDatumBis\" was not injected: check your FXML file 'EdiSystem.fxml'.";
+        assert tvVerwendungen != null : "fx:id=\"tvVerwendungen\" was not injected: check your FXML file 'EdiSystem.fxml'.";
+        assert btnLoeschen != null : "fx:id=\"btnLoeschen\" was not injected: check your FXML file 'EdiSystem.fxml'.";
     }
     
 }

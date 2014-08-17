@@ -18,7 +18,6 @@ import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
@@ -27,7 +26,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
@@ -92,15 +90,17 @@ public class EdiMainController {
     @FXML private Button btnDeleteGeschaeftsobjekt;
     @FXML private Button btnExportExcel;
 
-    @FXML private SplitPane splitPane;
-    @FXML private AnchorPane ediEintragSplitPane;
-    @FXML private AnchorPane komponenteSplitPane;
+//    @FXML private SplitPane splitPane;
+//    @FXML private AnchorPane ediEintragSplitPane;
+//    @FXML private AnchorPane komponenteSplitPane;
     
     @FXML private Pane ediEintrag;
+    @FXML private Pane ediSystem;
     @FXML private Pane ediKomponente;
     
-    @FXML private EdiKomponenteController ediKomponenteController ;
     @FXML private EdiEintragController ediEintragController;
+    @FXML private EdiSystemController ediSystemController;
+    @FXML private EdiKomponenteController ediKomponenteController;
     
 	private static String applName;
 	private static int maxEdiNr;
@@ -125,6 +125,7 @@ public class EdiMainController {
     	primaryStage = stage;
     	primaryStage.setTitle(APPL_NAME);
     	EdiEintragController.start(primaryStage, this, entityManager);
+    	EdiSystemController.start(primaryStage, this, entityManager);
     	EdiKomponenteController.start(primaryStage, this, entityManager);
     }
     
@@ -178,8 +179,8 @@ public class EdiMainController {
         tableKomponentenAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkKomponente(e) );
 		tableKomponentenAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkKomponente(e) );
 		
-        tableEdiNrAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkKomponente(e) );
-		tableEdiNrAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkKomponente(e) );
+//      tableEdiNrAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkKomponente(e) );
+//		tableEdiNrAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkKomponente(e) );
     }
     
 	private void checkKomponente(Event event) {
@@ -211,21 +212,26 @@ public class EdiMainController {
     						    tableEdiNrAuswahl.getSelectionModel().selectedItemProperty());
     }
     
-	private void setupEdiSystemPane() {
-    	tableSystemAuswahl.setItems(ediSystemList);
-    	tColSelSystemSystemName.setCellValueFactory(cellData -> cellData.getValue()
-    						.nameProperty());
-    	tColSelSystemPartnerName.setCellValueFactory(cellData -> cellData.getValue() 
-    						.getEdiPartner().nameProperty());
-    	tColSelSystemKomponenten.setCellValueFactory(new PropertyValueFactory<EdiSystem,Integer>("AnzKomponenten"));
-	}
-	
 	private void setupEdiPartnerPane() {
 		tablePartnerAuswahl.setItems(ediPartnerList);
 		tColAuswahlPartnerName.setCellValueFactory(cellData -> cellData.getValue()
 							.nameProperty());
 		tColAuswahlPartnerSysteme.setCellValueFactory(new PropertyValueFactory<EdiPartner,Integer>("anzSysteme"));
 		tColAuswahlPartnerKomponenten.setCellValueFactory(new PropertyValueFactory<EdiPartner,Integer>("anzKomponenten"));
+	}
+	
+	private void setupEdiSystemPane() {
+		tableSystemAuswahl.setItems(ediSystemList);
+		tColSelSystemSystemName.setCellValueFactory(cellData -> cellData.getValue()
+				.nameProperty());
+		tColSelSystemPartnerName.setCellValueFactory(cellData -> cellData.getValue() 
+				.getEdiPartner().nameProperty());
+		tColSelSystemKomponenten.setCellValueFactory(new PropertyValueFactory<EdiSystem,Integer>("AnzKomponenten"));
+		
+		ediSystemController.ediSystemProperty().bind(
+							tableSystemAuswahl.getSelectionModel().selectedItemProperty());
+		ediSystem.disableProperty().bind(
+							Bindings.isNull(tableSystemAuswahl.getSelectionModel().selectedItemProperty()));
 	}
 	
 	private void setupKomponentenPane() {
@@ -283,7 +289,7 @@ public class EdiMainController {
 		}
 	}
 
-	private void loadSystemListData() {
+	protected void loadSystemListData() {
 		TypedQuery<EdiSystem> tq = entityManager.createQuery(
 				"SELECT s FROM EdiSystem s ORDER BY s.name", EdiSystem.class);
 		tq.setHint("javax.persistence.cache.storeMode", "REFRESH");
@@ -466,14 +472,14 @@ public class EdiMainController {
         assert tabKomponenten != null : "fx:id=\"tabKomponenten\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tColSelKompoSysteme != null : "fx:id=\"tColSelKompoSysteme\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tabGeschaeftsobjekt != null : "fx:id=\"tabGeschaeftsobjekt\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert ediEintragSplitPane != null : "fx:id=\"ediEintragSplitPane\" was not injected: check your FXML file 'EdiMain.fxml'.";
+//      assert ediEintragSplitPane != null : "fx:id=\"ediEintragSplitPane\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tableSystemAuswahl != null : "fx:id=\"tableSystemAuswahl\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tabPartner != null : "fx:id=\"tabPartner\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tColAuswahlPartnerSysteme != null : "fx:id=\"tColAuswahlPartnerSysteme\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert txtInfoZeile != null : "fx:id=\"txtInfoZeile\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert btnNewEdiNr != null : "fx:id=\"btnNewEdiNr\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tColSelSystemKomponenten != null : "fx:id=\"tColSelSystemKomponenten\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert komponenteSplitPane != null : "fx:id=\"komponenteSplitPane\" was not injected: check your FXML file 'EdiMain.fxml'.";
+//      assert komponenteSplitPane != null : "fx:id=\"komponenteSplitPane\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tColAuswahlGeschaeftsobjektAnzahl != null : "fx:id=\"tColAuswahlGeschaeftsobjektAnzahl\" was not injected: check your FXML file 'EdiMain.fxml'.";
 	}
 }

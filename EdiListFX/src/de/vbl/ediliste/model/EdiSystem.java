@@ -56,6 +56,10 @@ public class EdiSystem {
 	public String getName() {
 		return name.get();
 	}
+	
+	public String getNameSafe() {
+		return name.getValueSafe();
+	}
 
 	public void setName(String param) {
 		name.set(param);

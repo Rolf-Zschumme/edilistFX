@@ -10,7 +10,7 @@
 			<items>
 				<ToolBar prefWidth="200.0">
   					<items>
-    					<Button fx:id="btnSpeichern" mnemonicParsing="false" onAction="#speichern" text="Änderungen speichern" />
+    					<Button mnemonicParsing="false" onAction="#speichern" text="Änderungen speichern" />
     					<Button fx:id="btnLoeschen" mnemonicParsing="false" onAction="#loeschen" text="Komponente löschen" />
 	  				</items>
 				</ToolBar>

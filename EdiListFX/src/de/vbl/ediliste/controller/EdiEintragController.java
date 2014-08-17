@@ -79,7 +79,7 @@ public class EdiEintragController {
     private String busObjName[] = { "", "", ""};
 
 	
-	@FXML private AnchorPane rightsplitpane;
+	@FXML private AnchorPane ediEintragPane;
     @FXML private VBox eintragVBox;
 
     @FXML private TitledPane paneSzenario;
