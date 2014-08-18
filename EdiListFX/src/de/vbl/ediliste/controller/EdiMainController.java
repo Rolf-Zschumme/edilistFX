@@ -176,6 +176,9 @@ public class EdiMainController {
 				}
         );
 
+        tableSystemAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkSystem(e) );
+        tableSystemAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkSystem(e) );
+        
         tableKomponentenAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkKomponente(e) );
 		tableKomponentenAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkKomponente(e) );
 		
@@ -183,6 +186,12 @@ public class EdiMainController {
 //		tableEdiNrAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkKomponente(e) );
     }
     
+	private void checkSystem(Event event) {
+		if (ediSystemController.checkForChangesAndAskForSave() == false) {
+			event.consume();
+		}
+	}
+
 	private void checkKomponente(Event event) {
 		if (ediKomponenteController.checkForChangesAndAskForSave() == false) {
 			event.consume();
@@ -293,8 +302,12 @@ public class EdiMainController {
 		TypedQuery<EdiSystem> tq = entityManager.createQuery(
 				"SELECT s FROM EdiSystem s ORDER BY s.name", EdiSystem.class);
 		tq.setHint("javax.persistence.cache.storeMode", "REFRESH");
-
-		List<EdiSystem> aktuList = tq.getResultList(); 
+		List<EdiSystem> aktuList = tq.getResultList();
+		
+		// gelöschte Einträge entfernen
+		ediSystemList.retainAll(aktuList);
+		
+		// nicht vorhandene Einträge einfügen
 		for (EdiSystem s : aktuList) {
 			if (ediSystemList.contains(s) == false) {
 				ediSystemList.add(aktuList.indexOf(s), s);
@@ -307,9 +320,11 @@ public class EdiMainController {
 				"SELECT k FROM EdiKomponente k ORDER BY k.name", EdiKomponente.class);
 		tq.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		List<EdiKomponente> aktuList = tq.getResultList();
-											// lösche was nicht mehr drin ist
-		ediKomponentenList.retainAll(aktuList);   
-											// nicht vorhandene Einträge einfügen
+		
+		// gelöschte Einträge entfernen
+		ediKomponentenList.retainAll(aktuList);
+		
+		// nicht vorhandene Einträge einfügen
 		for ( EdiKomponente k : aktuList) {
 			if (ediKomponentenList.contains(k) == false) {
 				ediKomponentenList.add(aktuList.indexOf(k), k);

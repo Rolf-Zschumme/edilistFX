@@ -42,6 +42,7 @@ public class EdiSystemController {
 	private final ObjectProperty<EdiSystem> ediSystem;
 	private final ObservableList<EdiEmpfaenger> ediKomponentenList = FXCollections.observableArrayList();
 	private EdiSystem aktSystem = null;
+	private String aktFullName;
 	
 	@FXML private ResourceBundle resources;
     @FXML private URL location;
@@ -91,9 +92,10 @@ public class EdiSystemController {
 				if (newSystem != null) {
 					aktSystem = newSystem;
 					log("ediSystemListner.changed", "newSystem.Name="+ newSystem.getName());
+					aktFullName = aktSystem.getFullname();
 					readEdiListeforSystem(newSystem, CacheRefresh.FALSE);
 					tfBezeichnung.setText(newSystem.getName());
-//					taBeschreibung.setText(newSystem.getBeschreibung());
+					taBeschreibung.setText(newSystem.getBeschreibung());
 				}
 			}
 		});
@@ -114,11 +116,8 @@ public class EdiSystemController {
 						setText(null); 
 					else {
 						setText(sender);
-// todo						
-//						if (sender.equals(aktSysten.getFullname()))
-//							setFont(Font.font(null, FontWeight.BOLD, getFont().getSize()));
-//						else
-							setFont(Font.font(null, FontWeight.NORMAL,getFont().getSize()));
+						FontWeight fw = sender.startsWith(aktFullName) ? FontWeight.BOLD : FontWeight.NORMAL;
+						setFont(Font.font(null, fw, getFont().getSize()));
 					}
 				}
 			};
@@ -134,10 +133,8 @@ public class EdiSystemController {
 						setText(null); 
 					else {
 						setText(empf);
-// todo						if (empf.equals(aktKomponente.getFullname()))
-//							setFont(Font.font(null, FontWeight.BOLD, getFont().getSize()));
-//						else
-							setFont(Font.font(null, FontWeight.NORMAL,getFont().getSize()));
+						FontWeight fw = empf.startsWith(aktFullName) ? FontWeight.BOLD : FontWeight.NORMAL;
+						setFont(Font.font(null, fw, getFont().getSize()));
 					}
 				}
 			};
@@ -153,14 +150,14 @@ public class EdiSystemController {
 			mainCtr.setErrorText("Fehler: Komponente wird verwendet");
 			return;
 		}	
-		String aktName = "Komponente \"" + aktSystem.getName() + "\"";
+		String aktName = "System \"" + aktSystem.getName() + "\"";
 		String neuName = aktName;
 		if (aktSystem.getName().equals(tfBezeichnung.getText()) == false) {
 			neuName = aktName + " / \"" + tfBezeichnung.getText() + "\"";
 		}
 		Action response = Dialogs.create()
 				.owner(primaryStage).title(primaryStage.getTitle())
-				.message(neuName + " wirklich löschen ?")
+				.message(neuName + " des Partners " + aktSystem.getPartnerName() + " wirklich löschen ?")
 				.showConfirm();
 		if (response == Dialog.Actions.YES) {
 			try {
@@ -169,7 +166,7 @@ public class EdiSystemController {
 				entityManager.getTransaction().commit();
 				aktSystem = null;
 				mainCtr.loadSystemListData();
-				mainCtr.setInfoText("Die " + aktName + " wurde erfolgreich gelöscht !");
+				mainCtr.setInfoText("Das " + aktName + " wurde erfolgreich gelöscht !");
 			} catch (RuntimeException er) {
 				Dialogs.create()
 					.owner(primaryStage).title(primaryStage.getTitle())
@@ -280,15 +277,15 @@ public class EdiSystemController {
 		 *    -> zeige alle Empfänger  
 		 */
 		
-//		TypedQuery<EdiEmpfaenger> tqE = entityManager.createQuery(
-//				"SELECT e FROM EdiEmpfaenger e WHERE e.komponente = :k", EdiEmpfaenger.class);
-//		tqE.setParameter("k", selSystem);
-//		if (cache == CacheRefresh.TRUE) {
-//			tqE.setHint("javax.persistence.cache.storeMode", "REFRESH");
-//		}	
-//		ediKomponentenList.addAll(tqE.getResultList());
-//		log("readEdiListeforKomponete", "für " + selSystem.getName() + " " + 
-//			tqE.getResultList().size() + " EDI-Empfänger gelesen (Refresh=" + cache+ ")");
+		TypedQuery<EdiEmpfaenger> tqE = entityManager.createQuery(
+				"SELECT e FROM EdiEmpfaenger e WHERE e.komponente.ediSystem = :s", EdiEmpfaenger.class);
+		tqE.setParameter("s", selSystem);
+		if (cache == CacheRefresh.TRUE) {
+			tqE.setHint("javax.persistence.cache.storeMode", "REFRESH");
+		}	
+		ediKomponentenList.addAll(tqE.getResultList());
+		log("readEdiListeforKomponete", "für " + selSystem.getName() + " " + 
+			tqE.getResultList().size() + " EDI-Empfänger gelesen (Refresh=" + cache+ ")");
 	}
 
 	public final ObjectProperty<EdiSystem> ediSystemProperty() {
