@@ -13,6 +13,7 @@ import java.util.Map;
 
 
 
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -50,13 +51,16 @@ import javafx.util.StringConverter;
 
 
 
+
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
 
 
+
 import org.controlsfx.dialog.Dialog.Actions;
 import org.controlsfx.dialog.Dialogs;
+
 
 
 
@@ -109,8 +113,8 @@ public class EdiEintragController {
     @FXML private Button btnEmpfaenger2;
     @FXML private Button btnEmpfaenger3;
     
-    @FXML private ChoiceBox<String> ccbEmpfaenger2;
-    @FXML private ChoiceBox<String> ccbEmpfaenger3;
+    @FXML private ChoiceBox<String> cobEmpfaenger2;
+    @FXML private ChoiceBox<String> cobEmpfaenger3;
 
     
     private static Stage primaryStage = null;
@@ -396,13 +400,17 @@ public class EdiEintragController {
     	btnEmpfaenger1.disableProperty().bind(Bindings.not(senderIsSelected));
     	btnEmpfaenger2.disableProperty().bind(Bindings.not(buOb1Exist));
     	btnEmpfaenger3.disableProperty().bind(Bindings.not(buOb2Exist));
+    
     	cmbBuOb1.disableProperty().bind(Bindings.not(empfaenger1IsSelected));
     	cmbBuOb2.disableProperty().bind(Bindings.not(empfaenger2IsSelected));
     	cmbBuOb3.disableProperty().bind(Bindings.not(empfaenger3IsSelected));
     	
+    	
+    	cobEmpfaenger2.visibleProperty().bind(buOb1Exist);
     	btnEmpfaenger2.visibleProperty().bind(buOb1Exist);
     	cmbBuOb2.visibleProperty().bind(buOb1Exist);
 
+    	cobEmpfaenger3.visibleProperty().bind(buOb2Exist);
     	btnEmpfaenger3.visibleProperty().bind(buOb2Exist);
     	cmbBuOb3.visibleProperty().bind(buOb2Exist);
     	
@@ -603,6 +611,16 @@ public class EdiEintragController {
 //		return false;
 //	}
 	
+    @FXML
+    void actionEmpfaenger2loeschen(ActionEvent event) {
+    	log("actionEmpfaenger2loeschen","called");
+    }
+    
+    @FXML
+    void actionEmpfaenger3loeschen(ActionEvent event) {
+    	log("actionEmpfaenger3loeschen","called");
+    }
+    
     @FXML
     void ediEintragSpeichern(ActionEvent event) {
     	if (aktEdiEintragPruefen()==false)
@@ -812,6 +830,11 @@ public class EdiEintragController {
 		this.ediEintrag.set(ediEintrag);
 	}
 
+	private void log(String methode, String message) {
+		String className = this.getClass().getName().substring(16);
+		System.out.println(className + "." + methode + "(): " + message); 
+	}
+    
     private void checkFieldFromView() {
         assert paneAnbindung != null : "fx:id=\"paneAnbindung\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
         assert paneSzenario != null : "fx:id=\"paneSzenario\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
@@ -864,9 +887,9 @@ public class EdiEintragController {
         assert btnSender != null : "fx:id=\"btnSender\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
         assert dpProduktivBis != null : "fx:id=\"dpProduktivBis\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
         assert cmbBuOb1 != null : "fx:id=\"cmbBuOb1\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert ccbEmpfaenger3 != null : "fx:id=\"ccbEmpfaenger3\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert cobEmpfaenger3 != null : "fx:id=\"chbEmpfaenger3\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
         assert btnEdiEintragSpeichern != null : "fx:id=\"btnEdiEintragSpeichern\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert ccbEmpfaenger2 != null : "fx:id=\"ccbEmpfaenger2\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert cobEmpfaenger2 != null : "fx:id=\"chbEmpfaenger2\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
 
         
     }

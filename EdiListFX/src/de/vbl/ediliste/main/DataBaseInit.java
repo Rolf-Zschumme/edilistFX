@@ -42,11 +42,12 @@ public class DataBaseInit {
 			
 			ta.begin();
 
-			for (int i=2; i<3 ; ++i) {
+			for (int i=4; i<5 ; ++i) {
 				switch(i) {
 					case 1: 	generateTestObjekts();
 					case 2:		generateRealObjekts();
 					case 3: 	generateGeschaeftobjekte();
+					case 4: 	generateSzenarios();
 				}
 			}
 
@@ -83,6 +84,7 @@ public class DataBaseInit {
 			
 	}
 	
+
 	private static String toString(Integer i, Integer minlen) {
 		String ret = Integer.toString(i);
 		while(ret.length() < minlen)
@@ -231,6 +233,13 @@ public class DataBaseInit {
 		em.persist(newKonfiguration(null, "CS_RC_SAS_BNP__Filetransfer"));
 	}
 	
+	private static void generateSzenarios() {
+		Integration integration = null;
+		
+		integration = newIntegration("Materialbeschaffung (MM)");
+		em.persist(integration);
+		em.persist(newKonfiguration(integration, "CS_e-Procurement_Integration_Lieferanten"));
+	}
 	
 	private static void generateGeschaeftobjekte() {
 		em.persist(new GeschaeftsObjekt("ZGP-Stammdaten"));

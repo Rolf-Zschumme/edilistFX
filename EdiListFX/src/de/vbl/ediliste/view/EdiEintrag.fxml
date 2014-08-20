@@ -4,11 +4,10 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
 <AnchorPane fx:id="ediEintrag" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.ediliste.controller.EdiEintragController">
 	<children>
-		<VBox fx:id="eintragVBox" prefHeight="797.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+		<VBox fx:id="eintragVBox" maxHeight="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 			<children>
 				<ToolBar>
 					<items>
@@ -62,7 +61,7 @@
 						</AnchorPane>
 					</content>
 				</TitledPane>
-            <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+            <AnchorPane maxHeight="330.0" maxWidth="1.7976931348623157E308">
                <children>
                   <TabPane fx:id="tabPaneEdiNr" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <tabs>
@@ -160,11 +159,23 @@
                               													<GridPane.margin>
                               														<Insets />
                               													</GridPane.margin>
+<contextMenu><ContextMenu>
+  <items>
+    <MenuItem mnemonicParsing="false" onAction="#actionEmpfaenger2loeschen" text="Empfänger löschen" />
+  </items>
+</ContextMenu>
+</contextMenu>
                               												</Button>
                               												<Button fx:id="btnEmpfaenger3" alignment="CENTER" layoutX="-52.100006103515625" layoutY="14.899993896484375" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#empfaengerButton3" visible="false" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                               													<GridPane.margin>
                               														<Insets />
                               													</GridPane.margin>
+<contextMenu><ContextMenu>
+  <items>
+    <MenuItem mnemonicParsing="false" onAction="#actionEmpfaenger3loeschen" text="Empfänger löschen" />
+  </items>
+</ContextMenu>
+</contextMenu>
                               												</Button>
                               												<ComboBox fx:id="cmbBuOb1" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="1">
                               													<GridPane.margin>
@@ -173,8 +184,14 @@
                               												</ComboBox>
                               												<ComboBox fx:id="cmbBuOb2" editable="true" layoutX="515.0" layoutY="35.0" maxWidth="1.7976931348623157E308" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="2" />
                               												<ComboBox fx:id="cmbBuOb3" editable="true" layoutX="515.0" layoutY="68.0" maxWidth="1.7976931348623157E308" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-                                                <ChoiceBox fx:id="ccbEmpfaenger2" prefHeight="27.0" prefWidth="20.0" style="-fx-background-color: ddd;" visible="false" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
-                                                <ChoiceBox fx:id="ccbEmpfaenger3" prefHeight="27.0" prefWidth="20.0" style="-fx-background-color: ddd;" visible="false" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
+                                                <ChoiceBox fx:id="cobEmpfaenger2" prefHeight="25.0" prefWidth="32.0" style="-fx-background-color: ddd;" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
+<contextMenu><ContextMenu>
+  <items>
+    <MenuItem mnemonicParsing="false" text="Unspecified Action" />
+  </items>
+</ContextMenu>
+</contextMenu></ChoiceBox>
+                                                <ChoiceBox fx:id="cobEmpfaenger3" prefHeight="27.0" prefWidth="20.0" style="-fx-background-color: ddd;" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
                               											</children>
                               											<padding>
                               												<Insets bottom="5.0" left="5.0" right="8.0" top="5.0" />

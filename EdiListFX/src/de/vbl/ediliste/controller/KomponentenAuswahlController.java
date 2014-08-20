@@ -22,7 +22,6 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
@@ -33,11 +32,16 @@ import de.vbl.ediliste.model.EdiKomponente;
 import de.vbl.ediliste.model.EdiPartner;
 import de.vbl.ediliste.model.EdiSystem;
 
+/**
+ * @author p01023
+ * 
+ *	20.08.2014 RZ EntityManager wird stets neu erstellt -> aktuelle Tabelleninhalte
+ */
 public class KomponentenAuswahlController {
 	public static enum KomponentenTyp {	SENDER, RECEIVER };
 	private static final String APPL_TITLE = "EdiListe";
 	private static final String PERSISTENCE_UNIT_NAME = "EdiListFX";
-	private static EntityManager em; 
+	private EntityManager em; 
     
     @FXML private ResourceBundle resources;
 
@@ -105,7 +109,7 @@ public class KomponentenAuswahlController {
 		komponentenList  = FXCollections.observableArrayList();
     	
     	checkFieldFromView();
-        setupEntityManager();
+		em = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME).createEntityManager();
 
         readPartnerData();
 		setupBindings();
@@ -255,12 +259,12 @@ public class KomponentenAuswahlController {
     	);
     }	
     	
-    private void setupEntityManager() {
-    	if (em == null) {
-    		EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-    		em = factory.createEntityManager();
-    	}	
-    }
+//    private void setupEntityManager() {
+//    	if (em == null) {
+//    		EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+//    		em = factory.createEntityManager();
+//    	}	
+//    }
     
     @FXML
     void okPressed(ActionEvent event) {
@@ -397,10 +401,10 @@ public class KomponentenAuswahlController {
 					.showTextInput(name);
     		if (name == null)	
     			break;
-    		if (name.length() < 3) {
+    		if (name.length() < 2) {
     			Dialogs.create().owner(stage).title(APPL_TITLE)
 					.masthead("Korrektur erforderlich")
-					.message("Der Komponenten-Name muß mindestens 3 Zeichen lang sein")
+					.message("Der Komponenten-Name muß mindestens 2 Zeichen lang sein")
 					.showWarning();
     			continue;
     		}
