@@ -155,7 +155,7 @@
                               														<Insets />
                               													</GridPane.margin>
                               												</Button>
-                              												<Button fx:id="btnEmpfaenger2" alignment="CENTER" layoutX="-46.600006103515625" layoutY="-1.600006103515625" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#empfaengerButton2" visible="false" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                              												<Button fx:id="btnEmpfaenger2" alignment="CENTER" disable="true" layoutX="-46.600006103515625" layoutY="-1.600006103515625" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#empfaengerButton2" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                               													<GridPane.margin>
                               														<Insets />
                               													</GridPane.margin>
@@ -166,7 +166,7 @@
 </ContextMenu>
 </contextMenu>
                               												</Button>
-                              												<Button fx:id="btnEmpfaenger3" alignment="CENTER" layoutX="-52.100006103515625" layoutY="14.899993896484375" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#empfaengerButton3" visible="false" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                              												<Button fx:id="btnEmpfaenger3" alignment="CENTER" disable="true" layoutX="-52.100006103515625" layoutY="14.899993896484375" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#empfaengerButton3" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                               													<GridPane.margin>
                               														<Insets />
                               													</GridPane.margin>
@@ -182,16 +182,18 @@
                               														<Insets />
                               													</GridPane.margin>
                               												</ComboBox>
-                              												<ComboBox fx:id="cmbBuOb2" editable="true" layoutX="515.0" layoutY="35.0" maxWidth="1.7976931348623157E308" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                              												<ComboBox fx:id="cmbBuOb3" editable="true" layoutX="515.0" layoutY="68.0" maxWidth="1.7976931348623157E308" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-                                                <ChoiceBox fx:id="cobEmpfaenger2" prefHeight="25.0" prefWidth="32.0" style="-fx-background-color: ddd;" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
-<contextMenu><ContextMenu>
-  <items>
-    <MenuItem mnemonicParsing="false" text="Unspecified Action" />
-  </items>
-</ContextMenu>
-</contextMenu></ChoiceBox>
-                                                <ChoiceBox fx:id="cobEmpfaenger3" prefHeight="27.0" prefWidth="20.0" style="-fx-background-color: ddd;" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
+                              												<ComboBox fx:id="cmbBuOb2" disable="true" editable="true" layoutX="515.0" layoutY="35.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                              												<ComboBox fx:id="cmbBuOb3" disable="true" editable="true" layoutX="515.0" layoutY="68.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                                                <MenuButton fx:id="mbtEmpfaenger2" minWidth="22.0" mnemonicParsing="false" prefWidth="22.0" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
+                                                  <items>
+                                                    <MenuItem mnemonicParsing="false" onAction="#actionEmpfaenger2loeschen" text="Empfänger entfernen" />
+                                                  </items>
+                                                </MenuButton>
+                                                <MenuButton fx:id="mbtEmpfaenger3" minWidth="22.0" mnemonicParsing="false" prefWidth="22.0" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
+                                                   <items>
+                                                      <MenuItem fx:id="mniEmpfaengerZeile3" mnemonicParsing="false" onAction="#actionEmpfaenger3loeschen" text="Empfänger entfernen" />
+                                                   </items>
+                                                </MenuButton>
                               											</children>
                               											<padding>
                               												<Insets bottom="5.0" left="5.0" right="8.0" top="5.0" />

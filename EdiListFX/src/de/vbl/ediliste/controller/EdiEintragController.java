@@ -11,9 +11,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-
-
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -29,15 +26,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListCell;
+import javafx.scene.control.MenuButton;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-//import javafx.scene.control.Dialogs;
-//import javafx.scene.control.Dialogs.DialogOptions;
-//import javafx.scene.control.Dialogs.DialogResponse;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
@@ -49,20 +43,11 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
 
-
-
-
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
-
-
-
 import org.controlsfx.dialog.Dialog.Actions;
 import org.controlsfx.dialog.Dialogs;
-
-
-
 
 import de.vbl.ediliste.controller.KomponentenAuswahlController.KomponentenTyp;
 import de.vbl.ediliste.model.EdiEintrag;
@@ -113,9 +98,8 @@ public class EdiEintragController {
     @FXML private Button btnEmpfaenger2;
     @FXML private Button btnEmpfaenger3;
     
-    @FXML private ChoiceBox<String> cobEmpfaenger2;
-    @FXML private ChoiceBox<String> cobEmpfaenger3;
-
+    @FXML private MenuButton mbtEmpfaenger2;
+    @FXML private MenuButton mbtEmpfaenger3;
     
     private static Stage primaryStage = null;
     private static String applName = null;
@@ -405,14 +389,14 @@ public class EdiEintragController {
     	cmbBuOb2.disableProperty().bind(Bindings.not(empfaenger2IsSelected));
     	cmbBuOb3.disableProperty().bind(Bindings.not(empfaenger3IsSelected));
     	
-    	
-    	cobEmpfaenger2.visibleProperty().bind(buOb1Exist);
     	btnEmpfaenger2.visibleProperty().bind(buOb1Exist);
     	cmbBuOb2.visibleProperty().bind(buOb1Exist);
 
-    	cobEmpfaenger3.visibleProperty().bind(buOb2Exist);
+    	mbtEmpfaenger2.visibleProperty().bind(buOb2Exist);
     	btnEmpfaenger3.visibleProperty().bind(buOb2Exist);
     	cmbBuOb3.visibleProperty().bind(buOb2Exist);
+    	
+    	mbtEmpfaenger3.visibleProperty().bind(buOb3Exist);
     	
     	dpProduktivSeit.setShowWeekNumbers(true);
     	dpProduktivBis.setShowWeekNumbers(true);
@@ -887,11 +871,9 @@ public class EdiEintragController {
         assert btnSender != null : "fx:id=\"btnSender\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
         assert dpProduktivBis != null : "fx:id=\"dpProduktivBis\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
         assert cmbBuOb1 != null : "fx:id=\"cmbBuOb1\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert cobEmpfaenger3 != null : "fx:id=\"chbEmpfaenger3\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert mbtEmpfaenger2 != null : "fx:id=\"mbtEmpfaenger2\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
         assert btnEdiEintragSpeichern != null : "fx:id=\"btnEdiEintragSpeichern\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert cobEmpfaenger2 != null : "fx:id=\"chbEmpfaenger2\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-
-        
+        assert mbtEmpfaenger3 != null : "fx:id=\"mbtEmpfaenger3\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
     }
 
     
