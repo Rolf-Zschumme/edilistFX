@@ -775,18 +775,21 @@ public class EdiEintragController {
 
     @FXML
     void actionEmpfaenger2loeschen(ActionEvent event) {
-    	log("actionEmpfaenger2loeschen","called");
     	if (aktEmpfaenger[2]!=null) {
     		aktEmpfaenger[1] = aktEmpfaenger[2];
     		aktEmpfaenger[2] = null;
-    		busObjName[1] = busObjName[2]; 
-			btnEmpfaenger2.setText(aktEmpfaenger[1].getKomponente().getFullname());
-// todo
-//			cmbBuOb2.getSelectionModel().select(aktEmpfaenger[1].getGeschaeftsObjekt());
+    		btnEmpfaenger2.setText(aktEmpfaenger[1].getKomponente().getFullname());
+    		
+			busObjName[1] = businessObjectMap.get(busObjName[2].toUpperCase()).getName();
+			busObjName[2] = null;
+			cmbBuOb2.getSelectionModel().select(busObjName[1]);
+			
 	    	btnEmpfaenger3.setText("");
+	    	cmbBuOb3.getSelectionModel().select(null);
     		empfaenger3IsSelected.set(false);
     		buOb3Exist.set(false);
-    	} else {
+    	} 
+    	else {
     		aktEmpfaenger[1] = null;
 	    	btnEmpfaenger2.setText("");
 	    	cmbBuOb2.getSelectionModel().select(null);
@@ -798,11 +801,10 @@ public class EdiEintragController {
     
     @FXML
     void actionEmpfaenger3loeschen(ActionEvent event) {
-    	log("actionEmpfaenger3loeschen","called");
     	aktEmpfaenger[2] = null;
     	btnEmpfaenger3.setText("");
-		empfaenger3IsSelected.set(false);
 		cmbBuOb3.getSelectionModel().select(null);
+		empfaenger3IsSelected.set(false);
 		buOb3Exist.set(false);
     	ediEintragIsChanged.set(true);
     }

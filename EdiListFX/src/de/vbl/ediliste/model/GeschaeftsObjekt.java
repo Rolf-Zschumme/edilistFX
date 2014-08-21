@@ -63,8 +63,9 @@ public class GeschaeftsObjekt implements Serializable {
 	    this.ediEmpfaenger = param;
 	}
    
+	
 	public IntegerProperty anzVerwendungenProperty () {
-		anzVerwendungen.set(ediEmpfaenger==null ? 0 :ediEmpfaenger.size());
+		anzVerwendungen.set(ediEmpfaenger==null ? 0 : ediEmpfaenger.size());
 		return anzVerwendungen;
 	}
 }

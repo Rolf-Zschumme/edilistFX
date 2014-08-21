@@ -42,7 +42,7 @@ public class DataBaseInit {
 			
 			ta.begin();
 
-			for (int i=4; i<5 ; ++i) {
+			for (int i=2; i<=2 ; ++i) {
 				switch(i) {
 					case 1: 	generateTestObjekts();
 					case 2:		generateRealObjekts();
@@ -242,6 +242,7 @@ public class DataBaseInit {
 	}
 	
 	private static void generateGeschaeftobjekte() {
+		System.out.println("generateGeschaeftobjekte()");
 		em.persist(new GeschaeftsObjekt("ZGP-Stammdaten"));
 		em.persist(new GeschaeftsObjekt("ZGP-Beziehungen"));
 		em.persist(new GeschaeftsObjekt("Zahlungsanweisung"));
