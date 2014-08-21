@@ -596,16 +596,6 @@ public class EdiEintragController {
 //	}
 	
     @FXML
-    void actionEmpfaenger2loeschen(ActionEvent event) {
-    	log("actionEmpfaenger2loeschen","called");
-    }
-    
-    @FXML
-    void actionEmpfaenger3loeschen(ActionEvent event) {
-    	log("actionEmpfaenger3loeschen","called");
-    }
-    
-    @FXML
     void ediEintragSpeichern(ActionEvent event) {
     	if (aktEdiEintragPruefen()==false)
     		return;
@@ -781,6 +771,40 @@ public class EdiEintragController {
     		}
     	}
     	return ret;
+    }
+
+    @FXML
+    void actionEmpfaenger2loeschen(ActionEvent event) {
+    	log("actionEmpfaenger2loeschen","called");
+    	if (aktEmpfaenger[2]!=null) {
+    		aktEmpfaenger[1] = aktEmpfaenger[2];
+    		aktEmpfaenger[2] = null;
+    		busObjName[1] = busObjName[2]; 
+			btnEmpfaenger2.setText(aktEmpfaenger[1].getKomponente().getFullname());
+// todo
+//			cmbBuOb2.getSelectionModel().select(aktEmpfaenger[1].getGeschaeftsObjekt());
+	    	btnEmpfaenger3.setText("");
+    		empfaenger3IsSelected.set(false);
+    		buOb3Exist.set(false);
+    	} else {
+    		aktEmpfaenger[1] = null;
+	    	btnEmpfaenger2.setText("");
+	    	cmbBuOb2.getSelectionModel().select(null);
+    		empfaenger2IsSelected.set(false);
+    		buOb2Exist.set(false);
+    	}
+    	ediEintragIsChanged.set(true);
+    }
+    
+    @FXML
+    void actionEmpfaenger3loeschen(ActionEvent event) {
+    	log("actionEmpfaenger3loeschen","called");
+    	aktEmpfaenger[2] = null;
+    	btnEmpfaenger3.setText("");
+		empfaenger3IsSelected.set(false);
+		cmbBuOb3.getSelectionModel().select(null);
+		buOb3Exist.set(false);
+    	ediEintragIsChanged.set(true);
     }
     
     private FXMLLoader loadKomponentenAuswahl(Stage dialog, int xOffset, int yOffset) {
