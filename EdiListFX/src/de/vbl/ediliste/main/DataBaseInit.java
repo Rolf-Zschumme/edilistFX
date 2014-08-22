@@ -58,13 +58,8 @@ public class DataBaseInit {
 			System.out.println("Daten erfolgreich in DB eingetragen");
 						
 		} catch (RuntimeException e) {
-			if (ta != null) {
-				System.out.println("transaction.isActive : " + ta.isActive() );
-			}
 			if (ta != null && ta.isActive()) {
-				System.out.println("Rollback wird durchgeführt \n" + ta.toString() );
-				ta.rollback();  // eigentlich nicht notwendig da implizit
-				System.out.println("Rollback wurde durchgeführt \n" + ta.toString() );
+				System.out.println("Rollback wird durchgeführt");
 			}
 			e.printStackTrace();
 		}
@@ -204,8 +199,12 @@ public class DataBaseInit {
 		partner = new EdiPartner("Bafin");
 		em.persist(partner);
 
-		// Integrationen und Konfigurationen 
 		
+	}
+	
+	// Integrationen und Konfigurationen
+	
+	private static void generateSzenarios() {
 		Integration integration = null;
 
 		integration = newIntegration("ANW Meldungsverarbeitung");
@@ -227,22 +226,21 @@ public class DataBaseInit {
 		em.persist(integration);
 		em.persist(newKonfiguration(integration, "CS_ISIV_Koexistenz"));
 
+		integration = newIntegration("Materialbeschaffung (MM)");
+		em.persist(integration);
+		em.persist(newKonfiguration(integration, "CS_e-Procurement_Integration_Lieferanten"));
 		
 		em.persist(newKonfiguration(null, "CS_e-Gov_Portal_Integration"));
 		em.persist(newKonfiguration(null, "CS_FS-CD_eAvis_Beitragseingang__RZ_Arbeitgeber"));
 		em.persist(newKonfiguration(null, "CS_RC_SAS_BNP__Filetransfer"));
-	}
-	
-	private static void generateSzenarios() {
-		Integration integration = null;
 		
-		integration = newIntegration("Materialbeschaffung (MM)");
+		integration = newIntegration("Zulage-System");
 		em.persist(integration);
-		em.persist(newKonfiguration(integration, "CS_e-Procurement_Integration_Lieferanten"));
+		em.persist(newKonfiguration(integration, "IS_ZUL_ZUSY_SAP"));
+		em.persist(newKonfiguration(integration, "IS_ZUL_ZUSY_KOEX"));
 	}
 	
 	private static void generateGeschaeftobjekte() {
-		System.out.println("generateGeschaeftobjekte()");
 		em.persist(new GeschaeftsObjekt("ZGP-Stammdaten"));
 		em.persist(new GeschaeftsObjekt("ZGP-Beziehungen"));
 		em.persist(new GeschaeftsObjekt("Zahlungsanweisung"));
@@ -250,6 +248,12 @@ public class DataBaseInit {
 		em.persist(new GeschaeftsObjekt("ANW-Meldungen"));
 		em.persist(new GeschaeftsObjekt("ANW-Meldungsdokumente"));
 		em.persist(new GeschaeftsObjekt("ZfA-Meldungen"));
+		em.persist(new GeschaeftsObjekt("MM-Bestellanfrage"));
+		em.persist(new GeschaeftsObjekt("MM-Bestellung"));
+		em.persist(new GeschaeftsObjekt("MM-Bestelländerung"));
+		em.persist(new GeschaeftsObjekt("MM-Materialstammdaten"));
+		em.persist(new GeschaeftsObjekt("MM-Einkaufsinfosätze"));
+		System.out.println("12 Geschaeftobjekte() angelegt");
 	}
 	
 	private static Integration newIntegration (String integrationName) {
@@ -260,6 +264,12 @@ public class DataBaseInit {
 
 	private static Konfiguration newKonfiguration( Integration integration,	String konfigName) 
 	{
+		System.out.print("Edi_Konfiguration anlegen ");
+		if (integration != null) {
+			System.out.print("für \"" + integration.getName() + "\" ");
+		}
+		System.out.println("mit Name \"" + konfigName + "\"");
+		
 		Konfiguration konfiguration = new Konfiguration();
 		konfiguration.setName(konfigName);
 		konfiguration.setIntegration(integration);

@@ -12,25 +12,28 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
 
 import de.vbl.ediliste.model.EdiKomponente;
 import de.vbl.ediliste.model.EdiPartner;
 import de.vbl.ediliste.model.EdiSystem;
+import de.vbl.ediliste.model.GeschaeftsObjekt;
 
 public class ExportToExcel {
 	private static final String PARTNER_SHEET = "Partner";
 	private static final String SYSTEM_SHEET = "Systeme";
 	private static final String KOMPONENTEN_SHEET = "Komponenten";
+	private static final String G_OBJEKT_SHEET = "Geschäftsobjekt";
 
 	private EntityManager em;
 	
-	Workbook wb;
+	XSSFWorkbook wb;
 	
 	public ExportToExcel(EntityManager em) {
 		this.em = em;
 		wb = new XSSFWorkbook(); 
+    	XSSFFormulaEvaluator.evaluateAllFormulaCells(wb);
 	}
 
 	public int write(File file) throws IOException {
@@ -126,6 +129,25 @@ public class ExportToExcel {
     	k_Sheet.setColumnWidth(2, s_MaxLen);
     	k_Sheet.setColumnWidth(3, p_MaxLen);
     	k_Sheet.setColumnWidth(4, p_MaxLen + s_MaxLen + k_MaxLen);
+
+    	
+    	Sheet g_Sheet = wb.createSheet(G_OBJEKT_SHEET);
+    	row = g_Sheet.createRow(0);
+		row.setHeightInPoints(20);
+		createCell(row, s=0, styleHeader, "lfd-Nr.");
+		createCell(row, ++s, styleHeader, "Geschäftsobjet");
+		++anz_zeilen;
+		
+    	query = em.createQuery( "SELECT g FROM GeschaeftsObjekt g ORDER BY g.name",GeschaeftsObjekt.class);
+    	int g_znr = 0;
+    	for (Object g : query.getResultList()) {
+    		GeschaeftsObjekt gObjekt = (GeschaeftsObjekt) g;
+    		row =  g_Sheet.createRow(++g_znr);
+    		++anz_zeilen;
+    		createCell(row, s=0, styleNormal, g_znr); 
+    		createCell(row, ++s, styleNormal, gObjekt.getName());
+    	}
+    	for (s=0; s<2; ++s) g_Sheet.autoSizeColumn(s);
     	
 		FileOutputStream out = new FileOutputStream(file);
 		wb.write(out);

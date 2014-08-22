@@ -443,15 +443,19 @@ public class EdiMainController {
     	if (file != null) {
 			initialExportFilePath = file.getParent();
 			initialExportFileName = file.getName();
+			Cursor aktCursor = primaryStage.getScene().getCursor();
+			primaryStage.getScene().setCursor(Cursor.WAIT);
     		ExportToExcel export = new ExportToExcel(entityManager);
     		try {
     			int lines = export.write(file);
+    			primaryStage.getScene().setCursor(aktCursor);
     			Dialogs.create().owner(applName).title(applName)
     					.masthead(null)
     					.message(lines + " Zeilen in der Datei " + file.getName() + 
     							" im Verzeichnis " + file.getParent() +" gespeichert")
     					.showInformation();		
 			} catch (IOException e1) {
+				primaryStage.getScene().setCursor(aktCursor);
 				Dialogs.create().owner(primaryStage).title(applName)
 						.masthead("FEHLER")
 						.message("Fehler beim Speichern der Exportdatei")

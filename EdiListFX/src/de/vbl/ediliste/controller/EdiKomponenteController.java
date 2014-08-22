@@ -40,7 +40,7 @@ public class EdiKomponenteController {
 	private static EdiMainController mainCtr;
 	private static EntityManager entityManager;
 	private final ObjectProperty<EdiKomponente> edikomponente;
-	private final ObservableList<EdiEmpfaenger> ediKomponenteList = FXCollections.observableArrayList();
+	private ObservableList<EdiEmpfaenger> ediKomponenteList = FXCollections.observableArrayList();
 	private EdiKomponente aktKomponente = null;
 	
 	@FXML private ResourceBundle resources;
@@ -83,8 +83,8 @@ public class EdiKomponenteController {
 				log("ChangeListener<EdiKomponente>",
 					((oldKomponente==null) ? "null" : oldKomponente.getFullname()) + " -> " 
 				  + ((newKomponente==null) ? "null" : newKomponente.getFullname()) );
+				ediKomponenteList.clear();
 				if (oldKomponente != null && newKomponente == null) {
-						ediKomponenteList.clear();
 						tfBezeichnung.setText("");
 						taBeschreibung.setText("");
 				}
@@ -97,9 +97,9 @@ public class EdiKomponenteController {
 			}
 		});
 		
+		tvVerwendungen.setItems(ediKomponenteList);
 		btnLoeschen.disableProperty().bind(Bindings.isNotEmpty(ediKomponenteList));
 		
-		tvVerwendungen.setItems(ediKomponenteList);
 		tcEdiNr.setCellValueFactory(cellData -> 
 					Bindings.format(EdiEintrag.FORMAT_EDINR, cellData.getValue().ediNrProperty()));
 		
@@ -113,6 +113,8 @@ public class EdiKomponenteController {
 						setText(null); 
 					else {
 						setText(sender);
+						log("tcSender.updateItem", "aktkombo:" + aktKomponente.getFullname() + 
+								" sender:" + sender);
 						if (sender.equals(aktKomponente.getFullname()))
 							setFont(Font.font(null, FontWeight.BOLD, getFont().getSize()));
 						else
@@ -132,6 +134,8 @@ public class EdiKomponenteController {
 						setText(null); 
 					else {
 						setText(empf);
+						log("tcEmpfaengeItem","aktkombo:" + aktKomponente.getFullname() + 
+								" emfpaenger:" + empf);
 						if (empf.equals(aktKomponente.getFullname()))
 							setFont(Font.font(null, FontWeight.BOLD, getFont().getSize()));
 						else
@@ -251,6 +255,19 @@ public class EdiKomponenteController {
 	
 	private void readEdiListeforKomponete( EdiKomponente selKomponente, CacheRefresh cache) {
 		ediKomponenteList.clear();
+//		tvVerwendungen.setItems(ediKomponenteListLeer);
+//		ediKomponenteListLeer.clear();
+//		EdiEmpfaenger dummyE = new EdiEmpfaenger();
+//		EdiKomponente dummyK = new EdiKomponente();
+//		EdiEintrag dummyEE = new EdiEintrag();
+//		dummyEE.setEdiNr(0);
+//		dummyK.setName("dummy");
+//		dummyE.setKomponente(aktKomponente);
+//		dummyE.setEdiEintrag(dummyEE);
+//		ediKomponenteListLeer.add(dummyE);
+//		ediKomponenteListLeer.remove(dummyE);
+//		tvVerwendungen.setItems(ediKomponenteList);
+		
 		/* 1. lese alle EdiEinträge mit Sender = selekierter Komponente 
 		 * 		-> zeige jeweils alle zugehörigen Empfänger, falls kein Empfänger vorhanden dummy erzeugen
 		*/
@@ -284,7 +301,11 @@ public class EdiKomponenteController {
 		if (cache == CacheRefresh.TRUE) {
 			tqE.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		}	
-		ediKomponenteList.addAll(tqE.getResultList());
+//		ediKomponenteList.addAll(tqE.getResultList());
+		for(EdiEmpfaenger e : tqE.getResultList() ) {
+			log("readEdiListeforKomponete", "Empfaenger:" + e.getKomponente().getFullname() + " add");
+			ediKomponenteList.add(e);
+		}
 		log("readEdiListeforKomponete", "für " + selKomponente.getName() + " " + 
 			tqE.getResultList().size() + " EDI-Empfänger gelesen (Refresh=" + cache+ ")");
 	}

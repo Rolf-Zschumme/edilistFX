@@ -138,7 +138,7 @@ public class EdiEintragController {
 
     @FXML 
     void initialize() {
-    	System.out.println("EdiEintragController.initialize() called");
+    	log("initialize","called");
     	checkFieldFromView();
     	
     	ediEintrag.addListener(new ChangeListener<EdiEintrag>() {
@@ -222,7 +222,7 @@ public class EdiEintragController {
 					if (item == null || empty) {
 						setText(null);
 					} else {
-						System.out.println("Integration setCellFactory -" + item.getName());
+						log("cmbIntegration.setCellFactory","updateItem() call with item " + item.getName());
 						setText(item.getName());
 					}
 				}
@@ -276,7 +276,6 @@ public class EdiEintragController {
 		});
 		cmbKonfiguration.setOnAction((event) -> {
 			Konfiguration newKonfiguration = cmbKonfiguration.getSelectionModel().getSelectedItem();
-//			System.out.println("cmbKonfiguration setOnAction()");
 			if (newKonfiguration != aktEdi.getKonfiguration()) {
 				if (aktEdi.getKonfiguration() != null) {
 					aktEdi.getKonfiguration().getEdiEintrag().remove(aktEdi);
@@ -503,7 +502,7 @@ public class EdiEintragController {
 //		Iterator<Konfiguration> iterKonfig = tq.getResultList().iterator();
 //		while (iterKonfig.hasNext()) {
 //			Konfiguration k = iterKonfig.next();
-//			System.out.println("readKonfiguration " + k + " \t" + k.getName() + " mit " + k.getEdiEintrag().size() + " EdiNrn");
+//			log("readCmBKonfigurationData",k.getName() + " mit " + k.getEdiEintrag().size() + " EdiNrn");
 //		}
 	} 
 	
@@ -608,7 +607,7 @@ public class EdiEintragController {
 					aktEdi.getEdiEmpfaenger().add(empf);
 					empf.setEdiEintrag(aktEdi);
 					if (empf.getKomponente().getId() == 0L) {
-						System.out.println("HINWEIS: EdiEintragController findet Komponente ohne ID ???");
+						log("ediEintragSpeichern","HINWEIS: Komponente ohne ID gefunden!");
 						entityManager.persist(empf);
 					}
 				}	
@@ -716,7 +715,7 @@ public class EdiEintragController {
     	    if (aktSenderId != selKomponentenID ) {
     	    	EdiKomponente sender = entityManager.find(EdiKomponente.class, selKomponentenID);
     	    	aktEdi.setEdiKomponente(sender); 
-    	    	System.out.println("aktEdi.senderName :" + aktEdi.senderNameProperty().get());
+    	    	log("senderButton","senderName :" + aktEdi.senderNameProperty().get());
     	    	btnSender.setText(sender.getFullname());
     	    	ediEintragIsChanged.set(true);
     	    	senderIsSelected.set(true);
