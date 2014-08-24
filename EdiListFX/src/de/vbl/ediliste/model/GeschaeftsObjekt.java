@@ -8,11 +8,11 @@ import java.util.Collection;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.Column;
 
 /**
  * Entity implementation class for Entity: GeschaeftsObjekt
@@ -29,12 +29,12 @@ public class GeschaeftsObjekt implements Serializable {
 	private String name;
 	private Collection<EdiEmpfaenger> ediEmpfaenger;
 	private IntegerProperty anzVerwendungen;
-
+	
 	public GeschaeftsObjekt() {
-		super();
 		anzVerwendungen = new SimpleIntegerProperty();
 	}   
 	public GeschaeftsObjekt(String name) {
+		this();
 		this.name = name;
 	}
 	@Id    
@@ -62,10 +62,12 @@ public class GeschaeftsObjekt implements Serializable {
 	public void setEdiEmpfaenger(Collection<EdiEmpfaenger> param) {
 	    this.ediEmpfaenger = param;
 	}
-   
 	
 	public IntegerProperty anzVerwendungenProperty () {
-		anzVerwendungen.set(ediEmpfaenger==null ? 0 : ediEmpfaenger.size());
+		if (this.ediEmpfaenger != null) {
+			anzVerwendungen.set(ediEmpfaenger.size());
+		}
+//		anzVerwendungen.set(ediEmpfaenger==null ? 0 : ediEmpfaenger.size());
 		return anzVerwendungen;
 	}
 }

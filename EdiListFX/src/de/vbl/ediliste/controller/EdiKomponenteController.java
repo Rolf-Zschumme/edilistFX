@@ -83,10 +83,10 @@ public class EdiKomponenteController {
 				log("ChangeListener<EdiKomponente>",
 					((oldKomponente==null) ? "null" : oldKomponente.getFullname()) + " -> " 
 				  + ((newKomponente==null) ? "null" : newKomponente.getFullname()) );
-				ediKomponenteList.clear();
 				if (oldKomponente != null && newKomponente == null) {
-						tfBezeichnung.setText("");
-						taBeschreibung.setText("");
+					ediKomponenteList.clear();
+					tfBezeichnung.setText("");
+					taBeschreibung.setText("");
 				}
 				if (newKomponente != null) {
 					aktKomponente = newKomponente;
@@ -98,12 +98,21 @@ public class EdiKomponenteController {
 		});
 		
 		tvVerwendungen.setItems(ediKomponenteList);
+		
+		tvVerwendungen.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<EdiEmpfaenger>() {
+			@Override
+			public void changed (ObservableValue<? extends EdiEmpfaenger> ov, EdiEmpfaenger oldValue, EdiEmpfaenger newValue) {
+				log("tvVerwendungen.select.changed" ,"newValue" + newValue);
+			}
+		});
+		
 		btnLoeschen.disableProperty().bind(Bindings.isNotEmpty(ediKomponenteList));
 		
 		tcEdiNr.setCellValueFactory(cellData -> 
 					Bindings.format(EdiEintrag.FORMAT_EDINR, cellData.getValue().ediNrProperty()));
-		
+
 		tcSender.setCellValueFactory(cellData -> cellData.getValue().senderNameProperty());
+		
 		tcSender.setCellFactory(column -> {
 			return new TableCell<EdiEmpfaenger, String>() {
 				@Override
@@ -113,8 +122,8 @@ public class EdiKomponenteController {
 						setText(null); 
 					else {
 						setText(sender);
-						log("tcSender.updateItem", "aktkombo:" + aktKomponente.getFullname() + 
-								" sender:" + sender);
+//						log("tcSender.updateItem", "aktkombo:" + aktKomponente.getFullname() + 
+//								" sender:" + sender);
 						if (sender.equals(aktKomponente.getFullname()))
 							setFont(Font.font(null, FontWeight.BOLD, getFont().getSize()));
 						else
@@ -125,6 +134,7 @@ public class EdiKomponenteController {
 		});
 		
 		tcEmpfaenger.setCellValueFactory(cellData -> cellData.getValue().empfaengerNameProperty());
+
 		tcEmpfaenger.setCellFactory(column -> {
 			return new TableCell<EdiEmpfaenger, String>() {
 				@Override
@@ -134,8 +144,8 @@ public class EdiKomponenteController {
 						setText(null); 
 					else {
 						setText(empf);
-						log("tcEmpfaengeItem","aktkombo:" + aktKomponente.getFullname() + 
-								" emfpaenger:" + empf);
+//						log("tcEmpfaengeItem","aktkombo:" + aktKomponente.getFullname() + 
+//								" emfpaenger:" + empf);
 						if (empf.equals(aktKomponente.getFullname()))
 							setFont(Font.font(null, FontWeight.BOLD, getFont().getSize()));
 						else
@@ -255,19 +265,6 @@ public class EdiKomponenteController {
 	
 	private void readEdiListeforKomponete( EdiKomponente selKomponente, CacheRefresh cache) {
 		ediKomponenteList.clear();
-//		tvVerwendungen.setItems(ediKomponenteListLeer);
-//		ediKomponenteListLeer.clear();
-//		EdiEmpfaenger dummyE = new EdiEmpfaenger();
-//		EdiKomponente dummyK = new EdiKomponente();
-//		EdiEintrag dummyEE = new EdiEintrag();
-//		dummyEE.setEdiNr(0);
-//		dummyK.setName("dummy");
-//		dummyE.setKomponente(aktKomponente);
-//		dummyE.setEdiEintrag(dummyEE);
-//		ediKomponenteListLeer.add(dummyE);
-//		ediKomponenteListLeer.remove(dummyE);
-//		tvVerwendungen.setItems(ediKomponenteList);
-		
 		/* 1. lese alle EdiEinträge mit Sender = selekierter Komponente 
 		 * 		-> zeige jeweils alle zugehörigen Empfänger, falls kein Empfänger vorhanden dummy erzeugen
 		*/
@@ -279,12 +276,13 @@ public class EdiKomponenteController {
 		}	
 		List<EdiEintrag> ediList = tqS.getResultList();
 		for(EdiEintrag e : ediList ) {
-			if (e.getEdiEmpfaenger().size() > 0)
+			if (e.getEdiEmpfaenger().size() > 0) {
 				ediKomponenteList.addAll(e.getEdiEmpfaenger());
-			else {
+//				for(EdiEmpfaenger ee : e.getEdiEmpfaenger() ) ediKomponenteList.add(ee); 
+			} else {
 				EdiEmpfaenger tmpE = new EdiEmpfaenger();
 				tmpE.setEdiEintrag(e);
-				ediKomponenteList.addAll(tmpE);
+				ediKomponenteList.add(tmpE);
 			}
 		}
 		log("readEdiListeforKomponete", "für "+ selKomponente.getName() + " " + 
@@ -326,8 +324,8 @@ public class EdiKomponenteController {
 		String className = EdiKomponenteController.class.getName().substring(16);
 		System.out.println(className + "." + methode + "(): " + message); 
 	}
-		
-    void checkFieldsFromView() {
+
+	void checkFieldsFromView() {
     	assert ediKomponentePane != null : "fx:id=\"ediKomponente\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
     	assert tfBezeichnung != null : "fx:id=\"tfBezeichnung\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
     	assert taBeschreibung != null : "fx:id=\"taBeschreibung\" was not injected: check your FXML file 'EdiKomponente.fxml'.";

@@ -1,3 +1,4 @@
+
 package de.vbl.ediliste.model;
 
 import static javax.persistence.GenerationType.IDENTITY;
@@ -19,7 +20,6 @@ import javax.persistence.ManyToOne;
 
 public class EdiEmpfaenger {
 
-	private StringProperty empfaengerName;
 	private StringProperty geschaeftsObjektName;
 	private long id;
 	private EdiKomponente ediKomponente;
@@ -27,15 +27,10 @@ public class EdiEmpfaenger {
 	private GeschaeftsObjekt geschaeftsObjekt;
 
 	public EdiEmpfaenger() {
-		empfaengerName = new SimpleStringProperty();
+		super();
 		geschaeftsObjektName = new SimpleStringProperty();
 	}
 
-//	public EdiEmpfaenger(EdiEintrag param) {
-//		this();
-//		ediEintrag = param;
-//	}
-	
 	@Id    
 	@GeneratedValue(strategy = IDENTITY)
 	public long getId() {
@@ -53,8 +48,6 @@ public class EdiEmpfaenger {
 	}
 
 	public void setKomponente(EdiKomponente kompo) {
-		String fullName = (kompo == null) ? "?e?" : kompo.getFullname(); 
-		this.empfaengerName.set(fullName);
 	    this.ediKomponente = kompo;
 	}
 
@@ -78,10 +71,7 @@ public class EdiEmpfaenger {
 	}
 	public void setGeschaeftsObjekt(GeschaeftsObjekt param) {
 		this.geschaeftsObjektName.set(param.getName());
-//		if (ediKomponente == null ) 
-//			System.out.println("GeschaeftsobjektName(E="+this+").set("+param.getName()+")");
-//		else
-//			System.out.println("GeschaeftsobjektName(E="+ ediKomponente.getFullname()+").set("+param.getName()+")");
+//		System.out.println("Dem EDI-Empfänger("+ this +")" + this.id +  " wird das Gechäftsobjekt " + this.geschaeftsObjektName.get() + " zugordnet");
 	    this.geschaeftsObjekt = param;
 	}
 	
@@ -95,7 +85,7 @@ public class EdiEmpfaenger {
 	}
 
 	public StringProperty empfaengerNameProperty() {
-		return this.empfaengerName;
+		return ediKomponente.fullnameProperty();
 	}
 	
 	// ------------------------------------------------------------------------

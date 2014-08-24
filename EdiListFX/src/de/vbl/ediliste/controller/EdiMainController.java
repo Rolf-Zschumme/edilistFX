@@ -289,12 +289,18 @@ public class EdiMainController {
 		tq.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		List<EdiPartner> aktuList = tq.getResultList(); 
 
-		ediPartnerList.retainAll(aktuList);
+		ediPartnerList.retainAll(aktuList);  // remove all delete entities  
 
-		for ( EdiPartner p : aktuList) {
+		for ( EdiPartner p : aktuList) {     // insert or update all entities
 			if (ediPartnerList.contains(p) == false) {
 				ediPartnerList.add(aktuList.indexOf(p), p);
+			} else {
+				int aktPos = ediPartnerList.indexOf(p);
+				EdiPartner p1 = ediPartnerList.get(aktPos);
+				p1.anzSystemeProperty().set(p.anzSystemeProperty().get());
+				p1.anzKomponentenProperty().set(p.anzKomponentenProperty().get());
 			}
+				
 		}
 	}
 
@@ -304,13 +310,15 @@ public class EdiMainController {
 		tq.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		List<EdiSystem> aktuList = tq.getResultList();
 		
-		// gelöschte Einträge entfernen
-		ediSystemList.retainAll(aktuList);
+		ediSystemList.retainAll(aktuList);  // remove all delete entities  
 		
-		// nicht vorhandene Einträge einfügen
-		for (EdiSystem s : aktuList) {
+		for (EdiSystem s : aktuList) {		// insert or update all entities
 			if (ediSystemList.contains(s) == false) {
 				ediSystemList.add(aktuList.indexOf(s), s);
+			} else {
+				int aktPos = ediSystemList.indexOf(s);
+				EdiSystem s1 = ediSystemList.get(aktPos);
+				s1.anzKomponentenProperty().set(s.anzKomponentenProperty().get());
 			}
 		}
 	}
@@ -321,11 +329,9 @@ public class EdiMainController {
 		tq.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		List<EdiKomponente> aktuList = tq.getResultList();
 		
-		// gelöschte Einträge entfernen
-		ediKomponentenList.retainAll(aktuList);
+		ediKomponentenList.retainAll(aktuList); // remove delete entities  
 		
-		// nicht vorhandene Einträge einfügen
-		for ( EdiKomponente k : aktuList) {
+		for ( EdiKomponente k : aktuList) {     // insert or update all entities
 			if (ediKomponentenList.contains(k) == false) {
 				ediKomponentenList.add(aktuList.indexOf(k), k);
 			}

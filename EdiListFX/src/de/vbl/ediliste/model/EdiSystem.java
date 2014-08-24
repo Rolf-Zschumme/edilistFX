@@ -24,15 +24,15 @@ public class EdiSystem {
 	private long id;
 	private EdiPartner ediPartner;
 	private Collection<EdiKomponente> ediKomponente;
-	private IntegerProperty anzKomponenten = new SimpleIntegerProperty();
+	private IntegerProperty anzKomponenten;
 	private String beschreibung;
 
 	public EdiSystem() {
-		super();
+		anzKomponenten = new SimpleIntegerProperty();
 	}
 
 	public EdiSystem(String name, EdiPartner ediPartner) {
-		super();
+		this();
 		this.name.setValue(name);
 		this.ediPartner = ediPartner;
 	}
@@ -103,10 +103,12 @@ public class EdiSystem {
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
 	public IntegerProperty anzKomponentenProperty() {
+		System.out.println("EdiSystem.anzKomponentenProperty() called for " + this.getNameSafe());
 		return anzKomponenten;
 	}
 
 	public Integer getAnzKomponenten() {
+		System.out.println("EdiSystem.getAnzKomponenten() called for " + this.getNameSafe());
 		return ediKomponente.size();
 	}
 

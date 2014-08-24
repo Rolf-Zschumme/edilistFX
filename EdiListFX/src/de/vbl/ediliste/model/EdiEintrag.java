@@ -36,6 +36,12 @@ public class EdiEintrag {
 	private Collection<EdiEmpfaenger> ediEmpfaenger;
 	private String laeDatum; 
 	private String laeUser; 
+	
+
+	public EdiEintrag() {
+		super();
+		ediEmpfaenger = new ArrayList<>();
+	}	
 
 	// ------------------------------------------------------------------------
 	@Id
@@ -212,16 +218,17 @@ public class EdiEintrag {
 //		while(is.hasNext()) {
 //			EdiEmpfaenger e = is.next();
 //			System.out.println("Copy: S-Empf-Id="+ e.getId() +" S-Edi-Id="+ e.getEdiEintrag().getId() + " " + e.getKomponente().getFullname()); 
-//		}	
+//		}
+		
 		if (source.ediEmpfaenger == null) {
 			this.setEdiEmpfaenger(null);
 		} else {
-			this.setEdiEmpfaenger(new ArrayList<EdiEmpfaenger>(source.ediEmpfaenger));
+			
+			this.ediEmpfaenger.clear();
+			for (EdiEmpfaenger e : source.ediEmpfaenger) {
+				this.ediEmpfaenger.add(e);
+			}
 		}
-//		Iterator<EdiEmpfaenger> i = this.ediEmpfaenger.iterator();
-//		while(i.hasNext()) {
-//			i.next().setEdiEintrag(this);
-//		}
 
 //		if (this.ediEmpfaenger == null) {
 //			System.out.println("Copy: T-Empf   = null");
