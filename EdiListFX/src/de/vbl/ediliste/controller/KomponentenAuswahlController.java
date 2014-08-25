@@ -22,7 +22,6 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
 import org.controlsfx.dialog.Dialogs;
@@ -36,12 +35,13 @@ import de.vbl.ediliste.model.EdiSystem;
  * @author p01023
  * 
  *	20.08.2014 RZ EntityManager wird stets neu erstellt -> aktuelle Tabelleninhalte
+ *  25.08.2014 RZ EntityManager wird vom rufenden Programm übergeben!
  */
 public class KomponentenAuswahlController {
 	public static enum KomponentenTyp {	SENDER, RECEIVER };
 	private static final String APPL_TITLE = "EdiListe";
-	private static final String PERSISTENCE_UNIT_NAME = "EdiListFX";
-	private EntityManager em; 
+//	private static final String PERSISTENCE_UNIT_NAME = "EdiListFX";
+	private EntityManager entityManager; 
     
     @FXML private ResourceBundle resources;
 
@@ -75,9 +75,11 @@ public class KomponentenAuswahlController {
 		return ediKomponentenId.get();
 	}
 	
-	public void setKomponente(KomponentenTyp typ, Long komponentenID) {
+	public void setKomponente(KomponentenTyp typ, Long komponentenID, EntityManager em) {
     	System.out.println(getClass().getName()+".setKomponenten called");
-
+    	entityManager = em;
+        readPartnerData();
+    	
 		if (typ == KomponentenTyp.SENDER)
 			lbSenderReseiver.setText("Sender");
 		else
@@ -85,7 +87,7 @@ public class KomponentenAuswahlController {
 
 		ediKomponentenId.set(komponentenID);
 		if (komponentenID > 0L) {
-			EdiKomponente komponente = em.find(EdiKomponente.class, komponentenID);
+			EdiKomponente komponente = entityManager.find(EdiKomponente.class, komponentenID);
 				
 			partnerCB.getSelectionModel().select(komponente.getEdiSystem().getEdiPartner());
 			systemCB.getSelectionModel().select(komponente.getEdiSystem());
@@ -109,9 +111,8 @@ public class KomponentenAuswahlController {
 		komponentenList  = FXCollections.observableArrayList();
     	
     	checkFieldFromView();
-		em = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME).createEntityManager();
+//		entityManager = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME).createEntityManager();
 
-        readPartnerData();
 		setupBindings();
 		partnerCB.setItems(partnerList);
 		systemCB.setItems(systemList);
@@ -120,7 +121,7 @@ public class KomponentenAuswahlController {
     
     private void readPartnerData() {
     	// alle EdiPartner lesen
-    	TypedQuery<EdiPartner> tq = em.createQuery(
+    	TypedQuery<EdiPartner> tq = entityManager.createQuery(
     		  "SELECT p FROM EdiPartner p ORDER BY p.name", EdiPartner.class);
     	List<EdiPartner> ediList = tq.getResultList();
     	for (EdiPartner ediPartner : ediList) {
@@ -130,7 +131,7 @@ public class KomponentenAuswahlController {
     
     private void readSystemData(Long partnerId) {
     	systemList.clear();
-		TypedQuery<EdiSystem> tq = em.createQuery(
+		TypedQuery<EdiSystem> tq = entityManager.createQuery(
 				"SELECT s FROM EdiSystem s ORDER BY s.name", EdiSystem.class);
 		List<EdiSystem> ediList = tq.getResultList();
 		for (EdiSystem ediSystem : ediList) {
@@ -142,7 +143,7 @@ public class KomponentenAuswahlController {
 
     private void readKomponentenData(Long systemId) {
     	komponentenList.clear();
-		TypedQuery<EdiKomponente> tq = em.createQuery(
+		TypedQuery<EdiKomponente> tq = entityManager.createQuery(
 		  "SELECT k FROM EdiKomponente k ORDER BY k.name",EdiKomponente.class);
 		List<EdiKomponente> resultList = tq.getResultList();
 		for (EdiKomponente ediKomponente : resultList) {
@@ -308,9 +309,9 @@ public class KomponentenAuswahlController {
     		}
     		EdiPartner ediPartner = new EdiPartner(name);
     		try {
-    			em.getTransaction().begin();
-    			em.persist(ediPartner);
-    			em.getTransaction().commit();
+    			entityManager.getTransaction().begin();
+    			entityManager.persist(ediPartner);
+    			entityManager.getTransaction().commit();
     			partnerList.add(ediPartner);
     			partnerCB.getSelectionModel().select(ediPartner);
     		} catch (RuntimeException e) {
@@ -363,9 +364,9 @@ public class KomponentenAuswahlController {
     		}
     		EdiSystem ediSystem = new EdiSystem(name, aktPartner);
     		try {
-    			em.getTransaction().begin();
-    			em.persist(ediSystem);
-    			em.getTransaction().commit();
+    			entityManager.getTransaction().begin();
+    			entityManager.persist(ediSystem);
+    			entityManager.getTransaction().commit();
     		} catch (RuntimeException e) {
     			Dialogs.create().owner(stage).title(APPL_TITLE)
 					.masthead("Datenbankfehler")
@@ -417,9 +418,9 @@ public class KomponentenAuswahlController {
     		} 
     		EdiKomponente ediKomponente = new EdiKomponente(name, aktSystem);
     		try {
-    			em.getTransaction().begin();
-    			em.persist(ediKomponente);
-    			em.getTransaction().commit();
+    			entityManager.getTransaction().begin();
+    			entityManager.persist(ediKomponente);
+    			entityManager.getTransaction().commit();
     		} catch (RuntimeException e) {
     			Dialogs.create().owner(stage).title(APPL_TITLE)
 					.masthead("Datenbankfehler")

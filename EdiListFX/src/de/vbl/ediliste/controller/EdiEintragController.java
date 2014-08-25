@@ -67,7 +67,6 @@ public class EdiEintragController {
     private EdiEmpfaenger aktEmpfaenger[] = new EdiEmpfaenger[MAX_EMPFAENGER];
     private String busObjName[] = { "", "", ""};
 
-	
 	@FXML private AnchorPane ediEintragPane;
     @FXML private VBox eintragVBox;
 
@@ -697,9 +696,6 @@ public class EdiEintragController {
     	return true;
     }
     
- 
-    
-    
     //Action: Sender-Button is pressed
     @FXML
     void senderButton(ActionEvent event) {
@@ -708,7 +704,7 @@ public class EdiEintragController {
 
     	KomponentenAuswahlController komponentenAuswahlController = loader.getController();
     	Long aktSenderId = aktEdi.getEdiKomponente()==null ? 0L : aktEdi.getEdiKomponente().getId();
-    	komponentenAuswahlController.setKomponente(KomponentenTyp.SENDER, aktSenderId);
+    	komponentenAuswahlController.setKomponente(KomponentenTyp.SENDER, aktSenderId, entityManager);
     	dialog.showAndWait();
     	if (komponentenAuswahlController.getResponse() == Actions.OK ) {
 	    	Long selKomponentenID = komponentenAuswahlController.getSelectedKomponentenId();
@@ -756,7 +752,7 @@ public class EdiEintragController {
     	
     	KomponentenAuswahlController komponentenAuswahlController = loader.getController();
     	Long aktEmpfaengerId = (aktEmpfaenger[btnNr]==null ? 0L : aktEmpfaenger[btnNr].getKomponente().getId());
-    	komponentenAuswahlController.setKomponente(KomponentenTyp.RECEIVER, aktEmpfaengerId);
+    	komponentenAuswahlController.setKomponente(KomponentenTyp.RECEIVER, aktEmpfaengerId, entityManager);
     	dialog.showAndWait();
     	if (komponentenAuswahlController.getResponse() == Actions.OK ) {
     		Long selEmpfaengerID = komponentenAuswahlController.getSelectedKomponentenId();
