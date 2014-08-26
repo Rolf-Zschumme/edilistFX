@@ -4,6 +4,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 import java.util.Collection;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -18,23 +19,25 @@ import javax.persistence.OneToMany;
 
 @Entity
 public class EdiSystem {
-	private StringProperty name = new SimpleStringProperty();
-	private StringProperty fullname = new SimpleStringProperty();
-
 	private long id;
+	private StringProperty name;
 	private EdiPartner ediPartner;
 	private Collection<EdiKomponente> ediKomponente;
-	private IntegerProperty anzKomponenten;
 	private String beschreibung;
+	
+	private StringProperty fullname;
+	private IntegerProperty anzKomponenten;
 
 	public EdiSystem() {
+		name = new SimpleStringProperty();
+		fullname = new SimpleStringProperty();
 		anzKomponenten = new SimpleIntegerProperty();
 	}
 
 	public EdiSystem(String name, EdiPartner ediPartner) {
 		this();
 		this.name.setValue(name);
-		this.ediPartner = ediPartner;
+		this.setEdiPartner(ediPartner);
 	}
 
 	// ------------------------------------------------------------------------
@@ -70,11 +73,15 @@ public class EdiSystem {
 	public StringProperty fullnameProperty() {
 		return fullname;
 	}
-
-	public String getFullname() {
-		String partnerName = ediPartner == null ? "-?-" : ediPartner.getName();
-		return partnerName + ASCIItoStr(42) + name.get();   // 151
+	public String getFullname () {
+		return fullname.get();
 	}
+
+//	public String getFullname() {
+//		String partnerName = ediPartner == null ? "-?-" : ediPartner.getName();
+//		return partnerName + ASCIItoStr(42) + name.get();   // 151
+//		return fullname.get();
+//	}
 	private String ASCIItoStr(int a) {
 		byte[] b = { (byte) a };
 		String ret = new String(b);
@@ -88,7 +95,11 @@ public class EdiSystem {
 	}
 
 	public void setEdiPartner(EdiPartner param) {
-		this.ediPartner = param;
+		if (ediPartner != null) {
+			fullname.unbind();
+		}
+		ediPartner = param;
+		fullname.bind(Bindings.concat(ediPartner.nameProperty(), ASCIItoStr(42), name));
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --

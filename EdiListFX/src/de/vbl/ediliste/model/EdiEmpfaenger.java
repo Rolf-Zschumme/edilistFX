@@ -76,7 +76,7 @@ public class EdiEmpfaenger {
 	}
 	
 	// ------------------------------------------------------------------------
-	public IntegerProperty ediNrProperty() {
+	public IntegerProperty getEdiNrProperty() {
 		return ediEintrag.ediNrProperty();
 	}
 	

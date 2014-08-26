@@ -104,7 +104,7 @@ public class EdiSystemController {
 		
 		tvVerwendungen.setItems(ediKomponentenList);
 		tcEdiNr.setCellValueFactory(cellData -> 
-					Bindings.format(EdiEintrag.FORMAT_EDINR, cellData.getValue().ediNrProperty()));
+					Bindings.format(EdiEintrag.FORMAT_EDINR, cellData.getValue().getEdiNrProperty()));
 		
 		tcSender.setCellValueFactory(cellData -> cellData.getValue().senderNameProperty());
 		tcSender.setCellFactory(column -> {

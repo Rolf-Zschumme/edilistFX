@@ -21,21 +21,22 @@ import javax.persistence.OneToMany;
  */
 @Entity
 public class EdiPartner {
-	private StringProperty name = new SimpleStringProperty();
+	private long id;
+	private StringProperty name;
+	private String beschreibung;
+	private Collection<EdiSystem> ediSystem;
+
 	private IntegerProperty anzSysteme;
 	private IntegerProperty anzKomponenten;
 
-	private long id;
-	private Collection<EdiSystem> ediSystem;
-
-	private String beschreibung;
-
 	public EdiPartner() {
+		name = new SimpleStringProperty();
 		anzSysteme = new SimpleIntegerProperty();
 		anzKomponenten = new SimpleIntegerProperty();
 	}
 
 	public EdiPartner(String name) {
+		this();
 		setName(name);
 	}
 
@@ -61,6 +62,7 @@ public class EdiPartner {
 	}
 
 	public void setName(String param) {
+		if (param == null) System.out.println("EdiPartner.setName() mit NULL als Name!");
 		name.set(param);
 	}
 
@@ -97,6 +99,4 @@ public class EdiPartner {
 		anzKomponenten.set(anzK);
 		return anzKomponenten;
 	}
-	
-	
 }

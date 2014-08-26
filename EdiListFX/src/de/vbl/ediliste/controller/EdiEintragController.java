@@ -611,13 +611,15 @@ public class EdiEintragController {
 					}
 				}	
 			}
-			String tmpEdiBezeichnung = aktEdi.bezeichnung(); 
-			if (aktEdi.getBezeichnung() == null) {
-				aktEdi.setBezeichnung("");
-			}
+            for (EdiEmpfaenger e : orgEdi.getEdiEmpfaenger()) {
+                if (aktEdi.getEdiEmpfaenger().contains(e) == false) {
+                       entityManager.remove(e);
+                }
+            }
+			String tmpEdiBezeichnung = aktEdi.autoBezeichnung(); 
 			if (aktEdi.getBezeichnung().equals(tmpEdiBezeichnung)==false) {
 				aktEdi.setBezeichnung(tmpEdiBezeichnung);
-				tfBezeichnung.textProperty().set(aktEdi.bezeichnung());
+				tfBezeichnung.textProperty().set(aktEdi.autoBezeichnung());
 			}
 //			Konfiguration prevKonfiguration = null; 
 //			if (orgEdi.getKonfiguration() != aktEdi.getKonfiguration()) {

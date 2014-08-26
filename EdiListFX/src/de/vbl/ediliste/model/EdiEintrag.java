@@ -24,23 +24,29 @@ import static javax.persistence.CascadeType.ALL;
 public class EdiEintrag {
 	public static final int EDI_NR_MIN_LEN = 3;
 	public static final String FORMAT_EDINR = " %03d";
-	private IntegerProperty ediNr = new SimpleIntegerProperty();
-	private StringProperty bezeichnung = new SimpleStringProperty();
-	private StringProperty beschreibung = new SimpleStringProperty();
-	private StringProperty senderName = new SimpleStringProperty();
-	private StringProperty seitDatum = new SimpleStringProperty();
-	private StringProperty bisDatum = new SimpleStringProperty();
 	private long id;
+	private IntegerProperty ediNr;
+	private StringProperty bezeichnung;
+	private StringProperty beschreibung;
+	private StringProperty seitDatum;
+	private StringProperty bisDatum;
 	private Konfiguration konfiguration;
 	private EdiKomponente ediKomponente;
 	private Collection<EdiEmpfaenger> ediEmpfaenger;
 	private String laeDatum; 
-	private String laeUser; 
+	private String laeUser;
+	
+	private StringProperty senderName;
 	
 
 	public EdiEintrag() {
-		super();
+		ediNr = new SimpleIntegerProperty();
+		bezeichnung = new SimpleStringProperty();
+		beschreibung = new SimpleStringProperty();
 		ediEmpfaenger = new ArrayList<>();
+		seitDatum = new SimpleStringProperty();
+		bisDatum = new SimpleStringProperty();
+		senderName = new SimpleStringProperty();
 	}	
 
 	// ------------------------------------------------------------------------
@@ -104,7 +110,7 @@ public class EdiEintrag {
 	}
 
 	 public void setSenderName(String param) {
-	 senderName.set(param);
+		 senderName.set(param);
 	 }
 	 
 	// ------------------------------------------------------------------------
@@ -124,9 +130,13 @@ public class EdiEintrag {
 	}
 
 	public void setEdiKomponente(EdiKomponente kompo) {
-		String senderName = (kompo == null) ? "?k?" : kompo.getFullname(); 
-   		this.senderName.set(senderName);
-		this.ediKomponente = kompo;
+		if (ediKomponente != null) {
+			senderName.unbind();
+		}
+		ediKomponente = kompo;
+		if (kompo != null) {
+			senderName.bind(kompo.fullnameProperty());
+		}	
 	}
 
 	@OneToMany(mappedBy = "ediEintrag", cascade = ALL)
@@ -205,14 +215,12 @@ public class EdiEintrag {
 	}
 	
 	public void copy (EdiEintrag source) {
+		this.id = source.id;
 		this.setEdiNr(source.getEdiNr());
 		this.setBezeichnung(source.getBezeichnung());
 		this.setBeschreibung(source.getBeschreibung());
-		this.setSenderName(source.senderName.get());
-		
-		this.id = source.id;
-		this.konfiguration = source.konfiguration;
-		this.ediKomponente = source.ediKomponente;
+		this.setEdiKomponente(source.ediKomponente);
+		this.setKonfiguration(source.konfiguration);
 
 //		Iterator<EdiEmpfaenger> is = source.ediEmpfaenger.iterator();
 //		while(is.hasNext()) {
@@ -247,14 +255,10 @@ public class EdiEintrag {
 		this.laeUser = source.laeUser;
 		}
 
-    public String bezeichnung() {
+    public String autoBezeichnung() {
     	String intSzeName = "I??";
-    	String senderName = "S??";
     	String empf01Name = "E??";
     	String geOb01Name = "G??";
-    	if (ediKomponente != null) { 
-    		senderName = ediKomponente.getFullname();
-    	}
     	if (ediEmpfaenger.size() > 0) {
     		EdiEmpfaenger e01 = ediEmpfaenger.iterator().next();
     		if (e01.getKomponente() != null) {
@@ -270,6 +274,6 @@ public class EdiEintrag {
     				intSzeName = konfiguration.getIntegration().getName();
     		}
     	}	
-    	return intSzeName + "  [" + senderName + "  >>  " + empf01Name + ": " + geOb01Name + "]";
+    	return intSzeName + "  [" + senderName.get() + "  >>  " + empf01Name + ": " + geOb01Name + "]";
     }
 }

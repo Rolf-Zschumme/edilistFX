@@ -1,6 +1,8 @@
+
 package de.vbl.ediliste.model;
 
 import static javax.persistence.GenerationType.IDENTITY;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -9,27 +11,32 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+
 import de.vbl.ediliste.model.KontaktPerson;
+
 import java.util.Collection;
+
 import javax.persistence.ManyToMany;
 
 @Entity
 public class EdiKomponente {
-	private StringProperty name = new SimpleStringProperty();
-	private StringProperty fullname; // = new SimpleStringProperty();
 	private long id;
-	private EdiSystem ediSystem;
+	private StringProperty name;
 	private String beschreibung;
+	private EdiSystem ediSystem;
 	private Collection<KontaktPerson> kontaktPerson;
+	
+	private StringProperty fullname;  // transient
 
 	public EdiKomponente() {
+		name = new SimpleStringProperty();
 		fullname = new SimpleStringProperty();
 	}
 
 	public EdiKomponente(String name, EdiSystem system) {
 		this();
-		this.ediSystem = system;
-		this.setName(name);
+		setName(name);
+		setEdiSystem(system);
 	}
 
 	// ------------------------------------------------------------------------
@@ -49,45 +56,22 @@ public class EdiKomponente {
 	}
 
 	public String getName() {
-		return name.get();
+		return name.getValueSafe();
 	}
 
 	public void setName(String param) {
 		name.set(param);
-//		System.out.println("Edikomponente.setName:" + param + " system:" + ediSystem);
-		String tmpName = ediSystem == null ? "-?-" : ediSystem.getFullname();
-		fullname.set(tmpName + ASCIItoStr(42) + name.get());
 	}
 
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
-	public StringProperty fullnameProperty() {
-//		System.out.println("EdiKomponente.fullnameProperty() called for " + fullname.get() + " system:" + ediSystem.getFullname());
-		return fullname;
+	// ------------------------------------------------------------------------
+	public String getBeschreibung() {
+		return beschreibung;
 	}
 
-	public String getFullname() {
-//		return fullname.get();
-		String fullName = (ediSystem == null) ? "-?-" : ediSystem.getFullname();
-		return fullName + ASCIItoStr(42) + ((name == null) ? "-?-" : name.get());  // 151
+	public void setBeschreibung(String param) {
+		beschreibung = param;
 	}
 
-	private String ASCIItoStr(int a) {
-		byte[] b = { (byte) a };
-		String ret = new String(b);
-		return " " + ret + " ";
-	}
-
-//	public String getBezName() {
-//		String ret = "?";
-//		if (ediSystem != null) {
-//			if (ediSystem.getEdiPartner() != null) {
-//				ret = ediSystem.getEdiPartner().getName();
-//			}
-//			ret += "-" + ediSystem.getName();
-//		}
-//		return ret + "-" + name.get();
-//	}
-	
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
 	@ManyToOne
 	@JoinColumn(name = "ediSystem_id", referencedColumnName = "id")
@@ -96,17 +80,28 @@ public class EdiKomponente {
 	}
 
 	public void setEdiSystem(EdiSystem param) {
+		if (ediSystem != null) {
+			fullname.unbind();
+		}
 		this.ediSystem = param;
+		fullname.bind(Bindings.concat(ediSystem.fullnameProperty(), ASCIItoStr(42),name));
+	}
+	private String ASCIItoStr(int a) {
+		byte[] b = { (byte) a };
+		String ret = new String(b);
+		return " " + ret + " ";
 	}
 
-	public String getBeschreibung() {
-		return beschreibung;
+	// *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   * 
+	public StringProperty fullnameProperty() {
+		return fullname;
+	}
+	
+	public String getFullname() {
+		return fullname.get();
 	}
 
-	public void setBeschreibung(String param) {
-		this.beschreibung = param;
-	}
-
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
 	@ManyToMany
 	public Collection<KontaktPerson> getKontaktPerson() {
 	    return kontaktPerson;

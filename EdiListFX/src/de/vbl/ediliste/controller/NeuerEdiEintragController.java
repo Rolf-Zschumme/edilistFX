@@ -66,6 +66,7 @@ public class NeuerEdiEintragController {
     	}
     	else {
     		entityManager.getTransaction().begin();
+    		ediEintrag.setBezeichnung("(EDI-Nummer Reserviert)");
     		entityManager.persist(ediEintrag);
     		entityManager.getTransaction().commit();
     		response = Dialog.Actions.OK;

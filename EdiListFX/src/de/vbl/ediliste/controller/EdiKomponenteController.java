@@ -81,8 +81,8 @@ public class EdiKomponenteController {
 			public void changed(ObservableValue<? extends EdiKomponente> ov,
 					EdiKomponente oldKomponente, EdiKomponente newKomponente) {
 				log("ChangeListener<EdiKomponente>",
-					((oldKomponente==null) ? "null" : oldKomponente.getFullname()) + " -> " 
-				  + ((newKomponente==null) ? "null" : newKomponente.getFullname()) );
+					((oldKomponente==null) ? "null" : oldKomponente.getFullname() + " -> " 
+				  + ((newKomponente==null) ? "null" : newKomponente.getFullname() )));
 				if (oldKomponente != null && newKomponente == null) {
 					ediKomponenteList.clear();
 					tfBezeichnung.setText("");
@@ -99,6 +99,7 @@ public class EdiKomponenteController {
 		
 		tvVerwendungen.setItems(ediKomponenteList);
 		
+		// todo: zum Absprung bei Select eines Edi-Eintrages in der Sub-Tabelle
 		tvVerwendungen.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<EdiEmpfaenger>() {
 			@Override
 			public void changed (ObservableValue<? extends EdiEmpfaenger> ov, EdiEmpfaenger oldValue, EdiEmpfaenger newValue) {
@@ -108,23 +109,25 @@ public class EdiKomponenteController {
 		
 		btnLoeschen.disableProperty().bind(Bindings.isNotEmpty(ediKomponenteList));
 		
-		tcEdiNr.setCellValueFactory(cellData -> 
-					Bindings.format(EdiEintrag.FORMAT_EDINR, cellData.getValue().ediNrProperty()));
+		tcEdiNr.setCellValueFactory(cellData -> Bindings.format(EdiEintrag.FORMAT_EDINR, 
+//												cellData.getValue().getEdiNrProperty()));
+												cellData.getValue().getEdiEintrag().ediNrProperty()));
 
-		tcSender.setCellValueFactory(cellData -> cellData.getValue().senderNameProperty());
+//		tcSender.setCellValueFactory(cellData -> cellData.getValue().senderNameProperty());
+		tcSender.setCellValueFactory(cellData -> cellData.getValue().getEdiEintrag().getEdiKomponente().fullnameProperty());
 		
 		tcSender.setCellFactory(column -> {
 			return new TableCell<EdiEmpfaenger, String>() {
 				@Override
-				protected void updateItem (String sender, boolean empty) {
-					super.updateItem(sender, empty);
-					if (sender == null || empty) 
+				protected void updateItem (String senderFullname, boolean empty) {
+					super.updateItem(senderFullname, empty);
+					if (senderFullname == null || empty) 
 						setText(null); 
 					else {
-						setText(sender);
+						setText(senderFullname);
 //						log("tcSender.updateItem", "aktkombo:" + aktKomponente.getFullname() + 
 //								" sender:" + sender);
-						if (sender.equals(aktKomponente.getFullname()))
+						if (senderFullname.equals(aktKomponente.getFullname()))
 							setFont(Font.font(null, FontWeight.BOLD, getFont().getSize()));
 						else
 							setFont(Font.font(null, FontWeight.NORMAL,getFont().getSize()));
@@ -133,20 +136,21 @@ public class EdiKomponenteController {
 			};
 		});
 		
-		tcEmpfaenger.setCellValueFactory(cellData -> cellData.getValue().empfaengerNameProperty());
+//		tcEmpfaenger.setCellValueFactory(cellData -> cellData.getValue().empfaengerNameProperty());
+		tcEmpfaenger.setCellValueFactory(cellData -> cellData.getValue().getKomponente().fullnameProperty());
 
 		tcEmpfaenger.setCellFactory(column -> {
 			return new TableCell<EdiEmpfaenger, String>() {
 				@Override
-				protected void updateItem (String empf, boolean empty) {
-					super.updateItem(empf, empty);
-					if (empf == null || empty) 
+				protected void updateItem (String empfaengerFullname, boolean empty) {
+					super.updateItem(empfaengerFullname, empty);
+					if (empfaengerFullname == null || empty) 
 						setText(null); 
 					else {
-						setText(empf);
+						setText(empfaengerFullname);
 //						log("tcEmpfaengeItem","aktkombo:" + aktKomponente.getFullname() + 
 //								" emfpaenger:" + empf);
-						if (empf.equals(aktKomponente.getFullname()))
+						if (empfaengerFullname.equals(aktKomponente.getFullname()))
 							setFont(Font.font(null, FontWeight.BOLD, getFont().getSize()));
 						else
 							setFont(Font.font(null, FontWeight.NORMAL,getFont().getSize()));
