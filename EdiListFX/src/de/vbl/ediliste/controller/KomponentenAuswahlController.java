@@ -36,6 +36,7 @@ import de.vbl.ediliste.model.EdiSystem;
  * 
  *	20.08.2014 RZ EntityManager wird stets neu erstellt -> aktuelle Tabelleninhalte
  *  25.08.2014 RZ EntityManager wird vom rufenden Programm übergeben!
+ *  27.08.2014 RZ getSelectionModel() ergänzt
  */
 public class KomponentenAuswahlController {
 	public static enum KomponentenTyp {	SENDER, RECEIVER };
@@ -73,6 +74,10 @@ public class KomponentenAuswahlController {
 
 	public Long getSelectedKomponentenId() {
 		return ediKomponentenId.get();
+	}
+
+	public EdiKomponente getSelectedKomponente() {
+		return komponenteCB.getSelectionModel().getSelectedItem();
 	}
 	
 	public void setKomponente(KomponentenTyp typ, Long komponentenID, EntityManager em) {
@@ -275,7 +280,8 @@ public class KomponentenAuswahlController {
 
     @FXML
     void escapePressed(ActionEvent event) {
-    	ediKomponentenId.set(0L);;
+    	ediKomponentenId.set(0L);
+    	komponenteCB.getSelectionModel().clearSelection();
 		unbind();
     	close(event);
     }

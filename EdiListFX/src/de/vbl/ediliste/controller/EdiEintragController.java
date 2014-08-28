@@ -65,8 +65,9 @@ public class EdiEintragController {
 
 	private final ObjectProperty<EdiEintrag> ediEintrag;
 	private EdiEintrag orgEdi;
+	private Konfiguration aktKonfiguration;
+	long aktSenderId;
     private EdiEmpfaenger aktEmpfaenger[] = new EdiEmpfaenger[MAX_EMPFAENGER];
-    private Konfiguration aktKonfiguration;
     private String busObjName[] = { "", "", ""};
 
 	@FXML private AnchorPane ediEintragPane;
@@ -166,27 +167,23 @@ public class EdiEintragController {
     			}
     			if (newEintrag != null) {
     				orgEdi = newEintrag;
-    				//1 aktEdi.copy(orgEdi);
     				aktKonfiguration = orgEdi.getKonfiguration();
     				if (aktKonfiguration != null) {
     					aktIntegration = aktKonfiguration.getIntegration();
     					readCmbKonfigurationData(aktIntegration);
     					cmbKonfiguration.getSelectionModel().select(aktKonfiguration);
-    					// dodo
-    					if (aktKonfiguration.getEdiEintrag().size() > 0) {
-    						
-    					}
     				}
     				tabAktEdiNr.setText(EDI_PANE_PREFIX +  orgEdi.getEdiNrStr());
     				tfBezeichnung.setText(orgEdi.getBezeichnung()==null ? "" : orgEdi.getBezeichnung());
     				taEdiBeschreibung.setText(orgEdi.getBeschreibung());
     				
     				if (orgEdi.getEdiKomponente() == null) {
-    					senderIsSelected.set(false);
     					btnSender.setText("");
+    					senderIsSelected.set(false);
     				} else {
-    					senderIsSelected.set(true);
+    			    	aktSenderId = orgEdi.getEdiKomponente()==null ? 0L : orgEdi.getEdiKomponente().getId();
     					btnSender.setText(orgEdi.getEdiKomponente().getFullname());
+    					senderIsSelected.set(true);
     				}
     				copyEmpfaengerList(orgEdi.getEdiEmpfaenger().iterator());
     				setAktEmpfaenger();
@@ -281,18 +278,11 @@ public class EdiEintragController {
 		cmbKonfiguration.setOnAction((event) -> {
 			Konfiguration selKonfiguration = cmbKonfiguration.getSelectionModel().getSelectedItem();
 			if (selKonfiguration != orgEdi.getKonfiguration()) {
-
-//	todo -> löschen beim speichern implemnetiern				
-//				if (orgEdi.getKonfiguration() != null) {
-//					aktEdi.getKonfiguration().getEdiEintrag().remove(aktEdi);
-//				}
-//				if (selKonfiguration != null) {
-//					selKonfiguration.getEdiEintrag().add(aktEdi);
-//				}	
+				log("cmbKonfiguration.setOnAction"," Änderung von " + orgEdi.getKonfiguration() + " nach " + selKonfiguration);
 				aktKonfiguration = selKonfiguration;
 				ediEintragIsChanged.set(true);
 			} else {
-				log("cmbKonfiguration.setOnAction"," todo: keine Änderung ?");
+				log("cmbKonfiguration.setOnAction"," todo: prüfe ob insgesamt keine Änderung ?");
 			}
 
 			// zusätzliche EdiNr-Reiter aktualisieren (entfernen/ergänzen)
@@ -613,6 +603,7 @@ public class EdiEintragController {
     		return;
 		try {
 	 		entityManager.getTransaction().begin();
+	    	orgEdi.setEdiKomponente(entityManager.find(EdiKomponente.class, aktSenderId)); 
 	 		
 	 		tmpEmpfaengerList = new ArrayList<>();
 			for (int i=0; i<MAX_EMPFAENGER; ++i) {
@@ -638,10 +629,15 @@ public class EdiEintragController {
 				orgEdi.setBezeichnung(tmpEdiBezeichnung);
 				tfBezeichnung.textProperty().set(orgEdi.autoBezeichnung());
 			}
-//			Konfiguration prevKonfiguration = null; 
-//			if (orgEdi.getKonfiguration() != aktEdi.getKonfiguration()) {
-//				prevKonfiguration = orgEdi.getKonfiguration();
-//			}
+			// if Konfiguration changed the EdiEintrag must be removed from previous Konfiguration	
+			if (orgEdi.getKonfiguration() != null && orgEdi.getKonfiguration() != aktKonfiguration) {
+				orgEdi.getKonfiguration().getEdiEintrag().remove(orgEdi);
+			}
+			if (aktKonfiguration.getEdiEintrag().contains(orgEdi) == false) {
+				aktKonfiguration.getEdiEintrag().add(orgEdi);
+			}
+			orgEdi.setKonfiguration(aktKonfiguration);
+
 			orgEdi.setLaeUser(System.getenv("USERNAME").toUpperCase());
 			orgEdi.setLaeDatum(LocalDateTime.now().toString());
 			
@@ -665,7 +661,7 @@ public class EdiEintragController {
     }
 
     private boolean aktEdiEintragPruefen() {
-    	if (aktEdi.getEdiKomponente()==null) {
+    	if (aktSenderId == 0L) {
     		Dialogs.create().owner(primaryStage)
     		.title(applName).masthead("Korrektur-Hinweis")
     		.message("Sender ist erforderlich")
@@ -706,8 +702,8 @@ public class EdiEintragController {
     		cmbIntegration.requestFocus();
     		return false;
     	}
-    	if (aktEdi.getKonfiguration() == null) {
-    		mainController.setErrorText("Konfiguration notwendig auswählen");
+    	if (aktKonfiguration == null) {
+    		mainController.setErrorText("Eine Konfiguration muss auswählen/zugeordnet werden");
     		cmbKonfiguration.requestFocus();
     		return false;
     	}
@@ -721,15 +717,14 @@ public class EdiEintragController {
     	FXMLLoader loader = loadKomponentenAuswahl(dialog, 100, 250); 
 
     	KomponentenAuswahlController komponentenAuswahlController = loader.getController();
-    	Long aktSenderId = aktEdi.getEdiKomponente()==null ? 0L : aktEdi.getEdiKomponente().getId();
     	komponentenAuswahlController.setKomponente(KomponentenTyp.SENDER, aktSenderId, entityManager);
     	dialog.showAndWait();
     	if (komponentenAuswahlController.getResponse() == Actions.OK ) {
 	    	Long selKomponentenID = komponentenAuswahlController.getSelectedKomponentenId();
     	    if (aktSenderId != selKomponentenID ) {
-    	    	EdiKomponente sender = entityManager.find(EdiKomponente.class, selKomponentenID);
-    	    	aktEdi.setEdiKomponente(sender); 
-    	    	log("senderButton","senderName :" + aktEdi.senderNameProperty().get());
+    	    	aktSenderId = selKomponentenID; 
+    	    	EdiKomponente sender = entityManager.find(EdiKomponente.class, aktSenderId);
+    	    	log("senderButton","senderName :" + orgEdi.senderNameProperty().get());
     	    	btnSender.setText(sender.getFullname());
     	    	ediEintragIsChanged.set(true);
     	    	senderIsSelected.set(true);

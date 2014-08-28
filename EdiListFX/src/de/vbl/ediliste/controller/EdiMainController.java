@@ -418,7 +418,8 @@ public class EdiMainController {
 	        			empf.remove();
 	        		}
 	        		entityManager.remove(ediEintrag);
-	        		entityManager.getTransaction().commit();
+
+
 	        		Dialogs.create().owner(primaryStage).masthead(null)
 	        				.message("Edi-Eintrag mit der Nr. " + ediNr + " erfolgreich gelöscht")
 	        				.showInformation();
