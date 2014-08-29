@@ -2,6 +2,7 @@ package de.vbl.ediliste.model;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javafx.beans.property.SimpleStringProperty;
@@ -20,14 +21,20 @@ import javax.persistence.OneToMany;
  */ 
 @Entity
 public class Konfiguration {
-	private StringProperty name = new SimpleStringProperty();
+	private StringProperty name;
 	private long id;
 	private Integration integration;
 	private Collection<EdiEintrag> ediEintrag;
 	private String beschreibung;
 
 	public Konfiguration() {
-		super();
+		name = new SimpleStringProperty();
+	}
+	
+	public Konfiguration(String name) {
+		this();
+		this.setName(name);
+		ediEintrag = new ArrayList<EdiEintrag>();
 	}
 
 	// ------------------------------------------------------------------------

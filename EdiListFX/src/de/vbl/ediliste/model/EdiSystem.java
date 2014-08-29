@@ -114,12 +114,12 @@ public class EdiSystem {
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
 	public IntegerProperty anzKomponentenProperty() {
-		System.out.println("EdiSystem.anzKomponentenProperty() called for " + this.getNameSafe());
+//		System.out.println("EdiSystem.anzKomponentenProperty() called for " + this.getNameSafe());
 		return anzKomponenten;
 	}
 
 	public Integer getAnzKomponenten() {
-		System.out.println("EdiSystem.getAnzKomponenten() called for " + this.getNameSafe());
+//		System.out.println("EdiSystem.getAnzKomponenten() called for " + this.getNameSafe());
 		return ediKomponente.size();
 	}
 

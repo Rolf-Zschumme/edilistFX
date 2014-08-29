@@ -152,7 +152,7 @@ public class EdiMainController {
         			@Override
         			public void changed(ObservableValue<? extends Tab> ov, Tab talt, Tab tneu) {
         				final Tab akttab = tneu;
-						log("changed<tabPane>", akttab.textProperty().get());
+						log("tabPane.changed", akttab.textProperty().get());
 
 						primaryStage.getScene().setCursor(Cursor.WAIT);
 						
@@ -408,7 +408,7 @@ public class EdiMainController {
     		if (response == Dialog.Actions.OK) {
     			EdiEintrag ediEintrag = entityManager.find(EdiEintrag.class, selectedlistElement.getId());
     			if (ediEintrag==null) {
-    				log("deleteEdieintrag", "FEHLER: EDI-Eintrag " + ediNr + " ist nicht (mehr) gespeichert");
+    				log("deleteEdiEintrag", "FEHLER: EDI-Eintrag " + ediNr + " ist nicht (mehr) gespeichert");
     			}
     			else {
 	        		entityManager.getTransaction().begin();
@@ -417,12 +417,15 @@ public class EdiMainController {
 	        			entityManager.remove(empf.next());
 	        			empf.remove();
 	        		}
+	        		if (ediEintrag.getKonfiguration() != null) {
+	        			ediEintrag.getKonfiguration().getEdiEintrag().remove(ediEintrag);
+	        		}
 	        		entityManager.remove(ediEintrag);
-
-
-	        		Dialogs.create().owner(primaryStage).masthead(null)
-	        				.message("Edi-Eintrag mit der Nr. " + ediNr + " erfolgreich gelöscht")
-	        				.showInformation();
+	        		entityManager.getTransaction().commit();
+	        		setInfoText("Edi-Eintrag mit der Nr. " + ediNr + " erfolgreich gelöscht");
+//	        		Dialogs.create().owner(primaryStage).masthead(null)
+//	        				.message("Edi-Eintrag mit der Nr. " + ediNr + " erfolgreich gelöscht")
+//	        				.showInformation();
     			}	
     			ediEintraegeList.remove(selectedlistElement);
     			tableEdiNrAuswahl.getSelectionModel().clearSelection();

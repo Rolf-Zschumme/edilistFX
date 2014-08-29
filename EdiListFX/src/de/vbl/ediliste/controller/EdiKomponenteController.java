@@ -11,6 +11,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -40,7 +41,7 @@ public class EdiKomponenteController {
 	private static EdiMainController mainCtr;
 	private static EntityManager entityManager;
 	private final ObjectProperty<EdiKomponente> edikomponente;
-	private ObservableList<EdiEmpfaenger> ediKomponenteList = FXCollections.observableArrayList();
+	private final ObservableSet<EdiEintrag> ediEintragsSet;
 	private EdiKomponente aktKomponente = null;
 	
 	@FXML private ResourceBundle resources;
@@ -60,6 +61,7 @@ public class EdiKomponenteController {
     
     public EdiKomponenteController() {
     	this.edikomponente = new SimpleObjectProperty<>(this, "edikomponente", null);
+    	this.ediEintragsSet = FXCollections.observableSet();
     }
 
 	public static void start(Stage 			   primaryStage, 
@@ -84,7 +86,7 @@ public class EdiKomponenteController {
 					((oldKomponente==null) ? "null" : oldKomponente.getFullname() + " -> " 
 				  + ((newKomponente==null) ? "null" : newKomponente.getFullname() )));
 				if (oldKomponente != null && newKomponente == null) {
-					ediKomponenteList.clear();
+					ediEintragsSet.clear();
 					tfBezeichnung.setText("");
 					taBeschreibung.setText("");
 				}
@@ -97,7 +99,7 @@ public class EdiKomponenteController {
 			}
 		});
 		
-		tvVerwendungen.setItems(ediKomponenteList);
+//		tvVerwendungen.setItems(ediKomponenteList);
 		
 		// todo: zum Absprung bei Select eines Edi-Eintrages in der Sub-Tabelle
 		tvVerwendungen.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<EdiEmpfaenger>() {
@@ -107,7 +109,7 @@ public class EdiKomponenteController {
 			}
 		});
 		
-		btnLoeschen.disableProperty().bind(Bindings.isNotEmpty(ediKomponenteList));
+		btnLoeschen.disableProperty().bind(Bindings.not(Bindings.greaterThanOrEqual(0, Bindings.size(ediEintragsSet))));
 		
 		tcEdiNr.setCellValueFactory(cellData -> Bindings.format(EdiEintrag.FORMAT_EDINR, 
 //												cellData.getValue().getEdiNrProperty()));
@@ -165,8 +167,8 @@ public class EdiKomponenteController {
 
 	@FXML
 	void loeschen(ActionEvent event) {
-		if (ediKomponenteList.size() > 0) {
-			mainCtr.setErrorText("Fehler: Komponente wird verwendet");
+		if (ediEintragsSet.size() > 0) {
+			mainCtr.setErrorText("Fehler beim löschen der Komponente " + aktKomponente.getFullname() +" wird verwendet");
 			return;
 		}	
 		String kompoName1 = "Komponente \"" + aktKomponente.getName() + "\"";
@@ -268,7 +270,9 @@ public class EdiKomponenteController {
 	}
 	
 	private void readEdiListeforKomponete( EdiKomponente selKomponente, CacheRefresh cache) {
-		ediKomponenteList.clear();
+		tvVerwendungen.getItems().clear();
+		ObservableList<EdiEmpfaenger> empfaengerList = FXCollections.observableArrayList();
+		ediEintragsSet.clear(); 
 		/* 1. lese alle EdiEinträge mit Sender = selekierter Komponente 
 		 * 		-> zeige jeweils alle zugehörigen Empfänger, falls kein Empfänger vorhanden dummy erzeugen
 		*/
@@ -280,18 +284,19 @@ public class EdiKomponenteController {
 		}	
 		List<EdiEintrag> ediList = tqS.getResultList();
 		for(EdiEintrag e : ediList ) {
+			ediEintragsSet.add(e);
 			if (e.getEdiEmpfaenger().size() > 0) {
-				ediKomponenteList.addAll(e.getEdiEmpfaenger());
+				empfaengerList.addAll(e.getEdiEmpfaenger());
 //				for(EdiEmpfaenger ee : e.getEdiEmpfaenger() ) ediKomponenteList.add(ee); 
 			} else {
 				EdiEmpfaenger tmpE = new EdiEmpfaenger();
 				tmpE.setEdiEintrag(e);
-				ediKomponenteList.add(tmpE);
+				empfaengerList.add(tmpE);
 			}
 		}
 		log("readEdiListeforKomponete", "für "+ selKomponente.getName() + " " + 
 			ediList.size() + " EDI-Einträge" + " mit insgesamt " + 
-			ediKomponenteList.size() + " Empfänger gelesen (Refresh=" + cache+ ")");
+			empfaengerList.size() + " Empfänger gelesen (Refresh=" + cache+ ")");
 		
 		/* 2. lese alle Empfänger mit Empfänger = selektierte Komponente 
 		 *    -> zeige alle Empfänger  
@@ -306,10 +311,14 @@ public class EdiKomponenteController {
 //		ediKomponenteList.addAll(tqE.getResultList());
 		for(EdiEmpfaenger e : tqE.getResultList() ) {
 			log("readEdiListeforKomponete", "Empfaenger:" + e.getKomponente().getFullname() + " add");
-			ediKomponenteList.add(e);
+			empfaengerList.add(e);
+			ediEintragsSet.add(e.getEdiEintrag());
 		}
 		log("readEdiListeforKomponete", "für " + selKomponente.getName() + " " + 
 			tqE.getResultList().size() + " EDI-Empfänger gelesen (Refresh=" + cache+ ")");
+		
+		tvVerwendungen.setItems(empfaengerList);
+		log("readEdiListeforKomponente","size="+ ediEintragsSet.size());
 	}
 
 	public final ObjectProperty<EdiKomponente> komponenteProperty() {
