@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -42,7 +44,9 @@ public class EdiSystemController {
 	private final ObjectProperty<EdiSystem> ediSystem;
 	private final ObservableList<EdiEmpfaenger> ediKomponentenList = FXCollections.observableArrayList();
 	private EdiSystem aktSystem = null;
-	private String aktFullName;
+	private static String aktFullName;
+	
+	private BooleanProperty dataIsChanged = new SimpleBooleanProperty(false);
 	
 	@FXML private ResourceBundle resources;
     @FXML private URL location;
@@ -57,6 +61,7 @@ public class EdiSystemController {
     @FXML private TableColumn<EdiEmpfaenger, String> tcDatumAb;
     @FXML private TableColumn<EdiEmpfaenger, String> tcDatumBis;
     
+    @FXML private Button btnSpeichern;
     @FXML private Button btnLoeschen;
     
     public EdiSystemController() {
@@ -84,23 +89,47 @@ public class EdiSystemController {
 				log("ChangeListener<EdiSystem>",
 					((oldSystem==null) ? "null" : oldSystem.getFullname()) + " -> " 
 				  + ((newSystem==null) ? "null" : newSystem.getFullname()) );
-				if (oldSystem != null && newSystem == null) {
-						ediKomponentenList.clear();
-						tfBezeichnung.setText("");
-						taBeschreibung.setText("");
+				btnLoeschen.disableProperty().unbind();
+				if (oldSystem != null) {
+					ediKomponentenList.clear();
 				}
+				tfBezeichnung.setText("");
+				taBeschreibung.setText("");
 				if (newSystem != null) {
 					aktSystem = newSystem;
 					log("ediSystemListner.changed", "newSystem.Name="+ newSystem.getName());
 					aktFullName = aktSystem.getFullname();
 					readEdiListeforSystem(newSystem, CacheRefresh.FALSE);
 					tfBezeichnung.setText(newSystem.getName());
+					if (newSystem.getBeschreibung() == null) {
+						newSystem.setBeschreibung("");
+					}
 					taBeschreibung.setText(newSystem.getBeschreibung());
+					btnLoeschen.disableProperty().bind(Bindings.lessThan(0, aktSystem.anzKomponentenProperty()));
 				}
+				dataIsChanged.set(false);
 			}
 		});
 		
-		btnLoeschen.disableProperty().bind(Bindings.isNotEmpty(ediKomponentenList));
+		btnSpeichern.disableProperty().bind(Bindings.not(dataIsChanged));
+
+		tfBezeichnung.textProperty().addListener((observable, oldValue, newValue)  -> {
+			if (aktSystem.getName().equals(newValue) == false) {
+				dataIsChanged.set(true);
+			} else {	
+				dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
+			}
+		}); 
+
+		taBeschreibung.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue.equals(aktSystem.getBeschreibung()) == false) {
+				dataIsChanged.set(true);
+			} else {	
+				dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
+			}
+		});
+		
+//	    Setup for Sub-Panel    
 		
 		tvVerwendungen.setItems(ediKomponentenList);
 		tcEdiNr.setCellValueFactory(cellData -> 
@@ -157,7 +186,8 @@ public class EdiSystemController {
 		}
 		Action response = Dialogs.create()
 				.owner(primaryStage).title(primaryStage.getTitle())
-				.message(neuName + " des Partners " + aktSystem.getPartnerName() + " wirklich löschen ?")
+				.message(neuName + " des Partners " + " \"" + 
+				aktSystem.getEdiPartner().getName() + "\" wirklich löschen ?")
 				.showConfirm();
 		if (response == Dialog.Actions.YES) {
 			try {
@@ -179,14 +209,16 @@ public class EdiSystemController {
 	
 	@FXML
 	void speichern(ActionEvent event) {
-		checkForChangesAndSave(false);
+		checkForChangesAndSave(Checkmode.SAVE_DONT_ASK);
 	}
 	
 	public boolean checkForChangesAndAskForSave() {
-		return checkForChangesAndSave(true);
+		return checkForChangesAndSave(Checkmode.ASK_FOR_UPDATE);
 	}
 
-	private boolean checkForChangesAndSave(boolean askForUpdate) {
+	private static enum Checkmode { ONLY_CHECK, ASK_FOR_UPDATE, SAVE_DONT_ASK };
+	
+	private boolean checkForChangesAndSave(Checkmode checkmode) {
 		log("checkForChangesAndSave","aktSystem=" + (aktSystem==null ? "null" : aktSystem.getFullname()));
 		if (aktSystem == null ) {
 			return true;
@@ -195,25 +227,30 @@ public class EdiSystemController {
 		String newName = tfBezeichnung.getText();
 		String orgBeschreibung = aktSystem.getBeschreibung()==null ? "" : aktSystem.getBeschreibung();
 		String newBeschreibung = taBeschreibung.getText()==null ? "" : taBeschreibung.getText();
-		if (!orgName.equals(newName) ||
-			!orgBeschreibung.equals(newBeschreibung) ) {
-			if (askForUpdate) {
-				Action response = Dialogs.create()
-    				.owner(primaryStage).title(primaryStage.getTitle())
-    				.actions(Dialog.Actions.YES, Dialog.Actions.NO, Dialog.Actions.CANCEL)
-    				.message("Sollen die Änderungen an dem System " + orgName + " gespeichert werden ?")
-    				.showConfirm();
-	    		if (response == Dialog.Actions.CANCEL) 	
-	    			return false;
-	    		if (response == Dialog.Actions.NO) {
-	    			aktSystem = null;
-	    			return true;
-	    		}
-			}	
-			if (checkSystemName(newName) == false) {
-				mainCtr.setErrorText("Eine anderes System des Partners heißt bereits so!");
+		if (orgName.equals(newName) &&
+			orgBeschreibung.equals(newBeschreibung) ) {
+			log("checkForChangesAndSave", "Name und Bezeichnung unverändert");
+			return true;
+		}
+		if (checkSystemName(newName) == false) {
+			mainCtr.setErrorText("Eine anderes System des Partners \"" +
+					aktSystem.getEdiPartner().getName() + "\" heißt bereits so!");
+			return false;
+		}
+		if (checkmode == Checkmode.ASK_FOR_UPDATE) {
+			Action response = Dialogs.create()
+					.owner(primaryStage).title(primaryStage.getTitle())
+					.actions(Dialog.Actions.YES, Dialog.Actions.NO, Dialog.Actions.CANCEL)
+					.message("Sollen die Änderungen an dem System " + orgName + " gespeichert werden ?")
+					.showConfirm();
+			if (response == Dialog.Actions.CANCEL) 	
 				return false;
+			if (response == Dialog.Actions.NO) {
+				aktSystem = null;
+				return true;
 			}
+		}	
+		if (checkmode != Checkmode.ONLY_CHECK) {
 			log("checkForChangesAndSave","Änderung erkannt -> update");
 			entityManager.getTransaction().begin();
 			aktSystem.setName(newName);
@@ -221,9 +258,6 @@ public class EdiSystemController {
 			entityManager.getTransaction().commit();
 			readEdiListeforSystem(aktSystem, CacheRefresh.TRUE);
 			mainCtr.setInfoText("Das System " + orgName + " wurde gespeichert");
-		}
-		else {
-			log("checkForChangesAndSave", "Name und Bezeichnung unverändert");
 		}
 		return true;
 	}
@@ -314,6 +348,7 @@ public class EdiSystemController {
         assert tcEmpfaenger != null : "fx:id=\"tcEmpfaenger\" was not injected: check your FXML file 'EdiSystem.fxml'.";
         assert tcDatumBis != null : "fx:id=\"tcDatumBis\" was not injected: check your FXML file 'EdiSystem.fxml'.";
         assert tvVerwendungen != null : "fx:id=\"tvVerwendungen\" was not injected: check your FXML file 'EdiSystem.fxml'.";
+        assert btnSpeichern != null : "fx:id=\"btnSpeichern\" was not injected: check your FXML file 'EdiSystem.fxml'.";
         assert btnLoeschen != null : "fx:id=\"btnLoeschen\" was not injected: check your FXML file 'EdiSystem.fxml'.";
     }
     

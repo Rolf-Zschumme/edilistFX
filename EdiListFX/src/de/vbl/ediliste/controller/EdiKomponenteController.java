@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -41,8 +43,10 @@ public class EdiKomponenteController {
 	private static EdiMainController mainCtr;
 	private static EntityManager entityManager;
 	private final ObjectProperty<EdiKomponente> edikomponente;
-	private final ObservableSet<EdiEintrag> ediEintragsSet;
+	private final ObservableSet<EdiEintrag> ediEintragsSet;      // all assigned EDI-Entities
 	private EdiKomponente aktKomponente = null;
+	
+    private BooleanProperty dataIsChanged = new SimpleBooleanProperty(false);
 	
 	@FXML private ResourceBundle resources;
     @FXML private URL location;
@@ -57,6 +61,7 @@ public class EdiKomponenteController {
     @FXML private TableColumn<EdiEmpfaenger, String> tcDatumAb;
     @FXML private TableColumn<EdiEmpfaenger, String> tcDatumBis;
     
+    @FXML private Button btnSpeichern;
     @FXML private Button btnLoeschen;
     
     public EdiKomponenteController() {
@@ -94,28 +99,39 @@ public class EdiKomponenteController {
 					aktKomponente = newKomponente;
 					readEdiListeforKomponete(newKomponente, CacheRefresh.FALSE);
 					tfBezeichnung.setText(newKomponente.getName());
+					if (newKomponente.getBeschreibung() == null) {
+						newKomponente.setBeschreibung("");
+					}
 					taBeschreibung.setText(newKomponente.getBeschreibung());
 				}
+				dataIsChanged.set(false);
 			}
 		});
 		
-//		tvVerwendungen.setItems(ediKomponenteList);
-		
-		// todo: zum Absprung bei Select eines Edi-Eintrages in der Sub-Tabelle
-		tvVerwendungen.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<EdiEmpfaenger>() {
-			@Override
-			public void changed (ObservableValue<? extends EdiEmpfaenger> ov, EdiEmpfaenger oldValue, EdiEmpfaenger newValue) {
-				log("tvVerwendungen.select.changed" ,"newValue" + newValue);
-			}
-		});
-		
+		btnSpeichern.disableProperty().bind(Bindings.not(dataIsChanged));
 		btnLoeschen.disableProperty().bind(Bindings.not(Bindings.greaterThanOrEqual(0, Bindings.size(ediEintragsSet))));
+
+		tfBezeichnung.textProperty().addListener((observable, oldValue, newValue)  -> {
+			if (aktKomponente.getName().equals(newValue) == false) {
+				dataIsChanged.set(true);
+			} else {	
+				dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
+			}
+		}); 
+
+		taBeschreibung.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue.equals(aktKomponente.getBeschreibung()) == false) {
+				dataIsChanged.set(true);
+			} else {	
+				dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
+			}
+		});
+		
+//	    Setup for Sub-Panel    
 		
 		tcEdiNr.setCellValueFactory(cellData -> Bindings.format(EdiEintrag.FORMAT_EDINR, 
-//												cellData.getValue().getEdiNrProperty()));
 												cellData.getValue().getEdiEintrag().ediNrProperty()));
 
-//		tcSender.setCellValueFactory(cellData -> cellData.getValue().senderNameProperty());
 		tcSender.setCellValueFactory(cellData -> cellData.getValue().getEdiEintrag().getEdiKomponente().fullnameProperty());
 		
 		tcSender.setCellFactory(column -> {
@@ -129,6 +145,7 @@ public class EdiKomponenteController {
 						setText(senderFullname);
 //						log("tcSender.updateItem", "aktkombo:" + aktKomponente.getFullname() + 
 //								" sender:" + sender);
+//						if (senderFullname.equals(aktKomponente.getFullname()))
 						if (senderFullname.equals(aktKomponente.getFullname()))
 							setFont(Font.font(null, FontWeight.BOLD, getFont().getSize()));
 						else
@@ -138,7 +155,6 @@ public class EdiKomponenteController {
 			};
 		});
 		
-//		tcEmpfaenger.setCellValueFactory(cellData -> cellData.getValue().empfaengerNameProperty());
 		tcEmpfaenger.setCellValueFactory(cellData -> cellData.getValue().getKomponente().fullnameProperty());
 
 		tcEmpfaenger.setCellFactory(column -> {
@@ -163,6 +179,14 @@ public class EdiKomponenteController {
 		tcGeschaeftsobjekt.setCellValueFactory(cellData -> cellData.getValue().geschaeftsObjektNameProperty());
 		tcDatumAb.setCellValueFactory(cellData -> cellData.getValue().getEdiEintrag().seitDatumProperty());
 		tcDatumBis.setCellValueFactory(cellData -> cellData.getValue().getEdiEintrag().bisDatumProperty());
+		
+		// todo: zum Absprung bei Select eines Edi-Eintrages in der Sub-Tabelle
+		tvVerwendungen.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<EdiEmpfaenger>() {
+			@Override
+			public void changed (ObservableValue<? extends EdiEmpfaenger> ov, EdiEmpfaenger oldValue, EdiEmpfaenger newValue) {
+				log("tvVerwendungen.select.changed" ,"newValue" + newValue);
+			}
+		});
 	}
 
 	@FXML
@@ -201,14 +225,16 @@ public class EdiKomponenteController {
 	
 	@FXML
 	void speichern(ActionEvent event) {
-		checkForChangesAndSave(false);
+		checkForChangesAndSave(Checkmode.SAVE_DONT_ASK);
 	}
 	
 	public boolean checkForChangesAndAskForSave() {
-		return checkForChangesAndSave(true);
+		return checkForChangesAndSave(Checkmode.ASK_FOR_UPDATE);
 	}
 
-	private boolean checkForChangesAndSave(boolean askForUpdate) {
+	private static enum Checkmode { ONLY_CHECK, ASK_FOR_UPDATE, SAVE_DONT_ASK };
+	
+	private boolean checkForChangesAndSave(Checkmode checkmode) {
 		log("checkForChangesAndSave","aktKompo=" + (aktKomponente==null ? "null" : aktKomponente.getFullname()));
 		if (aktKomponente == null ) {
 			return true;
@@ -217,9 +243,14 @@ public class EdiKomponenteController {
 		String newName = tfBezeichnung.getText();
 		String orgBeschreibung = aktKomponente.getBeschreibung()==null ? "" : aktKomponente.getBeschreibung();
 		String newBeschreibung = taBeschreibung.getText()==null ? "" : taBeschreibung.getText();
+
 		if (!orgName.equals(newName) ||
 			!orgBeschreibung.equals(newBeschreibung) ) {
-			if (askForUpdate) {
+			if (checkKomponentenName(newName) == false) {
+				mainCtr.setErrorText("Eine andere Komponente des Systems heißt bereits so!");
+				return false;
+			}
+			if (checkmode == Checkmode.ASK_FOR_UPDATE) {
 				Action response = Dialogs.create()
     				.owner(primaryStage).title(primaryStage.getTitle())
     				.actions(Dialog.Actions.YES, Dialog.Actions.NO, Dialog.Actions.CANCEL)
@@ -232,17 +263,15 @@ public class EdiKomponenteController {
 	    			return true;
 	    		}
 			}	
-			if (checkKomponentenName(newName) == false) {
-				mainCtr.setErrorText("Eine andere Komponente des Systems heißt bereits so!");
-				return false;
-			}
-			log("checkForChangesAndSave","Änderung erkannt -> update");
-			entityManager.getTransaction().begin();
-			aktKomponente.setName(newName);
-			aktKomponente.setBeschreibung(newBeschreibung);
-			entityManager.getTransaction().commit();
-			readEdiListeforKomponete(aktKomponente, CacheRefresh.TRUE);
-			mainCtr.setInfoText("Komponente wurde gespeichert");
+			if (checkmode != Checkmode.ONLY_CHECK) {
+				log("checkForChangesAndSave","Änderung erkannt -> update");
+				entityManager.getTransaction().begin();
+				aktKomponente.setName(newName);
+				aktKomponente.setBeschreibung(newBeschreibung);
+				entityManager.getTransaction().commit();
+				readEdiListeforKomponete(aktKomponente, CacheRefresh.TRUE);
+				mainCtr.setInfoText("Komponente wurde gespeichert");
+			}	
 		}
 		else {
 			log("checkForChangesAndSave", "Name und Bezeichnung unverändert");
@@ -295,9 +324,9 @@ public class EdiKomponenteController {
 				empfaengerList.add(tmpE);
 			}
 		}
-		log("readEdiListeforKomponete", "für "+ selKomponente.getName() + " " + 
-			ediList.size() + " EDI-Einträge" + " mit insgesamt " + 
-			empfaengerList.size() + " Empfänger gelesen (Refresh=" + cache+ ")");
+//		log("readEdiListeforKomponete", "für "+ selKomponente.getName() + " " + 
+//			ediList.size() + " EDI-Einträge" + " mit insgesamt " + 
+//			empfaengerList.size() + " Empfänger gelesen (Refresh=" + cache+ ")");
 		
 		/* 2. lese alle Empfänger mit Empfänger = selektierte Komponente 
 		 *    -> zeige alle Empfänger  
@@ -315,11 +344,11 @@ public class EdiKomponenteController {
 			empfaengerList.add(e);
 			ediEintragsSet.add(e.getEdiEintrag());
 		}
-		log("readEdiListeforKomponete", "für " + selKomponente.getName() + " " + 
-			tqE.getResultList().size() + " EDI-Empfänger gelesen (Refresh=" + cache+ ")");
+//		log("readEdiListeforKomponete", "für " + selKomponente.getName() + " " + 
+//			tqE.getResultList().size() + " EDI-Empfänger gelesen (Refresh=" + cache+ ")");
 		
 		tvVerwendungen.setItems(empfaengerList);
-		log("readEdiListeforKomponente","size="+ ediEintragsSet.size());
+//		log("readEdiListeforKomponente","size="+ ediEintragsSet.size());
 	}
 
 	public final ObjectProperty<EdiKomponente> komponenteProperty() {
@@ -349,6 +378,7 @@ public class EdiKomponenteController {
         assert tcDatumBis != null : "fx:id=\"tcDatumBis\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
         assert tvVerwendungen != null : "fx:id=\"tvVerwendungen\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
         assert btnLoeschen != null : "fx:id=\"btnLoeschen\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
+        assert btnSpeichern != null : "fx:id=\"btnSpeichern\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
     }
     
 }

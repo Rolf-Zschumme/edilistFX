@@ -3,7 +3,7 @@
 <?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?> 
+<?import javafx.scene.layout.*?>
 
 <AnchorPane fx:id="ediEintrag" prefHeight="664.0" prefWidth="923.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.ediliste.controller.EdiEintragController">
 	<children>
@@ -11,7 +11,7 @@
 			<children>
 				<ToolBar>
 					<items>
-						<Button fx:id="btnEdiEintragSpeichern" disable="true" mnemonicParsing="false" onAction="#ediEintragSpeichern" text="Änderungen speichern" />
+						<Button fx:id="btnSpeichern" disable="true" mnemonicParsing="false" onAction="#speichern" text="Änderungen speichern" />
 						<Button disable="true" mnemonicParsing="false" prefHeight="25.0" prefWidth="148.0" text="Steckbrief drucken" />
 					</items>
 					<VBox.margin>

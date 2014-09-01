@@ -119,17 +119,13 @@ public class EdiPartner {
 		return anzSysteme;
 	}
 
-//	@Transient
-//	public Integer getAnzSysteme() {
-//		return anzSysteme.get();
-//	}
-
 	// ------------------------------------------------------------------------
 	@Transient
 	public IntegerProperty anzKomponentenProperty() {
 		int anzK = 0;
 		for ( EdiSystem s : getEdiSystem() ) {
-			anzK += s.getEdiKomponente().size();
+//			anzK += s.getEdiKomponente().size();
+			anzK += s.anzKomponentenProperty().get();
 		}
 		anzKomponenten.set(anzK);
 		return anzKomponenten;

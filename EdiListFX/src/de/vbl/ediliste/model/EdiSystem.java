@@ -9,8 +9,6 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -43,6 +41,7 @@ public class EdiSystem {
 		this();
 		this.name.setValue(name);
 		this.setEdiPartner(ediPartner);
+		ediPartner.getEdiSystem().add(this);
 	}
 
 	// ------------------------------------------------------------------------
@@ -75,6 +74,7 @@ public class EdiSystem {
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
+	@Transient
 	public StringProperty fullnameProperty() {
 		return fullname;
 	}
@@ -102,9 +102,10 @@ public class EdiSystem {
 	public void setEdiPartner(EdiPartner param) {
 		if (ediPartner != null) {
 			fullname.unbind();
+			ediPartner.getEdiSystem().remove(this);
 		}
 		ediPartner = param;
-		fullname.bind(Bindings.concat(ediPartner.nameProperty(), ASCIItoStr(42), name));
+		fullname.bind(Bindings.concat(ediPartner.nameProperty(), ASCIItoStr(42), this.name));
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
@@ -116,40 +117,32 @@ public class EdiSystem {
 	public void setEdiKomponente(Collection<EdiKomponente> komponenten) {
 		if (ediKomponente != null) {
 			anzKomponenten.unbind();
-			System.out.println("setEdiKomponente UNBOUND");
-		}
-		if (ediKomponente != null) {
-			System.out.println("setEdiKomponente " + ediKomponente.size());
 		}
 		ediKomponente = FXCollections.observableArrayList(komponenten);
+		System.out.println(ediKomponente.size() + " " + this.getFullname());
 		anzKomponenten.bind(Bindings.size(ediKomponente));
 
-//		System.out.println("setKomponente für " + this.getFullname() + " mit "  + komponenten );
-		anzKomponenten.addListener(new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> observable,
-					Number oldValue, Number newValue) {
-				System.out.println("------->   Value changed from " + oldValue + " to " + newValue + " for " + observable.toString());
-			}
-		} );
+//		anzKomponenten.addListener(new ChangeListener<Number>() {
+//			@Override
+//			public void changed(ObservableValue<? extends Number> observable,
+//					Number oldValue, Number newValue) {
+//				System.out.println("------->   Value changed from " + oldValue + " to " + newValue + " for " + observable.toString());
+//			}
+//		} );
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
 	@Transient
 	public IntegerProperty anzKomponentenProperty() {
-//		System.out.println("EdiSystem.anzKomponentenProperty() called for " + this.getNameSafe());
 		return anzKomponenten;
 	}
 
-//	public Integer getAnzKomponenten() {
-//		System.out.println("EdiSystem.getAnzKomponenten() called for " + this.getNameSafe());
-//		return ediKomponente.size();
+//	@Transient
+//	public String getPartnerName() {
+//		return ediPartner.getName();
 //	}
-
-	public String getPartnerName() {
-		return ediPartner.getName();
-	}
-
+//
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
 	public String getBeschreibung() {
 		return beschreibung;
 	}

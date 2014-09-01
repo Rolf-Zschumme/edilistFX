@@ -109,7 +109,7 @@ public class EdiEintragController {
 	private static EdiMainController mainController;
     private static EntityManager entityManager = null;
 
-    private BooleanProperty ediEintragIsChanged = new SimpleBooleanProperty(false);
+    private BooleanProperty dataIsChanged = new SimpleBooleanProperty(false);
     private BooleanProperty senderIsSelected = new SimpleBooleanProperty(false);
     private BooleanProperty empfaenger1IsSelected = new SimpleBooleanProperty(false);
     private BooleanProperty empfaenger2IsSelected = new SimpleBooleanProperty(false);
@@ -166,7 +166,6 @@ public class EdiEintragController {
     			if (newEintrag != null) {
     				orgEdi = newEintrag;
     				aktKonfiguration = orgEdi.getKonfiguration();
-    				log("-->",aktKonfiguration + " " + aktIntegration);
     				if (aktKonfiguration != null) {
     					cmbIntegration.getSelectionModel().select(aktKonfiguration.getIntegration());
     					aktIntegration = aktKonfiguration.getIntegration();
@@ -194,14 +193,8 @@ public class EdiEintragController {
     				if (!orgEdi.bisDatumProperty().getValueSafe().equals("")) {
     					dpProduktivBis.setValue(LocalDate.parse(orgEdi.getBisDatum()));
     				}
-    				if (orgEdi.getLaeDatum() != null) {
-    					LocalDateTime dt = LocalDateTime.parse(orgEdi.getLaeDatum());
-    					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy"); 
-    					ediLastChange.setText(orgEdi.getLaeUser() + "  " + formatter.format(dt));
-    					String ttt = LocalTime.from(dt).toString().substring(0, 8);
-    					ediLastChange.setTooltip(new Tooltip(ttt));
-    				}
-    				ediEintragIsChanged.set(false);
+    				setLastChangeField(ediLastChange, orgEdi.getLaeDatum(), orgEdi.getLaeUser());
+    				dataIsChanged.set(false);
     			}
     			cmbIntegration.getSelectionModel().select(aktIntegration);
     		}
@@ -209,6 +202,20 @@ public class EdiEintragController {
 		});
     }	
 
+    private void setLastChangeField(TextField tf, String dateTime, String laeUser) {
+    	if (dateTime == null) {
+    		tf.setText("");
+    		tf.setTooltip(null);
+    	} else {	
+    		LocalDateTime dt = LocalDateTime.parse(dateTime);
+    		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy"); 
+    		tf.setText(laeUser + "  " + formatter.format(dt));
+    		String ttt = LocalTime.from(dt).toString().substring(0, 8);
+    		tf.setTooltip(new Tooltip(ttt));
+    	}
+    }
+    
+    
 	private void setupLocalBindings() {
 		if (businessObjectMap != null) {    // verify: this methode is done only once
 			return;
@@ -216,6 +223,14 @@ public class EdiEintragController {
 		setupIntegrationComboBox();
 		setupKonfigurationComboBox();
 
+		taEdiBeschreibung.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue.equals(orgEdi.getBeschreibung()) == false) {
+				dataIsChanged.set(true);
+			} else {	
+//				dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
+			}
+		});
+		
 		businessObjectMap = new HashMap<String,GeschaeftsObjekt>();		
 		readBusinessObject();
 		cmbBuOb1.setItems(businessObjectName);
@@ -267,17 +282,6 @@ public class EdiEintragController {
 			}
 		});
 
-		taEdiBeschreibung.textProperty().addListener(new ChangeListener<String>() {
-			@Override
-			public void changed(ObservableValue<? extends String> o, String oldValue, String newValue) {
-				if (newValue != null) {
-					if (newValue != orgEdi.getBeschreibung()) { 
-						ediEintragIsChanged.set(true);
-					}
-				}
-			}
-		});
-		
     	btnEmpfaenger1.disableProperty().bind(Bindings.not(senderIsSelected));
     	btnEmpfaenger2.disableProperty().bind(Bindings.not(buOb1Exist));
     	btnEmpfaenger3.disableProperty().bind(Bindings.not(buOb2Exist));
@@ -303,7 +307,7 @@ public class EdiEintragController {
     	    String newDateStr = dpProduktivSeit.getValue() == null ? "" : 
     		                    dpProduktivSeit.getValue().toString();
     		if (newDateStr.equals(orgEdi.getSeitDatum()) == false) {
-    			ediEintragIsChanged.set(true);
+    			dataIsChanged.set(true);
     		}
     	});
     	
@@ -311,11 +315,11 @@ public class EdiEintragController {
     		String newDateStr = dpProduktivBis.getValue() == null ? "" :
     							dpProduktivBis.getValue().toString();
     		if (newDateStr.equals(orgEdi.getBisDatum()) == false) {
-    			ediEintragIsChanged.set(true);
+    			dataIsChanged.set(true);
     		}
     	});
     	
-    	btnEdiEintragSpeichern.disableProperty().bind(Bindings.not(ediEintragIsChanged));
+    	btnEdiEintragSpeichern.disableProperty().bind(Bindings.not(dataIsChanged));
 		
 	}
 
@@ -355,7 +359,7 @@ public class EdiEintragController {
 				aktIntegration = cmbIntegration.getSelectionModel().getSelectedItem();
 				log("cmbIntegration.setOnAction",aktIntegration.getName() + " ausgewählt");
 				readCmbKonfigurationList(aktIntegration);
-				ediEintragIsChanged.set(true);
+				dataIsChanged.set(true);
 			}	
 		});
 	}
@@ -394,7 +398,7 @@ public class EdiEintragController {
 			Konfiguration selKonfiguration = cmbKonfiguration.getSelectionModel().getSelectedItem();
 			if (selKonfiguration != orgEdi.getKonfiguration()) {
 				log("cmbKonfiguration.setOnAction"," Änderung von " + orgEdi.getKonfiguration() + " nach " + selKonfiguration);
-				ediEintragIsChanged.set(true);
+				dataIsChanged.set(true);
 			} else {
 				log("cmbKonfiguration.setOnAction"," todo: prüfe ob insgesamt keine Änderung ?");
 			}
@@ -447,7 +451,7 @@ public class EdiEintragController {
 			GeschaeftsObjekt buOb = businessObjectMap.get(newName.toUpperCase());
 			if (buOb != null) {
 				aktName = buOb.getName();
-				ediEintragIsChanged.set(true);
+				dataIsChanged.set(true);
 			} else {
 				newName = Dialogs.create().owner(primaryStage).title(applName)
 						.message("Soll das folgende Geschäftsobjekt neu angelegt werden?")
@@ -465,7 +469,7 @@ public class EdiEintragController {
 						businessObjectName.add(newName);
 						businessObjectMap.put(newName.toUpperCase(), newBusObj);
 						aktName = newName;
-						ediEintragIsChanged.set(true);
+						dataIsChanged.set(true);
 					} catch (RuntimeException er) {
 						Dialogs.create().owner(primaryStage)
 						   .title(applName).masthead("Datenbankfehler")
@@ -605,19 +609,21 @@ public class EdiEintragController {
 //		return false;
 //	}
 	
-//	private boolean aktEdiEqualPersistence() {
-//		EdiEintrag orgEdi = entityManager.find(EdiEintrag.class, aktEdi.getId());
-//		if (aktEdi.equaels(orgEdi)) {
-//			return true;
-//		}
-//		return false;
-//	}
+	@FXML
+	void speichern(ActionEvent event) {
+		checkForChangesAndSave(Checkmode.SAVE_DONT_ASK);
+	}
 	
-    @FXML
-    void ediEintragSpeichern(ActionEvent event) {
+	public boolean checkForChangesAndAskForSave() {
+		return checkForChangesAndSave(Checkmode.ASK_FOR_UPDATE);
+	}
+
+	private static enum Checkmode { ONLY_CHECK, ASK_FOR_UPDATE, SAVE_DONT_ASK };
+	
+	private boolean checkForChangesAndSave(Checkmode checkmode) {
     	Collection<EdiEmpfaenger> tmpEmpfaengerList;
     	if (aktEdiEintragPruefen()==false)
-    		return;
+    		return false;
 		try {
 	 		entityManager.getTransaction().begin();
 	    	// if configuration changed the EdiEintrag must be removed from previous configuration	
@@ -669,7 +675,8 @@ public class EdiEintragController {
 			orgEdi.setLaeDatum(LocalDateTime.now().toString());
 			
 			entityManager.getTransaction().commit();
-
+			
+			setLastChangeField(ediLastChange, orgEdi.getLaeDatum(), orgEdi.getLaeUser());			
 //			if (prevKonfiguration != null) {
 //				entityManager.refresh(prevKonfiguration);
 //				entityManager.refresh(orgEdi.getKonfiguration());
@@ -684,7 +691,8 @@ public class EdiEintragController {
 			.message("Fehler beim speichern des Geschäftsobjektes")
 			.showException(e);
 		}	
-		ediEintragIsChanged.set(false);
+		dataIsChanged.set(false);
+		return true;
     }
 
     private boolean aktEdiEintragPruefen() {
@@ -753,7 +761,7 @@ public class EdiEintragController {
     	    	EdiKomponente sender = entityManager.find(EdiKomponente.class, aktSenderId);
     	    	log("senderButton","senderName :" + orgEdi.senderNameProperty().get());
     	    	btnSender.setText(sender.getFullname());
-    	    	ediEintragIsChanged.set(true);
+    	    	dataIsChanged.set(true);
     	    	senderIsSelected.set(true);
     	    }
     	}
@@ -802,7 +810,7 @@ public class EdiEintragController {
     			}
     			aktEmpfaenger[btnNr].setKomponente(entityManager.find(EdiKomponente.class,selEmpfaengerID));
     			ret = aktEmpfaenger[btnNr].getKomponente().getFullname();
-    	    	ediEintragIsChanged.set(true);
+    	    	dataIsChanged.set(true);
     		}
     	}
     	return ret;
@@ -831,7 +839,7 @@ public class EdiEintragController {
     		empfaenger2IsSelected.set(false);
     		buOb2Exist.set(false);
     	}
-    	ediEintragIsChanged.set(true);
+    	dataIsChanged.set(true);
     }
     
     @FXML
@@ -841,7 +849,7 @@ public class EdiEintragController {
 		cmbBuOb3.getSelectionModel().select(null);
 		empfaenger3IsSelected.set(false);
 		buOb3Exist.set(false);
-    	ediEintragIsChanged.set(true);
+    	dataIsChanged.set(true);
     }
     
     private FXMLLoader loadKomponentenAuswahl(Stage dialog, int xOffset, int yOffset) {

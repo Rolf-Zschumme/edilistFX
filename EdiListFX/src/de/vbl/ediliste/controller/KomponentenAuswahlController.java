@@ -373,6 +373,7 @@ public class KomponentenAuswahlController {
     			entityManager.getTransaction().begin();
     			entityManager.persist(ediSystem);
     			entityManager.getTransaction().commit();
+    			System.out.println("commit-->" + ediSystem.getEdiPartner().getEdiSystem().contains(ediSystem));
     		} catch (RuntimeException e) {
     			Dialogs.create().owner(stage).title(APPL_TITLE)
 					.masthead("Datenbankfehler")
