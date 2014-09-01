@@ -257,7 +257,7 @@ public class EdiSystemController {
 				"SELECT e FROM EdiEintrag e WHERE e.ediKomponente.ediSystem = :s", EdiEintrag.class);
 		tqS.setParameter("s", selSystem);
 		if (cache == CacheRefresh.TRUE) {
-			tqS.setHint("javax.persistence.cache.storeMode", "REFRESH");
+//			tqS.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		}	
 		List<EdiEintrag> ediList = tqS.getResultList();
 		for(EdiEintrag e : ediList ) {
@@ -281,7 +281,7 @@ public class EdiSystemController {
 				"SELECT e FROM EdiEmpfaenger e WHERE e.komponente.ediSystem = :s", EdiEmpfaenger.class);
 		tqE.setParameter("s", selSystem);
 		if (cache == CacheRefresh.TRUE) {
-			tqE.setHint("javax.persistence.cache.storeMode", "REFRESH");
+//			tqE.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		}	
 		ediKomponentenList.addAll(tqE.getResultList());
 		log("readEdiListeforKomponete", "für " + selSystem.getName() + " " + 

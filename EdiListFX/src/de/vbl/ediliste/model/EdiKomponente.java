@@ -37,6 +37,7 @@ public class EdiKomponente {
 		this();
 		setName(name);
 		setEdiSystem(system);
+		system.getEdiKomponente().add(this);
 	}
 
 	// ------------------------------------------------------------------------

@@ -4,16 +4,21 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 import java.util.Collection;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
+
 
 /**
  * Entity implementation class for Entity: EdiPartner
@@ -24,7 +29,8 @@ public class EdiPartner {
 	private long id;
 	private StringProperty name;
 	private String beschreibung;
-	private Collection<EdiSystem> ediSystem;
+//	private Collection<EdiSystem> ediSystem;
+	private ObservableList<EdiSystem> ediSystem;
 
 	private IntegerProperty anzSysteme;
 	private IntegerProperty anzKomponenten;
@@ -66,14 +72,36 @@ public class EdiPartner {
 		name.set(param);
 	}
 
-	// ------------------------------------------------------------------------
+//	// ------------------------------------------------------------------------
+//	@OneToMany(mappedBy = "ediPartner")
+//	public Collection<EdiSystem> getEdiSystem() {
+//		return ediSystem;
+//	}
+//
+//	public void setEdiSystem(Collection<EdiSystem> param) {
+//		this.ediSystem = param;
+//	}
+	
+	
 	@OneToMany(mappedBy = "ediPartner")
 	public Collection<EdiSystem> getEdiSystem() {
 		return ediSystem;
 	}
 
-	public void setEdiSystem(Collection<EdiSystem> param) {
-		this.ediSystem = param;
+	public void setEdiSystem(Collection<EdiSystem> systems) {
+		if (ediSystem != null) {
+			anzSysteme.unbind();
+			anzKomponenten.unbind();
+		}
+		this.ediSystem = FXCollections.observableArrayList(systems);
+		anzSysteme.bind(Bindings.size(ediSystem));
+		
+//		ObservableIntegerArray array = FXCollections.observableIntegerArray(); 
+//		for ( EdiSystem s : getEdiSystem() ) {
+// 			IntegerProperty tmp = new SimpleIntegerProperty();
+//			tmp.bind(anzKomponenten);
+//			anzKomponenten.bind(Bindings.add(tmp, s.anzKomponentenProperty()));
+//		}
 	}
 
 	// ------------------------------------------------------------------------
@@ -85,12 +113,19 @@ public class EdiPartner {
 		this.beschreibung = param;
 	}
 
-	// Properties -----------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	@Transient
 	public IntegerProperty anzSystemeProperty() {
-		anzSysteme.set(getEdiSystem().size());
 		return anzSysteme;
 	}
 
+//	@Transient
+//	public Integer getAnzSysteme() {
+//		return anzSysteme.get();
+//	}
+
+	// ------------------------------------------------------------------------
+	@Transient
 	public IntegerProperty anzKomponentenProperty() {
 		int anzK = 0;
 		for ( EdiSystem s : getEdiSystem() ) {

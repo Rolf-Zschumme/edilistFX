@@ -9,6 +9,10 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,13 +20,14 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 @Entity
 public class EdiSystem {
 	private long id;
 	private StringProperty name;
 	private EdiPartner ediPartner;
-	private Collection<EdiKomponente> ediKomponente;
+	private ObservableList<EdiKomponente> ediKomponente;
 	private String beschreibung;
 	
 	private StringProperty fullname;
@@ -108,20 +113,38 @@ public class EdiSystem {
 		return ediKomponente;
 	}
 
-	public void setEdiKomponente(Collection<EdiKomponente> param) {
-		this.ediKomponente = param;
+	public void setEdiKomponente(Collection<EdiKomponente> komponenten) {
+		if (ediKomponente != null) {
+			anzKomponenten.unbind();
+			System.out.println("setEdiKomponente UNBOUND");
+		}
+		if (ediKomponente != null) {
+			System.out.println("setEdiKomponente " + ediKomponente.size());
+		}
+		ediKomponente = FXCollections.observableArrayList(komponenten);
+		anzKomponenten.bind(Bindings.size(ediKomponente));
+
+//		System.out.println("setKomponente für " + this.getFullname() + " mit "  + komponenten );
+		anzKomponenten.addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> observable,
+					Number oldValue, Number newValue) {
+				System.out.println("------->   Value changed from " + oldValue + " to " + newValue + " for " + observable.toString());
+			}
+		} );
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
+	@Transient
 	public IntegerProperty anzKomponentenProperty() {
 //		System.out.println("EdiSystem.anzKomponentenProperty() called for " + this.getNameSafe());
 		return anzKomponenten;
 	}
 
-	public Integer getAnzKomponenten() {
+//	public Integer getAnzKomponenten() {
 //		System.out.println("EdiSystem.getAnzKomponenten() called for " + this.getNameSafe());
-		return ediKomponente.size();
-	}
+//		return ediKomponente.size();
+//	}
 
 	public String getPartnerName() {
 		return ediPartner.getName();

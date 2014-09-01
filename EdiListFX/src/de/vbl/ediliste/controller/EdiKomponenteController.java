@@ -182,6 +182,7 @@ public class EdiKomponenteController {
 				.showConfirm();
 		if (response == Dialog.Actions.YES) {
 			try {
+				aktKomponente.getEdiSystem().getEdiKomponente().remove(aktKomponente);
 				entityManager.getTransaction().begin();
 				entityManager.remove(aktKomponente);
 				entityManager.getTransaction().commit();
@@ -280,7 +281,7 @@ public class EdiKomponenteController {
 				"SELECT e FROM EdiEintrag e WHERE e.ediKomponente = :k", EdiEintrag.class);
 		tqS.setParameter("k", selKomponente);
 		if (cache == CacheRefresh.TRUE) {
-			tqS.setHint("javax.persistence.cache.storeMode", "REFRESH");
+//			tqS.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		}	
 		List<EdiEintrag> ediList = tqS.getResultList();
 		for(EdiEintrag e : ediList ) {
@@ -306,7 +307,7 @@ public class EdiKomponenteController {
 				"SELECT e FROM EdiEmpfaenger e WHERE e.komponente = :k", EdiEmpfaenger.class);
 		tqE.setParameter("k", selKomponente);
 		if (cache == CacheRefresh.TRUE) {
-			tqE.setHint("javax.persistence.cache.storeMode", "REFRESH");
+//			tqE.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		}	
 //		ediKomponenteList.addAll(tqE.getResultList());
 		for(EdiEmpfaenger e : tqE.getResultList() ) {

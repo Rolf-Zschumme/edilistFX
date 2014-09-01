@@ -494,7 +494,7 @@ public class EdiEintragController {
         ObservableList<Integration> integrationList = FXCollections.observableArrayList();
 		TypedQuery<Integration> tq = entityManager.createQuery(
 				"SELECT i FROM Integration i ORDER BY i.name", Integration.class);
-		tq.setHint("javax.persistence.cache.storeMode", "REFRESH");
+//		tq.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		integrationList.addAll(tq.getResultList());
 		return integrationList;
 	}
@@ -505,7 +505,7 @@ public class EdiEintragController {
 		TypedQuery<Konfiguration> tq = entityManager.createQuery(
 				"SELECT k FROM Konfiguration k WHERE k.integration = :i ORDER BY k.name", Konfiguration.class);
 		tq.setParameter("i", integration);
-		tq.setHint("javax.persistence.cache.storeMode", "REFRESH");
+//		tq.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		
 		ObservableList<Konfiguration> aktList = FXCollections.observableArrayList(tq.getResultList());
 		Boolean found = false;
