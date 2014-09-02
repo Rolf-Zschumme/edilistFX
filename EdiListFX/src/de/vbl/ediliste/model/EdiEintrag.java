@@ -42,7 +42,7 @@ public class EdiEintrag {
 		ediNr = new SimpleIntegerProperty();
 		bezeichnung = new SimpleStringProperty();
 		beschreibung = new SimpleStringProperty();
-		ediEmpfaenger = new ArrayList<>();
+		ediEmpfaenger = new ArrayList<EdiEmpfaenger>();
 		seitDatum = new SimpleStringProperty();
 		bisDatum = new SimpleStringProperty();
 		senderName = new SimpleStringProperty();
