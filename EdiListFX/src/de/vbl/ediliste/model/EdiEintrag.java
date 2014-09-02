@@ -4,7 +4,6 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -184,35 +183,35 @@ public class EdiEintrag {
 		this.laeUser = laeUser;
 	}
 
-	public boolean equaels (EdiEintrag tEDI) {
-		if ( (id == tEDI.id)                          								&&
-			 (ediNr.get() == tEDI.ediNr.get())		  							  	&&	
-		     (beschreibung.getValueSafe().equals(tEDI.beschreibung.getValueSafe()))	&&
-		     (konfiguration == tEDI.konfiguration)                  				&&
-		     (ediKomponente == tEDI.ediKomponente)									&&
-		     (seitDatum == tEDI.seitDatum || (seitDatum != null && seitDatum.equals(tEDI.bisDatum))) &&
-		     (bisDatum == tEDI.bisDatum || (bisDatum != null && bisDatum.equals(tEDI.bisDatum))) &&
-		     (empfaengerListIsEqual(ediEmpfaenger,tEDI.ediEmpfaenger)) 	) {
-		     		return true;
-		}
-		return false;
-	}
+//	public boolean equaels (EdiEintrag tEDI) {
+//		if ( (id == tEDI.id)                          								&&
+//			 (ediNr.get() == tEDI.ediNr.get())		  							  	&&	
+//		     (beschreibung.getValueSafe().equals(tEDI.beschreibung.getValueSafe()))	&&
+//		     (konfiguration == tEDI.konfiguration)                  				&&
+//		     (ediKomponente == tEDI.ediKomponente)									&&
+//		     (seitDatum == tEDI.seitDatum || (seitDatum != null && seitDatum.equals(tEDI.bisDatum))) &&
+//		     (bisDatum == tEDI.bisDatum || (bisDatum != null && bisDatum.equals(tEDI.bisDatum))) &&
+//		     (empfaengerListIsEqual(ediEmpfaenger,tEDI.ediEmpfaenger)) 	) {
+//		     		return true;
+//		}
+//		return false;
+//	}
 	
-	private boolean empfaengerListIsEqual( Collection<EdiEmpfaenger> empf1,
-			Collection<EdiEmpfaenger> empf2) {
-		if (empf1.size() == empf2.size()) {
-			Iterator<EdiEmpfaenger> i1 = empf1.iterator();
-			Iterator<EdiEmpfaenger> i2 = empf2.iterator();
-			while (i1.hasNext()) {
-				EdiEmpfaenger e1 = i1.next();
-				EdiEmpfaenger e2 = i2.next();
-				if ( !e1.equaels(e2) )
-					return false;
-			}
-			return true;
-		}
-		return false;
-	}
+//	private boolean empfaengerListIsEqual( Collection<EdiEmpfaenger> empf1,
+//			Collection<EdiEmpfaenger> empf2) {
+//		if (empf1.size() == empf2.size()) {
+//			Iterator<EdiEmpfaenger> i1 = empf1.iterator();
+//			Iterator<EdiEmpfaenger> i2 = empf2.iterator();
+//			while (i1.hasNext()) {
+//				EdiEmpfaenger e1 = i1.next();
+//				EdiEmpfaenger e2 = i2.next();
+//				if ( !e1.equaels(e2) )
+//					return false;
+//			}
+//			return true;
+//		}
+//		return false;
+//	}
 	
 	public void copy (EdiEintrag source) {
 		this.id = source.id;

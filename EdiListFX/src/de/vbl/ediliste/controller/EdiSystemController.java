@@ -227,6 +227,7 @@ public class EdiSystemController {
 		String newName = tfBezeichnung.getText();
 		String orgBeschreibung = aktSystem.getBeschreibung()==null ? "" : aktSystem.getBeschreibung();
 		String newBeschreibung = taBeschreibung.getText()==null ? "" : taBeschreibung.getText();
+		
 		if (orgName.equals(newName) &&
 			orgBeschreibung.equals(newBeschreibung) ) {
 			log("checkForChangesAndSave", "Name und Bezeichnung unverändert");

@@ -18,6 +18,8 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -59,18 +61,64 @@ import de.vbl.ediliste.model.GeschaeftsObjekt;
 import de.vbl.ediliste.model.Integration;
 import de.vbl.ediliste.model.Konfiguration;
 
+
 public class EdiEintragController {
 	private static final String EDI_PANE_PREFIX = "EDI ";
 	private static final Integer MAX_EMPFAENGER = 3;
 	private static final String DEFAULT_KONFIG_NAME = "Ohne XI/PO-Konfiguration";
 
 	private final ObjectProperty<EdiEintrag> ediEintrag;
-	private EdiEintrag orgEdi;
-	private Konfiguration aktKonfiguration;
-	long aktSenderId;
+//	private EdiEintrag aktEdi;
+//	private Konfiguration aktKonfiguration;
     private EdiEmpfaenger aktEmpfaenger[] = new EdiEmpfaenger[MAX_EMPFAENGER];
     private String busObjName[] = { "", "", ""};
 
+    private static class AktEDI {
+    	EdiEintrag orgEDI;
+    	Integration integration;
+    	Konfiguration konfiguration;
+    	String bezeichnung;
+    	String beschreibung;
+    	LocalDate seitDatum;
+    	LocalDate bisDatum;
+    	long senderId;
+    	StringProperty senderName = new SimpleStringProperty(); 
+    	
+    	void setData (EdiEintrag s) {
+    		orgEDI = s;
+    		konfiguration = s.getKonfiguration();
+    		integration = konfiguration.getIntegration();
+    		bezeichnung = s.getBezeichnung()==null ? "" : s.getBezeichnung();
+    		if (s.getEdiKomponente()==null) {
+    			senderId = 0L;
+    			senderName.set("");
+    		} else {
+    			senderId = s.getEdiKomponente().getId();
+    			senderName.set(s.getEdiKomponente().getFullname());
+    		}
+			if (s.seitDatumProperty().getValueSafe().equals("")) {
+				seitDatum = null;
+			} else {
+				seitDatum = LocalDate.parse(s.getSeitDatum());
+			}	
+			if (s.bisDatumProperty().getValueSafe().equals("")) {
+				bisDatum = null;
+			} else {
+				bisDatum = LocalDate.parse(s.getBisDatum());
+			}	
+    	}
+    	void clearData () {
+    		orgEDI = null;
+    		integration = null;
+    		konfiguration = null;
+    		bezeichnung = "";
+    		beschreibung = "";
+    		senderId = 0L;
+    		senderName.set("");
+    	}
+    }
+    static AktEDI ae;
+    
 	@FXML private AnchorPane ediEintragPane;
     @FXML private VBox eintragVBox;
 
@@ -119,7 +167,7 @@ public class EdiEintragController {
     private BooleanProperty buOb3Exist = new SimpleBooleanProperty(false);
     private BooleanProperty readOnlyAccess = new SimpleBooleanProperty(false);
     
-    private Integration aktIntegration = null;
+//  private Integration aktIntegration = null;
     private Map<String,GeschaeftsObjekt> businessObjectMap; 
     private ObservableList<String> businessObjectName = FXCollections.observableArrayList();
 
@@ -150,53 +198,42 @@ public class EdiEintragController {
     			} else {	
     				taEdiBeschreibung.setText("");
     				tfBezeichnung.setText("");
-    				btnSender.setText("");
     				btnEmpfaenger1.setText("");
     				btnEmpfaenger2.setText("");
     				btnEmpfaenger3.setText("");
     				ediLastChange.setText("");
-    				aktIntegration = null;
-    				aktKonfiguration = null;
+//    				aktIntegration = null;
+//    				aktKonfiguration = null;
     				tabAktEdiNr.setText(EDI_PANE_PREFIX + "000");
     				cmbKonfiguration.getSelectionModel().select(null);
+    				btnSender.textProperty().unbind();
     			}
-    			aktSenderId = 0L;
-    			dpProduktivSeit.setValue(null);
-    			dpProduktivBis.setValue(null);
+    			ae.senderId = 0L;
     			if (newEintrag != null) {
-    				orgEdi = newEintrag;
-    				aktKonfiguration = orgEdi.getKonfiguration();
-    				if (aktKonfiguration != null) {
-    					cmbIntegration.getSelectionModel().select(aktKonfiguration.getIntegration());
-    					aktIntegration = aktKonfiguration.getIntegration();
-    					cmbIntegration.getSelectionModel().select(aktIntegration);
-    					cmbKonfiguration.getSelectionModel().select(aktKonfiguration);
+    				ae.setData(newEintrag);
+//    				aktEdi = newEintrag;
+//    				aktKonfiguration = aktEdi.getKonfiguration();
+    				if (ae.konfiguration != null) {
+    					cmbIntegration.getSelectionModel().select(ae.konfiguration.getIntegration());
+    					ae.integration = ae.konfiguration.getIntegration();
+    					cmbIntegration.getSelectionModel().select(ae.integration);
+    					cmbKonfiguration.getSelectionModel().select(ae.konfiguration);
     				}
-    				tabAktEdiNr.setText(EDI_PANE_PREFIX +  orgEdi.getEdiNrStr());
-    				tfBezeichnung.setText(orgEdi.getBezeichnung()==null ? "" : orgEdi.getBezeichnung());
-    				taEdiBeschreibung.setText(orgEdi.getBeschreibung());
+    				tabAktEdiNr.setText(EDI_PANE_PREFIX +  ae.orgEDI.getEdiNrStr());
+    				tfBezeichnung.setText(ae.bezeichnung);
+    				taEdiBeschreibung.setText(ae.beschreibung);
     				
-    				if (orgEdi.getEdiKomponente() == null) {
-    					btnSender.setText("");
-    					senderIsSelected.set(false);
-    				} else {
-    			    	aktSenderId = orgEdi.getEdiKomponente()==null ? 0L : orgEdi.getEdiKomponente().getId();
-    					btnSender.setText(orgEdi.getEdiKomponente().getFullname());
-    					senderIsSelected.set(true);
-    				}
-    				copyEmpfaengerList(orgEdi.getEdiEmpfaenger().iterator());
+    				btnSender.textProperty().bind(ae.senderName);
+    				senderIsSelected.set(ae.senderId == 0L);
+    				copyEmpfaengerList(ae.orgEDI.getEdiEmpfaenger().iterator());
     				setAktEmpfaenger();
     				
-    				if (!orgEdi.seitDatumProperty().getValueSafe().equals("")) {
-    					dpProduktivSeit.setValue(LocalDate.parse(orgEdi.getSeitDatum()));
-    				}
-    				if (!orgEdi.bisDatumProperty().getValueSafe().equals("")) {
-    					dpProduktivBis.setValue(LocalDate.parse(orgEdi.getBisDatum()));
-    				}
-    				setLastChangeField(ediLastChange, orgEdi.getLaeDatum(), orgEdi.getLaeUser());
-    				dataIsChanged.set(false);
+    				setLastChangeField(ediLastChange, ae.orgEDI.getLaeDatum(), ae.orgEDI.getLaeUser());
     			}
-    			cmbIntegration.getSelectionModel().select(aktIntegration);
+    			dpProduktivSeit.setValue(ae.seitDatum);
+    			dpProduktivBis.setValue(ae.bisDatum);
+    			cmbIntegration.getSelectionModel().select(ae.integration);
+    			dataIsChanged.set(false);
     		}
 
 		});
@@ -224,7 +261,7 @@ public class EdiEintragController {
 		setupKonfigurationComboBox();
 
 		taEdiBeschreibung.textProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue.equals(orgEdi.getBeschreibung()) == false) {
+			if (newValue.equals(aktEdi.getBeschreibung()) == false) {
 				dataIsChanged.set(true);
 			} else {	
 //				dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
@@ -306,7 +343,7 @@ public class EdiEintragController {
     		// table.value and property.value can be null
     	    String newDateStr = dpProduktivSeit.getValue() == null ? "" : 
     		                    dpProduktivSeit.getValue().toString();
-    		if (newDateStr.equals(orgEdi.getSeitDatum()) == false) {
+    		if (newDateStr.equals(aktEdi.getSeitDatum()) == false) {
     			dataIsChanged.set(true);
     		}
     	});
@@ -314,7 +351,7 @@ public class EdiEintragController {
     	dpProduktivBis.setOnAction(event -> {
     		String newDateStr = dpProduktivBis.getValue() == null ? "" :
     							dpProduktivBis.getValue().toString();
-    		if (newDateStr.equals(orgEdi.getBisDatum()) == false) {
+    		if (newDateStr.equals(aktEdi.getBisDatum()) == false) {
     			dataIsChanged.set(true);
     		}
     	});
@@ -323,6 +360,7 @@ public class EdiEintragController {
 		
 	}
 
+	
     private void setupIntegrationComboBox() {
 
 		cmbIntegration.setItems(readIntegrations());
@@ -396,8 +434,8 @@ public class EdiEintragController {
 		});
 		cmbKonfiguration.setOnAction((event) -> {
 			Konfiguration selKonfiguration = cmbKonfiguration.getSelectionModel().getSelectedItem();
-			if (selKonfiguration != orgEdi.getKonfiguration()) {
-				log("cmbKonfiguration.setOnAction"," Änderung von " + orgEdi.getKonfiguration() + " nach " + selKonfiguration);
+			if (selKonfiguration != aktEdi.getKonfiguration()) {
+				log("cmbKonfiguration.setOnAction"," Änderung von " + aktEdi.getKonfiguration() + " nach " + selKonfiguration);
 				dataIsChanged.set(true);
 			} else {
 				log("cmbKonfiguration.setOnAction"," todo: prüfe ob insgesamt keine Änderung ?");
@@ -411,7 +449,7 @@ public class EdiEintragController {
 				HashMap<Integer, Tab> tabMapAfter = new HashMap<Integer,Tab>();				
 				HashMap<Integer, Tab> tabMapBefore = new HashMap<Integer,Tab>();				
 				Iterator<EdiEintrag> i = selKonfiguration.getEdiEintrag().iterator();
-				int aktEdiNr = orgEdi.getEdiNr();
+				int aktEdiNr = aktEdi.getEdiNr();
 				Tab extraTab = null;
 				while (i.hasNext()) {
 					EdiEintrag e = i.next();
@@ -621,31 +659,46 @@ public class EdiEintragController {
 	private static enum Checkmode { ONLY_CHECK, ASK_FOR_UPDATE, SAVE_DONT_ASK };
 	
 	private boolean checkForChangesAndSave(Checkmode checkmode) {
-    	Collection<EdiEmpfaenger> tmpEmpfaengerList;
-    	if (aktEdiEintragPruefen()==false)
+		log("checkForChangesAndSave","aktEdi=" + (aktEdi==null ? "null" : aktEdi.getBezeichnung()));
+		if (aktEdi == null) {
+			return true;
+		}
+		if (aktKonfiguration == aktEdi.getKonfiguration() &&
+			ae.senderId == aktEdi.getEdiKomponente().getId() &&
+			verifyEmpfaengerAreUnchanged() == true   &&
+			LocalDate.parse(aktEdi.getSeitDatum()) == dpProduktivSeit.getValue() &&
+			LocalDate.parse(aktEdi.getBisDatum()) == dpProduktivBis.getValue()  ) {
+			return true;
+		}
+		Collection<EdiEmpfaenger> tmpEmpfaengerList = new ArrayList<>();
+		
+		
+//		String tmpEdiBezeichnung = aktEdi.autoBezeichnung(); 
+		
+    	if (checkForChanges()==false)
     		return false;
 		try {
 	 		entityManager.getTransaction().begin();
 	    	// if configuration changed the EdiEintrag must be removed from previous configuration	
-	    	if (orgEdi.getKonfiguration() != null && orgEdi.getKonfiguration() != aktKonfiguration) {
-	    		orgEdi.getKonfiguration().getEdiEintrag().remove(orgEdi);
+	    	if (aktEdi.getKonfiguration() != null && aktEdi.getKonfiguration() != aktKonfiguration) {
+	    		aktEdi.getKonfiguration().getEdiEintrag().remove(aktEdi);
 	    	}
 	    	if (aktKonfiguration.getId() == 0L) {    	// new configuration for persistence
 	    		entityManager.persist(aktKonfiguration);
 	    		aktKonfiguration.setIntegration(aktIntegration);
 	    	}
-	    	if (aktKonfiguration.getEdiEintrag().contains(orgEdi) == false) {
-	    		aktKonfiguration.getEdiEintrag().add(orgEdi);
+	    	if (aktKonfiguration.getEdiEintrag().contains(aktEdi) == false) {
+	    		aktKonfiguration.getEdiEintrag().add(aktEdi);
 	    	}
-	    	orgEdi.setKonfiguration(aktKonfiguration);
+	    	aktEdi.setKonfiguration(aktKonfiguration);
 	    	
-	    	orgEdi.setEdiKomponente(entityManager.find(EdiKomponente.class, aktSenderId)); 
+	    	aktEdi.setEdiKomponente(entityManager.find(EdiKomponente.class, ae.senderId)); 
 	    	
 	 		tmpEmpfaengerList = new ArrayList<>();
 			for (int i=0; i<MAX_EMPFAENGER; ++i) {
 				EdiEmpfaenger empf = aktEmpfaenger[i];
 				if (empf != null) {
-					empf.setEdiEintrag(orgEdi);
+					empf.setEdiEintrag(aktEdi);
 					if (empf.getKomponente().getId() == 0L) {
 						log("ediEintragSpeichern","HINWEIS: Komponente ohne ID gefunden!");
 						entityManager.persist(empf);
@@ -653,30 +706,30 @@ public class EdiEintragController {
 					tmpEmpfaengerList.add(empf);
 				}	
 			}
-            for (EdiEmpfaenger e : orgEdi.getEdiEmpfaenger()) {
+            for (EdiEmpfaenger e : aktEdi.getEdiEmpfaenger()) {
                 if (tmpEmpfaengerList.contains(e) == false) {
                        entityManager.remove(e);
                 }
             }
-            orgEdi.setEdiEmpfaenger(tmpEmpfaengerList);
+            aktEdi.setEdiEmpfaenger(tmpEmpfaengerList);
             
-			String tmpEdiBezeichnung = orgEdi.autoBezeichnung(); 
-			if (orgEdi.getBezeichnung().equals(tmpEdiBezeichnung) == false) {
-				orgEdi.setBezeichnung(tmpEdiBezeichnung);
-				tfBezeichnung.textProperty().set(orgEdi.autoBezeichnung());
+			String tmpEdiBezeichnung = aktEdi.autoBezeichnung(); 
+			if (aktEdi.getBezeichnung().equals(tmpEdiBezeichnung) == false) {
+				aktEdi.setBezeichnung(tmpEdiBezeichnung);
+				tfBezeichnung.textProperty().set(aktEdi.autoBezeichnung());
 			}
-			LocalDate sdate = dpProduktivSeit.getValue();
-			orgEdi.seitDatumProperty().set(sdate==null ? "" : sdate.toString());
+			LocalDate aktSeitDatum = dpProduktivSeit.getValue();
+			aktEdi.seitDatumProperty().set(aktSeitDatum==null ? "" : aktSeitDatum.toString());
 			
-			LocalDate bdate = dpProduktivBis.getValue();
-			orgEdi.seitDatumProperty().set(bdate==null ? "" : bdate.toString());
+			LocalDate aktBisDatum = dpProduktivBis.getValue();
+			aktEdi.seitDatumProperty().set(aktBisDatum==null ? "" : aktBisDatum.toString());
 			
-			orgEdi.setLaeUser(System.getenv("USERNAME").toUpperCase());
-			orgEdi.setLaeDatum(LocalDateTime.now().toString());
+			aktEdi.setLaeUser(System.getenv("USERNAME").toUpperCase());
+			aktEdi.setLaeDatum(LocalDateTime.now().toString());
 			
 			entityManager.getTransaction().commit();
 			
-			setLastChangeField(ediLastChange, orgEdi.getLaeDatum(), orgEdi.getLaeUser());			
+			setLastChangeField(ediLastChange, aktEdi.getLaeDatum(), aktEdi.getLaeUser());			
 //			if (prevKonfiguration != null) {
 //				entityManager.refresh(prevKonfiguration);
 //				entityManager.refresh(orgEdi.getKonfiguration());
@@ -695,8 +748,24 @@ public class EdiEintragController {
 		return true;
     }
 
-    private boolean aktEdiEintragPruefen() {
-    	if (aktSenderId == 0L) {
+
+	private boolean verifyEmpfaengerAreUnchanged () {
+		Iterator<EdiEmpfaenger> e = aktEdi.getEdiEmpfaenger().iterator();
+		int i = 0;
+    	while (i < MAX_EMPFAENGER) {
+    		if (e.hasNext() == false)
+    			break;
+    		EdiEmpfaenger empfaenger = e.next(); 
+    		if (empfaenger.getKomponente() != aktEmpfaenger[i].getKomponente() ||
+    		   !empfaenger.getGeschaeftsObjekt().getName().equals(busObjName[i]) ) {
+    			return false;
+    		}
+    	}
+    	return (i == aktEdi.getEdiEmpfaenger().size());
+	}
+	
+	private boolean checkForChanges() {
+    	if (ae.senderId == 0L) {
     		Dialogs.create().owner(primaryStage)
     		.title(applName).masthead("Korrektur-Hinweis")
     		.message("Sender ist erforderlich")
@@ -744,6 +813,80 @@ public class EdiEintragController {
     	}
     	return true;
     }
+	private boolean checkForChangesAndSaveXXX(Checkmode checkmode) {
+    	Collection<EdiEmpfaenger> tmpEmpfaengerList;
+    	if (checkForChanges()==false)
+    		return false;
+		try {
+	 		entityManager.getTransaction().begin();
+	    	// if configuration changed the EdiEintrag must be removed from previous configuration	
+	    	if (aktEdi.getKonfiguration() != null && aktEdi.getKonfiguration() != aktKonfiguration) {
+	    		aktEdi.getKonfiguration().getEdiEintrag().remove(aktEdi);
+	    	}
+	    	if (aktKonfiguration.getId() == 0L) {    	// new configuration for persistence
+	    		entityManager.persist(aktKonfiguration);
+	    		aktKonfiguration.setIntegration(aktIntegration);
+	    	}
+	    	if (aktKonfiguration.getEdiEintrag().contains(aktEdi) == false) {
+	    		aktKonfiguration.getEdiEintrag().add(aktEdi);
+	    	}
+	    	aktEdi.setKonfiguration(aktKonfiguration);
+	    	
+	    	aktEdi.setEdiKomponente(entityManager.find(EdiKomponente.class, ae.senderId)); 
+	    	
+	 		tmpEmpfaengerList = new ArrayList<>();
+			for (int i=0; i<MAX_EMPFAENGER; ++i) {
+				EdiEmpfaenger empf = aktEmpfaenger[i];
+				if (empf != null) {
+					empf.setEdiEintrag(aktEdi);
+					if (empf.getKomponente().getId() == 0L) {
+						log("ediEintragSpeichern","HINWEIS: Komponente ohne ID gefunden!");
+						entityManager.persist(empf);
+					}
+					tmpEmpfaengerList.add(empf);
+				}	
+			}
+            for (EdiEmpfaenger e : aktEdi.getEdiEmpfaenger()) {
+                if (tmpEmpfaengerList.contains(e) == false) {
+                       entityManager.remove(e);
+                }
+            }
+            aktEdi.setEdiEmpfaenger(tmpEmpfaengerList);
+            
+			String tmpEdiBezeichnung = aktEdi.autoBezeichnung(); 
+			if (aktEdi.getBezeichnung().equals(tmpEdiBezeichnung) == false) {
+				aktEdi.setBezeichnung(tmpEdiBezeichnung);
+				tfBezeichnung.textProperty().set(aktEdi.autoBezeichnung());
+			}
+			LocalDate sdate = dpProduktivSeit.getValue();
+			aktEdi.seitDatumProperty().set(sdate==null ? "" : sdate.toString());
+			
+			LocalDate bdate = dpProduktivBis.getValue();
+			aktEdi.seitDatumProperty().set(bdate==null ? "" : bdate.toString());
+			
+			aktEdi.setLaeUser(System.getenv("USERNAME").toUpperCase());
+			aktEdi.setLaeDatum(LocalDateTime.now().toString());
+			
+			entityManager.getTransaction().commit();
+			
+			setLastChangeField(ediLastChange, aktEdi.getLaeDatum(), aktEdi.getLaeUser());			
+//			if (prevKonfiguration != null) {
+//				entityManager.refresh(prevKonfiguration);
+//				entityManager.refresh(orgEdi.getKonfiguration());
+//			}
+			
+//			entityManager.getEntityManagerFactory().getCache().evict(Konfiguration.class, orgEdi.getKonfiguration().getId());
+//			System.out.println("Org-Konfig(nR): " + orgEdi.getKonfiguration() + " mit " + orgEdi.getKonfiguration().getEdiEintrag().size() + " Edis");			
+			mainController.setInfoText("Der EDI-Eintrag wurde gespeichert");
+		} catch (RuntimeException e) {
+			Dialogs.create().owner(primaryStage)
+			.title(applName).masthead("Datenbankfehler")
+			.message("Fehler beim speichern des Geschäftsobjektes")
+			.showException(e);
+		}	
+		dataIsChanged.set(false);
+		return true;
+    }
     
     //Action: Sender-Button is pressed
     @FXML
@@ -752,14 +895,14 @@ public class EdiEintragController {
     	FXMLLoader loader = loadKomponentenAuswahl(dialog, 100, 250); 
 
     	KomponentenAuswahlController komponentenAuswahlController = loader.getController();
-    	komponentenAuswahlController.setKomponente(KomponentenTyp.SENDER, aktSenderId, entityManager);
+    	komponentenAuswahlController.setKomponente(KomponentenTyp.SENDER, ae.senderId, entityManager);
     	dialog.showAndWait();
     	if (komponentenAuswahlController.getResponse() == Actions.OK ) {
 	    	Long selKomponentenID = komponentenAuswahlController.getSelectedKomponentenId();
-    	    if (aktSenderId != selKomponentenID ) {
-    	    	aktSenderId = selKomponentenID; 
-    	    	EdiKomponente sender = entityManager.find(EdiKomponente.class, aktSenderId);
-    	    	log("senderButton","senderName :" + orgEdi.senderNameProperty().get());
+    	    if (ae.senderId != selKomponentenID ) {
+    	    	ae.senderId = selKomponentenID; 
+    	    	EdiKomponente sender = entityManager.find(EdiKomponente.class, ae.senderId);
+    	    	log("senderButton","senderName :" + aktEdi.senderNameProperty().get());
     	    	btnSender.setText(sender.getFullname());
     	    	dataIsChanged.set(true);
     	    	senderIsSelected.set(true);
