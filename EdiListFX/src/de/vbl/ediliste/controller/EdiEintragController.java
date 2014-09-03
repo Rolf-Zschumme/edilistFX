@@ -16,7 +16,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -74,8 +73,7 @@ public class EdiEintragController {
     	String beschreibung;
     	LocalDate seitDatum;
     	LocalDate bisDatum;
-    	long senderId;
-    	EdiKomponente sender = null; 
+    	EdiKomponente sender; 
     	EdiKomponente empfaengerKomponente[] = new EdiKomponente[MAX_EMPFAENGER];
     	String busObjName[] = new String[MAX_EMPFAENGER]; 
     	
@@ -85,14 +83,7 @@ public class EdiEintragController {
     		integration = konfiguration==null ? null : konfiguration.getIntegration();
     		bezeichnung = s.getBezeichnung()==null ? "" : s.getBezeichnung();
     		beschreibung = s.getBeschreibung()==null ? "" : s.getBeschreibung();
-    		if (s.getEdiKomponente()==null) {
-    			senderId = 0L;
-    			sender = null;
-    		} else {
-    			senderId = s.getEdiKomponente().getId();
-    			sender = s.getEdiKomponente();
-//    			senderName.set(s.getEdiKomponente().getFullname());
-    		}
+    		sender = s.getEdiKomponente();
 			String seitStr = s.seitDatumProperty().getValueSafe();
 			seitDatum = seitStr.equals("") ? null : LocalDate.parse(seitStr);
 			String bisStr = s.bisDatumProperty().getValueSafe();
@@ -253,6 +244,8 @@ public class EdiEintragController {
     
 	private void setupLocalBindings() {
 		log("setupLocalBindings","called");
+		
+		btnSpeichern.disableProperty().bind(Bindings.not(dataIsChanged));
 		setupIntegrationComboBox();
 		setupKonfigurationComboBox();
 
@@ -345,7 +338,6 @@ public class EdiEintragController {
 				dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
 			}
     	});
-    	btnSpeichern.disableProperty().bind(Bindings.not(dataIsChanged));
 	}
 
 	private String checkBusinessObjectName(String newName, int index) {
@@ -712,7 +704,7 @@ public class EdiEintragController {
 			return true;
 		}
 		if (akt.konfiguration == org.konfiguration &&
-			akt.senderId == org.senderId &&
+			akt.sender == org.sender &&
 			verifyEmpfaengerAreUnchanged() == true   &&
 			akt.seitDatum == org.seitDatum  &&
 			akt.bisDatum == org.bisDatum ) {
@@ -967,13 +959,12 @@ public class EdiEintragController {
     	FXMLLoader loader = loadKomponentenAuswahl(dialog, 100, 250); 
 
     	KomponentenAuswahlController komponentenAuswahlController = loader.getController();
-    	komponentenAuswahlController.setKomponente(KomponentenTyp.SENDER, akt.senderId, entityManager);
+    	komponentenAuswahlController.setKomponente(KomponentenTyp.SENDER, akt.sender.getId(), entityManager);
     	dialog.showAndWait();
     	if (komponentenAuswahlController.getResponse() == Actions.OK ) {
-	    	Long selKomponentenID = komponentenAuswahlController.getSelectedKomponentenId();
-    	    if (akt.senderId != selKomponentenID ) {
-    	    	akt.senderId = selKomponentenID; 
-    	    	akt.sender = entityManager.find(EdiKomponente.class, akt.senderId);
+    		EdiKomponente selKomponente = komponentenAuswahlController.getSelectedKomponente();
+    	    if (akt.sender != selKomponente ) {
+    	    	akt.sender = selKomponente; 
     	    	log("senderButton","senderName :" + akt.sender.fullnameProperty().get());
     	    	btnSender.textProperty().unbind();
     	    	btnSender.textProperty().bind(akt.sender.fullnameProperty());
