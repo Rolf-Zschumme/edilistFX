@@ -16,7 +16,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -76,7 +75,7 @@ public class EdiEintragController {
     	LocalDate seitDatum;
     	LocalDate bisDatum;
     	long senderId;
-    	StringProperty senderName = null; // new SimpleStringProperty();
+    	EdiKomponente sender = null; 
     	EdiKomponente empfaengerKomponente[] = new EdiKomponente[MAX_EMPFAENGER];
     	String busObjName[] = new String[MAX_EMPFAENGER]; 
     	
@@ -88,10 +87,10 @@ public class EdiEintragController {
     		beschreibung = s.getBeschreibung()==null ? "" : s.getBeschreibung();
     		if (s.getEdiKomponente()==null) {
     			senderId = 0L;
-    			senderName = null;
+    			sender = null;
     		} else {
     			senderId = s.getEdiKomponente().getId();
-    			senderName = s.getEdiKomponente().fullnameProperty();
+    			sender = s.getEdiKomponente();
 //    			senderName.set(s.getEdiKomponente().getFullname());
     		}
 			String seitStr = s.seitDatumProperty().getValueSafe();
@@ -108,20 +107,19 @@ public class EdiEintragController {
 				empfaengerKomponente[i++] = null;
 			}
     	}
-    	void clearData () {
-    		integration = null;
-    		konfiguration = null;
-    		bezeichnung = "";
-    		beschreibung = "";
-    		seitDatum = null;
-    		bisDatum = null;
-    		senderId = 0L;
-    		senderName = null;
-//			empfaenger.clear();
-    	}
+//    	void clearData () {
+//    		integration = null;
+//    		konfiguration = null;
+//    		bezeichnung = "";
+//    		beschreibung = "";
+//    		seitDatum = null;
+//    		bisDatum = null;
+//    		senderId = 0L;
+//    		senderName = null;
+//    	}
     }
-    static EdiEintragPlus akt = new EdiEintragPlus();
-    static EdiEintragPlus org = new EdiEintragPlus();
+    static final EdiEintragPlus akt = new EdiEintragPlus();
+    static final EdiEintragPlus org = new EdiEintragPlus();
     
 	@FXML private AnchorPane ediEintragPane;
     @FXML private VBox eintragVBox;
@@ -181,6 +179,7 @@ public class EdiEintragController {
 	}
 
 	public static void start(Stage primaryStage, EdiMainController mainController, EntityManager entityManager) {
+		log("start","called");
 		EdiEintragController.primaryStage = primaryStage;
 		EdiEintragController.entityManager = entityManager;
 		EdiEintragController.mainController = mainController;
@@ -191,14 +190,11 @@ public class EdiEintragController {
     void initialize() {
     	log("initialize","called");
     	checkFieldFromView();
-    	
     	ediEintrag.addListener(new ChangeListener<EdiEintrag>() {
     		@Override
     		public void changed (ObservableValue<? extends EdiEintrag> ov,
     				EdiEintrag oldEintrag, EdiEintrag newEintrag) {
-    			if (oldEintrag == null) {
-    		    	setupLocalBindings();
-    			} else {	
+    			if (oldEintrag != null) {
     				taEdiBeschreibung.setText("");
     				tfBezeichnung.setText("");
     				btnEmpfaenger1.setText("");
@@ -208,38 +204,38 @@ public class EdiEintragController {
     				tabAktEdiNr.setText(EDI_PANE_PREFIX + "000");
     				btnSender.textProperty().unbind();
     			}
-    			if (akt.senderName != null) {
-    				btnSender.textProperty().unbindBidirectional(akt.senderName);
-    			}
-    			akt.clearData();
-    			cmbKonfiguration.getSelectionModel().select(null);
-    			if (newEintrag != null) {
+    			if (newEintrag == null) {
+//    				akt.clearData();
+    				log("ediEintrag.changed","newEintrag=null");
+    				cmbIntegration.getSelectionModel().select(null);
+    			} else {
+    				readBusinessObject();
+    				readIntegrationList();
     				org.setData(newEintrag);
+    				akt.integration = null;  
+    				cmbIntegration.getSelectionModel().select(org.integration);
     				akt.setData(newEintrag);
-    				if (akt.konfiguration != null) {
-    					cmbIntegration.getSelectionModel().select(akt.integration);
-    					akt.integration = akt.konfiguration.getIntegration();
-    					cmbIntegration.getSelectionModel().select(akt.integration);
-    					cmbKonfiguration.getSelectionModel().select(akt.konfiguration);
-    				}
+   					cmbKonfiguration.getSelectionModel().select(akt.konfiguration);
     				tabAktEdiNr.setText(EDI_PANE_PREFIX +  newEintrag.getEdiNrStr());
     				tfBezeichnung.setText(akt.bezeichnung);
     				taEdiBeschreibung.setText(akt.beschreibung);
-    				if (akt.senderName != null) {
-    					btnSender.textProperty().bindBidirectional(akt.senderName);
+    				if (akt.sender != null) {
+    					btnSender.textProperty().bind(akt.sender.fullnameProperty());
+    				} else {
+        				btnSender.textProperty().unbind();
+        				btnSender.setText("");
     				}
-    				senderIsSelected.set(akt.senderName != null);
+    				senderIsSelected.set(akt.sender != null);
     				setAktEmpfaenger();
     				
     				setLastChangeField(ediLastChange, newEintrag.getLaeDatum(), newEintrag.getLaeUser());
     			}
     			dpProduktivSeit.setValue(akt.seitDatum);
     			dpProduktivBis.setValue(akt.bisDatum);
-    			cmbIntegration.getSelectionModel().select(akt.integration);
     			dataIsChanged.set(false);
     		}
-
 		});
+    	setupLocalBindings();
     }	
 
     private void setLastChangeField(TextField tf, String dateTime, String laeUser) {
@@ -255,11 +251,8 @@ public class EdiEintragController {
     	}
     }
     
-    
 	private void setupLocalBindings() {
-		if (businessObjectMap != null) {    // verify: this methode is done only once
-			return;
-		}	
+		log("setupLocalBindings","called");
 		setupIntegrationComboBox();
 		setupKonfigurationComboBox();
 
@@ -275,7 +268,6 @@ public class EdiEintragController {
 		});
 
 		businessObjectMap = new HashMap<String,GeschaeftsObjekt>();		
-		readBusinessObject();
 		cmbBuOb1.setItems(businessObjectName);
 		cmbBuOb2.setItems(businessObjectName);
 		cmbBuOb3.setItems(businessObjectName);
@@ -444,7 +436,7 @@ public class EdiEintragController {
 	
     private void setupIntegrationComboBox() {
 
-		cmbIntegration.setItems(readIntegrations());
+//		cmbIntegration.setItems(readIntegrations());
 		
 		cmbIntegration.setCellFactory((cmbBx) -> {
 			return new ListCell<Integration>() {
@@ -474,11 +466,14 @@ public class EdiEintragController {
 		
 		cmbIntegration.setOnAction((event) -> {
 			Integration newIntegration = cmbIntegration.getSelectionModel().getSelectedItem();
+			if (newIntegration != org.integration) {
+				dataIsChanged.set(true);
+			} else {
+				dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
+			}	
 			if (newIntegration != akt.integration) {
 				akt.integration = newIntegration;
-				log("cmbIntegration.setOnAction",akt.integration.getName() + " ausgewählt");
 				readCmbKonfigurationList(akt.integration);
-				dataIsChanged.set(true);
 			}	
 		});
 	}
@@ -515,10 +510,13 @@ public class EdiEintragController {
 		});
 		cmbKonfiguration.setOnAction((event) -> {
 			Konfiguration selKonfiguration = cmbKonfiguration.getSelectionModel().getSelectedItem();
+			String aktKonfigName = akt.konfiguration==null ? "null" : akt.konfiguration.getName();
+			String selKonfigName = selKonfiguration==null ? "null" : selKonfiguration.getName();
+			log("cmbKonfiguration.setOnAction"," Änderung von " + aktKonfigName + " nach " + selKonfigName);
 			if (selKonfiguration != org.konfiguration) {
-				log("cmbKonfiguration.setOnAction"," Änderung von " + akt.konfiguration + " nach " + selKonfiguration);
 				dataIsChanged.set(true);
 			} else {
+				dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
 			}
 			akt.konfiguration = selKonfiguration;
 
@@ -529,7 +527,7 @@ public class EdiEintragController {
 				HashMap<Integer, Tab> tabMapAfter = new HashMap<Integer,Tab>();				
 				HashMap<Integer, Tab> tabMapBefore = new HashMap<Integer,Tab>();				
 				Iterator<EdiEintrag> i = selKonfiguration.getEdiEintrag().iterator();
-				Tab extraTab = null;
+				Tab extraTab = new Tab();
 				while (i.hasNext()) {
 					EdiEintrag e = i.next();
 					int iEdiNr = e.getEdiNr();
@@ -549,26 +547,33 @@ public class EdiEintragController {
 		});
 	}
 
-
 	private void readBusinessObject() {
 		businessObjectMap.clear();
 		businessObjectName.clear();
 		TypedQuery<GeschaeftsObjekt> tq = entityManager.createQuery(
 				"SELECT g FROM GeschaeftsObjekt g ORDER BY g.name", GeschaeftsObjekt.class);
-		List<GeschaeftsObjekt> gList = tq.getResultList();
+		final List<GeschaeftsObjekt> gList = tq.getResultList();
 		for (GeschaeftsObjekt gObject : gList) {
 			businessObjectName.add(gObject.getName());
 			businessObjectMap.put(gObject.getName().toUpperCase(), gObject);
 		}
 	}
 	
-	private ObservableList<Integration> readIntegrations() {
-        ObservableList<Integration> integrationList = FXCollections.observableArrayList();
+	private void readIntegrationList() {
+        final ObservableList<Integration> aktList = FXCollections.observableArrayList();
 		TypedQuery<Integration> tq = entityManager.createQuery(
 				"SELECT i FROM Integration i ORDER BY i.name", Integration.class);
 //		tq.setHint("javax.persistence.cache.storeMode", "REFRESH");
-		integrationList.addAll(tq.getResultList());
-		return integrationList;
+		
+		aktList.addAll(tq.getResultList());
+		if (cmbIntegration.getItems().isEmpty()) {
+			cmbIntegration.setItems(aktList);
+		}
+		else {
+			cmbIntegration.getItems().retainAll(aktList);
+			cmbIntegration.getItems().setAll(aktList);
+		}
+		
 	}
 
 	
@@ -580,7 +585,9 @@ public class EdiEintragController {
 //		tq.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		
 		ObservableList<Konfiguration> aktList = FXCollections.observableArrayList(tq.getResultList());
-		Boolean found = false;
+
+		// find default KONFIGURATION in DB-table
+		Boolean found = false;  
 		for (Konfiguration k : aktList) {
 			if (k.getName().equals(DEFAULT_KONFIG_NAME)) {
 				found = true;
@@ -592,8 +599,6 @@ public class EdiEintragController {
 			aktList.add(defKonfig);
 		}
 		cmbKonfiguration.setItems(aktList);
-		log("readCmbKonfigurationData",cmbKonfiguration.getItems().size() + 
-			" Konfig-Einträge für " + integration.getName() + " in Liste vorhanden");
 	} 
 	
 //    private void copyEmpfaengerList(Iterator<EdiEmpfaenger> empfaengerList) {
@@ -702,7 +707,7 @@ public class EdiEintragController {
 	private static enum Checkmode { ONLY_CHECK, ASK_FOR_UPDATE, SAVE_DONT_ASK };
 	
 	private boolean checkForChangesAndSave(Checkmode checkmode) {
-		log("checkForChangesAndSave","aktEdi=" + akt.bezeichnung);
+		log("checkForChangesAndSave","mode="+ checkmode +  " aktEdi=" + akt.bezeichnung);
 		if (org.EdiNr < 1) {
 			return true;
 		}
@@ -711,15 +716,22 @@ public class EdiEintragController {
 			verifyEmpfaengerAreUnchanged() == true   &&
 			akt.seitDatum == org.seitDatum  &&
 			akt.bisDatum == org.bisDatum ) {
-			return true;
+			// no changes -> no update
+			return true;  
 		}
+		if (checkmode == Checkmode.ASK_FOR_UPDATE) {
+			// ask if update should be done
+		}
+		if (checkmode != Checkmode.ONLY_CHECK) {
+			// now we do the update 
+		}
+		return true;
+	}	
 //		Collection<EdiEmpfaenger> tmpEmpfaengerList = new ArrayList<>();
 		
 		
 //		String tmpEdiBezeichnung = aktEdi.autoBezeichnung(); 
 		
-    	if (checkForChanges()==false)
-    		return false;
 //		try {
 //	 		entityManager.getTransaction().begin();
 //	    	// if configuration changed the EdiEintrag must be removed from previous configuration	
@@ -788,8 +800,6 @@ public class EdiEintragController {
 //			.showException(e);
 //		}	
 //		dataIsChanged.set(false);
-		return true;
-    }
 
 
 //	private boolean verifyEmpfaengerAreUnchanged () {
@@ -826,7 +836,7 @@ public class EdiEintragController {
 //		}
 	}
 	
-	private boolean checkForChanges() {
+//	private boolean checkForChanges() {
 //    	if (akt.senderId == 0L) {
 //    		Dialogs.create().owner(primaryStage)
 //    		.title(applName).masthead("Korrektur-Hinweis")
@@ -863,18 +873,18 @@ public class EdiEintragController {
 //    			empf.setGeschaeftsObjekt(businessObjectMap.get(busObjName[i].toUpperCase()));
 //    		}
 //    	}
-    	if(akt.integration == null) {
-    		mainController.setErrorText("Integration muss ausgewählt/zugeordnet werden");
-    		cmbIntegration.requestFocus();
-    		return false;
-    	}
-    	if (akt.konfiguration == null) {
-    		mainController.setErrorText("Eine Konfiguration muss auswählen/zugeordnet werden");
-    		cmbKonfiguration.requestFocus();
-    		return false;
-    	}
-    	return true;
-    }
+//    	if(akt.integration == null) {
+//    		mainController.setErrorText("Integration muss ausgewählt/zugeordnet werden");
+//    		cmbIntegration.requestFocus();
+//    		return false;
+//    	}
+//    	if (akt.konfiguration == null) {
+//    		mainController.setErrorText("Eine Konfiguration muss auswählen/zugeordnet werden");
+//    		cmbKonfiguration.requestFocus();
+//    		return false;
+//    	}
+//    	return true;
+//    }
 //	private boolean checkForChangesAndSaveXXX(Checkmode checkmode) {
 //    	Collection<EdiEmpfaenger> tmpEmpfaengerList;
 //    	if (checkForChanges()==false)
@@ -963,10 +973,16 @@ public class EdiEintragController {
 	    	Long selKomponentenID = komponentenAuswahlController.getSelectedKomponentenId();
     	    if (akt.senderId != selKomponentenID ) {
     	    	akt.senderId = selKomponentenID; 
-    	    	EdiKomponente sender = entityManager.find(EdiKomponente.class, akt.senderId);
-    	    	log("senderButton","senderName :" + sender.fullnameProperty().get());
-    	    	akt.senderName = sender.fullnameProperty();
-    	    	dataIsChanged.set(true);
+    	    	akt.sender = entityManager.find(EdiKomponente.class, akt.senderId);
+    	    	log("senderButton","senderName :" + akt.sender.fullnameProperty().get());
+    	    	btnSender.textProperty().unbind();
+    	    	btnSender.textProperty().bind(akt.sender.fullnameProperty());
+    	    	if (akt.sender != org.sender) {
+    	    		dataIsChanged.set(true);
+    	    	}
+    	    	else {
+    	    		dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
+    	    	}
     	    	senderIsSelected.set(true);
     	    }
     	}
@@ -1091,8 +1107,8 @@ public class EdiEintragController {
 		this.ediEintrag.set(ediEintrag);
 	}
 
-	private void log(String methode, String message) {
-		String className = this.getClass().getName().substring(16);
+	private static void log(String methode, String message) {
+		String className = EdiEintragController.class.getName().substring(16);
 		System.out.println(className + "." + methode + "(): " + message); 
 	}
     

@@ -119,7 +119,6 @@ public class EdiSystem {
 			anzKomponenten.unbind();
 		}
 		ediKomponente = FXCollections.observableArrayList(komponenten);
-		System.out.println(ediKomponente.size() + " " + this.getFullname());
 		anzKomponenten.bind(Bindings.size(ediKomponente));
 
 //		anzKomponenten.addListener(new ChangeListener<Number>() {
