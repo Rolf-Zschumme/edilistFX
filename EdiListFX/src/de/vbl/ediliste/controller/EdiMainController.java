@@ -32,6 +32,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import javax.persistence.CacheStoreMode;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -48,6 +49,8 @@ import de.vbl.ediliste.model.EdiPartner;
 import de.vbl.ediliste.model.EdiSystem;
 import de.vbl.ediliste.model.GeschaeftsObjekt;
 import de.vbl.ediliste.tools.ExportToExcel;
+
+// 04.09.2014 RZ CacheStoreMode = REFRESH gesetzt
 
 public class EdiMainController {
 	private static final String APPL_NAME = "EDI-Liste";
@@ -260,7 +263,6 @@ public class EdiMainController {
 	private void loadEdiEintragListData() {
     	TypedQuery<EdiEintrag> tq = entityManager.createQuery(
 				"SELECT e FROM EdiEintrag e ORDER BY e.ediNr", EdiEintrag.class);
-//		tq.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		List<EdiEintrag> aktuList = tq.getResultList();
 
 		ediEintraegeList.retainAll(aktuList);
@@ -276,7 +278,6 @@ public class EdiMainController {
 	protected void loadPartnerListData() {
 		TypedQuery<EdiPartner> tq = entityManager.createQuery(
 				"SELECT p FROM EdiPartner p ORDER BY p.name", EdiPartner.class);
-//		tq.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		List<EdiPartner> aktuList = tq.getResultList(); 
 
 		ediPartnerList.retainAll(aktuList);  // remove all delete entities  
@@ -298,7 +299,6 @@ public class EdiMainController {
 	protected void loadSystemListData() {
 		TypedQuery<EdiSystem> tq = entityManager.createQuery(
 				"SELECT s FROM EdiSystem s ORDER BY s.name", EdiSystem.class);
-//		tq.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		List<EdiSystem> aktuList = tq.getResultList();
 		ediSystemList.retainAll(aktuList);  // remove all delete entities  
 		for (EdiSystem s : aktuList) {		// insert or update all entities
@@ -315,7 +315,6 @@ public class EdiMainController {
 	protected void loadKomponentenListData() {
 		TypedQuery<EdiKomponente> tq = entityManager.createQuery(
 				"SELECT k FROM EdiKomponente k ORDER BY k.name", EdiKomponente.class);
-//		tq.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		List<EdiKomponente> aktuList = tq.getResultList();
 		
 		ediKomponentenList.retainAll(aktuList); // remove delete entities  
@@ -330,7 +329,6 @@ public class EdiMainController {
 	private void loadGeschaeftobjektListData() {
 		TypedQuery<GeschaeftsObjekt> tq = entityManager.createQuery(
 				"SELECT g FROM GeschaeftsObjekt g ORDER BY g.name", GeschaeftsObjekt.class);
-//		tq.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		geschaeftsobjektList.setAll(tq.getResultList());
 	}
 	
@@ -381,6 +379,11 @@ public class EdiMainController {
     private void setupEntityManager() {
     	EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
     	entityManager = factory.createEntityManager();
+    	
+    	entityManager.setProperty("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH);
+    	// REFRESH = refresh data in cache on find and query 
+    	// USE = use cache without refresh if data exists in cache (=default)
+    	// BYPASS = do not use cache
     }
     
     @FXML    

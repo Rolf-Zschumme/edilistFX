@@ -75,7 +75,8 @@ public class EdiEintragController {
     	LocalDate bisDatum;
     	EdiKomponente sender; 
     	EdiKomponente empfaengerKomponente[] = new EdiKomponente[MAX_EMPFAENGER];
-    	String busObjName[] = new String[MAX_EMPFAENGER]; 
+    	GeschaeftsObjekt geschaeftsObjekt[] = new GeschaeftsObjekt[MAX_EMPFAENGER];
+//    	String busObjName[] = new String[MAX_EMPFAENGER]; 
     	
     	void setData (EdiEintrag s) {
     		EdiNr = s.getEdiNr();
@@ -90,12 +91,14 @@ public class EdiEintragController {
 			bisDatum = bisStr.equals("") ? null : LocalDate.parse(bisStr);
 			int i=0;
 			for(EdiEmpfaenger e : s.getEdiEmpfaenger()) {
-				busObjName[i] = e.geschaeftsObjektNameProperty().getValueSafe();
-				empfaengerKomponente[i++] = e.getKomponente();
+				empfaengerKomponente[i] = e.getKomponente();
+				geschaeftsObjekt[i++] = e.getGeschaeftsObjekt();
+//				busObjName[i] = e.geschaeftsObjektNameProperty().getValueSafe();
 			}
 			while(i < MAX_EMPFAENGER) {
-				busObjName[i] = null;
-				empfaengerKomponente[i++] = null;
+				empfaengerKomponente[i] = null;
+				geschaeftsObjekt[i++] = null;
+//				busObjName[i] = null;
 			}
     	}
 //    	void clearData () {
@@ -343,38 +346,62 @@ public class EdiEintragController {
 	private String checkBusinessObjectName(String newName, int index) {
 		String aktName = null;
 		if (newName != null) {
-			if (newName.equals(org.busObjName[0]) == true) {
-				// equal -> check rest and set state
-				akt.busObjName[index] = newName; 
+			GeschaeftsObjekt buOb = businessObjectMap.get(newName.toUpperCase());
+			if (buOb == org.geschaeftsObjekt[index]) {
+				akt.geschaeftsObjekt[index] = buOb; 
 				dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
 			} else {
-				GeschaeftsObjekt buOb = businessObjectMap.get(newName.toUpperCase());
+				if (buOb == null) {
+					buOb = askForNewBusinessObjektName(newName);
+				}	
 				if (buOb != null) {
+					akt.geschaeftsObjekt[index] = buOb; 
 					aktName = buOb.getName();
 					dataIsChanged.set(true);
-				} else {
-					aktName = askForNewBusinessObjektName(newName);
-					if (aktName != null) {
-						akt.busObjName[index] = aktName;
-						dataIsChanged.set(true);
-					}
 				}
 			}
 		}
 		return aktName;
 	}
 	
-	private String askForNewBusinessObjektName(String newName) {
+	private GeschaeftsObjekt askForNewBusinessObjektName(String newName) {
 		String aktName = Dialogs.create().owner(primaryStage).title(applName)
-				.message("Soll das folgende Geschäftsobjekt ergänzt werden?")
+				.message("Soll das folgende Geschäftsobjekt gespeichert werden?")
 				.showTextInput(newName);
-		if (aktName != null) {
-			GeschaeftsObjekt newBusObj = new GeschaeftsObjekt(aktName);
-			businessObjectName.add(newName);
-			businessObjectMap.put(newName.toUpperCase(), newBusObj);
-		}
-		return aktName;
+		if (aktName == null) {
+			return null;
+		}	
+		return (geschaeftsObjektAnlegen(aktName));
 	}
+
+	private GeschaeftsObjekt geschaeftsObjektAnlegen(String aktName) {
+		
+		String select = "SELECT g FROM GeschaeftsObjekt g WHERE g.name= '" + aktName + "'";
+		TypedQuery<GeschaeftsObjekt> tq = entityManager.createQuery(select, GeschaeftsObjekt.class);
+		List<GeschaeftsObjekt> gList = tq.getResultList();
+		
+		if (gList.size() > 0) {
+			mainController.setInfoText("Geschäftsobjekt ist bereits "+ gList.size() +" mal vorhanden");
+			return gList.get(0);
+		}
+		try {
+			GeschaeftsObjekt newBusObj = new GeschaeftsObjekt(aktName);
+			entityManager.getTransaction().begin();
+			entityManager.persist(newBusObj);
+			entityManager.getTransaction().commit();
+			businessObjectName.add(aktName);
+			businessObjectMap.put(aktName.toUpperCase(), newBusObj);
+			mainController.setInfoText("Das Geschäftsobjekt \"" + 
+					aktName + "\" wurde erfolgreich gespeichert");
+			return newBusObj;
+		} catch (RuntimeException er) {
+			Dialogs.create().owner(primaryStage)
+			.title(applName).masthead("Datenbankfehler")
+			.message("Fehler beim speichern des Geschäftsobjektes")
+			.showException(er);
+		}
+		return null;
+	}	
 
 	// prüft ob das eingegebene BO (newName) in der BO-Tabelle (businessObjektMap) bereits
 	// vorhanden ist. Zuvor wird geprüft ob das BO dem im Empfänger gespeicherten BO entspricht 
@@ -555,7 +582,6 @@ public class EdiEintragController {
         final ObservableList<Integration> aktList = FXCollections.observableArrayList();
 		TypedQuery<Integration> tq = entityManager.createQuery(
 				"SELECT i FROM Integration i ORDER BY i.name", Integration.class);
-//		tq.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		
 		aktList.addAll(tq.getResultList());
 		if (cmbIntegration.getItems().isEmpty()) {
@@ -574,7 +600,6 @@ public class EdiEintragController {
 		TypedQuery<Konfiguration> tq = entityManager.createQuery(
 				"SELECT k FROM Konfiguration k WHERE k.integration = :i ORDER BY k.name", Konfiguration.class);
 		tq.setParameter("i", integration);
-//		tq.setHint("javax.persistence.cache.storeMode", "REFRESH");
 		
 		ObservableList<Konfiguration> aktList = FXCollections.observableArrayList(tq.getResultList());
 
@@ -611,8 +636,8 @@ public class EdiEintragController {
 		if (akt.empfaengerKomponente[0] != null) {
 			btnEmpfaenger1.setText(akt.empfaengerKomponente[0].getFullname());
 			empfaenger1IsSelected.set(true);
-			cmbBuOb1.getSelectionModel().select(akt.busObjName[0]);
-			buOb1Exist.set(akt.busObjName[0] != null);
+			cmbBuOb1.getSelectionModel().select(akt.geschaeftsObjekt[0].getName());
+			buOb1Exist.set(akt.geschaeftsObjekt[0] != null);
 		}
 		else {
 			btnEmpfaenger1.setText("");
@@ -623,8 +648,8 @@ public class EdiEintragController {
 		if (akt.empfaengerKomponente[1] != null) {
 			btnEmpfaenger2.setText(akt.empfaengerKomponente[1].getFullname());
 			empfaenger2IsSelected.set(true);
-			cmbBuOb2.getSelectionModel().select(akt.busObjName[1]);
-			buOb2Exist.set(akt.busObjName[1]!=null);
+			cmbBuOb2.getSelectionModel().select(akt.geschaeftsObjekt[1].getName());
+			buOb2Exist.set(akt.geschaeftsObjekt[1] != null);
 		}
 		else {
 			btnEmpfaenger2.setText("");
@@ -635,8 +660,8 @@ public class EdiEintragController {
 		if (akt.empfaengerKomponente[2] != null) {
 			btnEmpfaenger3.setText(akt.empfaengerKomponente[2].getFullname());
 			empfaenger3IsSelected.set(true);
-			cmbBuOb3.getSelectionModel().select(akt.busObjName[2]);
-			buOb3Exist.set(akt.busObjName[2]!=null);
+			cmbBuOb3.getSelectionModel().select(akt.geschaeftsObjekt[2].getName());
+			buOb3Exist.set(akt.geschaeftsObjekt[2] != null);
 		}
 		else {
 			btnEmpfaenger3.setText("");
@@ -711,6 +736,7 @@ public class EdiEintragController {
 			// no changes -> no update
 			return true;  
 		}
+		log("checkForChangesAndSave"," --> no changes found");		
 		if (checkmode == Checkmode.ASK_FOR_UPDATE) {
 			// ask if update should be done
 		}
@@ -718,7 +744,19 @@ public class EdiEintragController {
 			// now we do the update 
 		}
 		return true;
+		
 	}	
+	private boolean verifyEmpfaengerAreUnchanged () {
+		for(int i=0; i < MAX_EMPFAENGER; ++i ) {
+			if (akt.empfaengerKomponente[i] != org.empfaengerKomponente[i] ||
+					akt.geschaeftsObjekt[i] != org.geschaeftsObjekt[i])
+				return false;
+			else
+				log("verify","i="+i);
+		}
+		return true;
+	}
+		
 //		Collection<EdiEmpfaenger> tmpEmpfaengerList = new ArrayList<>();
 		
 		
@@ -809,14 +847,6 @@ public class EdiEintragController {
 //    	return (i == orgEDI.getEdiEmpfaenger().size());
 //  }
 	
-	private boolean verifyEmpfaengerAreUnchanged () {
-		for(int i=0; i < MAX_EMPFAENGER; ++i ) {
-			if (akt.empfaengerKomponente[i] != org.empfaengerKomponente[i] ||
-				akt.busObjName[i] != org.busObjName[i])
-				return false;
-		}
-		return true;
-		
 //		if (akt.empfaenger.size() != org.empfaenger.size())
 //			return false;
 //		Iterator<EdiEmpfaenger> orgEmpfaengerList = org.empfaenger.iterator();  
@@ -826,7 +856,6 @@ public class EdiEintragController {
 //				aktE.getGeschaeftsObjekt() != orgE.getGeschaeftsObjekt() )
 //				return false;
 //		}
-	}
 	
 //	private boolean checkForChanges() {
 //    	if (akt.senderId == 0L) {
@@ -959,7 +988,7 @@ public class EdiEintragController {
     	FXMLLoader loader = loadKomponentenAuswahl(dialog, 100, 250); 
 
     	KomponentenAuswahlController komponentenAuswahlController = loader.getController();
-    	komponentenAuswahlController.setKomponente(KomponentenTyp.SENDER, akt.sender.getId(), entityManager);
+    	komponentenAuswahlController.setKomponente(KomponentenTyp.SENDER, akt.sender, entityManager);
     	dialog.showAndWait();
     	if (komponentenAuswahlController.getResponse() == Actions.OK ) {
     		EdiKomponente selKomponente = komponentenAuswahlController.getSelectedKomponente();
@@ -1011,12 +1040,10 @@ public class EdiEintragController {
     	FXMLLoader loader = loadKomponentenAuswahl(dialog, 400, 350); 
     	
     	KomponentenAuswahlController komponentenAuswahlController = loader.getController();
-    	Long aktEmpfaengerId = (akt.empfaengerKomponente[btnNr]==null ? 0L : akt.empfaengerKomponente[btnNr].getId());
-    	komponentenAuswahlController.setKomponente(KomponentenTyp.RECEIVER, aktEmpfaengerId, entityManager);
+    	komponentenAuswahlController.setKomponente(KomponentenTyp.RECEIVER, akt.empfaengerKomponente[btnNr], entityManager);
     	dialog.showAndWait();
     	if (komponentenAuswahlController.getResponse() == Actions.OK ) {
-    		Long selEmpfaengerID = komponentenAuswahlController.getSelectedKomponentenId();
-    		if (selEmpfaengerID != aktEmpfaengerId) {
+    		if (akt.empfaengerKomponente[btnNr] != komponentenAuswahlController.getSelectedKomponente()) {
     			akt.empfaengerKomponente[btnNr] = komponentenAuswahlController.getSelectedKomponente();
     			ret = akt.empfaengerKomponente[btnNr].getFullname();
     		}
@@ -1036,9 +1063,9 @@ public class EdiEintragController {
     		akt.empfaengerKomponente[2] = null;
     		btnEmpfaenger2.setText(akt.empfaengerKomponente[1].getFullname());
     		
-			akt.busObjName[1] = akt.busObjName[1]; // businessObjectMap.get(akt.busObjName[2].toUpperCase()).getName();
-			akt.busObjName[2] = null;
-			cmbBuOb2.getSelectionModel().select(akt.busObjName[1]);
+			akt.geschaeftsObjekt[1] = akt.geschaeftsObjekt[2];  // businessObjectMap.get(akt.busObjName[2].toUpperCase()).getName();
+			akt.geschaeftsObjekt[2] = null;
+			cmbBuOb2.getSelectionModel().select(akt.geschaeftsObjekt[1].getName());
 			
 	    	btnEmpfaenger3.setText("");
 	    	cmbBuOb3.getSelectionModel().select(null);
@@ -1048,7 +1075,7 @@ public class EdiEintragController {
     	else { // 3 is empty -> delete 2
     		akt.empfaengerKomponente[1] = null;
     		btnEmpfaenger2.setText("");
-    		akt.busObjName[1] = null;
+    		akt.geschaeftsObjekt[1] = null;
 	    	cmbBuOb2.getSelectionModel().select(null);
     		buOb2Exist.set(false);
     		empfaenger2IsSelected.set(false);
@@ -1060,7 +1087,7 @@ public class EdiEintragController {
     void actionEmpfaenger3loeschen(ActionEvent event) {
     	akt.empfaengerKomponente[2] = null;
     	btnEmpfaenger3.setText("");
-    	akt.busObjName[2] = null;
+    	akt.geschaeftsObjekt[2] = null;
 		cmbBuOb3.getSelectionModel().select(null);
 		empfaenger3IsSelected.set(false);
 		buOb3Exist.set(false);

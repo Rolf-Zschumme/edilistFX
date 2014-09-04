@@ -72,15 +72,15 @@ public class KomponentenAuswahlController {
 			return Actions.OK;
 	}
 
-	public Long getSelectedKomponentenId() {
-		return ediKomponentenId.get();
-	}
+//	public Long getSelectedKomponentenId() {
+//		return ediKomponentenId.get();
+//	}
 
 	public EdiKomponente getSelectedKomponente() {
 		return komponenteCB.getSelectionModel().getSelectedItem();
 	}
 	
-	public void setKomponente(KomponentenTyp typ, Long komponentenID, EntityManager em) {
+	public void setKomponente(KomponentenTyp typ, EdiKomponente komponente, EntityManager em) {
     	System.out.println(getClass().getName()+".setKomponenten called");
     	entityManager = em;
         readPartnerData();
@@ -90,9 +90,8 @@ public class KomponentenAuswahlController {
 		else
 			lbSenderReseiver.setText("Empfänger");
 
-		ediKomponentenId.set(komponentenID);
-		if (komponentenID > 0L) {
-			EdiKomponente komponente = entityManager.find(EdiKomponente.class, komponentenID);
+		if (komponente != null) {
+			ediKomponentenId.set(komponente.getId());
 				
 			partnerCB.getSelectionModel().select(komponente.getEdiSystem().getEdiPartner());
 			systemCB.getSelectionModel().select(komponente.getEdiSystem());

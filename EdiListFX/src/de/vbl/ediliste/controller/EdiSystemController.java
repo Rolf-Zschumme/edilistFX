@@ -99,7 +99,7 @@ public class EdiSystemController {
 					aktSystem = newSystem;
 					log("ediSystemListner.changed", "newSystem.Name="+ newSystem.getName());
 					aktFullName = aktSystem.getFullname();
-					readEdiListeforSystem(newSystem, CacheRefresh.FALSE);
+					readEdiListeforSystem(newSystem);
 					tfBezeichnung.setText(newSystem.getName());
 					if (newSystem.getBeschreibung() == null) {
 						newSystem.setBeschreibung("");
@@ -257,7 +257,7 @@ public class EdiSystemController {
 			aktSystem.setName(newName);
 			aktSystem.setBeschreibung(newBeschreibung);
 			entityManager.getTransaction().commit();
-			readEdiListeforSystem(aktSystem, CacheRefresh.TRUE);
+			readEdiListeforSystem(aktSystem);
 			mainCtr.setInfoText("Das System " + orgName + " wurde gespeichert");
 		}
 		return true;
@@ -279,11 +279,7 @@ public class EdiSystemController {
 		return true;
 	}
 
-	private enum CacheRefresh { TRUE, FALSE;
-		CacheRefresh() {}
-	}
-	
-	private void readEdiListeforSystem( EdiSystem selSystem, CacheRefresh cache) {
+	private void readEdiListeforSystem( EdiSystem selSystem) {
 		ediKomponentenList.clear();
 		/* 1. lese alle EdiEinträge mit Sender = selekierter Komponente 
 		 * 		-> zeige jeweils alle zugehörigen Empfänger, falls kein Empfänger vorhanden dummy erzeugen
@@ -291,9 +287,6 @@ public class EdiSystemController {
 		TypedQuery<EdiEintrag> tqS = entityManager.createQuery(
 				"SELECT e FROM EdiEintrag e WHERE e.ediKomponente.ediSystem = :s", EdiEintrag.class);
 		tqS.setParameter("s", selSystem);
-		if (cache == CacheRefresh.TRUE) {
-//			tqS.setHint("javax.persistence.cache.storeMode", "REFRESH");
-		}	
 		List<EdiEintrag> ediList = tqS.getResultList();
 		for(EdiEintrag e : ediList ) {
 			if (e.getEdiEmpfaenger().size() > 0)
@@ -306,7 +299,7 @@ public class EdiSystemController {
 		}
 		log("readEdiListeforKomponete", "für "+ selSystem.getName() + " " + 
 			ediList.size() + " EDI-Einträge" + " mit insgesamt " + 
-			ediKomponentenList.size() + " Empfänger gelesen (Refresh=" + cache+ ")");
+			ediKomponentenList.size() + " Empfänger gelesen");
 		
 		/* 2. lese alle Empfänger mit Empfänger = selektierte Komponente 
 		 *    -> zeige alle Empfänger  
@@ -315,12 +308,9 @@ public class EdiSystemController {
 		TypedQuery<EdiEmpfaenger> tqE = entityManager.createQuery(
 				"SELECT e FROM EdiEmpfaenger e WHERE e.komponente.ediSystem = :s", EdiEmpfaenger.class);
 		tqE.setParameter("s", selSystem);
-		if (cache == CacheRefresh.TRUE) {
-//			tqE.setHint("javax.persistence.cache.storeMode", "REFRESH");
-		}	
 		ediKomponentenList.addAll(tqE.getResultList());
 		log("readEdiListeforKomponete", "für " + selSystem.getName() + " " + 
-			tqE.getResultList().size() + " EDI-Empfänger gelesen (Refresh=" + cache+ ")");
+			tqE.getResultList().size() + " EDI-Empfänger gelesen");
 	}
 
 	public final ObjectProperty<EdiSystem> ediSystemProperty() {

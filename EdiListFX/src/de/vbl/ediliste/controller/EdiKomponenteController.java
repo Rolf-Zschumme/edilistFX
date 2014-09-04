@@ -97,7 +97,7 @@ public class EdiKomponenteController {
 				}
 				if (newKomponente != null) {
 					aktKomponente = newKomponente;
-					readEdiListeforKomponete(newKomponente, CacheRefresh.FALSE);
+					readEdiListeforKomponete(newKomponente);
 					tfBezeichnung.setText(newKomponente.getName());
 					if (newKomponente.getBeschreibung() == null) {
 						newKomponente.setBeschreibung("");
@@ -269,7 +269,7 @@ public class EdiKomponenteController {
 				aktKomponente.setName(newName);
 				aktKomponente.setBeschreibung(newBeschreibung);
 				entityManager.getTransaction().commit();
-				readEdiListeforKomponete(aktKomponente, CacheRefresh.TRUE);
+				readEdiListeforKomponete(aktKomponente);
 				mainCtr.setInfoText("Komponente wurde gespeichert");
 			}	
 		}
@@ -295,11 +295,7 @@ public class EdiKomponenteController {
 		return true;
 	}
 
-	private enum CacheRefresh { TRUE, FALSE;
-		CacheRefresh() {}
-	}
-	
-	private void readEdiListeforKomponete( EdiKomponente selKomponente, CacheRefresh cache) {
+	private void readEdiListeforKomponete( EdiKomponente selKomponente) {
 		tvVerwendungen.getItems().clear();
 		ObservableList<EdiEmpfaenger> empfaengerList = FXCollections.observableArrayList();
 		ediEintragsSet.clear(); 
@@ -309,9 +305,6 @@ public class EdiKomponenteController {
 		TypedQuery<EdiEintrag> tqS = entityManager.createQuery(
 				"SELECT e FROM EdiEintrag e WHERE e.ediKomponente = :k", EdiEintrag.class);
 		tqS.setParameter("k", selKomponente);
-		if (cache == CacheRefresh.TRUE) {
-//			tqS.setHint("javax.persistence.cache.storeMode", "REFRESH");
-		}	
 		List<EdiEintrag> ediList = tqS.getResultList();
 		for(EdiEintrag e : ediList ) {
 			ediEintragsSet.add(e);
@@ -335,9 +328,6 @@ public class EdiKomponenteController {
 		TypedQuery<EdiEmpfaenger> tqE = entityManager.createQuery(
 				"SELECT e FROM EdiEmpfaenger e WHERE e.komponente = :k", EdiEmpfaenger.class);
 		tqE.setParameter("k", selKomponente);
-		if (cache == CacheRefresh.TRUE) {
-//			tqE.setHint("javax.persistence.cache.storeMode", "REFRESH");
-		}	
 //		ediKomponenteList.addAll(tqE.getResultList());
 		for(EdiEmpfaenger e : tqE.getResultList() ) {
 			log("readEdiListeforKomponete", "Empfaenger:" + e.getKomponente().getFullname() + " add");
