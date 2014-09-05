@@ -190,8 +190,8 @@ public class EdiEintragController {
     				tabAktEdiNr.setText(EDI_PANE_PREFIX + "000");
     				btnSender.textProperty().unbind();
     			}
+    			cmbIntegration.setValue(null);
     			if (newEintrag == null) {
-    				cmbIntegration.getSelectionModel().select(null);
     				EdiEintragController.mainController.setInfoText("Edi-Nummer wurde reserviert");
     			} else {
     				readBusinessObject();
@@ -239,6 +239,7 @@ public class EdiEintragController {
 	private void setupLocalBindings() {
 		
 		btnNewSzenario.disableProperty().set(true);   // todo
+		btnNewConfiguration.disableProperty().bind(cmbIntegration.getSelectionModel().selectedItemProperty().isNull());
 		btnSpeichern.disableProperty().bind(Bindings.not(dataIsChanged));
 		setupIntegrationComboBox();
 		setupKonfigurationComboBox();
@@ -414,7 +415,7 @@ public class EdiEintragController {
 		String aktName = null;
 		if (newName != null) {
 			GeschaeftsObjekt buOb = businessObjectMap.get(newName.toUpperCase());
-			if (buOb == org.geschaeftsObjekt[index]) {
+			if (buOb != null && buOb == org.geschaeftsObjekt[index]) {
 				akt.geschaeftsObjekt[index] = buOb; 
 			} else {
 				if (buOb == null) {
@@ -761,6 +762,26 @@ public class EdiEintragController {
 		return true;
 	}
 		
+    @FXML
+    void newSzenario(ActionEvent event) {
+    	// todo
+		String aktName = Dialogs.create().owner(primaryStage).title(applName + " noch nicht implementiert")
+				.message("Wie soll die neue Konfiguration heiﬂen?")
+				.showTextInput("");
+		if (aktName != null) {
+			System.out.println("AktName:" + aktName);
+		}	
+    }
+    
+    @FXML
+    void newKonfiguration(ActionEvent event) {
+		String aktName = Dialogs.create().owner(primaryStage).title(applName + " noch nicht implementiert")
+				.message("Wie soll die neue Konfiguration heiﬂen?")
+				.showTextInput("");
+		if (aktName != null) {
+			System.out.println("AktName:" + aktName);
+		}	
+    }
     
     //Action: Sender-Button is pressed
     @FXML

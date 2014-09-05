@@ -51,7 +51,7 @@
 												<TableColumn editable="false" maxWidth="353.0000305175781" minWidth="61.0" prefWidth="126.0" resizable="false" text="Datum" />
 												<TableColumn editable="false" maxWidth="269.0" minWidth="0.0" prefWidth="128.0" resizable="false" text="Quelle" />
 											</columns>
-										</TableView><Button fx:id="btnNewSzenario" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Neues Szenrio anlegen..." GridPane.columnIndex="2" GridPane.rowIndex="1" /><Button fx:id="btnNewConfiguration" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Neue Konfiguration anlegen..." GridPane.columnIndex="2" GridPane.rowIndex="3" />
+										</TableView><Button fx:id="btnNewSzenario" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#newSzenario" text="Neues Szenrio anlegen..." GridPane.columnIndex="2" GridPane.rowIndex="1" /><Button fx:id="btnNewConfiguration" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#newKonfiguration" text="Neue Konfiguration anlegen..." GridPane.columnIndex="2" GridPane.rowIndex="3" />
 									</children>
 <padding>
 <Insets right="8.0" />

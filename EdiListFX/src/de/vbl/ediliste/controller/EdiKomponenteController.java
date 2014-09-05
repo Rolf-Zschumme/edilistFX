@@ -355,8 +355,10 @@ public class EdiKomponenteController {
 	}
     
 	private static void log(String methode, String message) {
-		String className = EdiKomponenteController.class.getName().substring(16);
-		System.out.println(className + "." + methode + "(): " + message); 
+		if (message == null || methode == null) {
+			String className = EdiKomponenteController.class.getName().substring(16);
+			System.out.println(className + "." + methode + "(): " + message); 
+		}
 	}
 
 	void checkFieldsFromView() {
