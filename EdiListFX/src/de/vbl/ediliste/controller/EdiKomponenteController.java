@@ -115,7 +115,7 @@ public class EdiKomponenteController {
 			if (aktKomponente.getName().equals(newValue) == false) {
 				dataIsChanged.set(true);
 			} else {	
-				dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
+				dataIsChanged.set(!checkForChangesWithMode(Checkmode.ONLY_CHECK));
 			}
 		}); 
 
@@ -123,7 +123,7 @@ public class EdiKomponenteController {
 			if (newValue.equals(aktKomponente.getBeschreibung()) == false) {
 				dataIsChanged.set(true);
 			} else {	
-				dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
+				dataIsChanged.set(!checkForChangesWithMode(Checkmode.ONLY_CHECK));
 			}
 		});
 		
@@ -225,17 +225,17 @@ public class EdiKomponenteController {
 	
 	@FXML
 	void speichern(ActionEvent event) {
-		checkForChangesAndSave(Checkmode.SAVE_DONT_ASK);
+		checkForChangesWithMode(Checkmode.SAVE_DONT_ASK);
 	}
 	
 	public boolean checkForChangesAndAskForSave() {
-		return checkForChangesAndSave(Checkmode.ASK_FOR_UPDATE);
+		return checkForChangesWithMode(Checkmode.ASK_FOR_UPDATE);
 	}
 
 	private static enum Checkmode { ONLY_CHECK, ASK_FOR_UPDATE, SAVE_DONT_ASK };
 	
-	private boolean checkForChangesAndSave(Checkmode checkmode) {
-		log("checkForChangesAndSave","aktKompo=" + (aktKomponente==null ? "null" : aktKomponente.getFullname()));
+	private boolean checkForChangesWithMode(Checkmode checkmode) {
+		log("checkForChangesWithMode","aktKompo=" + (aktKomponente==null ? "null" : aktKomponente.getFullname()));
 		if (aktKomponente == null ) {
 			return true;
 		}
@@ -256,15 +256,16 @@ public class EdiKomponenteController {
     				.actions(Dialog.Actions.YES, Dialog.Actions.NO, Dialog.Actions.CANCEL)
     				.message("Sollen die Änderungen an der Komponente " + orgName + " gespeichert werden ?")
     				.showConfirm();
-	    		if (response == Dialog.Actions.CANCEL) 	
+	    		if (response == Dialog.Actions.CANCEL) {
 	    			return false;
+	    		}
 	    		if (response == Dialog.Actions.NO) {
 	    			aktKomponente = null;
 	    			return true;
 	    		}
 			}	
 			if (checkmode != Checkmode.ONLY_CHECK) {
-				log("checkForChangesAndSave","Änderung erkannt -> update");
+				log("checkForChangesWithMode","Änderung erkannt -> update");
 				entityManager.getTransaction().begin();
 				aktKomponente.setName(newName);
 				aktKomponente.setBeschreibung(newBeschreibung);
@@ -274,7 +275,7 @@ public class EdiKomponenteController {
 			}	
 		}
 		else {
-			log("checkForChangesAndSave", "Name und Bezeichnung unverändert");
+			log("checkForChangesWithMode", "Name und Bezeichnung unverändert");
 		}
 		return true;
 	}

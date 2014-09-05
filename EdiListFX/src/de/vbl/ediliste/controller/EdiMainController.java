@@ -185,8 +185,8 @@ public class EdiMainController {
         tableKomponentenAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkKomponente(e) );
 		tableKomponentenAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkKomponente(e) );
 		
-//      tableEdiNrAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkKomponente(e) );
-//		tableEdiNrAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkKomponente(e) );
+		tableEdiNrAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkEdiEintrag(e) );
+		tableEdiNrAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkEdiEintrag(e) );
     }
     
 	private void checkSystem(Event event) {
@@ -201,11 +201,14 @@ public class EdiMainController {
 		}	
 	}
 
-//	private void checkEdiEintrag(Event event) {
+	private void checkEdiEintrag(Event event) {
+		if(ediEintragController.checkForChangesAndAskForSave() == false) {
+			event.consume();
+		}
 //    	if (tabEdiNr.equals(selTab)) {
 //    		if (ediEintragController.checkForContinueEditing() == true) e.consume();
 //    	}
-//	}
+	}
 	
 	private void setupEdiEintragPane() {
     	tableEdiNrAuswahl.setItems(ediEintraegeList);
