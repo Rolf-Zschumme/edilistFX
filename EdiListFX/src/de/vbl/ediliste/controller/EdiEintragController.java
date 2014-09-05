@@ -107,8 +107,8 @@ public class EdiEintragController {
 			}
     	}
     }
-    static final EdiEintragPlus akt = new EdiEintragPlus();
-    static final EdiEintragPlus org = new EdiEintragPlus();
+    EdiEintragPlus akt = new EdiEintragPlus();
+    EdiEintragPlus org = new EdiEintragPlus();
     
 	@FXML private AnchorPane ediEintragPane;
     @FXML private VBox eintragVBox;
@@ -168,16 +168,13 @@ public class EdiEintragController {
 	}
 
 	public static void start(Stage primaryStage, EdiMainController mainController, EntityManager entityManager) {
-		log("start","called");
 		EdiEintragController.primaryStage = primaryStage;
 		EdiEintragController.entityManager = entityManager;
 		EdiEintragController.mainController = mainController;
-		EdiEintragController.mainController.setInfoText("Hallo");
 	}
 
     @FXML 
     void initialize() {
-    	log("initialize","called");
     	checkFieldFromView();
     	ediEintrag.addListener(new ChangeListener<EdiEintrag>() {
     		@Override
@@ -194,8 +191,8 @@ public class EdiEintragController {
     				btnSender.textProperty().unbind();
     			}
     			if (newEintrag == null) {
-    				log("ediEintrag.changed","newEintrag=null");
     				cmbIntegration.getSelectionModel().select(null);
+    				EdiEintragController.mainController.setInfoText("Edi-Nummer wurde reserviert");
     			} else {
     				readBusinessObject();
     				readIntegrationList();
@@ -240,8 +237,8 @@ public class EdiEintragController {
     }
     
 	private void setupLocalBindings() {
-		log("setupLocalBindings","called");
 		
+		btnNewSzenario.disableProperty().set(true);   // todo
 		btnSpeichern.disableProperty().bind(Bindings.not(dataIsChanged));
 		setupIntegrationComboBox();
 		setupKonfigurationComboBox();
@@ -583,29 +580,24 @@ public class EdiEintragController {
 	}
 	
 	public boolean checkForChangesAndAskForSave() {
-		log("checkForChangesAndAskForSave"," aktEdi=" + akt.bezeichnung);
 		return checkForChangesWithMode(Checkmode.ASK_FOR_UPDATE);
 	}
 
 	private boolean checkForChangesWithMode(Checkmode checkmode) {
-//		if (org.EdiNr < 1) {
 		if (ediEintrag.get() == null) {
-			log("checkForChangesAndSave","mode="+ checkmode +  " orgEdiNr=" + org.EdiNr);
 			return true;
 		}
 //		log("checkForChangesWithMode","mode="+ checkmode +  " aktEdi=" + akt.bezeichnung);
 		if (akt.konfiguration == org.konfiguration &&
 			akt.sender == org.sender &&
 			verifyEmpfaengerAreUnchanged() == true   &&
-			akt.seitDatum == org.seitDatum  &&
-			akt.bisDatum == org.bisDatum  &&
+			localDateEquals(akt.seitDatum, org.seitDatum)  &&
+			localDateEquals(akt.bisDatum, org.bisDatum)  &&
 			akt.beschreibung.equals(org.beschreibung) ) {
 			// no changes -> no update
-			log("checkForChangesWithMode"," no changes found");		
 			return true;  
 		}
 		if (checkmode == Checkmode.ONLY_CHECK) {
-			log("checkForChangesWithMode","changes found but mode=ONLY_CHECK");		
 			return false; 
 		}
 		if (checkmode == Checkmode.ASK_FOR_UPDATE) {
@@ -621,7 +613,6 @@ public class EdiEintragController {
 			if (response == Dialog.Actions.NO) {
 				return true;
 			}
-			log("checkForChangesWithMode","--> next do check/update");
 		}
 		
 		// start validation before insert/update
@@ -671,7 +662,6 @@ public class EdiEintragController {
     	}
     	
     	// end validation -> start update/insert
-		log("checkForChangesWithMode","changes found --> UPDATE");		
 		try {
 			EdiEintrag aktEdi = ediEintrag.get();
 			entityManager.getTransaction().begin();
@@ -752,11 +742,19 @@ public class EdiEintragController {
 		return true;
 	}	
 	
+	private boolean localDateEquals(LocalDate x, LocalDate y) {
+		if (x == null && y == null)
+			return true;
+		if (x != null && y != null) {
+			return (x.compareTo(y)==0);
+		}
+		return false;
+	}
+
 	private boolean verifyEmpfaengerAreUnchanged () {
 		for(int i=0; i < MAX_EMPFAENGER; ++i ) {
 			if (akt.empfaengerKomponente[i] != org.empfaengerKomponente[i] ||
 					akt.geschaeftsObjekt[i] != org.geschaeftsObjekt[i]) {
-				log("verifyEmpfaenger","false bei "+i);
 				return false;
 			}
 		}
@@ -899,10 +897,10 @@ public class EdiEintragController {
 		this.ediEintrag.set(ediEintrag);
 	}
 
-	private static void log(String methode, String message) {
-		String className = EdiEintragController.class.getName().substring(16);
-		System.out.println(className + "." + methode + "(): " + message); 
-	}
+//	private static void log(String methode, String message) {
+//		String className = EdiEintragController.class.getName().substring(16);
+//		System.out.println(className + "." + methode + "(): " + message); 
+//	}
     
     private void checkFieldFromView() {
     	assert paneAnbindung != null : "fx:id=\"paneAnbindung\" was not injected: check your FXML file 'EdiEintrag.fxml'.";

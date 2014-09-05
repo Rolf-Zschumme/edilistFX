@@ -10,9 +10,9 @@
 		<class>de.vbl.ediliste.model.GeschaeftsObjekt</class>
 		<class>de.vbl.ediliste.model.Integration</class>
 		<class>de.vbl.ediliste.model.Konfiguration</class>
+		<class>de.vbl.ediliste.model.KontaktPerson</class>
 		<class>de.vbl.ediliste.model.SVN_Repository</class>
 		<class>de.vbl.ediliste.model.Vorhaben</class>
-		<class>de.vbl.ediliste.model.KontaktPerson</class>
 		<properties>
 			<property name="eclipselink.logging.level" value="WARNING"/>  
 			<property name="eclipselink.jdbc.batch-writing" value="None"/>

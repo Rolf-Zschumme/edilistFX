@@ -340,7 +340,7 @@ public class EdiMainController {
 		Dialogs.create()
 			.owner(primaryStage).title(applName)
 			.masthead("VBL-Tool zur Verwaltung der EDI-Liste")
-			.message("Version 0.9a - 12.08.2014")
+			.message("Version 0.9.1 - 05.09.2014")
 			.showInformation();
     }
 

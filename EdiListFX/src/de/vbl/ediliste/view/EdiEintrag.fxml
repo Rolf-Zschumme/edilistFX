@@ -42,7 +42,7 @@
 										<Label alignment="CENTER_RIGHT" layoutX="9.600000381469727" layoutY="68.60000038146973" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Konfiguration:" GridPane.rowIndex="3">
 										</Label>
 										<ComboBox fx:id="cmbKonfiguration" layoutX="9.600000381469727" layoutY="85.60000038146973" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-										<Label alignment="CENTER_RIGHT" layoutX="9.600000381469727" layoutY="34.60000038146973" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Bezeichnung:" AnchorPane.leftAnchor="14.0" GridPane.rowIndex="1">
+										<Label alignment="CENTER_RIGHT" layoutX="9.600000381469727" layoutY="34.60000038146973" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Name:" AnchorPane.leftAnchor="14.0" GridPane.rowIndex="1">
 										</Label>
 										<TableView editable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="120.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2">
 											<columns>

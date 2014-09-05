@@ -52,7 +52,7 @@
 												<TableView fx:id="tableEdiNrAuswahl" prefHeight="702.0" prefWidth="535.0" tableMenuButtonVisible="true" VBox.vgrow="ALWAYS">
 													<columns>
 														<TableColumn fx:id="tColAuswahlEdiNr" editable="false" maxWidth="120.0" minWidth="0.0" prefWidth="35.0" text="Nr." /><TableColumn fx:id="tColAuswahlEdiNrSender" prefWidth="137.0" text="Sender" />
-														<TableColumn fx:id="tColAuswahlEdiNrBezeichnung" editable="false" maxWidth="1.7976931348623157E308" minWidth="200.0" prefWidth="-1.0" text="Bezeichnung" />
+														<TableColumn fx:id="tColAuswahlEdiNrBezeichnung" editable="false" maxWidth="1.7976931348623157E308" minWidth="200.0" prefWidth="-1.0" text="Name des EDI-Eintrages" />
 													</columns>
 												</TableView>
 											</children>
