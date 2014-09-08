@@ -226,6 +226,10 @@ public class EdiMainController {
     	ediEintragController.ediEintragProperty().bind(
     						    tableEdiNrAuswahl.getSelectionModel().selectedItemProperty());
     }
+	
+	protected void setSelectedEdiEintrag (EdiEintrag e) {
+		tableEdiNrAuswahl.getSelectionModel().select(e);
+	}
     
 	private void setupEdiPartnerPane() {
 		tablePartnerAuswahl.setItems(ediPartnerList);
