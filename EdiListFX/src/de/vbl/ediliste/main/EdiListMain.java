@@ -27,6 +27,7 @@ public class EdiListMain extends Application {
 	private static Stage primaryStage;  
 	
 	public static void main(String[] args) {
+		System.out.println("Java-Version: " + System.getProperty("java.version"));
 		launch(args);
 	}
 	

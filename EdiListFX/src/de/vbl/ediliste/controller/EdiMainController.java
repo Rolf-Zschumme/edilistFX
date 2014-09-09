@@ -341,10 +341,12 @@ public class EdiMainController {
 	
 	@FXML
     void btnUeber(ActionEvent event) {
+//		if System.getProperties("java.version")
 		Dialogs.create()
 			.owner(primaryStage).title(applName)
 			.masthead("VBL-Tool zur Verwaltung der EDI-Liste")
-			.message("Version 0.9.1 - 05.09.2014")
+			.message("\nProgramm-Version 0.9.2 - 10.09.2014\n"
+					+ "\nJava-Runtime-Verion: " + System.getProperty("java.version"))
 			.showInformation();
     }
 
