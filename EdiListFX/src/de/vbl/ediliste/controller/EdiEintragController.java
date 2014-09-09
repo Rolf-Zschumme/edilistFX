@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -235,8 +236,6 @@ public class EdiEintragController {
     }
     
 	private void setupLocalBindings() {
-		
-		btnNewSzenario.disableProperty().set(true);   // todo
 		
 		btnNewConfiguration.disableProperty().bind(cmbIntegration.getSelectionModel().selectedItemProperty().isNull());
 		
@@ -475,15 +474,15 @@ public class EdiEintragController {
 	}
 	
 	private GeschaeftsObjekt askForNewBusinessObjektName(String newName) {
-		String aktName = Dialogs.create()
+		Optional<String> aktName = Dialogs.create()
 				.owner(primaryStage)
 				.title(applName)
 				.message("Soll das folgende Gesch‰ftsobjekt gespeichert werden?")
 				.showTextInput(newName);
-		if (aktName == null) {
-			return null;
+		if (aktName.isPresent()) {
+			return (geschaeftsObjektAnlegen(aktName.get()));
 		}	
-		return (geschaeftsObjektAnlegen(aktName));
+		return null;
 	}
 
 	private GeschaeftsObjekt geschaeftsObjektAnlegen(String aktName) {
@@ -809,39 +808,67 @@ public class EdiEintragController {
 		
     @FXML
     void newSzenario(ActionEvent event) {
-    	// todo
-		String newName = Dialogs.create()
-				.owner(primaryStage)
-				.title(applName + ": Achtung noch nicht implementiert")
-				.message("Wie soll die neue Konfiguration heiﬂen?")
-				.showTextInput("");
-		if (newName != null) {
+    	String aktName = "";
+    	String masterhead = null;
+		while (true) {
+			Optional<String> newName = Dialogs.create()
+				.owner(primaryStage).title(applName)
+				.masthead(masterhead)
+				.message("Wie soll die neue Integration heiﬂen?")
+				.showTextInput(aktName);
+			if (newName.isPresent()==false) {
+				masterhead = "Eine Eingabe ist erforderlich!\n" + 
+							 "Bitte ‰ndern oder abbrechen";
+				continue;
+			} 
 			String sql="SELECT i FROM Integration i WHERE LOWER(i.name) = LOWER(:n)";
 			TypedQuery<Integration> tq = entityManager.createQuery(sql, Integration.class);
 			tq.setParameter("n", newName);
 			List<Integration> iList = tq.getResultList();
 			
 			if (iList.size() > 0) {
-				
+				masterhead = "Integration \"" +iList.get(0).getName() +"\" ist bereits vorhanden.\n" + 
+						"Bitte ‰ndern oder abbrechen";
+				aktName = newName.get();
+				continue;
 			}
-		}	
-    }
+			try {
+				Integration integration = new Integration(newName.get());
+				entityManager.getTransaction().begin();
+				entityManager.persist(integration);
+				entityManager.getTransaction().commit();
+				
+				readIntegrationList();
+				cmbIntegration.getSelectionModel().select(integration);
+				btnNewConfiguration.requestFocus();
+				
+				mainController.setInfoText("Die Integration \"" + newName + "\"" + 
+					" wurde erfolgreich erstellt und hier ausgew‰hlt");
+				return;
+			} catch (RuntimeException er) {
+				Dialogs.create().owner(primaryStage)
+					.title(applName).masthead("Datenbankfehler")
+					.message("Fehler beim Anlegen einer neuen Integration")
+					.showException(er);
+			}
+		}
+    }	
     
     @FXML
     void newKonfiguration(ActionEvent event) {
     	String aktName = "";
     	String masterhead = null;
 		while (true) {
-			String newName = Dialogs.create()
+			Optional<String> newName = Dialogs.create()
 				.owner(primaryStage).title(applName)
 				.masthead(masterhead)
 				.message("Wie soll die neue Konfiguration heiﬂen?")
 				.showTextInput(aktName);
 			
-			if (newName.length() < 1) {
+			if (newName.isPresent() == false) {
 				masterhead = "Eine Eingabe ist erforderlich!\n" + 
-						"Bitte ‰ndern oder abbrechen";
-				aktName = newName;
+							 "Bitte ‰ndern oder abbrechen";
+//				aktName = newName.get();
 				continue;
 			} 
 			String sql="SELECT k FROM Konfiguration k WHERE k.integration=:i AND LOWER(k.name) = LOWER(:n)";
@@ -851,13 +878,13 @@ public class EdiEintragController {
 			List<Konfiguration> kList = tq.getResultList();
 			
 			if (kList.size() > 0) {
-				masterhead = "Konfiguration \"" +kList.get(0).getName() +"\" bereits vorhanden.\n" + 
+				masterhead = "Konfiguration \"" +kList.get(0).getName() +"\" ist bereits vorhanden.\n" + 
 						     "Bitte ‰ndern oder abbrechen";
-				aktName = newName;
+				aktName = newName.get();
 				continue;
 			}
 			try {
-				Konfiguration konfiguration = new Konfiguration(newName);
+				Konfiguration konfiguration = new Konfiguration(newName.get());
 				entityManager.getTransaction().begin();
 				entityManager.persist(konfiguration);
 				konfiguration.setIntegration(akt.integration);
@@ -867,14 +894,14 @@ public class EdiEintragController {
 				cmbKonfiguration.getSelectionModel().select(konfiguration);
 				cmbKonfiguration.requestFocus();
 				
-				mainController.setInfoText("Die Konfiguartion \"" + newName + "\"" + 
+				mainController.setInfoText("Die Konfiguartion \"" + newName.get() + "\"" + 
 					" wurde der Integration \"" + akt.integration.getName()  + "\"" +
 					" erfolgreich zugef¸gt und hier ausgew‰hlt");
 				return;
 			} catch (RuntimeException er) {
 				Dialogs.create().owner(primaryStage)
 					.title(applName).masthead("Datenbankfehler")
-					.message("Fehler beim speichern des Gesch‰ftsobjektes")
+					.message("Fehler beim Anlegen einer neuen Konfiguration")
 					.showException(er);
 			}
 		}	

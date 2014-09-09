@@ -20,12 +20,21 @@ import javax.persistence.OneToMany;
 @Entity 
 public class Integration {
 
-	private StringProperty name = new SimpleStringProperty();
+	private StringProperty name;
 	private long id;
 	private Collection<Konfiguration> konfiguration;
 	private String beschreibung;
 	private Collection<Vorhaben> vorhaben;
 	private Collection<DokuLink> dokuLink;
+
+	public Integration() {
+		name = new SimpleStringProperty();
+	}
+	
+	public Integration(String newName) {
+		this();
+		name.set(newName);
+	}
 
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
