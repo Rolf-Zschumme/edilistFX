@@ -345,8 +345,8 @@ public class EdiMainController {
 		Dialogs.create()
 			.owner(primaryStage).title(applName)
 			.masthead("VBL-Tool zur Verwaltung der EDI-Liste")
-			.message("\nProgramm-Version 0.9.2 - 10.09.2014\n"
-					+ "\nJava-Runtime-Verion: " + System.getProperty("java.version"))
+			.message("\nProgramm-Version 0.9.2 - 11.09.2014\n"
+			   	   + "\nJava-Runtime-Verion: " + System.getProperty("java.version"))
 			.showInformation();
     }
 

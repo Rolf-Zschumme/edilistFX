@@ -814,26 +814,30 @@ public class EdiEintragController {
 			Optional<String> newName = Dialogs.create()
 				.owner(primaryStage).title(applName)
 				.masthead(masterhead)
-				.message("Wie soll die neue Integration heißen?")
+				.message("Wie soll das neue Integrations-Szenario heißen?")
 				.showTextInput(aktName);
-			if (newName.isPresent()==false) {
+			if ( !newName.isPresent() ) {
+				mainController.setInfoText("Integrations-Szenario-Neuanlage wurde vom Benutzer abgebrochen");
+				break;
+			}
+			aktName = newName.get().trim();
+			if (aktName.length() < 1) {
 				masterhead = "Eine Eingabe ist erforderlich!\n" + 
 							 "Bitte ändern oder abbrechen";
 				continue;
 			} 
 			String sql="SELECT i FROM Integration i WHERE LOWER(i.name) = LOWER(:n)";
 			TypedQuery<Integration> tq = entityManager.createQuery(sql, Integration.class);
-			tq.setParameter("n", newName);
+			tq.setParameter("n", aktName);
 			List<Integration> iList = tq.getResultList();
 			
 			if (iList.size() > 0) {
-				masterhead = "Integration \"" +iList.get(0).getName() +"\" ist bereits vorhanden.\n" + 
-						"Bitte ändern oder abbrechen";
-				aktName = newName.get();
+				masterhead = "Integration \"" +iList.get(0).getName() +"\" ist bereits vorhanden." + 
+						  "\n Bitte ändern oder abbrechen";
 				continue;
 			}
 			try {
-				Integration integration = new Integration(newName.get());
+				Integration integration = new Integration(aktName);
 				entityManager.getTransaction().begin();
 				entityManager.persist(integration);
 				entityManager.getTransaction().commit();
@@ -842,7 +846,7 @@ public class EdiEintragController {
 				cmbIntegration.getSelectionModel().select(integration);
 				btnNewConfiguration.requestFocus();
 				
-				mainController.setInfoText("Die Integration \"" + newName + "\"" + 
+				mainController.setInfoText("Die Integration \"" + aktName + "\"" + 
 					" wurde erfolgreich erstellt und hier ausgewählt");
 				return;
 			} catch (RuntimeException er) {
@@ -866,25 +870,28 @@ public class EdiEintragController {
 				.showTextInput(aktName);
 			
 			if (newName.isPresent() == false) {
-				masterhead = "Eine Eingabe ist erforderlich!\n" + 
-							 "Bitte ändern oder abbrechen";
-//				aktName = newName.get();
+				mainController.setInfoText("Neuanlager einer Konfiguartion wurde vom Benutzer abgebrochen");
+				break;
+			}
+			aktName = newName.get().trim();
+			if (aktName.length() < 1) {
+				masterhead = "Eine Eingabe ist erforderlich!" + 
+						  "\n Bitte ändern oder abbrechen";
 				continue;
 			} 
 			String sql="SELECT k FROM Konfiguration k WHERE k.integration=:i AND LOWER(k.name) = LOWER(:n)";
 			TypedQuery<Konfiguration> tq = entityManager.createQuery(sql, Konfiguration.class);
 			tq.setParameter("i", akt.integration);
-			tq.setParameter("n", newName);
+			tq.setParameter("n", aktName);
 			List<Konfiguration> kList = tq.getResultList();
 			
 			if (kList.size() > 0) {
 				masterhead = "Konfiguration \"" +kList.get(0).getName() +"\" ist bereits vorhanden.\n" + 
 						     "Bitte ändern oder abbrechen";
-				aktName = newName.get();
 				continue;
 			}
 			try {
-				Konfiguration konfiguration = new Konfiguration(newName.get());
+				Konfiguration konfiguration = new Konfiguration(aktName);
 				entityManager.getTransaction().begin();
 				entityManager.persist(konfiguration);
 				konfiguration.setIntegration(akt.integration);
@@ -894,7 +901,7 @@ public class EdiEintragController {
 				cmbKonfiguration.getSelectionModel().select(konfiguration);
 				cmbKonfiguration.requestFocus();
 				
-				mainController.setInfoText("Die Konfiguartion \"" + newName.get() + "\"" + 
+				mainController.setInfoText("Die Konfiguartion \"" + aktName + "\"" + 
 					" wurde der Integration \"" + akt.integration.getName()  + "\"" +
 					" erfolgreich zugefügt und hier ausgewählt");
 				return;
