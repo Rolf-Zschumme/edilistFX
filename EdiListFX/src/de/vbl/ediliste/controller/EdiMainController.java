@@ -63,6 +63,7 @@ public class EdiMainController {
     @FXML private TableView<EdiEintrag> tableEdiNrAuswahl;
     @FXML private TableColumn<EdiEintrag, String> tColAuswahlEdiNr;
     @FXML private TableColumn<EdiEintrag, String> tColAuswahlEdiNrSender;
+//  @FXML private TableColumn<EdiEintrag, String> tColAuswahlEdiNrSender;
     @FXML private TableColumn<EdiEintrag, String> tColAuswahlEdiNrBezeichnung;
 
     @FXML private Tab tabPartner;
@@ -216,8 +217,10 @@ public class EdiMainController {
     			cellData.getValue().ediNrProperty()));
     	tColAuswahlEdiNrSender.setCellValueFactory(cellData -> 
     			cellData.getValue().senderNameProperty());
+//    	tColAuswahlEdiNrBezeichnung.setCellValueFactory(cellData -> 
+//    			cellData.getValue().bezeichnungProperty());
     	tColAuswahlEdiNrBezeichnung.setCellValueFactory(cellData -> 
-    			cellData.getValue().bezeichnungProperty());
+		cellData.getValue().intregrationName());
 
     	btnDeleteEdiEintrag.disableProperty().bind(
     			Bindings.isNull(tableEdiNrAuswahl.getSelectionModel().selectedItemProperty()));
@@ -349,6 +352,18 @@ public class EdiMainController {
 			   	   + "\nJava-Runtime-Verion: " + System.getProperty("java.version"))
 			.showInformation();
     }
+	@FXML
+	void showJavaInfo (ActionEvent event) {
+		String javaVersion = "Java-Version: " + System.getProperty("java.version");
+		String javaHome = "Home: " + System.getProperty("java.home");
+		String classpath = System.getProperty("java.class.path");
+		String [] classpathEntries = classpath.split(File.pathSeparator);
+		String message = "";
+		for ( String l : classpathEntries) {
+			message += "\n" + l;
+		}
+		Dialogs.create().title(javaVersion).masthead(javaHome).message(message).showInformation();
+	}
 
     @FXML
     void newEdiNr(ActionEvent event) {
@@ -460,7 +475,7 @@ public class EdiMainController {
     		try {
     			int lines = export.write(file);
     			primaryStage.getScene().setCursor(aktCursor);
-    			Dialogs.create().owner(applName).title(applName)
+    			Dialogs.create().owner(primaryStage).title(applName)
     					.masthead(null)
     					.message(lines + " Zeilen in der Datei " + file.getName() + 
     							" im Verzeichnis " + file.getParent() +" gespeichert")

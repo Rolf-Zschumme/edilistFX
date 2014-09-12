@@ -23,7 +23,7 @@
 						</Menu>
 						<Menu mnemonicParsing="false" text="Hilfe">
 							<items>
-								<MenuItem mnemonicParsing="false" onAction="#btnUeber" text="Über" />
+								<MenuItem mnemonicParsing="false" onAction="#btnUeber" text="Über" /><MenuItem mnemonicParsing="false" onAction="#showJavaInfo" text="Java-Laufzeit-Info anzeigen" />
 							</items>
 						</Menu>
 					</menus>
@@ -37,10 +37,12 @@
 			<tabs>
 				<Tab fx:id="tabEdiNr" text="EDI-Nr.">
 					<content>
-						<AnchorPane>
+						<AnchorPane minHeight="0.0" minWidth="0.0">
 							<children>
-								<SplitPane dividerPositions="0.33972992181947403" prefHeight="739.0" prefWidth="1407.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+								<SplitPane dividerPositions="0.32338308457711445" prefHeight="739.0" prefWidth="1407.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 									<items>
+<AnchorPane minHeight="0.0" minWidth="0.0">
+<children>
 										<VBox prefHeight="739.0" prefWidth="1407.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 											<children>
 												<ToolBar layoutX="-48.0" layoutY="14.0" prefWidth="200.0">
@@ -51,12 +53,14 @@
 												</ToolBar>
 												<TableView fx:id="tableEdiNrAuswahl" prefHeight="702.0" prefWidth="535.0" tableMenuButtonVisible="true" VBox.vgrow="ALWAYS">
 													<columns>
-														<TableColumn fx:id="tColAuswahlEdiNr" editable="false" maxWidth="120.0" minWidth="0.0" prefWidth="35.0" text="Nr." /><TableColumn fx:id="tColAuswahlEdiNrSender" prefWidth="137.0" text="Sender" />
+														<TableColumn fx:id="tColAuswahlEdiNr" editable="false" maxWidth="120.0" minWidth="0.0" prefWidth="35.0" text="Nr." /><TableColumn fx:id="tColAuswahlEdiNrIngration" prefWidth="127.0" text="Integration" /><TableColumn fx:id="tColAuswahlEdiNrSender" prefWidth="85.0" text="Sender" />
 														<TableColumn fx:id="tColAuswahlEdiNrBezeichnung" editable="false" maxWidth="1.7976931348623157E308" minWidth="200.0" prefWidth="-1.0" text="Name des EDI-Eintrages" />
 													</columns>
 												</TableView>
 											</children>
 										</VBox>
+</children>
+</AnchorPane>
 									 	<fx:include fx:id="ediEintrag" disable="true" source="EdiEintrag.fxml" />
 									</items>
 								</SplitPane>

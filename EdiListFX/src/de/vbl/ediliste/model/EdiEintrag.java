@@ -213,30 +213,30 @@ public class EdiEintrag {
 //		return false;
 //	}
 	
-	public void copy (EdiEintrag source) {
-		this.id = source.id;
-		this.setEdiNr(source.getEdiNr());
-		this.setBezeichnung(source.getBezeichnung());
-		this.setBeschreibung(source.getBeschreibung());
-		this.setEdiKomponente(source.ediKomponente);
-		this.setKonfiguration(source.konfiguration);
-
+//	public void copy (EdiEintrag source) {
+//		this.id = source.id;
+//		this.setEdiNr(source.getEdiNr());
+//		this.setBezeichnung(source.getBezeichnung());
+//		this.setBeschreibung(source.getBeschreibung());
+//		this.setEdiKomponente(source.ediKomponente);
+//		this.setKonfiguration(source.konfiguration);
+//
 //		Iterator<EdiEmpfaenger> is = source.ediEmpfaenger.iterator();
 //		while(is.hasNext()) {
 //			EdiEmpfaenger e = is.next();
 //			System.out.println("Copy: S-Empf-Id="+ e.getId() +" S-Edi-Id="+ e.getEdiEintrag().getId() + " " + e.getKomponente().getFullname()); 
 //		}
-		
-		if (source.ediEmpfaenger == null) {
-			this.setEdiEmpfaenger(null);
-		} else {
-			
-			this.ediEmpfaenger.clear();
-			for (EdiEmpfaenger e : source.ediEmpfaenger) {
-				this.ediEmpfaenger.add(e);
-			}
-		}
-
+//		
+//		if (source.ediEmpfaenger == null) {
+//			this.setEdiEmpfaenger(null);
+//		} else {
+//			
+//			this.ediEmpfaenger.clear();
+//			for (EdiEmpfaenger e : source.ediEmpfaenger) {
+//				this.ediEmpfaenger.add(e);
+//			}
+//		}
+//
 //		if (this.ediEmpfaenger == null) {
 //			System.out.println("Copy: T-Empf   = null");
 //		}
@@ -247,12 +247,19 @@ public class EdiEintrag {
 //				System.out.println("Copy: T-Empf-Id="+ e.getId() +" T-Edi-Id="+ e.getEdiEintrag().getId()+ " " + e.getKomponente().getFullname()); 
 //			}	
 //		}
-		
-		this.setSeitDatum(source.seitDatum.get());
-		this.setBisDatum(source.bisDatum.get());
-		this.laeDatum = source.laeDatum;
-		this.laeUser = source.laeUser;
+//		
+//		this.setSeitDatum(source.seitDatum.get());
+//		this.setBisDatum(source.bisDatum.get());
+//		this.laeDatum = source.laeDatum;
+//		this.laeUser = source.laeUser;
+//		}
+	
+	public StringProperty intregrationName () {
+		if (getKonfiguration() == null) {
+			return new SimpleStringProperty("");
 		}
+		return getKonfiguration().integrationNameProperty();
+	}
 
     public String autoBezeichnung() {
     	String intSzeName = "I??";

@@ -19,17 +19,15 @@ public class EdiListMain extends Application {
 //		primaryStage.setScene(scene);
 //		primaryStage.show();
 //	}
-//
-//	public static void main(String[] args) {
-//		launch(args);
+
 	
-	
-	private static Stage primaryStage;  
 	
 	public static void main(String[] args) {
 		System.out.println("Java-Version: " + System.getProperty("java.version"));
 		launch(args);
 	}
+	
+	private static Stage primaryStage;
 	
 	@Override
 	public void start(Stage stage) {

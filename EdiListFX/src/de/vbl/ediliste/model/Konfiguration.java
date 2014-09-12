@@ -99,5 +99,12 @@ public class Konfiguration {
 	public void setBeschreibung(String param) {
 		this.beschreibung = param;
 	}
+
+	public StringProperty integrationNameProperty () {
+		if (getIntegration() == null) {
+			return new SimpleStringProperty("");
+		}
+		return getIntegration().nameProperty();
+	}
 	
 }

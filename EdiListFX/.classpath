@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="libs/sqlite-jdbc-3.7.2.jar"/>
 	<classpathentry kind="lib" path="libs/postgresql-9.1-903.jdbc4.jar"/>
 	<classpathentry kind="lib" path="libs/jxl.jar"/>
-	<classpathentry kind="lib" path="libs/guava-17.0.jar"/>
 	<classpathentry kind="lib" path="libs/testFx-3.1.2.jar" sourcepath="libs/testFx-3.1.2-sources.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:platform:/resource/EdiListFX/libs/testFx-3.1.2-javadoc.jar!/"/>
@@ -13,18 +11,17 @@
 	<classpathentry kind="lib" path="libs/mysql/mysql-connector-java-5.1.28-bin.jar"/>
 	<classpathentry kind="lib" path="libs/controlsfx-8.0.6_20/controlsfx-8.0.6_20.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ExcelAPI"/>
+	<classpathentry kind="con" path="org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_20">
 		<attributes>
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
-		<accessrules>
-			<accessrule kind="accessible" pattern="javafx/**"/>
-		</accessrules>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ExcelAPI"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/EclipseLink">
+	<classpathentry kind="lib" path="libs/poi-3.10.1/poi-ooxml-schemas-3.10.1-20140818.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/EclipseLinkEdiList">
 		<attributes>
-			<attribute name="owner.project.facets" value="jpt.jpa"/>
+			<attribute name="owner.project.facets" value="jpt.jpa;#system#"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
