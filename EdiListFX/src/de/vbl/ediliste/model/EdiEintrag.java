@@ -36,6 +36,7 @@ public class EdiEintrag {
 	private String laeUser;
 	
 	private StringProperty senderName;
+	private StringProperty integrationName;
 	
 
 	public EdiEintrag() {
@@ -46,6 +47,7 @@ public class EdiEintrag {
 		seitDatum = new SimpleStringProperty();
 		bisDatum = new SimpleStringProperty();
 		senderName = new SimpleStringProperty();
+		integrationName = new SimpleStringProperty("");
 	}	
 
 	// ------------------------------------------------------------------------
@@ -121,6 +123,10 @@ public class EdiEintrag {
 
 	public void setKonfiguration(Konfiguration param) {
 		this.konfiguration = param;
+		if (param != null) {
+			this.integrationName.unbind();
+			this.integrationName.bind(param.integrationNameProperty());
+		}	
 	}
 
 	@ManyToOne
@@ -255,10 +261,7 @@ public class EdiEintrag {
 //		}
 	
 	public StringProperty intregrationName () {
-		if (getKonfiguration() == null) {
-			return new SimpleStringProperty("");
-		}
-		return getKonfiguration().integrationNameProperty();
+		return integrationName;
 	}
 
     public String autoBezeichnung() {

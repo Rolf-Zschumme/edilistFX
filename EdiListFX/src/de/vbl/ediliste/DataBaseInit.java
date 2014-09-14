@@ -1,4 +1,4 @@
-package de.vbl.ediliste.main;
+package de.vbl.ediliste;
 
 import java.util.List;
 

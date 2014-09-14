@@ -63,7 +63,7 @@ public class EdiMainController {
     @FXML private TableView<EdiEintrag> tableEdiNrAuswahl;
     @FXML private TableColumn<EdiEintrag, String> tColAuswahlEdiNr;
     @FXML private TableColumn<EdiEintrag, String> tColAuswahlEdiNrSender;
-//  @FXML private TableColumn<EdiEintrag, String> tColAuswahlEdiNrSender;
+    @FXML private TableColumn<EdiEintrag, String> tColAuswahlEdiNrIngration;
     @FXML private TableColumn<EdiEintrag, String> tColAuswahlEdiNrBezeichnung;
 
     @FXML private Tab tabPartner;
@@ -106,7 +106,7 @@ public class EdiMainController {
     @FXML private EdiSystemController ediSystemController;
     @FXML private EdiKomponenteController ediKomponenteController;
     
-	private static String applName;
+//	private static String applName;
 	private static int maxEdiNr;
 	private Stage primaryStage;
     private EntityManager entityManager;
@@ -217,9 +217,9 @@ public class EdiMainController {
     			cellData.getValue().ediNrProperty()));
     	tColAuswahlEdiNrSender.setCellValueFactory(cellData -> 
     			cellData.getValue().senderNameProperty());
-//    	tColAuswahlEdiNrBezeichnung.setCellValueFactory(cellData -> 
-//    			cellData.getValue().bezeichnungProperty());
     	tColAuswahlEdiNrBezeichnung.setCellValueFactory(cellData -> 
+    			cellData.getValue().bezeichnungProperty());
+    	tColAuswahlEdiNrIngration.setCellValueFactory(cellData -> 
 		cellData.getValue().intregrationName());
 
     	btnDeleteEdiEintrag.disableProperty().bind(
@@ -346,23 +346,25 @@ public class EdiMainController {
     void btnUeber(ActionEvent event) {
 //		if System.getProperties("java.version")
 		Dialogs.create()
-			.owner(primaryStage).title(applName)
+			.owner(primaryStage).title(APPL_NAME)
 			.masthead("VBL-Tool zur Verwaltung der EDI-Liste")
 			.message("\nProgramm-Version 0.9.2 - 11.09.2014\n"
 			   	   + "\nJava-Runtime-Verion: " + System.getProperty("java.version"))
 			.showInformation();
+		String str = null;
+		System.out.println(str.length());
     }
 	@FXML
 	void showJavaInfo (ActionEvent event) {
 		String javaVersion = "Java-Version: " + System.getProperty("java.version");
-		String javaHome = "Home: " + System.getProperty("java.home");
+		String javaHome = System.getProperty("java.home");
 		String classpath = System.getProperty("java.class.path");
 		String [] classpathEntries = classpath.split(File.pathSeparator);
-		String message = "";
+		String message = "Java-Home:\n\t" + javaHome + "\n\nJava-Classpath:";
 		for ( String l : classpathEntries) {
 			message += "\n" + l;
 		}
-		Dialogs.create().title(javaVersion).masthead(javaHome).message(message).showInformation();
+		Dialogs.create().title(APPL_NAME).masthead(javaVersion).message(message).showInformation();
 	}
 
     @FXML
@@ -416,7 +418,7 @@ public class EdiMainController {
     	if (selectedlistElement != null) {
     		String ediNr = Integer.toString(selectedlistElement.ediNrProperty().get());
     		Action response = Dialogs.create()
-    				.owner(primaryStage).title(applName)
+    				.owner(primaryStage).title(APPL_NAME)
     				.actions(Dialog.Actions.OK, Dialog.Actions.CANCEL)
     				.masthead(SICHERHEITSABFRAGE)
     				.message("EDI-Eintrag mit der Nr. " + ediNr + " wirklich löschen?")
@@ -475,14 +477,14 @@ public class EdiMainController {
     		try {
     			int lines = export.write(file);
     			primaryStage.getScene().setCursor(aktCursor);
-    			Dialogs.create().owner(primaryStage).title(applName)
+    			Dialogs.create().owner(primaryStage).title(APPL_NAME)
     					.masthead(null)
     					.message(lines + " Zeilen in der Datei " + file.getName() + 
     							" im Verzeichnis " + file.getParent() +" gespeichert")
     					.showInformation();		
 			} catch (IOException e1) {
 				primaryStage.getScene().setCursor(aktCursor);
-				Dialogs.create().owner(primaryStage).title(applName)
+				Dialogs.create().owner(primaryStage).title(APPL_NAME)
 						.masthead("FEHLER")
 						.message("Fehler beim Speichern der Exportdatei")
 						.showException(e1);

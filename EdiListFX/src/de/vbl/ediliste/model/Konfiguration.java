@@ -26,9 +26,12 @@ public class Konfiguration {
 	private Integration integration;
 	private Collection<EdiEintrag> ediEintrag;
 	private String beschreibung;
+	
+	private StringProperty integrationName;
 
 	public Konfiguration() {
 		name = new SimpleStringProperty();
+		integrationName = new SimpleStringProperty("");
 	}
 	
 	public Konfiguration(String name) {
@@ -69,7 +72,12 @@ public class Konfiguration {
 	}
 
 	public void setIntegration(Integration param) {
+		
 		this.integration = param;
+		if (param != null) {
+			this.integrationName.unbind();
+			this.integrationName.bind(param.nameProperty());
+		}
 	}
  
 	// ------------------------------------------------------------------------
@@ -101,10 +109,7 @@ public class Konfiguration {
 	}
 
 	public StringProperty integrationNameProperty () {
-		if (getIntegration() == null) {
-			return new SimpleStringProperty("");
-		}
-		return getIntegration().nameProperty();
+		return integrationName;
 	}
 	
 }
