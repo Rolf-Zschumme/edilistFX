@@ -38,6 +38,8 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
@@ -56,6 +58,7 @@ public class EdiMainController {
 	private static final String APPL_NAME = "EDI-Liste";
 	private static final String PERSISTENCE_UNIT_NAME = "EdiListFX";
 	private static final String SICHERHEITSABFRAGE = "Sicherheitsabfrage";
+	private static final Logger logger = LogManager.getLogger(EdiEintragController.class.getName()); 
 
     @FXML private TextField txtInfoZeile;
     @FXML private TabPane tabPaneObjekte;    
@@ -99,10 +102,12 @@ public class EdiMainController {
 //    @FXML private AnchorPane komponenteSplitPane;
     
     @FXML private Pane ediEintrag;
+    @FXML private Pane ediPartner;
     @FXML private Pane ediSystem;
     @FXML private Pane ediKomponente;
     
     @FXML private EdiEintragController ediEintragController;
+    @FXML private EdiPartnerController ediPartnerController;
     @FXML private EdiSystemController ediSystemController;
     @FXML private EdiKomponenteController ediKomponenteController;
     
@@ -118,7 +123,7 @@ public class EdiMainController {
 
     @FXML
 	private void initialize () {
-		log("initialize", "called");
+    	logger.info("Entering initialize");
 		checkFieldsFromView();
 		setupEntityManager();
         setupBindings();		
@@ -129,6 +134,7 @@ public class EdiMainController {
     	primaryStage = stage;
     	primaryStage.setTitle(APPL_NAME);
     	EdiEintragController.start(primaryStage, this, entityManager);
+    	EdiPartnerController.start(primaryStage, this, entityManager);
     	EdiSystemController.start(primaryStage, this, entityManager);
     	EdiKomponenteController.start(primaryStage, this, entityManager);
     }
@@ -239,6 +245,9 @@ public class EdiMainController {
 		tColAuswahlPartnerName.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
 		tColAuswahlPartnerSysteme.setCellValueFactory(cellData -> Bindings.format("%7d", cellData.getValue().anzSystemeProperty()));
 		tColAuswahlPartnerKomponenten.setCellValueFactory(cell -> Bindings.format("%7d", cell.getValue().anzKomponentenProperty()));
+		
+		ediPartnerController.ediPartnerProperty().bind(tablePartnerAuswahl.getSelectionModel().selectedItemProperty());
+		ediPartner.disableProperty().bind(Bindings.isNull(tablePartnerAuswahl.getSelectionModel().selectedItemProperty()));
 	}
 	
 	private void setupEdiSystemPane() {
@@ -344,15 +353,12 @@ public class EdiMainController {
 	
 	@FXML
     void btnUeber(ActionEvent event) {
-//		if System.getProperties("java.version")
 		Dialogs.create()
 			.owner(primaryStage).title(APPL_NAME)
 			.masthead("VBL-Tool zur Verwaltung der EDI-Liste")
-			.message("\nProgramm-Version 0.9.2 - 11.09.2014\n"
+			.message("\nProgramm-Version 0.9.3b - 15.09.2014\n"
 			   	   + "\nJava-Runtime-Verion: " + System.getProperty("java.version"))
 			.showInformation();
-		String str = null;
-		System.out.println(str.length());
     }
 	@FXML
 	void showJavaInfo (ActionEvent event) {

@@ -10,6 +10,8 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="libs/mysql/mysql-connector-java-5.1.28-bin.jar"/>
 	<classpathentry kind="lib" path="libs/controlsfx-8.0.6_20/controlsfx-8.0.6_20.jar"/>
+	<classpathentry kind="lib" path="libs/logging/apache-log4j-2.0.2-bin/log4j-api-2.0.2.jar"/>
+	<classpathentry kind="lib" path="libs/logging/apache-log4j-2.0.2-bin/log4j-core-2.0.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ExcelAPI"/>
 	<classpathentry kind="con" path="org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER"/>
