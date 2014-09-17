@@ -50,7 +50,7 @@ public class EdiKomponenteController {
 	
 	@FXML private ResourceBundle resources;
     @FXML private URL location;
-    @FXML private AnchorPane ediKomponentePane;
+//    @FXML private AnchorPane ediKomponentePane;
     @FXML private TextField tfBezeichnung;
     @FXML private TextArea taBeschreibung;
     @FXML private TableView<EdiEmpfaenger> tvVerwendungen;
@@ -362,7 +362,7 @@ public class EdiKomponenteController {
 	}
 
 	void checkFieldsFromView() {
-    	assert ediKomponentePane != null : "fx:id=\"ediKomponente\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
+//    	assert ediKomponentePane != null : "fx:id=\"ediKomponente\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
     	assert tfBezeichnung != null : "fx:id=\"tfBezeichnung\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
     	assert taBeschreibung != null : "fx:id=\"taBeschreibung\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
     	assert tcEdiNr != null : "fx:id=\"tcEdiNr\" was not injected: check your FXML file 'EdiKomponente.fxml'.";

@@ -117,8 +117,6 @@ public class EdiEintragController {
     @FXML private VBox eintragVBox;
 
     @FXML private TitledPane paneSzenario;
-    @FXML private TitledPane paneAnbindung;
-    @FXML private TitledPane paneEdiEintrag;
     @FXML private TabPane tabPaneEdiNr;
     @FXML private Tab tabAktEdiNr;
     
@@ -1056,9 +1054,7 @@ public class EdiEintragController {
 	}
     
     private void checkFieldFromView() {
-    	assert paneAnbindung != null : "fx:id=\"paneAnbindung\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
         assert paneSzenario != null : "fx:id=\"paneSzenario\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert paneEdiEintrag != null : "fx:id=\"paneEdiEintrag\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
         assert btnSpeichern != null : "fx:id=\"btnSpeichern\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
         assert btnNewSzenario != null : "fx:id=\"btnNewSzenario\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
         assert cmbKonfiguration != null : "fx:id=\"cmbKonfiguration\" was not injected: check your FXML file 'EdiEintrag.fxml'.";

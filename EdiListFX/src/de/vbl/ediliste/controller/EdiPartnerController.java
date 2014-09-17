@@ -30,6 +30,8 @@ import javafx.stage.Stage;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
@@ -39,6 +41,7 @@ import de.vbl.ediliste.model.EdiEmpfaenger;
 import de.vbl.ediliste.model.EdiPartner;
 
 public class EdiPartnerController {
+	private static final Logger logger = LogManager.getLogger(EdiPartnerController.class.getName());
 	private static Stage primaryStage = null;
 	private static EdiMainController mainCtr;
 	private static EntityManager entityManager;
@@ -50,7 +53,7 @@ public class EdiPartnerController {
 	
 	@FXML private ResourceBundle resources;
     @FXML private URL location;
-    @FXML private AnchorPane ediPartnerPane;
+//    @FXML private AnchorPane ediPartnerPane;
     @FXML private TextField tfBezeichnung;
     @FXML private TextArea taBeschreibung;
     @FXML private TableView<EdiEmpfaenger> tvVerwendungen;
@@ -72,15 +75,16 @@ public class EdiPartnerController {
 	public static void start(Stage 			   primaryStage, 
 							 EdiMainController mainController, 
 							 EntityManager     entityManager) {
-		log("start","called");
+		logger.entry(primaryStage);
 		EdiPartnerController.primaryStage = primaryStage;
 		EdiPartnerController.mainCtr = mainController;
 		EdiPartnerController.entityManager = entityManager;
+		logger.exit();
 	}
 
 	@FXML
 	public void initialize() {
-		log("initialize","called");
+		logger.entry();
 		checkFieldsFromView();
 		
 		ediPartner.addListener(new ChangeListener<EdiPartner>() {
@@ -178,13 +182,16 @@ public class EdiPartnerController {
 				log("tvVerwendungen.select.changed" ,"newValue" + newValue);
 			}
 		});
+		logger.exit();
 	}
 
 	@FXML
 	void loeschen(ActionEvent event) {
 		if (ediEintragsSet.size() > 0) {
-			mainCtr.setErrorText("Fehler beim löschen des Partners \"" + aktPartner.getName() +"\" da er wird verwendet");
-			return;
+			String msg = "Fehler beim Löschen des Partners \"" + aktPartner.getName() +"\" da er wird verwendet";
+			mainCtr.setErrorText(msg);
+			logger.warn(msg);
+			return; 
 		}	
 		String partnerName1 = "Partner \"" + aktPartner.getName() + "\"";
 		String partnerName2 = partnerName1;
@@ -204,10 +211,12 @@ public class EdiPartnerController {
 				mainCtr.loadPartnerListData();
 				mainCtr.setInfoText("Der " + partnerName1 + " wurde erfolgreich gelöscht !");
 			} catch (RuntimeException er) {
+				String msg = "Fehler beim Löschen der Partners " + partnerName1;
+				logger.fatal(msg, er);
 				Dialogs.create()
 					.owner(primaryStage).title(primaryStage.getTitle())
 					.masthead("Datenbankfehler")
-				    .message("Fehler beim Löschen der Partners " + partnerName1)
+				    .message(msg)
 				    .showException(er);
 			}
 		}
@@ -351,7 +360,7 @@ public class EdiPartnerController {
 	}
 
 	void checkFieldsFromView() {
-    	assert ediPartnerPane != null : "fx:id=\"ediPartnerPane\" was not injected: check your FXML file 'EdiPartner.fxml'.";
+//    	assert ediPartnerPane != null : "fx:id=\"ediPartnerPane\" was not injected: check your FXML file 'EdiPartner.fxml'.";
     	assert tfBezeichnung != null : "fx:id=\"tfBezeichnung\" was not injected: check your FXML file 'EdiPartner.fxml'.";
     	assert taBeschreibung != null : "fx:id=\"taBeschreibung\" was not injected: check your FXML file 'EdiPartner.fxml'.";
     	assert tcEdiNr != null : "fx:id=\"tcEdiNr\" was not injected: check your FXML file 'EdiPartner.fxml'.";

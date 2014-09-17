@@ -50,6 +50,7 @@ import de.vbl.ediliste.model.EdiKomponente;
 import de.vbl.ediliste.model.EdiPartner;
 import de.vbl.ediliste.model.EdiSystem;
 import de.vbl.ediliste.model.GeschaeftsObjekt;
+import de.vbl.ediliste.model.Integration;
 import de.vbl.ediliste.tools.ExportToExcel;
 
 // 04.09.2014 RZ CacheStoreMode = REFRESH gesetzt
@@ -87,6 +88,11 @@ public class EdiMainController {
     @FXML private TableColumn<EdiKomponente, String> tColSelKompoSysteme;
     @FXML private TableColumn<EdiKomponente, String> tColSelKompoPartner;
     
+    @FXML private Tab tabIntegrationen;
+    @FXML private TableView<Integration> tableIntegrationAuswahl;
+    @FXML private TableColumn<Integration, String> tColSelIntegrationName;
+    @FXML private TableColumn<Integration, String> tColSelIntegrationKonfigurationAnzahl;
+    
     @FXML private Tab tabGeschaeftsobjekt;
     @FXML private TableView<GeschaeftsObjekt> tableGeschaeftsobjektAuswahl;
     @FXML private TableColumn<GeschaeftsObjekt, String> tColAuswahlGeschaeftsobjektName;
@@ -119,6 +125,7 @@ public class EdiMainController {
     private ObservableList<EdiPartner> ediPartnerList = FXCollections.observableArrayList();    
     private ObservableList<EdiSystem> ediSystemList = FXCollections.observableArrayList();
     private ObservableList<EdiKomponente> ediKomponentenList = FXCollections.observableArrayList();
+    private ObservableList<Integration> integrationList = FXCollections.observableArrayList();
     private ObservableList<GeschaeftsObjekt> geschaeftsobjektList = FXCollections.observableArrayList();    
 
     @FXML
@@ -155,6 +162,7 @@ public class EdiMainController {
     	setupEdiPartnerPane();
     	setupEdiSystemPane();
     	setupKomponentenPane();
+    	setupIntegrationPane();
     	setupGeschaeftsobjektPane();
 
         tabPaneObjekte.getSelectionModel().selectedItemProperty().addListener(
@@ -177,6 +185,9 @@ public class EdiMainController {
 						}
 						else if(akttab.equals(tabKomponenten)) {
 							loadKomponentenListData();
+						}
+						else if(akttab.equals(tabIntegrationen)) {
+							loadIntegrationListData();
 						}
 						else if(akttab.equals(tabGeschaeftsobjekt)) {
 							loadGeschaeftobjektListData();
@@ -270,6 +281,17 @@ public class EdiMainController {
     	ediKomponente.disableProperty().bind(Bindings.isNull(tableKomponentenAuswahl.getSelectionModel().selectedItemProperty()));
 	}
 
+	private void setupIntegrationPane() {
+		tableIntegrationAuswahl.setItems(integrationList);
+		tColSelIntegrationName.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
+//    	tColSelKompoKomponten.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
+//    	tColSelKompoSysteme.setCellValueFactory(cellData -> cellData.getValue().getEdiSystem().nameProperty());
+//    	tColSelKompoPartner.setCellValueFactory(cellData -> cellData.getValue().getEdiSystem().getEdiPartner().nameProperty());
+//
+//    	ediKomponenteController.komponenteProperty().bind(tableKomponentenAuswahl.getSelectionModel().selectedItemProperty());
+//    	ediKomponente.disableProperty().bind(Bindings.isNull(tableKomponentenAuswahl.getSelectionModel().selectedItemProperty()));
+	}
+
     private void setupGeschaeftsobjektPane() {
     	tableGeschaeftsobjektAuswahl.setItems(geschaeftsobjektList);
     	tColAuswahlGeschaeftsobjektName.setCellValueFactory(new PropertyValueFactory<GeschaeftsObjekt,String>("name"));
@@ -343,6 +365,15 @@ public class EdiMainController {
 				ediKomponentenList.add(aktuList.indexOf(k), k);
 			}
 		}
+	}
+
+	protected void loadIntegrationListData() {
+		TypedQuery<Integration> tq = entityManager.createQuery(
+				"SELECT i FROM Integration i ORDER BY i.name", Integration.class);
+		List<Integration> aktuList = tq.getResultList();
+		
+		integrationList.retainAll(aktuList); // remove delete entities  
+		integrationList.setAll(aktuList);
 	}
 
 	private void loadGeschaeftobjektListData() {
@@ -508,10 +539,12 @@ public class EdiMainController {
         assert tColSelKompoKomponten != null : "fx:id=\"tColSelKompoKomponten\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tColAuswahlEdiNr != null : "fx:id=\"tColAuswahlEdiNr\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tColSelSystemSystemName != null : "fx:id=\"tColSelSystemSystemName\" was not injected: check your FXML file 'EdiMain.fxml'.";
+        assert tColSelIntegrationName != null : "fx:id=\"tColSelIntegrationName\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tabPaneObjekte != null : "fx:id=\"tabPaneObjekte\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tColSelKompoPartner != null : "fx:id=\"tColSelKompoPartner\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tColSelSystemPartnerName != null : "fx:id=\"tColSelSystemPartnerName\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tableEdiNrAuswahl != null : "fx:id=\"tableEdiNrAuswahl\" was not injected: check your FXML file 'EdiMain.fxml'.";
+        assert tabIntegrationen != null : "fx:id=\"tabIntegrationen\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tabSysteme != null : "fx:id=\"tabSysteme\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tColAuswahlGeschaeftsobjektName != null : "fx:id=\"tColAuswahlGeschaeftsobjektName\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert btnDeleteEdiEintrag != null : "fx:id=\"btnDeleteEdiEintrag\" was not injected: check your FXML file 'EdiMain.fxml'.";

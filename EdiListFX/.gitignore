@@ -6,7 +6,10 @@
 .classpath
 .project
 .settings/
+.build/
 
 # Tests
 screenshot*.png
 
+/build/
+/EdiListFX.log
