@@ -6,8 +6,10 @@ import java.util.ResourceBundle;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -22,7 +24,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
@@ -47,13 +48,14 @@ public class EdiPartnerController {
 	private static EntityManager entityManager;
 	private final ObjectProperty<EdiPartner> ediPartner;
 	private final ObservableSet<EdiEintrag> ediEintragsSet;      // all assigned EDI-Entities
+	private final IntegerProperty ediSystemAnzahl; 
+	
 	private EdiPartner aktPartner = null;
 	
     private BooleanProperty dataIsChanged = new SimpleBooleanProperty(false);
 	
 	@FXML private ResourceBundle resources;
     @FXML private URL location;
-//    @FXML private AnchorPane ediPartnerPane;
     @FXML private TextField tfBezeichnung;
     @FXML private TextArea taBeschreibung;
     @FXML private TableView<EdiEmpfaenger> tvVerwendungen;
@@ -70,6 +72,7 @@ public class EdiPartnerController {
     public EdiPartnerController() {
     	this.ediPartner = new SimpleObjectProperty<>(this, "ediPartner", null);
     	this.ediEintragsSet = FXCollections.observableSet();
+    	this.ediSystemAnzahl = new SimpleIntegerProperty(0);
     }
 
 	public static void start(Stage 			   primaryStage, 
@@ -98,6 +101,7 @@ public class EdiPartnerController {
 					ediEintragsSet.clear();
 					tfBezeichnung.setText("");
 					taBeschreibung.setText("");
+					ediSystemAnzahl.unbind();
 				}
 				if (newPartner != null) {
 					aktPartner = newPartner;
@@ -107,13 +111,15 @@ public class EdiPartnerController {
 						newPartner.setBeschreibung("");
 					}
 					taBeschreibung.setText(newPartner.getBeschreibung());
+					ediSystemAnzahl.bind(aktPartner.anzSystemeProperty());
 				}
 				dataIsChanged.set(false);
 			}
 		});
 		
 		btnSpeichern.disableProperty().bind(Bindings.not(dataIsChanged));
-		btnLoeschen.disableProperty().bind(Bindings.not(Bindings.greaterThanOrEqual(0, Bindings.size(ediEintragsSet))));
+		btnLoeschen.disableProperty().bind(Bindings.lessThan(0, ediSystemAnzahl));
+//		btnLoeschen.disableProperty().bind(Bindings.not(Bindings.greaterThanOrEqual(0, Bindings.size(ediEintragsSet))));
 
 		tfBezeichnung.textProperty().addListener((observable, oldValue, newValue)  -> {
 			if (aktPartner.getName().equals(newValue) == false) {
@@ -188,7 +194,7 @@ public class EdiPartnerController {
 	@FXML
 	void loeschen(ActionEvent event) {
 		if (ediEintragsSet.size() > 0) {
-			String msg = "Fehler beim Löschen des Partners \"" + aktPartner.getName() +"\" da er wird verwendet";
+			String msg = "Fehler beim Löschen des Partners \"" + aktPartner.getName() +"\" da er verwendet wird";
 			mainCtr.setErrorText(msg);
 			logger.warn(msg);
 			return; 

@@ -18,6 +18,7 @@ import de.vbl.ediliste.controller.EdiMainController;
 public class EdiListMain extends Application {
 	
 	private static final Logger logger = LogManager.getLogger(EdiListMain.class.getName());
+	EdiMainController controller;
 	
 	public static void main(String[] args) {
 		
@@ -25,7 +26,6 @@ public class EdiListMain extends Application {
 		SimpleDateFormat dateFormatter =  new SimpleDateFormat("dd.MM.yyyy");
 		String dateString = dateFormatter.format(date);		
 		logger.info(dateString + " Java-Version: " + System.getProperty("java.version"));
-		
 		try {
 			launch(args);
 		} catch (Exception e) {
@@ -48,6 +48,11 @@ public class EdiListMain extends Application {
 		primaryStage.show();
 	}
 	
+	@Override
+	public void stop () {
+		controller.stop();
+		logger.info("stopped");
+	}
 
 	public Parent loadAndStartController() {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("view/EdiMain.fxml"));
@@ -60,7 +65,7 @@ public class EdiListMain extends Application {
 			logger.error("Fehler beim Laden der fxml-Resource", e);
 		}
 		
-		EdiMainController controller = loader.getController();
+		controller = loader.getController();
 		if (primaryStage == null) {
 			primaryStage = new Stage();
 		}

@@ -93,7 +93,11 @@ public class EdiMainController {
     @FXML private TableColumn<Integration, String> tColSelIntegrationName;
     @FXML private TableColumn<Integration, String> tColSelIntegrationKonfigurationAnzahl;
     
-    @FXML private Tab tabGeschaeftsobjekt;
+    @FXML private Tab tabKonfigurationen;
+    
+    @FXML private Tab tabKontaktPersonen;
+    
+    @FXML private Tab tabGeschaeftsobjekte;
     @FXML private TableView<GeschaeftsObjekt> tableGeschaeftsobjektAuswahl;
     @FXML private TableColumn<GeschaeftsObjekt, String> tColAuswahlGeschaeftsobjektName;
     @FXML private TableColumn<GeschaeftsObjekt, Integer> tColAuswahlGeschaeftsobjektAnzahl;
@@ -189,24 +193,47 @@ public class EdiMainController {
 						else if(akttab.equals(tabIntegrationen)) {
 							loadIntegrationListData();
 						}
-						else if(akttab.equals(tabGeschaeftsobjekt)) {
+						else if(akttab.equals(tabGeschaeftsobjekte)) {
 							loadGeschaeftobjektListData();
 						}
         				primaryStage.getScene().setCursor(Cursor.DEFAULT);
         			}
 				}
         );
+        tableEdiNrAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkEdiEintrag(e) );
+        tableEdiNrAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkEdiEintrag(e) );
 
+        tablePartnerAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkPartner(e) );
+        tablePartnerAuswahl.addEventFilter(KeyEvent.KEY_PRESSED, e -> checkPartner(e) );
+        
         tableSystemAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkSystem(e) );
         tableSystemAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkSystem(e) );
         
         tableKomponentenAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkKomponente(e) );
 		tableKomponentenAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkKomponente(e) );
 		
-		tableEdiNrAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkEdiEintrag(e) );
-		tableEdiNrAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkEdiEintrag(e) );
     }
     
+    public void stop() {
+    	ediEintragController.checkForChangesAndAskForSave();
+    	ediPartnerController.checkForChangesAndAskForSave();
+    	ediSystemController.checkForChangesAndAskForSave();
+    	ediKomponenteController.checkForChangesAndAskForSave();
+    }
+
+	private void checkEdiEintrag(Event event) {
+    	if(ediEintragController.checkForChangesAndAskForSave() == false) {
+    		event.consume();
+    	}
+    }
+    
+	private Object checkPartner(Event event) {
+		if (ediPartnerController.checkForChangesAndAskForSave() == false) {
+			event.consume();
+		}
+		return null;
+	}
+	
 	private void checkSystem(Event event) {
 		if (ediSystemController.checkForChangesAndAskForSave() == false) {
 			event.consume();
@@ -217,15 +244,6 @@ public class EdiMainController {
 		if (ediKomponenteController.checkForChangesAndAskForSave() == false) {
 			event.consume();
 		}	
-	}
-
-	private void checkEdiEintrag(Event event) {
-		if(ediEintragController.checkForChangesAndAskForSave() == false) {
-			event.consume();
-		}
-//    	if (tabEdiNr.equals(selTab)) {
-//    		if (ediEintragController.checkForContinueEditing() == true) e.consume();
-//    	}
 	}
 	
 	private void setupEdiEintragPane() {
@@ -546,6 +564,8 @@ public class EdiMainController {
         assert tableEdiNrAuswahl != null : "fx:id=\"tableEdiNrAuswahl\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tabIntegrationen != null : "fx:id=\"tabIntegrationen\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tabSysteme != null : "fx:id=\"tabSysteme\" was not injected: check your FXML file 'EdiMain.fxml'.";
+        assert tabKonfigurationen != null : "fx:id=\"tabKonfigurationen\" was not injected: check your FXML file 'EdiMain.fxml'.";
+        assert tabKontaktPersonen != null : "fx:id=\"tabKontaktPersonen\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tColAuswahlGeschaeftsobjektName != null : "fx:id=\"tColAuswahlGeschaeftsobjektName\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert btnDeleteEdiEintrag != null : "fx:id=\"btnDeleteEdiEintrag\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tablePartnerAuswahl != null : "fx:id=\"tablePartnerAuswahl\" was not injected: check your FXML file 'EdiMain.fxml'.";
@@ -557,7 +577,7 @@ public class EdiMainController {
         assert tColAuswahlPartnerName != null : "fx:id=\"tColAuswahlPartnerName\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tabKomponenten != null : "fx:id=\"tabKomponenten\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tColSelKompoSysteme != null : "fx:id=\"tColSelKompoSysteme\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tabGeschaeftsobjekt != null : "fx:id=\"tabGeschaeftsobjekt\" was not injected: check your FXML file 'EdiMain.fxml'.";
+        assert tabGeschaeftsobjekte != null : "fx:id=\"tabGeschaeftsobjekte\" was not injected: check your FXML file 'EdiMain.fxml'.";
 //      assert ediEintragSplitPane != null : "fx:id=\"ediEintragSplitPane\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tableSystemAuswahl != null : "fx:id=\"tableSystemAuswahl\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tabPartner != null : "fx:id=\"tabPartner\" was not injected: check your FXML file 'EdiMain.fxml'.";
