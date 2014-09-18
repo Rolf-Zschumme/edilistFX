@@ -13,7 +13,7 @@
 						<Menu mnemonicParsing="false" text="Datei">
 							<items>
 								<MenuItem mnemonicParsing="false" onAction="#btnExportExcel" text="Export nach Excel" />
-								<MenuItem mnemonicParsing="false" text="Beenden" />
+								<MenuItem mnemonicParsing="false" onAction="#onActionCLose" text="Beenden" />
 							</items>
 						</Menu>
 						<Menu mnemonicParsing="false" text="Bearbeiten">
@@ -153,21 +153,38 @@
                                  <children>
                                     <TableView fx:id="tableIntegrationAuswahl" prefHeight="714.0" prefWidth="416.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                       <columns>
-                                        <TableColumn fx:id="tColSelIntegrationName" prefWidth="426.0" text="Integration" />
+                                        <TableColumn fx:id="tColSelIntegrationName" prefWidth="426.0" text="Integrations-Name" />
                                         <TableColumn fx:id="tColSelIntegrationKonfigurationAnzahl" prefWidth="147.0" text="Anzahl Konfigurationen" visible="false" />
                                       </columns>
                                     </TableView>
                                  </children>
                               </AnchorPane>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
+                            <fx:include fx:id="integration" disable="true" source="Integration.fxml" />
                           </items>
                         </SplitPane>
                      </children></AnchorPane>
 					</content>
 				</Tab>
-				<Tab fx:id="tabKonfigurationen" disable="true" text="Konfigurationen">
+				<Tab fx:id="tabKonfigurationen" text="Konfigurationen">
 					<content>
-						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <SplitPane dividerPositions="0.3724235963041933" prefHeight="716.0" prefWidth="1409.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <items>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                                 <children>
+                                    <TableView fx:id="tableKonfigurationAuswahl" prefHeight="714.0" prefWidth="416.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                      <columns>
+                                        <TableColumn fx:id="tColSelKonfigurationName" prefWidth="314.0" text="Konfigurations-Name" />
+                                        <TableColumn fx:id="tColSelKonfigIntegrationName" prefWidth="259.0" text="gehört zu Integration" />
+                                      </columns>
+                                    </TableView>
+                                 </children>
+                              </AnchorPane>
+                            <fx:include fx:id="konfiguration" disable="true" source="Konfiguration.fxml" />
+                          </items>
+                        </SplitPane>
+                     </children></AnchorPane>
 					</content>
 				</Tab><Tab fx:id="tabKontaktPersonen" disable="true" text="Kontakt-Personen">
   <content>

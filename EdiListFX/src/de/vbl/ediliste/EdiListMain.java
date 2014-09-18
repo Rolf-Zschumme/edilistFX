@@ -46,11 +46,11 @@ public class EdiListMain extends Application {
 		scene.getStylesheets().add(getClass().getResource("view/application.css").toExternalForm());
 		primaryStage.setScene(scene);
 		primaryStage.show();
+		
 	}
 	
 	@Override
 	public void stop () {
-		controller.stop();
 		logger.info("stopped");
 	}
 

@@ -37,7 +37,7 @@ public class EdiEintrag {
 	
 	private StringProperty senderName;
 	private StringProperty integrationName;
-	
+	private StringProperty konfigurationName;
 
 	public EdiEintrag() {
 		ediNr = new SimpleIntegerProperty();
@@ -48,6 +48,7 @@ public class EdiEintrag {
 		bisDatum = new SimpleStringProperty();
 		senderName = new SimpleStringProperty();
 		integrationName = new SimpleStringProperty("");
+		konfigurationName = new SimpleStringProperty("");
 	}	
 
 	// ------------------------------------------------------------------------
@@ -124,6 +125,8 @@ public class EdiEintrag {
 	public void setKonfiguration(Konfiguration param) {
 		this.konfiguration = param;
 		if (param != null) {
+			this.konfigurationName.unbind();
+			this.konfigurationName.bind(param.nameProperty());
 			this.integrationName.unbind();
 			this.integrationName.bind(param.integrationNameProperty());
 		}	
@@ -189,76 +192,9 @@ public class EdiEintrag {
 		this.laeUser = laeUser;
 	}
 
-//	public boolean equaels (EdiEintrag tEDI) {
-//		if ( (id == tEDI.id)                          								&&
-//			 (ediNr.get() == tEDI.ediNr.get())		  							  	&&	
-//		     (beschreibung.getValueSafe().equals(tEDI.beschreibung.getValueSafe()))	&&
-//		     (konfiguration == tEDI.konfiguration)                  				&&
-//		     (ediKomponente == tEDI.ediKomponente)									&&
-//		     (seitDatum == tEDI.seitDatum || (seitDatum != null && seitDatum.equals(tEDI.bisDatum))) &&
-//		     (bisDatum == tEDI.bisDatum || (bisDatum != null && bisDatum.equals(tEDI.bisDatum))) &&
-//		     (empfaengerListIsEqual(ediEmpfaenger,tEDI.ediEmpfaenger)) 	) {
-//		     		return true;
-//		}
-//		return false;
-//	}
-	
-//	private boolean empfaengerListIsEqual( Collection<EdiEmpfaenger> empf1,
-//			Collection<EdiEmpfaenger> empf2) {
-//		if (empf1.size() == empf2.size()) {
-//			Iterator<EdiEmpfaenger> i1 = empf1.iterator();
-//			Iterator<EdiEmpfaenger> i2 = empf2.iterator();
-//			while (i1.hasNext()) {
-//				EdiEmpfaenger e1 = i1.next();
-//				EdiEmpfaenger e2 = i2.next();
-//				if ( !e1.equaels(e2) )
-//					return false;
-//			}
-//			return true;
-//		}
-//		return false;
-//	}
-	
-//	public void copy (EdiEintrag source) {
-//		this.id = source.id;
-//		this.setEdiNr(source.getEdiNr());
-//		this.setBezeichnung(source.getBezeichnung());
-//		this.setBeschreibung(source.getBeschreibung());
-//		this.setEdiKomponente(source.ediKomponente);
-//		this.setKonfiguration(source.konfiguration);
-//
-//		Iterator<EdiEmpfaenger> is = source.ediEmpfaenger.iterator();
-//		while(is.hasNext()) {
-//			EdiEmpfaenger e = is.next();
-//			System.out.println("Copy: S-Empf-Id="+ e.getId() +" S-Edi-Id="+ e.getEdiEintrag().getId() + " " + e.getKomponente().getFullname()); 
-//		}
-//		
-//		if (source.ediEmpfaenger == null) {
-//			this.setEdiEmpfaenger(null);
-//		} else {
-//			
-//			this.ediEmpfaenger.clear();
-//			for (EdiEmpfaenger e : source.ediEmpfaenger) {
-//				this.ediEmpfaenger.add(e);
-//			}
-//		}
-//
-//		if (this.ediEmpfaenger == null) {
-//			System.out.println("Copy: T-Empf   = null");
-//		}
-//		else {
-//			Iterator<EdiEmpfaenger> it = this.ediEmpfaenger.iterator();
-//			while(it.hasNext()) {
-//				EdiEmpfaenger e = it.next();
-//				System.out.println("Copy: T-Empf-Id="+ e.getId() +" T-Edi-Id="+ e.getEdiEintrag().getId()+ " " + e.getKomponente().getFullname()); 
-//			}	
-//		}
-//		
-//		this.setSeitDatum(source.seitDatum.get());
-//		this.setBisDatum(source.bisDatum.get());
-//		this.laeDatum = source.laeDatum;
-//		this.laeUser = source.laeUser;
-//		}
+	public StringProperty konfigurationName () {
+		return konfigurationName;
+	}
 	
 	public StringProperty intregrationName () {
 		return integrationName;

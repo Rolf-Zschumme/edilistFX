@@ -41,8 +41,9 @@ public class EdiSystem {
 		this();
 		this.name.setValue(name);
 		this.setEdiPartner(ediPartner);
-		if (ediPartner.getEdiSystem() != null)
+		if (ediPartner.getEdiSystem() != null) {
 			ediPartner.getEdiSystem().add(this);
+		}
 	}
 
 	// ------------------------------------------------------------------------

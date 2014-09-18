@@ -21,7 +21,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
@@ -71,7 +70,6 @@ public class EdiSystemController {
 	public static void start(Stage 			   primaryStage, 
 							 EdiMainController mainController, 
 							 EntityManager     entityManager) {
-		log("start","called");
 		EdiSystemController.primaryStage = primaryStage;
 		EdiSystemController.mainCtr = mainController;
 		EdiSystemController.entityManager = entityManager;
@@ -79,7 +77,6 @@ public class EdiSystemController {
 
 	@FXML
 	public void initialize() {
-		log("initialize","called");
 		checkFieldsFromView();
 		
 		ediSystem.addListener(new ChangeListener<EdiSystem>() {
