@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE project>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. --><project basedir="." default="build" name="EdiListFX">
+    <property environment="env"/>
+    <property name="ECLIPSE_HOME" value="../../../../ProgramData/eclipse-jee-luna-R-win32-x86_64/"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.8"/>
+    <property name="source" value="1.8"/>
+    <path id="JUnit 4.libraryclasspath">
+        <pathelement location="${ECLIPSE_HOME}plugins/org.junit_4.11.0.v201303080030/junit.jar"/>
+        <pathelement location="${ECLIPSE_HOME}plugins/org.hamcrest.core_1.3.0.v201303031735.jar"/>
+    </path>
+    <path id="ExcelAPI.userclasspath">
+        <pathelement location="../../../../EdiListFX/libs/poi-3.10.1/poi-3.10.1-20140818.jar"/>
+        <pathelement location="../../../../EdiListFX/libs/poi-3.10.1/poi-ooxml-3.10.1-20140818.jar"/>
+        <pathelement location="../../../../EdiListFX/libs/poi-3.10.1/poi-ooxml-schemas-3.10.1-20140818.jar"/>
+        <pathelement location="../../../../EdiListFX/libs/poi-3.10.1/ooxml-lib/dom4j-1.6.1.jar"/>
+        <pathelement location="../../../../EdiListFX/libs/poi-3.10.1/ooxml-lib/stax-api-1.0.1.jar"/>
+        <pathelement location="../../../../EdiListFX/libs/poi-3.10.1/ooxml-lib/xmlbeans-2.6.0.jar"/>
+    </path>
+    <path id="EclipseLink.userclasspath">
+        <pathelement location="../../../../ProgramData/JavaLibs/eclipselink-2.5.2/jlib/eclipselink.jar"/>
+        <pathelement location="../../../../ProgramData/JavaLibs/eclipselink-2.5.2/jlib/jpa/javax.persistence_2.1.0.v201304241213.jar"/>
+        <pathelement location="../../../../ProgramData/JavaLibs/eclipselink-2.5.2/jlib/jpa/org.eclipse.persistence.jpa.modelgen_2.5.2.v20140319-9ad6abd.jar"/>
+        <pathelement location="../../../../ProgramData/JavaLibs/eclipselink-2.5.2/jlib/jpa/org.eclipse.persistence.jpars_2.5.2.v20140319-9ad6abd.jar"/>
+        <pathelement location="../../../../ProgramData/JavaLibs/eclipselink-2.5.2/jlib/moxy/com.sun.tools.xjc_2.2.0.jar"/>
+        <pathelement location="../../../../ProgramData/JavaLibs/eclipselink-2.5.2/jlib/moxy/com.sun.xml.bind_2.2.0.v201004141950.jar"/>
+        <pathelement location="../../../../ProgramData/JavaLibs/eclipselink-2.5.2/jlib/moxy/javax.activation_1.1.0.v201108011116.jar"/>
+        <pathelement location="../../../../ProgramData/JavaLibs/eclipselink-2.5.2/jlib/moxy/javax.mail_1.4.0.v201005080615.jar"/>
+        <pathelement location="../../../../ProgramData/JavaLibs/eclipselink-2.5.2/jlib/moxy/javax.xml.bind_2.2.0.v201105210648.jar"/>
+        <pathelement location="../../../../ProgramData/JavaLibs/eclipselink-2.5.2/jlib/moxy/javax.xml.stream_1.0.1.v201004272200.jar"/>
+        <pathelement location="../../../../ProgramData/JavaLibs/eclipselink-2.5.2/jlib/sdo/commonj.sdo_2.1.1.v201112051852.jar"/>
+    </path>
+    <path id="EdiListFX.classpath">
+        <pathelement location="bin"/>
+        <pathelement location="libs/sqlite-jdbc-3.7.2.jar"/>
+        <pathelement location="libs/postgresql-9.1-903.jdbc4.jar"/>
+        <pathelement location="libs/jxl.jar"/>
+        <pathelement location="libs/guava-17.0.jar"/>
+        <pathelement location="libs/testFx-3.1.2.jar"/>
+        <pathelement location="libs/mysql/mysql-connector-java-5.1.28-bin.jar"/>
+        <pathelement location="libs/controlsfx-8.0.6_20/controlsfx-8.0.6_20.jar"/>
+        <path refid="JUnit 4.libraryclasspath"/>
+        <path refid="ExcelAPI.userclasspath"/>
+        <path refid="EclipseLink.userclasspath"/>
+    </path>
+    <target name="init">
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="bin"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects"/>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="EdiListFX.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
+        <copy todir="${ant.library.dir}">
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </copy>
+        <unzip dest="${ant.library.dir}">
+            <patternset includes="jdtCompilerAdapter.jar"/>
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </unzip>
+    </target>
+    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+        <antcall target="build"/>
+    </target>
+    <target name="EdiListMain">
+        <java classname="de.vbl.ediliste.main.EdiListMain" failonerror="true" fork="yes">
+            <classpath refid="EdiListFX.classpath"/>
+        </java>
+    </target>
+</project>
