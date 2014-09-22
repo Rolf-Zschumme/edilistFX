@@ -249,10 +249,15 @@ public class EdiPartnerController {
 		String orgBeschreibung = aktPartner.getBeschreibung()==null ? "" : aktPartner.getBeschreibung();
 		String newBeschreibung = taBeschreibung.getText()==null ? "" : taBeschreibung.getText();
 
-		if (!orgName.equals(newName) ||
-			!orgBeschreibung.equals(newBeschreibung) ) {
+		if (orgName.equals(newName) &&
+			orgBeschreibung.equals(newBeschreibung) ) {
+			log("checkForChangesWithMode", "Name und Bezeichnung sind unverändert");
+		} else {	
 			if (checkPartnerName(newName) == false) {
 				mainCtr.setErrorText("Ein anderer Partner heißt bereits so!");
+				return false;
+			}
+			if (checkmode == Checkmode.ONLY_CHECK) {
 				return false;
 			}
 			if (checkmode == Checkmode.ASK_FOR_UPDATE) {
@@ -269,18 +274,13 @@ public class EdiPartnerController {
 	    			return true;
 	    		}
 			}	
-			if (checkmode != Checkmode.ONLY_CHECK) {
-				log("checkForChangesWithMode","Änderung erkannt -> update");
-				entityManager.getTransaction().begin();
-				aktPartner.setName(newName);
-				aktPartner.setBeschreibung(newBeschreibung);
-				entityManager.getTransaction().commit();
-				readEdiListeforPartner(aktPartner);
-				mainCtr.setInfoText("Der Partner \"" + aktPartner.getName() + "\" wurde gespeichert");
-			}	
-		}
-		else {
-			log("checkForChangesWithMode", "Name und Bezeichnung sind unverändert");
+			log("checkForChangesWithMode","Änderung erkannt -> update");
+			entityManager.getTransaction().begin();
+			aktPartner.setName(newName);
+			aktPartner.setBeschreibung(newBeschreibung);
+			entityManager.getTransaction().commit();
+			readEdiListeforPartner(aktPartner);
+			mainCtr.setInfoText("Der Partner \"" + aktPartner.getName() + "\" wurde gespeichert");
 		}
 		return true;
 	}

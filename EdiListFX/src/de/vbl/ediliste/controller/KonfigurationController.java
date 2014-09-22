@@ -50,7 +50,6 @@ public class KonfigurationController {
     @FXML private TextArea taBeschreibung;
     @FXML private TableView<EdiEmpfaenger> tvVerwendungen;
     @FXML private TableColumn<EdiEmpfaenger, String> tcEdiNr;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcKonfiguration;
     @FXML private TableColumn<EdiEmpfaenger, String> tcEmpfaenger;
     @FXML private TableColumn<EdiEmpfaenger, String> tcSender;
     @FXML private TableColumn<EdiEmpfaenger, String> tcGeschaeftsobjekt;
@@ -107,11 +106,14 @@ public class KonfigurationController {
 		btnLoeschen.disableProperty().bind(Bindings.not(Bindings.greaterThanOrEqual(0, Bindings.size(ediEintragsSet))));
 
 		tfBezeichnung.textProperty().addListener((observable, oldValue, newValue)  -> {
+			String msg = "";
 			if (aktKonfiguration.getName().equals(newValue) == false) {
+				msg = checkKonfigurationName(newValue);
 				dataIsChanged.set(true);
 			} else {	
 				dataIsChanged.set(!checkForChangesWithMode(Checkmode.ONLY_CHECK));
 			}
+			mainCtr.setErrorText(msg);
 		}); 
 
 		taBeschreibung.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -127,40 +129,8 @@ public class KonfigurationController {
 		tcEdiNr.setCellValueFactory(cellData -> Bindings.format(EdiEintrag.FORMAT_EDINR, 
 												cellData.getValue().getEdiEintrag().ediNrProperty()));
 
-
-		tcKonfiguration.setCellValueFactory(cellData -> cellData.getValue().getEdiEintrag().konfigurationName());
-		
 		tcSender.setCellValueFactory(cellData -> cellData.getValue().getEdiEintrag().getEdiKomponente().fullnameProperty());
-		
-//		tcSender.setCellFactory(column -> {
-//			return new TableCell<EdiEmpfaenger, String>() {
-//				@Override
-//				protected void updateItem (String senderFullname, boolean empty) {
-//					super.updateItem(senderFullname, empty);
-//					if (senderFullname == null || empty) 
-//						setText(null); 
-//					else {
-//						setText(senderFullname);
-//					}
-//				}
-//			};
-//		});
-		
 		tcEmpfaenger.setCellValueFactory(cellData -> cellData.getValue().getKomponente().fullnameProperty());
-
-//		tcEmpfaenger.setCellFactory(column -> {
-//			return new TableCell<EdiEmpfaenger, String>() {
-//				@Override
-//				protected void updateItem (String empfaengerFullname, boolean empty) {
-//					super.updateItem(empfaengerFullname, empty);
-//					if (empfaengerFullname == null || empty) 
-//						setText(null); 
-//					else {
-//						setText(empfaengerFullname);
-//					}
-//				}
-//			};
-//		});
 		tcGeschaeftsobjekt.setCellValueFactory(cellData -> cellData.getValue().geschaeftsObjektNameProperty());
 		tcDatumAb.setCellValueFactory(cellData -> cellData.getValue().getEdiEintrag().seitDatumProperty());
 		tcDatumBis.setCellValueFactory(cellData -> cellData.getValue().getEdiEintrag().bisDatumProperty());
@@ -229,13 +199,19 @@ public class KonfigurationController {
 		String newName = tfBezeichnung.getText();
 		String orgBeschreibung = aktKonfiguration.getBeschreibung()==null ? "" : aktKonfiguration.getBeschreibung();
 		String newBeschreibung = taBeschreibung.getText()==null ? "" : taBeschreibung.getText();
-		if (!orgName.equals(newName) ||
-			!orgBeschreibung.equals(newBeschreibung) ) {
+
+		if (orgName.equals(newName) &&
+			orgBeschreibung.equals(newBeschreibung) )  {
+			log(l, "Name und Bezeichnung unver‰ndert");
+		} else {
+			if (checkmode == Checkmode.ONLY_CHECK) {
+				return false;
+			}
 			if (checkmode == Checkmode.ASK_FOR_UPDATE) {
 				Action response = Dialogs.create()
     				.owner(primaryStage).title(primaryStage.getTitle())
     				.actions(Dialog.Actions.YES, Dialog.Actions.NO, Dialog.Actions.CANCEL)
-    				.message("Sollen die ƒnderungen der Integration " + orgName + " gespeichert werden ?")
+    				.message("Sollen die ƒnderungen der Konfiguration " + orgName + " gespeichert werden ?")
     				.showConfirm();
 	    		if (response == Dialog.Actions.CANCEL) {
 	    			return false;
@@ -244,38 +220,41 @@ public class KonfigurationController {
 	    			aktKonfiguration = null;
 	    			return true;
 	    		}
-			}	
-			if (checkmode != Checkmode.ONLY_CHECK) {
-				log(l,"ƒnderung erkannt -> update");
-				entityManager.getTransaction().begin();
-				aktKonfiguration.setName(newName);
-				aktKonfiguration.setBeschreibung(newBeschreibung);
-				entityManager.getTransaction().commit();
-				readEdiListeforKonfiguration(aktKonfiguration);
-				mainCtr.setInfoText("Komponente wurde gespeichert");
-			}	
-		}
-		else {
-			log(l, "Name und Bezeichnung unver‰ndert");
+			}
+			String msg = checkKonfigurationName(newName);
+			if (msg != null) {
+				mainCtr.setErrorText(msg);
+				tfBezeichnung.requestFocus();
+				return false;
+			}
+			log(l,"ƒnderung erkannt -> update");
+			entityManager.getTransaction().begin();
+			aktKonfiguration.setName(newName);
+			aktKonfiguration.setBeschreibung(newBeschreibung);
+			entityManager.getTransaction().commit();
+			readEdiListeforKonfiguration(aktKonfiguration);
+			mainCtr.setInfoText("Konfiguration " + newName + " wurde gespeichert");
 		}
 		return true;
 	}
 	
-//	private boolean checkKomponentenName(String newName) {
-//		TypedQuery<EdiKomponente> tq = entityManager.createQuery(
-//				"SELECT k FROM EdiKomponente k WHERE LOWER(k.name) = LOWER(:n)",EdiKomponente.class);
-//		tq.setParameter("n", newName);
-//		List<EdiKomponente> kompoList = tq.getResultList();
-//		for (EdiKomponente k : kompoList ) {
-//			if (k.getId() != aktIntegration.getId() &&
-//				k.getEdiSystem().getId() == aktIntegration.getEdiSystem().getId())  {
-//				if (k.getName().equalsIgnoreCase(newName)) {
-//					return false;
-//				}
-//			}
-//		}
-//		return true;
-//	}
+	private String checkKonfigurationName(String newName) {
+		TypedQuery<Konfiguration> tq = entityManager.createQuery(
+				"SELECT k FROM Konfiguration k WHERE LOWER(k.name) = LOWER(:n)",Konfiguration.class);
+		tq.setParameter("n", newName);
+		List<Konfiguration> konfigurationList = tq.getResultList();
+		for (Konfiguration k : konfigurationList ) {
+			System.out.println("K.name=" + k.getName());
+			if (k != aktKonfiguration &&
+				k.getIntegration() == aktKonfiguration.getIntegration())  {
+				if (k.getName().equalsIgnoreCase(newName)) {
+					return "Eine andere Konfiguration der Integration " + 
+							aktKonfiguration.getIntegration().getName() + " heiﬂt bereits so";
+				}
+			}
+		}
+		return null;
+	}
 
 	private void readEdiListeforKonfiguration( Konfiguration selKonfiguration) {
 		tvVerwendungen.getItems().clear();
@@ -325,7 +304,6 @@ public class KonfigurationController {
     	assert tfBezeichnung != null : "fx:id=\"tfBezeichnung\" was not injected: check your FXML file 'Konfiguration.fxml'.";
     	assert taBeschreibung != null : "fx:id=\"taBeschreibung\" was not injected: check your FXML file 'Konfiguration.fxml'.";
     	assert tcEdiNr != null : "fx:id=\"tcEdiNr\" was not injected: check your FXML file 'Konfiguration.fxml'.";
-    	assert tcKonfiguration != null : "fx:id=\"tcKonfiguration\" was not injected: check your FXML file 'Konfiguration.fxml'.";
     	assert tcSender != null : "fx:id=\"tcSender\" was not injected: check your FXML file 'Konfiguration.fxml'.";
         assert tcEmpfaenger != null : "fx:id=\"tcEmpfaenger\" was not injected: check your FXML file 'Konfiguration.fxml'.";
         assert tcDatumBis != null : "fx:id=\"tcDatumBis\" was not injected: check your FXML file 'Konfiguration.fxml'.";

@@ -360,8 +360,8 @@ public class EdiMainController {
 		tColSelKonfigurationName.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
 		tColSelKonfigIntegrationName.setCellValueFactory(cd -> cd.getValue().integrationNameProperty());
 		
-//		konfigurationController.
-		// TODO Auto-generated method stub
+		konfigurationController.konfigurationProperty().bind(tableKonfigurationAuswahl.getSelectionModel().selectedItemProperty());
+		konfiguration.disableProperty().bind(Bindings.isNull(tableKonfigurationAuswahl.getSelectionModel().selectedItemProperty()));
 	}
 
     private void setupGeschaeftsobjektPane() {
@@ -456,13 +456,14 @@ public class EdiMainController {
 				"SELECT k FROM Konfiguration k ORDER BY k.name", Konfiguration.class);
 		List<Konfiguration> aktuList = tq.getResultList();
 		
-		integrationList.retainAll(aktuList); // remove delete entities
+		konfigurationList.retainAll(aktuList); // remove delete entities
 		for (Konfiguration k : aktuList) {	 // and insert new entities
 			if (konfigurationList.contains(k) == false) {
 				konfigurationList.add(aktuList.indexOf(k),k);
 			}
 		}
 	}
+	
 	
 	protected void loadGeschaeftobjektListData() {
 		TypedQuery<GeschaeftsObjekt> tq = entityManager.createQuery(

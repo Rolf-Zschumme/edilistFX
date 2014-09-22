@@ -229,8 +229,17 @@ public class IntegrationController {
 		String newName = tfBezeichnung.getText();
 		String orgBeschreibung = aktIntegration.getBeschreibung()==null ? "" : aktIntegration.getBeschreibung();
 		String newBeschreibung = taBeschreibung.getText()==null ? "" : taBeschreibung.getText();
-		if (!orgName.equals(newName) ||
-			!orgBeschreibung.equals(newBeschreibung) ) {
+		if (orgName.equals(newName) &&
+			orgBeschreibung.equals(newBeschreibung) ) {
+			log(l, "Name und Bezeichnung unverändert");
+		} else {
+			if (checkIntegrationName(newName) == false) {
+				mainCtr.setErrorText("Eine andere Integration heißt bereits so!");
+				return false;
+			}
+			if (checkmode == Checkmode.ONLY_CHECK) {
+				return false;
+			}	
 			if (checkmode == Checkmode.ASK_FOR_UPDATE) {
 				Action response = Dialogs.create()
     				.owner(primaryStage).title(primaryStage.getTitle())
@@ -245,37 +254,31 @@ public class IntegrationController {
 	    			return true;
 	    		}
 			}	
-			if (checkmode != Checkmode.ONLY_CHECK) {
-				log(l,"Änderung erkannt -> update");
-				entityManager.getTransaction().begin();
-				aktIntegration.setName(newName);
-				aktIntegration.setBeschreibung(newBeschreibung);
-				entityManager.getTransaction().commit();
-				readEdiListeforIntegration(aktIntegration);
-				mainCtr.setInfoText("Komponente wurde gespeichert");
-			}	
-		}
-		else {
-			log(l, "Name und Bezeichnung unverändert");
+			log(l,"Änderung erkannt -> update");
+			entityManager.getTransaction().begin();
+			aktIntegration.setName(newName);
+			aktIntegration.setBeschreibung(newBeschreibung);
+			entityManager.getTransaction().commit();
+			readEdiListeforIntegration(aktIntegration);
+			mainCtr.setInfoText("Integration " + orgName + " wurde gespeichert");
 		}
 		return true;
 	}
 	
-//	private boolean checkKomponentenName(String newName) {
-//		TypedQuery<EdiKomponente> tq = entityManager.createQuery(
-//				"SELECT k FROM EdiKomponente k WHERE LOWER(k.name) = LOWER(:n)",EdiKomponente.class);
-//		tq.setParameter("n", newName);
-//		List<EdiKomponente> kompoList = tq.getResultList();
-//		for (EdiKomponente k : kompoList ) {
-//			if (k.getId() != aktIntegration.getId() &&
-//				k.getEdiSystem().getId() == aktIntegration.getEdiSystem().getId())  {
-//				if (k.getName().equalsIgnoreCase(newName)) {
-//					return false;
-//				}
-//			}
-//		}
-//		return true;
-//	}
+	private boolean checkIntegrationName(String newName) {
+		TypedQuery<Integration> tq = entityManager.createQuery(
+				"SELECT i FROM EdiKomponente i WHERE LOWER(i.name) = LOWER(:n)",Integration.class);
+		tq.setParameter("n", newName);
+		List<Integration> integrationList = tq.getResultList();
+		for (Integration i : integrationList ) {
+			if (i.getId() != aktIntegration.getId() )  {
+				if (i.getName().equalsIgnoreCase(newName)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 
 	private void readEdiListeforIntegration( Integration selIntegration) {
 		tvVerwendungen.getItems().clear();

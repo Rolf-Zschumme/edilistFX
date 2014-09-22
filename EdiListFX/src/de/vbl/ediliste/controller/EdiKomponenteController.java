@@ -243,12 +243,17 @@ public class EdiKomponenteController {
 		String orgBeschreibung = aktKomponente.getBeschreibung()==null ? "" : aktKomponente.getBeschreibung();
 		String newBeschreibung = taBeschreibung.getText()==null ? "" : taBeschreibung.getText();
 
-		if (!orgName.equals(newName) ||
-			!orgBeschreibung.equals(newBeschreibung) ) {
+		if (orgName.equals(newName) &&
+			orgBeschreibung.equals(newBeschreibung) ) {
+			log("checkForChangesWithMode", "Name und Bezeichnung unverändert");
+		} else {	
 			if (checkKomponentenName(newName) == false) {
 				mainCtr.setErrorText("Eine andere Komponente des Systems heißt bereits so!");
 				return false;
 			}
+			if (checkmode == Checkmode.ONLY_CHECK) {
+				return false;
+			}	
 			if (checkmode == Checkmode.ASK_FOR_UPDATE) {
 				Action response = Dialogs.create()
     				.owner(primaryStage).title(primaryStage.getTitle())
@@ -263,18 +268,13 @@ public class EdiKomponenteController {
 	    			return true;
 	    		}
 			}	
-			if (checkmode != Checkmode.ONLY_CHECK) {
-				log("checkForChangesWithMode","Änderung erkannt -> update");
-				entityManager.getTransaction().begin();
-				aktKomponente.setName(newName);
-				aktKomponente.setBeschreibung(newBeschreibung);
-				entityManager.getTransaction().commit();
-				readEdiListeforKomponete(aktKomponente);
-				mainCtr.setInfoText("Komponente wurde gespeichert");
-			}	
-		}
-		else {
-			log("checkForChangesWithMode", "Name und Bezeichnung unverändert");
+			log("checkForChangesWithMode","Änderung erkannt -> update");
+			entityManager.getTransaction().begin();
+			aktKomponente.setName(newName);
+			aktKomponente.setBeschreibung(newBeschreibung);
+			entityManager.getTransaction().commit();
+			readEdiListeforKomponete(aktKomponente);
+			mainCtr.setInfoText("Komponente wurde gespeichert");
 		}
 		return true;
 	}

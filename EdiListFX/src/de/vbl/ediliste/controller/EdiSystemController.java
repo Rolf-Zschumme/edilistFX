@@ -49,7 +49,7 @@ public class EdiSystemController {
 	
 	@FXML private ResourceBundle resources;
     @FXML private URL location;
-//    @FXML private AnchorPane ediSystemPane;
+//  @FXML private AnchorPane ediSystem;
     @FXML private TextField tfBezeichnung;
     @FXML private TextArea taBeschreibung;
     @FXML private TableView<EdiEmpfaenger> tvVerwendungen;
@@ -228,27 +228,29 @@ public class EdiSystemController {
 		if (orgName.equals(newName) &&
 			orgBeschreibung.equals(newBeschreibung) ) {
 			log("checkForChangesAndSave", "Name und Bezeichnung unverändert");
-			return true;
-		}
-		if (checkSystemName(newName) == false) {
-			mainCtr.setErrorText("Eine anderes System des Partners \"" +
-					aktSystem.getEdiPartner().getName() + "\" heißt bereits so!");
-			return false;
-		}
-		if (checkmode == Checkmode.ASK_FOR_UPDATE) {
-			Action response = Dialogs.create()
-					.owner(primaryStage).title(primaryStage.getTitle())
-					.actions(Dialog.Actions.YES, Dialog.Actions.NO, Dialog.Actions.CANCEL)
-					.message("Sollen die Änderungen an dem System " + orgName + " gespeichert werden ?")
-					.showConfirm();
-			if (response == Dialog.Actions.CANCEL) 	
+		} else {
+			if (checkSystemName(newName) == false) {
+				mainCtr.setErrorText("Eine anderes System des Partners \"" +
+						aktSystem.getEdiPartner().getName() + "\" heißt bereits so!");
 				return false;
-			if (response == Dialog.Actions.NO) {
-				aktSystem = null;
-				return true;
 			}
-		}	
-		if (checkmode != Checkmode.ONLY_CHECK) {
+			if (checkmode == Checkmode.ONLY_CHECK) {
+				return false;
+			}
+			if (checkmode == Checkmode.ASK_FOR_UPDATE) {
+				Action response = Dialogs.create()
+						.owner(primaryStage).title(primaryStage.getTitle())
+						.actions(Dialog.Actions.YES, Dialog.Actions.NO, Dialog.Actions.CANCEL)
+						.message("Sollen die Änderungen an dem System " + orgName + " gespeichert werden ?")
+						.showConfirm();
+				if (response == Dialog.Actions.CANCEL) {
+					return false;
+				}
+				if (response == Dialog.Actions.NO) {
+					aktSystem = null;
+					return true;
+				}
+			}	
 			log("checkForChangesAndSave","Änderung erkannt -> update");
 			entityManager.getTransaction().begin();
 			aktSystem.setName(newName);
