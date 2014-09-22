@@ -740,10 +740,11 @@ public class EdiEintragController {
 					empf.setKomponente(akt.empfaengerKomponente[i]);
 					empf.setGeschaeftsObjekt(akt.geschaeftsObjekt[i]);
 					tmpEmpfaengerList.add(empf);
+// TODO				empf.getGeschaeftsObjekt().anzVerwendungenProperty().add(1);
 				}
 			}
 			// EdiEmpfaenger at the original EmpfaengerList must be removed 
-			// from the database if the are not in the new EmpfaengerList  
+			// from the database if they are not in the new EmpfaengerList  
 			//
 			for (int i=0; i<MAX_EMPFAENGER; ++i) {
 				EdiEmpfaenger empf = org.empfaenger[i];

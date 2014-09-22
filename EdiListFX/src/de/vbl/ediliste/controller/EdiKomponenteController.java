@@ -111,11 +111,14 @@ public class EdiKomponenteController {
 		btnLoeschen.disableProperty().bind(Bindings.not(Bindings.greaterThanOrEqual(0, Bindings.size(ediEintragsSet))));
 
 		tfBezeichnung.textProperty().addListener((observable, oldValue, newValue)  -> {
+			String msg = "";
 			if (aktKomponente.getName().equals(newValue) == false) {
+				msg = checkKomponentenName(newValue);
 				dataIsChanged.set(true);
 			} else {	
 				dataIsChanged.set(!checkForChangesWithMode(Checkmode.ONLY_CHECK));
 			}
+			mainCtr.setErrorText(msg);
 		}); 
 
 		taBeschreibung.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -234,7 +237,8 @@ public class EdiKomponenteController {
 	private static enum Checkmode { ONLY_CHECK, ASK_FOR_UPDATE, SAVE_DONT_ASK };
 	
 	private boolean checkForChangesWithMode(Checkmode checkmode) {
-		log("checkForChangesWithMode","aktKompo=" + (aktKomponente==null ? "null" : aktKomponente.getFullname()));
+		String mn = "checkForChangesWithMode-" + checkmode;
+		log(mn,"aktKompo=" + (aktKomponente==null ? "null" : aktKomponente.getFullname()));
 		if (aktKomponente == null ) {
 			return true;
 		}
@@ -245,12 +249,8 @@ public class EdiKomponenteController {
 
 		if (orgName.equals(newName) &&
 			orgBeschreibung.equals(newBeschreibung) ) {
-			log("checkForChangesWithMode", "Name und Bezeichnung unver‰ndert");
+			log(mn, "Name und Bezeichnung unver‰ndert");
 		} else {	
-			if (checkKomponentenName(newName) == false) {
-				mainCtr.setErrorText("Eine andere Komponente des Systems heiﬂt bereits so!");
-				return false;
-			}
 			if (checkmode == Checkmode.ONLY_CHECK) {
 				return false;
 			}	
@@ -268,18 +268,27 @@ public class EdiKomponenteController {
 	    			return true;
 	    		}
 			}	
-			log("checkForChangesWithMode","ƒnderung erkannt -> update");
+			String msg = checkKomponentenName(newName);
+			if (msg != null) {
+				mainCtr.setErrorText(msg);
+				tfBezeichnung.requestFocus();
+				return false;
+			}
+			log(mn,"ƒnderung erkannt -> update");
 			entityManager.getTransaction().begin();
 			aktKomponente.setName(newName);
 			aktKomponente.setBeschreibung(newBeschreibung);
 			entityManager.getTransaction().commit();
 			readEdiListeforKomponete(aktKomponente);
-			mainCtr.setInfoText("Komponente wurde gespeichert");
+			mainCtr.setInfoText("Komponente " + newName + " wurde gespeichert");
 		}
 		return true;
 	}
 	
-	private boolean checkKomponentenName(String newName) {
+	private String checkKomponentenName(String newName) {
+		if ("".equals(newName)) {
+			return "Eine Bezeichnung ist erforderlich";
+		}
 		TypedQuery<EdiKomponente> tq = entityManager.createQuery(
 				"SELECT k FROM EdiKomponente k WHERE LOWER(k.name) = LOWER(:n)",EdiKomponente.class);
 		tq.setParameter("n", newName);
@@ -288,11 +297,11 @@ public class EdiKomponenteController {
 			if (k.getId() != aktKomponente.getId() &&
 				k.getEdiSystem().getId() == aktKomponente.getEdiSystem().getId())  {
 				if (k.getName().equalsIgnoreCase(newName)) {
-					return false;
+					return "Eine andere Komponente des Systems heiﬂt bereits so!";
 				}
 			}
 		}
-		return true;
+		return null;
 	}
 
 	private void readEdiListeforKomponete( EdiKomponente selKomponente) {

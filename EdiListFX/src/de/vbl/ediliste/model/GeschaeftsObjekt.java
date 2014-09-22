@@ -5,8 +5,13 @@ import static javax.persistence.GenerationType.IDENTITY;
 import java.io.Serializable;
 import java.util.Collection;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -26,16 +31,18 @@ public class GeschaeftsObjekt implements Serializable {
 	 */
 	private static final long serialVersionUID = 6212861741600895810L;
 	private long id;
-	private String name;
-	private Collection<EdiEmpfaenger> ediEmpfaenger;
+	private StringProperty name;
+	private String beschreibung;
+	private ObservableList<EdiEmpfaenger> ediEmpfaenger;
 	private IntegerProperty anzVerwendungen;
 	
 	public GeschaeftsObjekt() {
+		name = new SimpleStringProperty();
 		anzVerwendungen = new SimpleIntegerProperty();
 	}   
 	public GeschaeftsObjekt(String name) {
 		this();
-		this.name = name;
+		this.name.set(name);
 	}
 	@Id    
 	@GeneratedValue(strategy = IDENTITY)
@@ -47,27 +54,40 @@ public class GeschaeftsObjekt implements Serializable {
 		this.id = id;
 	}   
 
+	// ------------------------------------------------------------------------
+	public StringProperty nameProperty() {
+		return name;
+	}
+	
 	@Column(unique = true, nullable = false)
 	public String getName() {
-		return this.name;
+		return this.name.get();
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		this.name.set(name);
 	}
+	
+	// ------------------------------------------------------------------------
+	public String getBeschreibung() { 
+		return beschreibung;
+	}
+
+	public void setBeschreibung(String param) {
+		this.beschreibung = param;
+	}
+	
 	@OneToMany(mappedBy = "geschaeftsObjekt")
 	public Collection<EdiEmpfaenger> getEdiEmpfaenger() {
 	    return ediEmpfaenger;
 	}
 	public void setEdiEmpfaenger(Collection<EdiEmpfaenger> param) {
-	    this.ediEmpfaenger = param;
+		anzVerwendungen.unbind();
+		ediEmpfaenger = FXCollections.observableArrayList(param);
+		anzVerwendungen.bind(Bindings.size(ediEmpfaenger));
 	}
 	
 	public IntegerProperty anzVerwendungenProperty () {
-		if (this.ediEmpfaenger != null) {
-			anzVerwendungen.set(ediEmpfaenger.size());
-		}
-//		anzVerwendungen.set(ediEmpfaenger==null ? 0 : ediEmpfaenger.size());
 		return anzVerwendungen;
 	}
 }

@@ -111,11 +111,14 @@ public class EdiSystemController {
 		btnSpeichern.disableProperty().bind(Bindings.not(dataIsChanged));
 
 		tfBezeichnung.textProperty().addListener((observable, oldValue, newValue)  -> {
+			String msg = "";
 			if (aktSystem.getName().equals(newValue) == false) {
+				msg = checkSystemName(newValue);
 				dataIsChanged.set(true);
 			} else {	
 				dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
 			}
+			mainCtr.setErrorText(msg);			
 		}); 
 
 		taBeschreibung.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -229,11 +232,6 @@ public class EdiSystemController {
 			orgBeschreibung.equals(newBeschreibung) ) {
 			log("checkForChangesAndSave", "Name und Bezeichnung unver‰ndert");
 		} else {
-			if (checkSystemName(newName) == false) {
-				mainCtr.setErrorText("Eine anderes System des Partners \"" +
-						aktSystem.getEdiPartner().getName() + "\" heiﬂt bereits so!");
-				return false;
-			}
 			if (checkmode == Checkmode.ONLY_CHECK) {
 				return false;
 			}
@@ -250,7 +248,13 @@ public class EdiSystemController {
 					aktSystem = null;
 					return true;
 				}
-			}	
+			}
+			String msg = checkSystemName(newName);
+			if (msg != null) {
+				mainCtr.setErrorText(msg);
+				tfBezeichnung.requestFocus();
+				return false;
+			}
 			log("checkForChangesAndSave","ƒnderung erkannt -> update");
 			entityManager.getTransaction().begin();
 			aktSystem.setName(newName);
@@ -262,7 +266,10 @@ public class EdiSystemController {
 		return true;
 	}
 	
-	private boolean checkSystemName(String newName) {
+	private String checkSystemName(String newName) {
+		if ("".equals(newName)) {
+			return "Eine Bezeichnung ist erforderlich";
+		}
 		TypedQuery<EdiSystem> tq = entityManager.createQuery(
 				"SELECT s FROM EdiSystem s WHERE LOWER(s.name) = LOWER(:n)",EdiSystem.class);
 		tq.setParameter("n", newName);
@@ -271,11 +278,12 @@ public class EdiSystemController {
 			if (s.getId() != aktSystem.getId() &&
 				s.getEdiPartner().getId() == aktSystem.getEdiPartner().getId())  {
 				if (s.getName().equalsIgnoreCase(newName)) {
-					return false;
+					return "Eine anderes System des Partners \"" +
+							aktSystem.getEdiPartner().getName() + "\" heiﬂt bereits so!";
 				}
 			}
 		}
-		return true;
+		return null;
 	}
 
 	private void readEdiListeforSystem( EdiSystem selSystem) {

@@ -186,23 +186,36 @@
                         </SplitPane>
                      </children></AnchorPane>
 					</content>
-				</Tab><Tab fx:id="tabKontaktPersonen" disable="true" text="Kontakt-Personen">
-  <content>
-    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-  </content>
-</Tab>
+				</Tab>
+				<Tab fx:id="tabKontaktPersonen" disable="true" text="Kontakt-Personen">
+				  <content>
+    				<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+				  </content>
+				</Tab>
 				<Tab fx:id="tabGeschaeftsobjekte" text="Geschäftsobjekte">
 					<content>
+					
 						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-							<children>
-								<TableView fx:id="tableGeschaeftsobjektAuswahl" editable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-									<columns>
-										<TableColumn fx:id="tColAuswahlGeschaeftsobjektName" maxWidth="1.7976931348623157E308" minWidth="110.0" prefWidth="250.0" text="Geschäftsobjekt" />
-										<TableColumn fx:id="tColAuswahlGeschaeftsobjektAnzahl" editable="false" maxWidth="1.7976931348623157E308" minWidth="120.0" prefWidth="-1.0" text="Verwendungen" />
-									</columns>
-								</TableView>
-							</children>
-						</AnchorPane>
+                     <children>
+                        <SplitPane dividerPositions="0.3724235963041933" prefHeight="716.0" prefWidth="1409.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <items>
+						
+							<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+								<children>
+									<TableView fx:id="tableGeschaeftsobjektAuswahl" editable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+										<columns>
+											<TableColumn fx:id="tColAuswahlGeschaeftsobjektName" maxWidth="1.7976931348623157E308" minWidth="110.0" prefWidth="250.0" text="Geschäftsobjekt" />
+											<TableColumn fx:id="tColAuswahlGeschaeftsobjektAnzahl" editable="false" maxWidth="1.7976931348623157E308" minWidth="120.0" prefWidth="-1.0" text="Verwendungen" />
+										</columns>
+									</TableView>
+								</children>
+							</AnchorPane>
+							
+                            <fx:include fx:id="geschaeftsObjekt" disable="true" source="GeschaeftsObjekt.fxml" />
+                          </items>
+                        </SplitPane>
+                     </children></AnchorPane>
+						
 					</content>
 				</Tab>
 			</tabs>

@@ -107,11 +107,14 @@ public class IntegrationController {
 		btnLoeschen.disableProperty().bind(Bindings.not(Bindings.greaterThanOrEqual(0, Bindings.size(ediEintragsSet))));
 
 		tfBezeichnung.textProperty().addListener((observable, oldValue, newValue)  -> {
+			String msg = "";
 			if (aktIntegration.getName().equals(newValue) == false) {
+				msg = checkIntegrationName(newValue);
 				dataIsChanged.set(true);
 			} else {	
 				dataIsChanged.set(!checkForChangesWithMode(Checkmode.ONLY_CHECK));
 			}
+			mainCtr.setErrorText(msg);
 		}); 
 
 		taBeschreibung.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -233,10 +236,6 @@ public class IntegrationController {
 			orgBeschreibung.equals(newBeschreibung) ) {
 			log(l, "Name und Bezeichnung unver‰ndert");
 		} else {
-			if (checkIntegrationName(newName) == false) {
-				mainCtr.setErrorText("Eine andere Integration heiﬂt bereits so!");
-				return false;
-			}
 			if (checkmode == Checkmode.ONLY_CHECK) {
 				return false;
 			}	
@@ -253,7 +252,13 @@ public class IntegrationController {
 	    			aktIntegration = null;
 	    			return true;
 	    		}
-			}	
+			}
+			String msg = checkIntegrationName(newName);
+			if (msg != null) {
+				mainCtr.setErrorText(msg);
+				tfBezeichnung.requestFocus();
+				return false;
+			}
 			log(l,"ƒnderung erkannt -> update");
 			entityManager.getTransaction().begin();
 			aktIntegration.setName(newName);
@@ -265,19 +270,22 @@ public class IntegrationController {
 		return true;
 	}
 	
-	private boolean checkIntegrationName(String newName) {
+	private String checkIntegrationName(String newName) {
+		if ("".equals(newName)) {
+			return "Eine Bezeichnung ist erforderlich";
+		}
 		TypedQuery<Integration> tq = entityManager.createQuery(
-				"SELECT i FROM EdiKomponente i WHERE LOWER(i.name) = LOWER(:n)",Integration.class);
+				"SELECT i FROM Integration i WHERE LOWER(i.name) = LOWER(:n)",Integration.class);
 		tq.setParameter("n", newName);
 		List<Integration> integrationList = tq.getResultList();
 		for (Integration i : integrationList ) {
 			if (i.getId() != aktIntegration.getId() )  {
 				if (i.getName().equalsIgnoreCase(newName)) {
-					return false;
+					return "Eine andere Integration heiﬂt bereits so!";
 				}
 			}
 		}
-		return true;
+		return null;
 	}
 
 	private void readEdiListeforIntegration( Integration selIntegration) {

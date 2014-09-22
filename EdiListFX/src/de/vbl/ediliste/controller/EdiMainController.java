@@ -118,11 +118,11 @@ public class EdiMainController {
     @FXML private Tab tabGeschaeftsobjekte;
     @FXML private TableView<GeschaeftsObjekt> tableGeschaeftsobjektAuswahl;
     @FXML private TableColumn<GeschaeftsObjekt, String> tColAuswahlGeschaeftsobjektName;
-    @FXML private TableColumn<GeschaeftsObjekt, Integer> tColAuswahlGeschaeftsobjektAnzahl;
+    @FXML private TableColumn<GeschaeftsObjekt, String> tColAuswahlGeschaeftsobjektAnzahl;
     
     @FXML private Button btnNewEdiNr;
     @FXML private Button btnDeleteEdiEintrag;
-    @FXML private Button btnDeleteGeschaeftsobjekt;
+//  @FXML private Button btnDeleteGeschaeftsobjekt;
     @FXML private Button btnExportExcel;
 
     @FXML private Pane ediEintrag;
@@ -131,6 +131,7 @@ public class EdiMainController {
     @FXML private Pane ediKomponente;
     @FXML private Pane integration;
     @FXML private Pane konfiguration;
+    @FXML private Pane geschaeftsObjekt;
 
     
     @FXML private EdiEintragController ediEintragController;
@@ -139,6 +140,7 @@ public class EdiMainController {
     @FXML private EdiKomponenteController ediKomponenteController;
     @FXML private IntegrationController integrationController;
     @FXML private KonfigurationController konfigurationController;   
+    @FXML private GeschaeftsObjektController geschaeftsObjektController;   
     
     @FXML
 	private void initialize () {
@@ -157,6 +159,7 @@ public class EdiMainController {
     	EdiKomponenteController.start(primaryStage, this, entityManager);
     	IntegrationController.start(primaryStage, this, entityManager);
     	KonfigurationController.start(primaryStage, this, entityManager);
+    	GeschaeftsObjektController.start(primaryStage, this, entityManager);
         
     	// Check for data changes on close request from MainWindow
     	primaryStage.setOnCloseRequest(event -> {
@@ -239,6 +242,9 @@ public class EdiMainController {
 		tableKonfigurationAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkKonfiguration(e));
 		tableKonfigurationAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkKonfiguration(e));
 		
+		tableGeschaeftsobjektAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkGeschaeftsObjekt(e));
+		tableGeschaeftsobjektAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkGeschaeftsObjekt(e));
+		
     }
     
 	private void checkEdiEintrag(Event event) {
@@ -277,13 +283,20 @@ public class EdiMainController {
 		}
 	}
 
+	private void checkGeschaeftsObjekt(Event event) {
+		if (geschaeftsObjektController.checkForChangesAndAskForSave() == false) {
+			event.consume();
+		}
+	}
+
 	private boolean checkAllOk() {
     	return ediEintragController.checkForChangesAndAskForSave() || 
     		   ediPartnerController.checkForChangesAndAskForSave() ||
     	       ediSystemController.checkForChangesAndAskForSave()  ||
     	       ediKomponenteController.checkForChangesAndAskForSave() ||
     		   integrationController.checkForChangesAndAskForSave()   || 
-    		   konfigurationController.checkForChangesAndAskForSave(); 
+    		   konfigurationController.checkForChangesAndAskForSave() || 
+    		   geschaeftsObjektController.checkForChangesAndAskForSave(); 
 	}
 	
 	// Aufruf "Beenden" via Menue
@@ -366,12 +379,16 @@ public class EdiMainController {
 
     private void setupGeschaeftsobjektPane() {
     	tableGeschaeftsobjektAuswahl.setItems(geschaeftsobjektList);
-    	tColAuswahlGeschaeftsobjektName.setCellValueFactory(new PropertyValueFactory<GeschaeftsObjekt,String>("name"));
-    	tColAuswahlGeschaeftsobjektAnzahl.setCellValueFactory(new PropertyValueFactory<GeschaeftsObjekt,Integer>("anzVerwendungen"));
+    	tColAuswahlGeschaeftsobjektName.setCellValueFactory(cell -> cell.getValue().nameProperty());
+    	tColAuswahlGeschaeftsobjektAnzahl.setCellValueFactory(cell -> Bindings.format("%7d", cell.getValue().anzVerwendungenProperty()));
     	
+//    	tColAuswahlGeschaeftsobjektAnzahl.setCellValueFactory(new PropertyValueFactory<GeschaeftsObjekt,Integer>("anzVerwendungen"));
+    	
+    	geschaeftsObjektController.geschaeftsObjektProperty().bind(tableGeschaeftsobjektAuswahl.getSelectionModel().selectedItemProperty());
+    	geschaeftsObjekt.disableProperty().bind(Bindings.isNull(tableGeschaeftsobjektAuswahl.getSelectionModel().selectedItemProperty()));
+    }
 //    	btnDeleteGeschaeftsobjekt.disableProperty().bind(
 //    			Bindings.isNull(tableGeschaeftsobjektAuswahl.getSelectionModel().selectedItemProperty()));
-    }
     
 	protected void loadEdiEintragListData() {
     	TypedQuery<EdiEintrag> tq = entityManager.createQuery(
@@ -464,11 +481,16 @@ public class EdiMainController {
 		}
 	}
 	
-	
 	protected void loadGeschaeftobjektListData() {
 		TypedQuery<GeschaeftsObjekt> tq = entityManager.createQuery(
 				"SELECT g FROM GeschaeftsObjekt g ORDER BY g.name", GeschaeftsObjekt.class);
-		geschaeftsobjektList.setAll(tq.getResultList());
+		List<GeschaeftsObjekt> aktuList = tq.getResultList();
+		geschaeftsobjektList.retainAll(aktuList);
+		for (GeschaeftsObjekt g : aktuList) {
+			if (geschaeftsobjektList.contains(g) == false ) {
+				geschaeftsobjektList.add(aktuList.indexOf(g),g);
+			}
+		}
 	}
 
 	@FXML
@@ -476,7 +498,7 @@ public class EdiMainController {
 		Dialogs.create()
 			.owner(primaryStage).title(APPL_NAME)
 			.masthead("VBL-Tool zur Verwaltung der EDI-Liste")
-			.message("\nProgramm-Version 0.9.3b - 15.09.2014\n"
+			.message("\nProgramm-Version 0.9.5 - 22.09.2014\n"
 			   	   + "\nJava-Runtime-Verion: " + System.getProperty("java.version"))
 			.showInformation();
     }
@@ -614,6 +636,7 @@ public class EdiMainController {
     	entityManager = factory.createEntityManager();
     	
     	entityManager.setProperty("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH);
+    	// Explanation for CacheStoreMode:
     	// REFRESH = refresh data in cache on find and query 
     	// USE = use cache without refresh if data exists in cache (=default)
     	// BYPASS = do not use cache
@@ -657,5 +680,8 @@ public class EdiMainController {
         assert btnNewEdiNr != null : "fx:id=\"btnNewEdiNr\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tColSelSystemKomponenten != null : "fx:id=\"tColSelSystemKomponenten\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tColAuswahlGeschaeftsobjektAnzahl != null : "fx:id=\"tColAuswahlGeschaeftsobjektAnzahl\" was not injected: check your FXML file 'EdiMain.fxml'.";
+        
+        assert konfigurationController != null : "\"konfigurationController\" was not injected in EdiMain.fxml";
+        assert geschaeftsObjektController != null : "\"geschaeftsObjektController\" was not injected in EdiMain.fxml";
 	}
 }

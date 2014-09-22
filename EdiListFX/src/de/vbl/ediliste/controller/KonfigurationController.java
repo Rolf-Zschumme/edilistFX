@@ -81,9 +81,6 @@ public class KonfigurationController {
 			@Override
 			public void changed(ObservableValue<? extends Konfiguration> ov,
 					Konfiguration oldKonfiguration, Konfiguration newKonfiguration) {
-				log("ChangeListener<EdiKomponente>",
-					((oldKonfiguration==null) ? "null" : oldKonfiguration.getName() + " -> " 
-				  + ((newKonfiguration==null) ? "null" : newKonfiguration.getName() )));
 				if (oldKonfiguration != null && newKonfiguration == null) {
 					ediEintragsSet.clear();
 					tfBezeichnung.setText("");
@@ -190,8 +187,8 @@ public class KonfigurationController {
 	private static enum Checkmode { ONLY_CHECK, ASK_FOR_UPDATE, SAVE_DONT_ASK };
 	
 	private boolean checkForChangesWithMode(Checkmode checkmode) {
-		String l = "checkForChangesWithMode-" + checkmode;
-		log(l,"aktInte=" + (aktKonfiguration==null ? "null" : aktKonfiguration.getName()));
+		String mn = "checkForChangesWithMode-" + checkmode;
+		log(mn,"aktInte=" + (aktKonfiguration==null ? "null" : aktKonfiguration.getName()));
 		if (aktKonfiguration == null ) {
 			return true;
 		}
@@ -202,7 +199,7 @@ public class KonfigurationController {
 
 		if (orgName.equals(newName) &&
 			orgBeschreibung.equals(newBeschreibung) )  {
-			log(l, "Name und Bezeichnung unverändert");
+			log(mn, "Name und Bezeichnung unverändert");
 		} else {
 			if (checkmode == Checkmode.ONLY_CHECK) {
 				return false;
@@ -227,7 +224,7 @@ public class KonfigurationController {
 				tfBezeichnung.requestFocus();
 				return false;
 			}
-			log(l,"Änderung erkannt -> update");
+			log(mn,"Änderung erkannt -> update");
 			entityManager.getTransaction().begin();
 			aktKonfiguration.setName(newName);
 			aktKonfiguration.setBeschreibung(newBeschreibung);
@@ -239,6 +236,9 @@ public class KonfigurationController {
 	}
 	
 	private String checkKonfigurationName(String newName) {
+		if ("".equals(newName)) {
+			return "Eine Bezeichnung ist erforderlich";
+		}
 		TypedQuery<Konfiguration> tq = entityManager.createQuery(
 				"SELECT k FROM Konfiguration k WHERE LOWER(k.name) = LOWER(:n)",Konfiguration.class);
 		tq.setParameter("n", newName);
