@@ -195,6 +195,8 @@ public class EdiEintragController {
     		cmbIntegration.setValue(null);
     		if (newEintrag == null) {
     			EdiEintragController.mainController.setInfoText("Edi-Nummer wurde reserviert");
+    			akt.seitDatum = null;
+    			akt.bisDatum = null;
     		} else {
     			readBusinessObject();
     			readIntegrationList();
