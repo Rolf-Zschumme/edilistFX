@@ -163,19 +163,20 @@ public class GeschaeftsObjektController {
 	@FXML
 	void loeschen(ActionEvent event) {
 		if (ediEintragsSet.size() > 0) {
-			String msg = "Fehler beim Löschen des Partners \"" + aktGeschaeftsObjekt.getName() +"\" da er verwendet wird";
+			String msg = "Fehler beim Löschen des Geschäftsobjektes \"" + 
+						  aktGeschaeftsObjekt.getName() + "\" da dieses verwendet wird";
 			mainCtr.setErrorText(msg);
 			logger.warn(msg);
 			return; 
 		}	
-		String partnerName1 = "Partner \"" + aktGeschaeftsObjekt.getName() + "\"";
-		String partnerName2 = partnerName1;
+		String geObName1 = "Geschäftsobjekt-Name \"" + aktGeschaeftsObjekt.getName() + "\"";
+		String geObName2 = geObName1;
 		if (aktGeschaeftsObjekt.getName().equals(tfBezeichnung.getText()) == false) {
-			partnerName2 = partnerName1 + " / \"" + tfBezeichnung.getText() + "\"";
+			geObName2 = geObName1 + " / \"" + tfBezeichnung.getText() + "\"";
 		}
 		Action response = Dialogs.create()
 				.owner(primaryStage).title(primaryStage.getTitle())
-				.message(partnerName2 + " wirklich löschen ?")
+				.message(geObName2 + " wirklich löschen ?")
 				.showConfirm();
 		if (response == Dialog.Actions.YES) {
 			try {
@@ -183,10 +184,10 @@ public class GeschaeftsObjektController {
 				entityManager.remove(aktGeschaeftsObjekt);
 				entityManager.getTransaction().commit();
 				aktGeschaeftsObjekt = null;
-				mainCtr.loadPartnerListData();
-				mainCtr.setInfoText("Der " + partnerName1 + " wurde erfolgreich gelöscht !");
+				mainCtr.loadGeschaeftobjektListData();
+				mainCtr.setInfoText("Der GO-Name " + geObName1 + " wurde erfolgreich gelöscht !");
 			} catch (RuntimeException er) {
-				String msg = "Fehler beim Löschen der Partners " + partnerName1;
+				String msg = "Fehler beim Löschen der GO-Name " + geObName1;
 				logger.fatal(msg, er);
 				Dialogs.create()
 					.owner(primaryStage).title(primaryStage.getTitle())
