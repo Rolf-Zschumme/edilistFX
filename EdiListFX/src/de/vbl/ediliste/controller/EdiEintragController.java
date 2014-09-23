@@ -162,6 +162,8 @@ public class EdiEintragController {
     private Map<String,GeschaeftsObjekt> businessObjectMap; 
     private ObservableList<String> businessObjectName = FXCollections.observableArrayList();
 
+    private Map<String,Intervall> intervallMap;
+    
     
 	public EdiEintragController() {
     	this.ediEintrag = new SimpleObjectProperty<>(this, "ediEintrag", null);

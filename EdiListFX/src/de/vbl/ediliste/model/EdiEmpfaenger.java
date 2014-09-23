@@ -27,7 +27,6 @@ public class EdiEmpfaenger {
 	private GeschaeftsObjekt geschaeftsObjekt;
 
 	public EdiEmpfaenger() {
-		super();
 		geschaeftsObjektName = new SimpleStringProperty();
 	}
 
@@ -69,10 +68,17 @@ public class EdiEmpfaenger {
 	public GeschaeftsObjekt getGeschaeftsObjekt() {
 	    return geschaeftsObjekt;
 	}
-	public void setGeschaeftsObjekt(GeschaeftsObjekt param) {
-		this.geschaeftsObjektName.set(param.getName());
-//		System.out.println("Dem EDI-Empfänger("+ this +")" + this.id +  " wird das Gechäftsobjekt " + this.geschaeftsObjektName.get() + " zugordnet");
-	    this.geschaeftsObjekt = param;
+	
+	public void setGeschaeftsObjekt(GeschaeftsObjekt newGeOb) {
+		if (geschaeftsObjekt != null) {
+			geschaeftsObjekt.getEdiEmpfaenger().remove(this);
+		}
+	    geschaeftsObjekt = newGeOb;
+	    if (geschaeftsObjekt.getId() > 0 && !geschaeftsObjekt.getEdiEmpfaenger().contains(this)) {
+	    	geschaeftsObjekt.getEdiEmpfaenger().add(this);
+	    }
+    	geschaeftsObjektName.set(newGeOb.getName());
+	    System.out.println("Dem EDI-Empfänger("+ this +") " + this.id +  " wird das Gechäftsobjekt " + this.geschaeftsObjektName.get() + " zugordnet");
 	}
 	
 	// ------------------------------------------------------------------------

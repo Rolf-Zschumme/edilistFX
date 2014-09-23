@@ -38,6 +38,7 @@ public class GeschaeftsObjekt implements Serializable {
 	
 	public GeschaeftsObjekt() {
 		name = new SimpleStringProperty();
+		ediEmpfaenger = FXCollections.observableArrayList();
 		anzVerwendungen = new SimpleIntegerProperty();
 	}   
 	public GeschaeftsObjekt(String name) {
@@ -84,6 +85,7 @@ public class GeschaeftsObjekt implements Serializable {
 	public void setEdiEmpfaenger(Collection<EdiEmpfaenger> param) {
 		anzVerwendungen.unbind();
 		ediEmpfaenger = FXCollections.observableArrayList(param);
+		System.out.println("setEdiEmpfänger for " + this.getName() + " (" + this.id + ") " + param.size());
 		anzVerwendungen.bind(Bindings.size(ediEmpfaenger));
 	}
 	
