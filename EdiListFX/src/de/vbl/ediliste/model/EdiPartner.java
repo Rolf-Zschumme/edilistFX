@@ -68,7 +68,6 @@ public class EdiPartner {
 	}
 
 	public void setName(String param) {
-		if (param == null) System.out.println("EdiPartner.setName() mit NULL als Name!");
 		name.set(param);
 	}
 

@@ -18,6 +18,7 @@ import javax.persistence.OneToMany;
 
 import javax.persistence.JoinColumn;
 import static javax.persistence.CascadeType.ALL;
+import de.vbl.ediliste.model.EdiIntervall;
 
 @Entity
 public class EdiEintrag {
@@ -38,6 +39,7 @@ public class EdiEintrag {
 	private StringProperty senderName;
 	private StringProperty integrationName;
 	private StringProperty konfigurationName;
+	private EdiIntervall ediIntervall;
 
 	public EdiEintrag() {
 		ediNr = new SimpleIntegerProperty();
@@ -221,4 +223,13 @@ public class EdiEintrag {
     	}	
     	return intSzeName + "  [" + senderName.get() + "  >>  " + empf01Name + ": " + geOb01Name + "]";
     }
+
+	@ManyToOne
+	public EdiIntervall getEdiIntervall() {
+	    return ediIntervall;
+	}
+
+	public void setEdiIntervall(EdiIntervall param) {
+	    this.ediIntervall = param;
+	}
 }

@@ -59,6 +59,7 @@ import org.controlsfx.dialog.Dialogs;
 import de.vbl.ediliste.controller.KomponentenAuswahlController.KomponentenTyp;
 import de.vbl.ediliste.model.EdiEintrag;
 import de.vbl.ediliste.model.EdiEmpfaenger;
+import de.vbl.ediliste.model.EdiIntervall;
 import de.vbl.ediliste.model.EdiKomponente;
 import de.vbl.ediliste.model.GeschaeftsObjekt;
 import de.vbl.ediliste.model.Integration;
@@ -85,6 +86,7 @@ public class EdiEintragController {
     	EdiEmpfaenger empfaenger[] = new EdiEmpfaenger[MAX_EMPFAENGER];
     	EdiKomponente empfaengerKomponente[] = new EdiKomponente[MAX_EMPFAENGER];
     	GeschaeftsObjekt geschaeftsObjekt[] = new GeschaeftsObjekt[MAX_EMPFAENGER];
+    	EdiIntervall ediIntervall;
     	
     	void setData (EdiEintrag s) {
     		EdiNr = s.getEdiNr();
@@ -92,6 +94,7 @@ public class EdiEintragController {
     		integration = konfiguration==null ? null : konfiguration.getIntegration();
     		bezeichnung = s.getBezeichnung()==null ? "" : s.getBezeichnung();
     		beschreibung = s.getBeschreibung()==null ? "" : s.getBeschreibung();
+    		ediIntervall = s.getEdiIntervall()==null ? new EdiIntervall() : s.getEdiIntervall();
     		sender = s.getEdiKomponente();
 			String seitStr = s.seitDatumProperty().getValueSafe();
 			seitDatum = seitStr.equals("") ? null : LocalDate.parse(seitStr);
@@ -162,8 +165,8 @@ public class EdiEintragController {
     private Map<String,GeschaeftsObjekt> businessObjectMap; 
     private ObservableList<String> businessObjectName = FXCollections.observableArrayList();
 
-    private Map<String,Intervall> intervallMap;
-    
+    private Map<String,EdiIntervall> ediIntervallMap;
+    private ObservableList<String>  ediIntervallName = FXCollections.observableArrayList();
     
 	public EdiEintragController() {
     	this.ediEintrag = new SimpleObjectProperty<>(this, "ediEintrag", null);
@@ -199,6 +202,7 @@ public class EdiEintragController {
     			akt.bisDatum = null;
     		} else {
     			readBusinessObject();
+    			readEdiIntervall();
     			readIntegrationList();
     			org.setData(newEintrag);
     			akt.setData(newEintrag);
@@ -207,6 +211,7 @@ public class EdiEintragController {
     			tabAktEdiNr.setText(EDI_PANE_PREFIX +  newEintrag.getEdiNrStr());
     			tfBezeichnung.setText(akt.bezeichnung);
     			taEdiBeschreibung.setText(akt.beschreibung);
+    			cmbIntervall.getSelectionModel().select(akt.ediIntervall.getName());
     			if (akt.sender != null) {
     				btnSender.textProperty().bind(akt.sender.fullnameProperty());
     			} else {
@@ -247,16 +252,31 @@ public class EdiEintragController {
 		setupKonfigurationComboBox();
 		
 		taEdiBeschreibung.textProperty().addListener((observable, oldValue, newValue) -> {
+			String msg = "";
 			if (newValue != null) {
 				akt.beschreibung = newValue;
 				setChangeFlag(!akt.beschreibung.equals(org.beschreibung));
 			}	
+			mainController.setErrorText(msg);
 		});
 
+		ediIntervallMap = new HashMap<String,EdiIntervall>();
+		cmbIntervall.setItems(ediIntervallName);
+		
+		cmbIntervall.valueProperty().addListener((ov, oldValue, newValue) -> {
+			String msg = "";
+			if (newValue != null && akt.ediIntervall.getName().equals(newValue) == false) {
+				akt.ediIntervall.setName(newValue);
+				setChangeFlag(!akt.ediIntervall.getName().equals(org.ediIntervall.getName()));
+			}
+			mainController.setErrorText(msg);			
+		});
+		
 		businessObjectMap = new HashMap<String,GeschaeftsObjekt>();		
 		cmbBuOb1.setItems(businessObjectName);
 		cmbBuOb2.setItems(businessObjectName);
 		cmbBuOb3.setItems(businessObjectName);
+		
 		
 		cmbBuOb1.valueProperty().addListener((observable, oldValue, newValue) -> {
 			String checkedName = checkBusinessObjectName(newValue, 0);
@@ -528,6 +548,18 @@ public class EdiEintragController {
 		}
 	}
 	
+	private void readEdiIntervall() {
+		ediIntervallMap.clear();
+		ediIntervallName.clear();
+		TypedQuery<EdiIntervall> tq = entityManager.createQuery(
+				"SELECT i FROM EdiIntervall i ORDER BY i.name", EdiIntervall.class);
+		final List<EdiIntervall> iList = tq.getResultList();
+		for (EdiIntervall iObject : iList) {
+			ediIntervallName.add(iObject.getName());
+			ediIntervallMap.put(iObject.getName().toUpperCase(), iObject);
+		}
+	}
+	
 	private void readIntegrationList() {
         final ObservableList<Integration> aktList = FXCollections.observableArrayList();
 		TypedQuery<Integration> tq = entityManager.createQuery(
@@ -640,7 +672,8 @@ public class EdiEintragController {
 			verifyEmpfaengerAreUnchanged() == true   &&
 			localDateEquals(akt.seitDatum, org.seitDatum)  &&
 			localDateEquals(akt.bisDatum, org.bisDatum)  &&
-			akt.beschreibung.equals(org.beschreibung) ) {
+			akt.beschreibung.equals(org.beschreibung)  &&
+			akt.ediIntervall.getName().equals(org.ediIntervall.getName())) {
 			// no changes -> no update
 			return true;  
 		}
@@ -730,6 +763,12 @@ public class EdiEintragController {
 			aktEdi.setEdiKomponente(akt.sender); 
 			aktEdi.setBeschreibung(akt.beschreibung);
 			
+			if (akt.ediIntervall.getName().equals(org.ediIntervall.getName())) {
+				aktEdi.setEdiIntervall(org.ediIntervall);
+			} else {	
+				aktEdi.setEdiIntervall(newEdiIntervall(akt.ediIntervall.getName()));
+			}
+			
 			Collection<EdiEmpfaenger> tmpEmpfaengerList = new ArrayList<EdiEmpfaenger>();
 			
 			for (int i=0; i<MAX_EMPFAENGER; ++i) {
@@ -790,6 +829,23 @@ public class EdiEintragController {
 		return true;
 	}	
 	
+	private EdiIntervall newEdiIntervall(String iName) {
+		EdiIntervall ediIntervall;
+		String select = "SELECT i FROM EdiIntervall i WHERE i.name= :i";
+		TypedQuery<EdiIntervall> tq = entityManager.createQuery(select, EdiIntervall.class);
+		tq.setParameter("i", iName);
+		List<EdiIntervall> iList = tq.getResultList();
+		
+		if (iList.size() == 0) {
+			ediIntervall = new EdiIntervall();
+			entityManager.persist(ediIntervall);
+		} else {
+			ediIntervall = iList.get(0);
+		}
+		ediIntervall.setName(iName);
+		return ediIntervall;
+	}
+
 	private boolean localDateEquals(LocalDate x, LocalDate y) {
 		if (x == null && y == null)
 			return true;
