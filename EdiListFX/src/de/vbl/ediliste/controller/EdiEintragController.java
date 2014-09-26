@@ -39,6 +39,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -51,6 +52,8 @@ import javafx.util.StringConverter;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialog.Actions;
@@ -67,6 +70,7 @@ import de.vbl.ediliste.model.Konfiguration;
 
 
 public class EdiEintragController {
+	private static final Logger logger = LogManager.getLogger(EdiEintragController.class.getName()); 
 	private static final String EDI_PANE_PREFIX = "EDI ";
 	private static final Integer MAX_EMPFAENGER = 3;
 	private static final String DEFAULT_KONFIG_NAME = "Ohne XI/PO-Konfiguration";
@@ -75,18 +79,18 @@ public class EdiEintragController {
 	private final ObjectProperty<EdiEintrag> ediEintrag;
 
     private static class EdiEintragPlus {
-    	int EdiNr;
-    	Integration integration;
-    	Konfiguration konfiguration;
-    	String bezeichnung;
-    	String beschreibung;
-    	LocalDate seitDatum;
-    	LocalDate bisDatum;
-    	EdiKomponente sender; 
-    	EdiEmpfaenger empfaenger[] = new EdiEmpfaenger[MAX_EMPFAENGER];
-    	EdiKomponente empfaengerKomponente[] = new EdiKomponente[MAX_EMPFAENGER];
-    	GeschaeftsObjekt geschaeftsObjekt[] = new GeschaeftsObjekt[MAX_EMPFAENGER];
-    	EdiIntervall ediIntervall;
+    	private int EdiNr;
+    	private Integration integration;
+    	private Konfiguration konfiguration;
+    	private String bezeichnung;
+    	private String beschreibung;
+    	private LocalDate seitDatum;
+    	private LocalDate bisDatum;
+    	private EdiKomponente sender; 
+    	private EdiEmpfaenger empfaenger[] = new EdiEmpfaenger[MAX_EMPFAENGER];
+    	private EdiKomponente empfaengerKomponente[] = new EdiKomponente[MAX_EMPFAENGER];
+    	private GeschaeftsObjekt geschaeftsObjekt[] = new GeschaeftsObjekt[MAX_EMPFAENGER];
+    	private String ediIntervallName;
     	
     	void setData (EdiEintrag s) {
     		EdiNr = s.getEdiNr();
@@ -94,7 +98,7 @@ public class EdiEintragController {
     		integration = konfiguration==null ? null : konfiguration.getIntegration();
     		bezeichnung = s.getBezeichnung()==null ? "" : s.getBezeichnung();
     		beschreibung = s.getBeschreibung()==null ? "" : s.getBeschreibung();
-    		ediIntervall = s.getEdiIntervall()==null ? new EdiIntervall() : s.getEdiIntervall();
+    		ediIntervallName = s.getEdiIntervall()==null ? "" : s.getEdiIntervall().getName();
     		sender = s.getEdiKomponente();
 			String seitStr = s.seitDatumProperty().getValueSafe();
 			seitDatum = seitStr.equals("") ? null : LocalDate.parse(seitStr);
@@ -164,9 +168,7 @@ public class EdiEintragController {
     
     private Map<String,GeschaeftsObjekt> businessObjectMap; 
     private ObservableList<String> businessObjectName = FXCollections.observableArrayList();
-
-    private Map<String,EdiIntervall> ediIntervallMap;
-    private ObservableList<String>  ediIntervallName = FXCollections.observableArrayList();
+    private ObservableList<String> ediIntervallName   = FXCollections.observableArrayList();
     
 	public EdiEintragController() {
     	this.ediEintrag = new SimpleObjectProperty<>(this, "ediEintrag", null);
@@ -211,7 +213,7 @@ public class EdiEintragController {
     			tabAktEdiNr.setText(EDI_PANE_PREFIX +  newEintrag.getEdiNrStr());
     			tfBezeichnung.setText(akt.bezeichnung);
     			taEdiBeschreibung.setText(akt.beschreibung);
-    			cmbIntervall.getSelectionModel().select(akt.ediIntervall.getName());
+    			cmbIntervall.getSelectionModel().select(akt.ediIntervallName);
     			if (akt.sender != null) {
     				btnSender.textProperty().bind(akt.sender.fullnameProperty());
     			} else {
@@ -260,14 +262,14 @@ public class EdiEintragController {
 			mainController.setErrorText(msg);
 		});
 
-		ediIntervallMap = new HashMap<String,EdiIntervall>();
 		cmbIntervall.setItems(ediIntervallName);
 		
 		cmbIntervall.valueProperty().addListener((ov, oldValue, newValue) -> {
 			String msg = "";
-			if (newValue != null && akt.ediIntervall.getName().equals(newValue) == false) {
-				akt.ediIntervall.setName(newValue);
-				setChangeFlag(!akt.ediIntervall.getName().equals(org.ediIntervall.getName()));
+			if (newValue != null && akt.ediIntervallName.equals(newValue) == false) {
+				logger.debug("cmbIntervall.changed to " + newValue);
+				akt.ediIntervallName = newValue;
+				setChangeFlag(!akt.ediIntervallName.equals(org.ediIntervallName));
 			}
 			mainController.setErrorText(msg);			
 		});
@@ -434,7 +436,7 @@ public class EdiEintragController {
 		});
 		
 		// check if user want to change the current EDI entity
-		tabPaneEdiNr.addEventFilter(MouseEvent.MOUSE_PRESSED,  event -> {
+		tabPaneEdiNr.addEventFilter(MouseEvent.MOUSE_PRESSED, event ->  {
 			Node node = (Node) event.getTarget();
 			if (node instanceof Text) {
 				Parent parent = node.getParent();
@@ -450,28 +452,33 @@ public class EdiEintragController {
 							}
 						}
 					}
-					if (e != null && checkForChangesAndAskForSave()) {
+					if (e != null) {
+						if(checkForChangesAndAskForSave()) {
+							mainController.setSelectedEdiEintrag(e);
+						}
 						event.consume();
-						mainController.setSelectedEdiEintrag(e);
 					}
 				} 
 			}
-		});		
-//		cmbKonfiguration.setOnAction((event) -> {
-//		Konfiguration selKonfiguration = cmbKonfiguration.getSelectionModel().getSelectedItem();
-//		
-//		if (selKonfiguration != null && cmbIntegration.getSelectionModel().getSelectedItem() == null) {
-//			log("cmbKonfiguration.setOnAction","selected Integration == null");
-//			akt.integration = null;   // for reading the  
-//			cmbIntegration.getSelectionModel().select(selKonfiguration.getIntegration());
-//		}
-//		akt.konfiguration = selKonfiguration;
-//		setChangeFlag(akt.konfiguration == org.konfiguration);
-//
-//	});
+			
+		});
 		
+		tabPaneEdiNr.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+			Node node = (Node) event.getTarget();
+			if (node instanceof TabPane) {
+				EdiEintrag e = null;
+				TabPane tabPane = (TabPane) node;
+				logger.debug(tabPane.getSelectionModel().selectedItemProperty().get());
+				e = (EdiEintrag) tabPane.getSelectionModel().selectedItemProperty().get().getUserData();
+				if (e != null) {
+					if(checkForChangesAndAskForSave()) {
+						mainController.setSelectedEdiEintrag(e);
+					}
+				}
+			}
+		});		
 	}
-
+	
 	// prüft ob das eingegebene BO (newName) in der BO-Tabelle (businessObjektMap) 
 	// bereits vorhanden ist.  
 
@@ -549,14 +556,12 @@ public class EdiEintragController {
 	}
 	
 	private void readEdiIntervall() {
-		ediIntervallMap.clear();
 		ediIntervallName.clear();
 		TypedQuery<EdiIntervall> tq = entityManager.createQuery(
 				"SELECT i FROM EdiIntervall i ORDER BY i.name", EdiIntervall.class);
 		final List<EdiIntervall> iList = tq.getResultList();
 		for (EdiIntervall iObject : iList) {
 			ediIntervallName.add(iObject.getName());
-			ediIntervallMap.put(iObject.getName().toUpperCase(), iObject);
 		}
 	}
 	
@@ -644,12 +649,13 @@ public class EdiEintragController {
 //		return false;
 //	}
 
-    private static enum Checkmode { ONLY_CHECK, ASK_FOR_UPDATE, SAVE_DONT_ASK };
+    private static enum Checkmode { CHECK_ONLY, ASK_FOR_UPDATE, SAVE_DONT_ASK };
 
     private void setChangeFlag(Boolean different) {
-    	if (different) {
-    		different = !checkForChangesWithMode(Checkmode.ONLY_CHECK);
+    	if (!different) {
+    		different = !checkForChangesWithMode(Checkmode.CHECK_ONLY);
     	}
+    	logger.debug("Status dataIsChanged wird auf " + different + " gesetzt");
     	dataIsChanged.set(different);
 	}
 	
@@ -666,22 +672,21 @@ public class EdiEintragController {
 		if (ediEintrag.get() == null) {
 			return true;
 		}
-//		log("checkForChangesWithMode","mode="+ checkmode +  " aktEdi=" + akt.bezeichnung);
 		if (akt.konfiguration == org.konfiguration &&
 			akt.sender == org.sender &&
 			verifyEmpfaengerAreUnchanged() == true   &&
 			localDateEquals(akt.seitDatum, org.seitDatum)  &&
 			localDateEquals(akt.bisDatum, org.bisDatum)  &&
 			akt.beschreibung.equals(org.beschreibung)  &&
-			akt.ediIntervall.getName().equals(org.ediIntervall.getName())) {
-			// no changes -> no update
+			akt.ediIntervallName.equals(org.ediIntervallName)) {
+			logger.debug(checkmode + ": no change found -> no update");
 			return true;  
 		}
-		if (checkmode == Checkmode.ONLY_CHECK) {
+		if (checkmode == Checkmode.CHECK_ONLY) {
+			logger.debug(checkmode + ": change found");
 			return false; 
 		}
 		if (checkmode == Checkmode.ASK_FOR_UPDATE) {
-			// ask if update should be done
 			Action response = Dialogs.create().owner(primaryStage)
 							.title(applName).masthead(SICHERHEITSABFRAGE)
 							.message("Soll die Änderungen am EDI-Eintrag " + ediEintrag.get().getEdiNrStr() + 
@@ -742,6 +747,7 @@ public class EdiEintragController {
     	}
     	
     	// end validation -> start update/insert
+    	// -------------------------------------
 		try {
 			EdiEintrag aktEdi = ediEintrag.get();
 			entityManager.getTransaction().begin();
@@ -763,10 +769,8 @@ public class EdiEintragController {
 			aktEdi.setEdiKomponente(akt.sender); 
 			aktEdi.setBeschreibung(akt.beschreibung);
 			
-			if (akt.ediIntervall.getName().equals(org.ediIntervall.getName())) {
-				aktEdi.setEdiIntervall(org.ediIntervall);
-			} else {	
-				aktEdi.setEdiIntervall(newEdiIntervall(akt.ediIntervall.getName()));
+			if (!akt.ediIntervallName.equals(org.ediIntervallName)) {
+				aktEdi.setEdiIntervall(newEdiIntervall(akt.ediIntervallName));
 			}
 			
 			Collection<EdiEmpfaenger> tmpEmpfaengerList = new ArrayList<EdiEmpfaenger>();
@@ -813,11 +817,17 @@ public class EdiEintragController {
 			
 			entityManager.getTransaction().commit();
 			
+			// do things that are necessary after DB-update:
+			if (!akt.ediIntervallName.equals(org.ediIntervallName)) {
+				readEdiIntervall();	// this will remove selection -> refresh 
+				cmbIntervall.getSelectionModel().select(akt.ediIntervallName);
+			}
 			setLastChangeField(ediLastChange, aktEdi.getLaeDatum(), aktEdi.getLaeUser());			
-
-			mainController.setInfoText("Der EDI-Eintrag wurde gespeichert");
 			akt.setData(aktEdi);
 			org.setData(aktEdi);
+			
+			mainController.setInfoText("Der EDI-Eintrag wurde gespeichert");
+			
 		} catch (RuntimeException e) {
 			Dialogs.create().owner(primaryStage)
 			.title(applName).masthead("Datenbankfehler")
@@ -830,12 +840,14 @@ public class EdiEintragController {
 	}	
 	
 	private EdiIntervall newEdiIntervall(String iName) {
+		logger.entry();
 		EdiIntervall ediIntervall;
-		String select = "SELECT i FROM EdiIntervall i WHERE i.name= :i";
+		String select = "SELECT i FROM EdiIntervall i WHERE LOWER(i.name) = LOWER(:i)";
 		TypedQuery<EdiIntervall> tq = entityManager.createQuery(select, EdiIntervall.class);
 		tq.setParameter("i", iName);
 		List<EdiIntervall> iList = tq.getResultList();
 		
+		logger.info("iListe.size=" + iList.size());
 		if (iList.size() == 0) {
 			ediIntervall = new EdiIntervall();
 			entityManager.persist(ediIntervall);
@@ -1108,12 +1120,6 @@ public class EdiEintragController {
 		this.ediEintrag.set(ediEintrag);
 	}
 
-	@SuppressWarnings("unused")
-	private static void log(String methode, String message) {
-		String className = EdiEintragController.class.getName().substring(16);
-		System.out.println(className + "." + methode + "(): " + message); 
-	}
-    
     private void checkFieldFromView() {
         assert paneSzenario != null : "fx:id=\"paneSzenario\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
         assert btnSpeichern != null : "fx:id=\"btnSpeichern\" was not injected: check your FXML file 'EdiEintrag.fxml'.";

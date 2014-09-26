@@ -26,6 +26,8 @@ import javafx.stage.Stage;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
@@ -35,6 +37,7 @@ import de.vbl.ediliste.model.EdiEmpfaenger;
 import de.vbl.ediliste.model.Konfiguration;
 
 public class KonfigurationController {
+	private static final Logger logger = LogManager.getLogger(KonfigurationController.class.getName());
 	private static Stage primaryStage = null;
 	private static EdiMainController mainCtr;
 	private static EntityManager entityManager;
@@ -67,7 +70,7 @@ public class KonfigurationController {
 	public static void start(Stage 			   primaryStage, 
 							 EdiMainController mainController, 
 							 EntityManager     entityManager) {
-		log("start","called");
+		logger.entry();
 		KonfigurationController.primaryStage = primaryStage;
 		KonfigurationController.mainCtr = mainController;
 		KonfigurationController.entityManager = entityManager;
@@ -136,7 +139,7 @@ public class KonfigurationController {
 		tvVerwendungen.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<EdiEmpfaenger>() {
 			@Override
 			public void changed (ObservableValue<? extends EdiEmpfaenger> ov, EdiEmpfaenger oldValue, EdiEmpfaenger newValue) {
-				log("tvVerwendungen.select.changed" ,"newValue" + newValue);
+				logger.info("tvVerwendungen.select.changed" ,"newValue" + newValue);
 			}
 		});
 	}
@@ -188,7 +191,7 @@ public class KonfigurationController {
 	
 	private boolean checkForChangesWithMode(Checkmode checkmode) {
 		String mn = "checkForChangesWithMode-" + checkmode;
-		log(mn,"aktInte=" + (aktKonfiguration==null ? "null" : aktKonfiguration.getName()));
+		logger.debug(mn,"aktInte=" + (aktKonfiguration==null ? "null" : aktKonfiguration.getName()));
 		if (aktKonfiguration == null ) {
 			return true;
 		}
@@ -199,7 +202,7 @@ public class KonfigurationController {
 
 		if (orgName.equals(newName) &&
 			orgBeschreibung.equals(newBeschreibung) )  {
-			log(mn, "Name und Bezeichnung unverändert");
+			logger.trace(mn, "Name und Bezeichnung unverändert");
 		} else {
 			if (checkmode == Checkmode.ONLY_CHECK) {
 				return false;
@@ -224,7 +227,7 @@ public class KonfigurationController {
 				tfBezeichnung.requestFocus();
 				return false;
 			}
-			log(mn,"Änderung erkannt -> update");
+			logger.trace(mn,"Änderung erkannt -> update");
 			entityManager.getTransaction().begin();
 			aktKonfiguration.setName(newName);
 			aktKonfiguration.setBeschreibung(newBeschreibung);
@@ -293,13 +296,6 @@ public class KonfigurationController {
 		this.konfiguration.set(konfiguration);
 	}
     
-	private static void log(String methode, String message) {
-		if (message != null || methode != null) {
-			String className = KonfigurationController.class.getName().substring(16);
-			System.out.println(className + "." + methode + "(): " + message); 
-		}
-	}
-
 	void checkFieldsFromView() {
     	assert tfBezeichnung != null : "fx:id=\"tfBezeichnung\" was not injected: check your FXML file 'Konfiguration.fxml'.";
     	assert taBeschreibung != null : "fx:id=\"taBeschreibung\" was not injected: check your FXML file 'Konfiguration.fxml'.";

@@ -60,7 +60,7 @@ public class EdiMainController {
 	private static final String APPL_NAME = "EDI-Liste";
 	private static final String PERSISTENCE_UNIT_NAME = "EdiListFX";
 	private static final String SICHERHEITSABFRAGE = "Sicherheitsabfrage";
-	private static final Logger logger = LogManager.getLogger(EdiEintragController.class.getName()); 
+	private static final Logger logger = LogManager.getLogger(EdiMainController.class.getName()); 
 
 	private static int maxEdiNr;
 	private Stage primaryStage;
@@ -193,7 +193,7 @@ public class EdiMainController {
         			@Override
         			public void changed(ObservableValue<? extends Tab> ov, Tab talt, Tab tneu) {
         				final Tab akttab = tneu;
-						log("tabPane.changed", akttab.textProperty().get());
+						logger.info("tabPane.changed", akttab.textProperty().get());
 
 						primaryStage.getScene().setCursor(Cursor.WAIT);
 						
@@ -564,7 +564,7 @@ public class EdiMainController {
     		if (response == Dialog.Actions.OK) {
     			EdiEintrag ediEintrag = entityManager.find(EdiEintrag.class, selectedlistElement.getId());
     			if (ediEintrag==null) {
-    				log("deleteEdiEintrag", "FEHLER: EDI-Eintrag " + ediNr + " ist nicht (mehr) gespeichert");
+    				logger.error("deleteEdiEintrag", "FEHLER: EDI-Eintrag " + ediNr + " ist nicht (mehr) gespeichert");
     			}
     			else {
 	        		entityManager.getTransaction().begin();
@@ -640,11 +640,6 @@ public class EdiMainController {
     	// USE = use cache without refresh if data exists in cache (=default)
     	// BYPASS = do not use cache
     }
-    
-	private void log(String methode, String message) {
-		String className = this.getClass().getName().substring(16);
-		System.out.println(className + "." + methode + "(): " + message); 
-	}
     
     private void checkFieldsFromView() {
         assert tabEdiNr != null : "fx:id=\"tabEdiNr\" was not injected: check your FXML file 'EdiMain.fxml'.";

@@ -26,6 +26,8 @@ import javafx.stage.Stage;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
@@ -35,12 +37,14 @@ import de.vbl.ediliste.model.EdiEmpfaenger;
 import de.vbl.ediliste.model.Integration;
 
 public class IntegrationController {
+	private static final Logger logger = LogManager.getLogger(IntegrationController.class.getName()); 
 	private static Stage primaryStage = null;
 	private static EdiMainController mainCtr;
 	private static EntityManager entityManager;
 	private final ObjectProperty<Integration> integration;
 	private final ObservableSet<EdiEintrag> ediEintragsSet;      // all assigned EDI-Entities
 	private Integration aktIntegration = null;
+
 	
     private BooleanProperty dataIsChanged = new SimpleBooleanProperty(false);
 	
@@ -68,7 +72,7 @@ public class IntegrationController {
 	public static void start(Stage 			   primaryStage, 
 							 EdiMainController mainController, 
 							 EntityManager     entityManager) {
-		log("start","called");
+		logger.entry();
 		IntegrationController.primaryStage = primaryStage;
 		IntegrationController.mainCtr = mainController;
 		IntegrationController.entityManager = entityManager;

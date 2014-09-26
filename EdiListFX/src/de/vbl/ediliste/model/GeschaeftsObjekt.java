@@ -19,17 +19,23 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * Entity implementation class for Entity: GeschaeftsObjekt
  *
  */
+
 @Entity
 
 public class GeschaeftsObjekt implements Serializable {
 	/**
 	 * 
 	 */
+	private static final Logger logger = LogManager.getLogger(GeschaeftsObjekt.class.getName()); 
 	private static final long serialVersionUID = 6212861741600895810L;
+
 	private long id;
 	private StringProperty name;
 	private String beschreibung;
@@ -85,7 +91,7 @@ public class GeschaeftsObjekt implements Serializable {
 	public void setEdiEmpfaenger(Collection<EdiEmpfaenger> param) {
 		anzVerwendungen.unbind();
 		ediEmpfaenger = FXCollections.observableArrayList(param);
-		System.out.println("setEdiEmpfänger for " + this.getName() + " (" + this.id + ") " + param.size());
+		logger.trace("name:" + this.getName() + " (" + this.id + ") " + param.size());
 		anzVerwendungen.bind(Bindings.size(ediEmpfaenger));
 	}
 	

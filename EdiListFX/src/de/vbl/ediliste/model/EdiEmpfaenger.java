@@ -78,7 +78,6 @@ public class EdiEmpfaenger {
 	    	geschaeftsObjekt.getEdiEmpfaenger().add(this);
 	    }
     	geschaeftsObjektName.set(newGeOb.getName());
-	    System.out.println("Dem EDI-Empfänger("+ this +") " + this.id +  " wird das Gechäftsobjekt " + this.geschaeftsObjektName.get() + " zugordnet");
 	}
 	
 	// ------------------------------------------------------------------------
