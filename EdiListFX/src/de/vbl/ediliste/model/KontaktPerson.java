@@ -18,7 +18,12 @@ public class KontaktPerson implements Serializable {
 	
 	private long id;
 	private String idStr;
-	private String name;
+	private String nummer;
+	private String nachname;
+	private String vorname;
+	private String abteilung;
+	private String telefon;
+	private String mail;
 	private static final long serialVersionUID = 1L;
 	public KontaktPerson() {
 		super();
@@ -35,16 +40,55 @@ public class KontaktPerson implements Serializable {
 	public String getIdStr() {
 		return this.idStr;
 	}
-
 	public void setIdStr(String idStr) {
 		this.idStr = idStr;
-	}   
-	public String getName() {
-		return this.name;
+	}
+	
+	// ----------------------------------
+	public String getNummer() {
+		return nummer;
+	}
+	public void setNummer(String nummer) {
+		this.nummer = nummer;
+	}
+	
+	// ----------------------------------
+	public String getNachname() {
+		return this.nachname;
+	}
+	public void setNachname(String name) {
+		this.nachname = name;
+	}
+	
+	// ----------------------------------
+	public String getVorname() {
+		return vorname;
+	}
+	public void setVorname(String vorname) {
+		this.vorname = vorname;
+	}
+	
+	// ----------------------------------
+	public String getAbteilung() {
+		return abteilung;
+	}
+	public void setAbteilung(String abteilung) {
+		this.abteilung = abteilung;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	// ----------------------------------
+	public String getTelefon() {
+		return telefon;
 	}
-   
+	public void setTelefon(String telefon) {
+		this.telefon = telefon;
+	}
+
+	// ----------------------------------
+	public String getMail() {
+		return mail;
+	}
+	public void setMail(String mail) {
+		this.mail = mail;
+	}
 }
