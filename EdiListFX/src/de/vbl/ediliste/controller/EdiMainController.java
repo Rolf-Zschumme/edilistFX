@@ -31,7 +31,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import javax.persistence.CacheStoreMode;
+import javax.persistence.CacheStoreMode; 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -52,9 +52,6 @@ import de.vbl.ediliste.model.GeschaeftsObjekt;
 import de.vbl.ediliste.model.Integration;
 import de.vbl.ediliste.model.Konfiguration;
 import de.vbl.ediliste.tools.ExportToExcel;
-
-// 04.09.2014 RZ CacheStoreMode = REFRESH gesetzt
-// 19.09.2014 RZ Tab Konfiguration begonnen 
 
 public class EdiMainController {
 	private static final String APPL_NAME = "EDI-Liste";
@@ -143,10 +140,10 @@ public class EdiMainController {
     
     @FXML
 	private void initialize () {
-    	logger.info("Entering initialize");
+    	logger.info("initialize() entered");
 		checkFieldsFromView();
 		setupEntityManager();
-        setupBindings();		
+        setupBindings();
     }	
 
     public void start(Stage stage) {
@@ -631,14 +628,15 @@ public class EdiMainController {
     }
     
     private void setupEntityManager() {
+    	logger.info("Datenbankverbindung zu {} wird aufgebaut",PERSISTENCE_UNIT_NAME);
     	EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
     	entityManager = factory.createEntityManager();
-    	
     	entityManager.setProperty("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH);
     	// Explanation for CacheStoreMode:
     	// REFRESH = refresh data in cache on find and query 
     	// USE = use cache without refresh if data exists in cache (=default)
     	// BYPASS = do not use cache
+    	logger.info("Datenbankverbinding aufgebaut", entityManager.getProperties().toString());
     }
     
     private void checkFieldsFromView() {

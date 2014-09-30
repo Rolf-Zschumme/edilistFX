@@ -21,16 +21,15 @@ public class EdiListMain extends Application {
 	EdiMainController controller;
 	
 	public static void main(String[] args) {
-		
 		Date date = java.util.Calendar.getInstance().getTime();
 		SimpleDateFormat dateFormatter =  new SimpleDateFormat("dd.MM.yyyy");
 		String dateString = dateFormatter.format(date);		
-		logger.info(dateString + " Java-Version: " + System.getProperty("java.version"));
+		logger.info("Java-Version:" + System.getProperty("java.version") + " Datum: " + dateString);
 		try {
 			launch(args);
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Fehler in der Anwendung", e);
+			e.printStackTrace();
 		}
 	}
 	
@@ -39,14 +38,16 @@ public class EdiListMain extends Application {
 	@Override
 	public void start(Stage stage) {
 		primaryStage = stage;
-		
-		Parent root = loadAndStartController();
-		
-		Scene scene = new Scene(root); 
-		scene.getStylesheets().add(getClass().getResource("view/application.css").toExternalForm());
-		primaryStage.setScene(scene);
-		primaryStage.show();
-		
+		try {
+			Parent root = loadAndStartController();
+			Scene scene = new Scene(root); 
+			scene.getStylesheets().add(getClass().getResource("view/application.css").toExternalForm());
+			primaryStage.setScene(scene);
+			primaryStage.show();
+		} catch (Exception e) {
+			logger.error("der Fehler trat in EdiListMain.start() auf", e);
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
@@ -61,8 +62,8 @@ public class EdiListMain extends Application {
 		try {
 			root = (Parent) loader.load();
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Fehler beim Laden der fxml-Resource", e);
+			e.printStackTrace();
 		}
 		
 		controller = loader.getController();

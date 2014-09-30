@@ -5,15 +5,10 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-
-
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -40,23 +35,14 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-
-
-
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-
-
-
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
-
-
-
 
 import de.vbl.ediliste.controller.subs.KontaktPersonNeuanlageController;
 import de.vbl.ediliste.model.EdiEintrag;
