@@ -11,12 +11,11 @@
 		</File>
 	</Appenders>
 	<Loggers>
-<!-- 	
-		<Root level="error">			
+		<Root level="ERROR">			
 				<AppenderRef ref="Console" />			
 				<AppenderRef ref="LogFile" />		
 		</Root>
- -->
+		
 		<logger name="de.vbl.ediliste" level="INFO" />
 		<logger name="de.vbl.ediliste.controller" level="INFO" />
 		<logger name="de.vbl.ediliste.controller.subs" level="INFO" />

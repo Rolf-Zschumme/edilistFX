@@ -51,6 +51,7 @@ import de.vbl.ediliste.model.EdiSystem;
 import de.vbl.ediliste.model.GeschaeftsObjekt;
 import de.vbl.ediliste.model.Integration;
 import de.vbl.ediliste.model.Konfiguration;
+import de.vbl.ediliste.model.KontaktPerson;
 import de.vbl.ediliste.tools.ExportToExcel;
 
 public class EdiMainController {
@@ -68,6 +69,7 @@ public class EdiMainController {
     private ObservableList<EdiKomponente> ediKomponentenList = FXCollections.observableArrayList();
     private ObservableList<Integration> integrationList = FXCollections.observableArrayList();
     private ObservableList<Konfiguration> konfigurationList = FXCollections.observableArrayList();
+    private ObservableList<KontaktPerson> kontaktPersonList = FXCollections.observableArrayList();
     private ObservableList<GeschaeftsObjekt> geschaeftsobjektList = FXCollections.observableArrayList();    
 
 	
@@ -110,6 +112,13 @@ public class EdiMainController {
     @FXML private TableColumn<Konfiguration, String> tColSelKonfigIntegrationName;
     
     @FXML private Tab tabKontaktPersonen;
+    @FXML private TableView<KontaktPerson> tableKontaktAuswahl;
+    @FXML private TableColumn<KontaktPerson, String> tColKontaktUserId;
+    @FXML private TableColumn<KontaktPerson, String> tColKontaktNachname;
+    @FXML private TableColumn<KontaktPerson, String> tColKontaktVorname;
+    @FXML private TableColumn<KontaktPerson, String> tColKontaktAbteilung;
+    @FXML private TableColumn<KontaktPerson, String> tColKontaktTelefon;
+    @FXML private TableColumn<KontaktPerson, String> tColKontaktMailadresse;
     
     @FXML private Tab tabGeschaeftsobjekte;
     @FXML private TableView<GeschaeftsObjekt> tableGeschaeftsobjektAuswahl;
@@ -139,8 +148,8 @@ public class EdiMainController {
     @FXML private GeschaeftsObjektController geschaeftsObjektController;   
     
     @FXML
-	private void initialize () {
-    	logger.info("initialize() entered");
+	private void initialize () throws Exception {
+    	logger.info("entered");
 		checkFieldsFromView();
 		setupEntityManager();
         setupBindings();
@@ -183,6 +192,7 @@ public class EdiMainController {
     	setupKomponentenPane();
     	setupIntegrationPane();
     	setupKonfigurationPane();
+    	setupKontaktPersonPane();
     	setupGeschaeftsobjektPane();
 
         tabPaneObjekte.getSelectionModel().selectedItemProperty().addListener(
@@ -211,6 +221,9 @@ public class EdiMainController {
 						}
 						else if(akttab.equals(tabKonfigurationen)) {
 							loadKonfigurationListData();
+						}
+						else if(akttab.equals(tabKontaktPersonen)) {
+							loadKontaktPersonListData();
 						}
 						else if(akttab.equals(tabGeschaeftsobjekte)) {
 							loadGeschaeftobjektListData();
@@ -302,7 +315,16 @@ public class EdiMainController {
 			primaryStage.close();
 		}
 	}
-
+	
+	@FXML
+	void actionEdiNrContextMenuRequested (ActionEvent event) {
+		// TODO
+		System.out.println("ContextMenuRequested");
+	}
+	
+	/* ************************************************************************
+	 * set a new selected EdiEintrag from other controllers
+	 * ***********************************************************************/
 	protected void setSelectedEdiEintrag (EdiEintrag e) {
 		tableEdiNrAuswahl.getSelectionModel().select(e);
 	}
@@ -373,6 +395,17 @@ public class EdiMainController {
 		konfiguration.disableProperty().bind(Bindings.isNull(tableKonfigurationAuswahl.getSelectionModel().selectedItemProperty()));
 	}
 
+	private void setupKontaktPersonPane() {
+		// TODO Auto-generated method stub
+		tableKontaktAuswahl.setItems(kontaktPersonList);
+		tColKontaktUserId.setCellValueFactory(cellData -> cellData.getValue().nummerProperty());
+		tColKontaktNachname.setCellValueFactory(cellData -> cellData.getValue().nachnameProperty());
+		tColKontaktVorname.setCellValueFactory(cellData -> cellData.getValue().vornameProperty());
+		tColKontaktAbteilung.setCellValueFactory(cellData -> cellData.getValue().abteilungProperty());
+		tColKontaktTelefon.setCellValueFactory(cellData -> cellData.getValue().telefonProperty());
+		tColKontaktMailadresse.setCellValueFactory(cellData -> cellData.getValue().mailProperty());
+	}
+	
     private void setupGeschaeftsobjektPane() {
     	tableGeschaeftsobjektAuswahl.setItems(geschaeftsobjektList);
     	tColAuswahlGeschaeftsobjektName.setCellValueFactory(cell -> cell.getValue().nameProperty());
@@ -476,7 +509,19 @@ public class EdiMainController {
 			}
 		}
 	}
-	
+
+	protected void loadKontaktPersonListData() {
+		TypedQuery<KontaktPerson> tq = entityManager.createQuery(
+				"SELECT k FROM KontaktPerson k ORDER BY k.nachname", KontaktPerson.class);
+		List<KontaktPerson> aktulist = tq.getResultList();
+		kontaktPersonList.retainAll(aktulist);
+		for (KontaktPerson k : aktulist) {
+			if (kontaktPersonList.contains(k) == false ) {
+				kontaktPersonList.add(aktulist.indexOf(k), k);
+			}
+		}
+	}
+
 	protected void loadGeschaeftobjektListData() {
 		TypedQuery<GeschaeftsObjekt> tq = entityManager.createQuery(
 				"SELECT g FROM GeschaeftsObjekt g ORDER BY g.name", GeschaeftsObjekt.class);
@@ -498,6 +543,12 @@ public class EdiMainController {
 			   	   + "\nJava-Runtime-Verion: " + System.getProperty("java.version"))
 			.showInformation();
     }
+	
+	@FXML
+	void actionBearbeiten(ActionEvent event) throws Exception {
+		logger.info("entered");
+		throw (new Exception("Test Exception (actionBearbeiten)"));
+	}
 	
 	@FXML
 	void showJavaInfo (ActionEvent event) {
@@ -576,9 +627,6 @@ public class EdiMainController {
 	        		entityManager.remove(ediEintrag);
 	        		entityManager.getTransaction().commit();
 	        		setInfoText("Edi-Eintrag mit der Nr. " + ediNr + " erfolgreich gelöscht");
-//	        		Dialogs.create().owner(primaryStage).masthead(null)
-//	        				.message("Edi-Eintrag mit der Nr. " + ediNr + " erfolgreich gelöscht")
-//	        				.showInformation();
     			}	
     			ediEintraegeList.remove(selectedlistElement);
     			tableEdiNrAuswahl.getSelectionModel().clearSelection();
@@ -639,41 +687,59 @@ public class EdiMainController {
     	logger.info("Datenbankverbinding aufgebaut", entityManager.getProperties().toString());
     }
     
-    private void checkFieldsFromView() {
+    private void checkFieldsFromView() throws Exception {
+    	logger.info("entered");
         assert tabEdiNr != null : "fx:id=\"tabEdiNr\" was not injected: check your FXML file 'EdiMain.fxml'.";
+
+        assert tabPaneObjekte != null : "fx:id=\"tabPaneObjekte\" was not injected: check your FXML file 'EdiMain.fxml'.";
+        assert tabPartner != null : "fx:id=\"tabPartner\" was not injected: check your FXML file 'EdiMain.fxml'.";
+        assert tabSysteme != null : "fx:id=\"tabSysteme\" was not injected: check your FXML file 'EdiMain.fxml'.";
+        assert tabKomponenten != null : "fx:id=\"tabKomponenten\" was not injected: check your FXML file 'EdiMain.fxml'.";
+        assert tabIntegrationen != null : "fx:id=\"tabIntegrationen\" was not injected: check your FXML file 'EdiMain.fxml'.";
+        assert tabKonfigurationen != null : "fx:id=\"tabKonfigurationen\" was not injected: check your FXML file 'EdiMain.fxml'.";
+        assert tabKontaktPersonen != null : "fx:id=\"tabKontaktPersonen\" was not injected: check your FXML file 'EdiMain.fxml'.";
+        assert tabGeschaeftsobjekte != null : "fx:id=\"tabGeschaeftsobjekte\" was not injected: check your FXML file 'EdiMain.fxml'.";
+
+        assert btnDeleteEdiEintrag != null : "fx:id=\"btnDeleteEdiEintrag\" was not injected: check your FXML file 'EdiMain.fxml'.";
+        assert btnNewEdiNr != null : "fx:id=\"btnNewEdiNr\" was not injected: check your FXML file 'EdiMain.fxml'.";
+        assert txtInfoZeile != null : "fx:id=\"txtInfoZeile\" was not injected: check your FXML file 'EdiMain.fxml'.";
+
+        assert tableEdiNrAuswahl != null : "fx:id=\"tableEdiNrAuswahl\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tColSelKompoKomponten != null : "fx:id=\"tColSelKompoKomponten\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tColAuswahlEdiNr != null : "fx:id=\"tColAuswahlEdiNr\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tColSelSystemSystemName != null : "fx:id=\"tColSelSystemSystemName\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tColSelIntegrationName != null : "fx:id=\"tColSelIntegrationName\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tabPaneObjekte != null : "fx:id=\"tabPaneObjekte\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tColSelKompoPartner != null : "fx:id=\"tColSelKompoPartner\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tColSelSystemPartnerName != null : "fx:id=\"tColSelSystemPartnerName\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tableEdiNrAuswahl != null : "fx:id=\"tableEdiNrAuswahl\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tabIntegrationen != null : "fx:id=\"tabIntegrationen\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tabSysteme != null : "fx:id=\"tabSysteme\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tabKonfigurationen != null : "fx:id=\"tabKonfigurationen\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tabKontaktPersonen != null : "fx:id=\"tabKontaktPersonen\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tColAuswahlGeschaeftsobjektName != null : "fx:id=\"tColAuswahlGeschaeftsobjektName\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert btnDeleteEdiEintrag != null : "fx:id=\"btnDeleteEdiEintrag\" was not injected: check your FXML file 'EdiMain.fxml'.";
+        
         assert tablePartnerAuswahl != null : "fx:id=\"tablePartnerAuswahl\" was not injected: check your FXML file 'EdiMain.fxml'.";
+        assert tColAuswahlPartnerKomponenten != null : "fx:id=\"tColAuswahlPartnerKomponenten\" was not injected: check your FXML file 'EdiMain.fxml'.";
+        assert tColAuswahlPartnerName != null : "fx:id=\"tColAuswahlPartnerName\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tColAuswahlEdiNrSender != null : "fx:id=\"tColAuswahlEdiNrSender\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tColAuswahlEdiNrBezeichnung != null : "fx:id=\"tColAuswahlEdiNrBezeichnung\" was not injected: check your FXML file 'EdiMain.fxml'.";
+
         assert tableKomponentenAuswahl != null : "fx:id=\"tableKomponentenAuswahl\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tColAuswahlPartnerKomponenten != null : "fx:id=\"tColAuswahlPartnerKomponenten\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tableGeschaeftsobjektAuswahl != null : "fx:id=\"tableGeschaeftsobjektAuswahl\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tColAuswahlPartnerName != null : "fx:id=\"tColAuswahlPartnerName\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tabKomponenten != null : "fx:id=\"tabKomponenten\" was not injected: check your FXML file 'EdiMain.fxml'.";
+        assert tColSelKompoPartner != null : "fx:id=\"tColSelKompoPartner\" was not injected: check your FXML file 'EdiMain.fxml'.";
+        assert tColSelSystemPartnerName != null : "fx:id=\"tColSelSystemPartnerName\" was not injected: check your FXML file 'EdiMain.fxml'.";
+
         assert tColSelKompoSysteme != null : "fx:id=\"tColSelKompoSysteme\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tabGeschaeftsobjekte != null : "fx:id=\"tabGeschaeftsobjekte\" was not injected: check your FXML file 'EdiMain.fxml'.";
+
         assert tableSystemAuswahl != null : "fx:id=\"tableSystemAuswahl\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tabPartner != null : "fx:id=\"tabPartner\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tColAuswahlPartnerSysteme != null : "fx:id=\"tColAuswahlPartnerSysteme\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert txtInfoZeile != null : "fx:id=\"txtInfoZeile\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert btnNewEdiNr != null : "fx:id=\"btnNewEdiNr\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tColSelSystemKomponenten != null : "fx:id=\"tColSelSystemKomponenten\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tColAuswahlGeschaeftsobjektAnzahl != null : "fx:id=\"tColAuswahlGeschaeftsobjektAnzahl\" was not injected: check your FXML file 'EdiMain.fxml'.";
         
         assert konfigurationController != null : "\"konfigurationController\" was not injected in EdiMain.fxml";
         assert geschaeftsObjektController != null : "\"geschaeftsObjektController\" was not injected in EdiMain.fxml";
-	}
+        
+        assert tableKontaktAuswahl != null : "\"tableKontaktAuswahl\" was not injected in EdiMain.fxml";
+        assert tColKontaktUserId != null : "\"tColKontaktUserId\" was not injected in EdiMain.fxml";
+        assert tColKontaktNachname != null : "\"tColKontaktNachname\" was not injected in EdiMain.fxml";
+        assert tColKontaktVorname != null : "\"tColKontaktVorname\" was not injected in EdiMain.fxml";
+        assert tColKontaktAbteilung != null : "\"tColKontaktAbteilung\" was not injected in EdiMain.fxml";
+        assert tColKontaktTelefon != null : "\"tColKontaktTelefon\" was not injected in EdiMain.fxml";
+        assert tColKontaktMailadresse != null : "\"tColKontaktMailadresse\" was not injected in EdiMain.fxml";
+        
+        assert tableGeschaeftsobjektAuswahl != null : "fx:id=\"tableGeschaeftsobjektAuswahl\" was not injected: check your FXML file 'EdiMain.fxml'.";
+        assert tColAuswahlGeschaeftsobjektName != null : "fx:id=\"tColAuswahlGeschaeftsobjektName\" was not injected: check your FXML file 'EdiMain.fxml'.";
+        assert tColAuswahlGeschaeftsobjektAnzahl != null : "fx:id=\"tColAuswahlGeschaeftsobjektAnzahl\" was not injected: check your FXML file 'EdiMain.fxml'.";
+        logger.info("passed");
+    }
 }

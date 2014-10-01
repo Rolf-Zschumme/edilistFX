@@ -4,6 +4,9 @@ import static javax.persistence.GenerationType.TABLE;
 
 import java.io.Serializable;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -18,25 +21,32 @@ public class KontaktPerson implements Serializable {
 	
 	private long id;
 	private String idStr;
-	private String nummer;
-	private String nachname;
-	private String vorname;
-	private String abteilung;
-	private String telefon;
-	private String mail;
+	private StringProperty nummer;
+	private StringProperty nachname;
+	private StringProperty vorname;
+	private StringProperty abteilung;
+	private StringProperty telefon;
+	private StringProperty mail;
 	private static final long serialVersionUID = 1L;
 	public KontaktPerson() {
 		super();
-	}   
+		nummer = new SimpleStringProperty();
+		nachname = new SimpleStringProperty();
+		vorname = new SimpleStringProperty();
+		abteilung = new SimpleStringProperty();
+		telefon = new SimpleStringProperty();
+		mail = new SimpleStringProperty();
+	}
+	
 	@Id    
 	@GeneratedValue(strategy = TABLE)
 	public long getId() {
 		return this.id;
 	}
-
 	public void setId(long id) {
 		this.id = id;
 	}   
+	// ----------------------------------
 	public String getIdStr() {
 		return this.idStr;
 	}
@@ -45,50 +55,72 @@ public class KontaktPerson implements Serializable {
 	}
 	
 	// ----------------------------------
-	public String getNummer() {
+	public StringProperty nummerProperty() {
 		return nummer;
 	}
+	public String getNummer() {
+		return nummer.get();
+	}
 	public void setNummer(String nummer) {
-		this.nummer = nummer;
+		this.nummer.set(nummer);
 	}
 	
 	// ----------------------------------
+	public StringProperty nachnameProperty() {
+		return nachname;
+	}
 	public String getNachname() {
-		return this.nachname;
+		return this.nachname.get();
 	}
 	public void setNachname(String name) {
-		this.nachname = name;
+		this.nachname.set(name);
 	}
 	
 	// ----------------------------------
-	public String getVorname() {
+	public StringProperty vornameProperty() {
 		return vorname;
 	}
+	public String getVorname() {
+		return vorname.get();
+	}
 	public void setVorname(String vorname) {
-		this.vorname = vorname;
+		this.vorname.set(vorname);
 	}
 	
 	// ----------------------------------
-	public String getAbteilung() {
+	public StringProperty abteilungProperty() {
 		return abteilung;
 	}
+	@Deprecated
+	public String getAbteilung() {
+		return abteilung.get();
+	}
 	public void setAbteilung(String abteilung) {
-		this.abteilung = abteilung;
+		this.abteilung.set(abteilung);
+	}
+	public String getAbteilungSafe() {
+		return abteilung.getValueSafe();
 	}
 
 	// ----------------------------------
-	public String getTelefon() {
+	public StringProperty telefonProperty() {
 		return telefon;
 	}
+	public String getTelefon() {
+		return telefon.get();
+	}
 	public void setTelefon(String telefon) {
-		this.telefon = telefon;
+		this.telefon.set(telefon);
 	}
 
 	// ----------------------------------
-	public String getMail() {
+	public StringProperty mailProperty() {
 		return mail;
 	}
+	public String getMail() {
+		return mail.get();
+	}
 	public void setMail(String mail) {
-		this.mail = mail;
+		this.mail.set(mail);
 	}
 }

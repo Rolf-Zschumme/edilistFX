@@ -28,7 +28,7 @@ public class EdiListMain extends Application {
 		try {
 			launch(args);
 		} catch (Exception e) {
-			logger.error("Fehler in der Anwendung", e);
+			logger.error("Fehler in der Anwendung EdiListMain");
 			e.printStackTrace();
 		}
 	}
@@ -45,7 +45,7 @@ public class EdiListMain extends Application {
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch (Exception e) {
-			logger.error("der Fehler trat in EdiListMain.start() auf", e);
+			logger.error("Fehler in EdiListMain.start()");
 			e.printStackTrace();
 		}
 	}

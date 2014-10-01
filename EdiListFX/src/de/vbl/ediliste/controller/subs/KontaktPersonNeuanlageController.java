@@ -62,7 +62,7 @@ public class KontaktPersonNeuanlageController implements Initializable {
     	});
     	
     	tfAbteilung.textProperty().addListener((ov, oldValue, newValue) -> {
-    		
+    		kontaktperson.setAbteilung(newValue);
     	});
     	
     	tfTelefon.textProperty().addListener((ov, oldValue, newValue) -> {
@@ -131,11 +131,15 @@ public class KontaktPersonNeuanlageController implements Initializable {
 		tq.setParameter("n", kp.getNachname());
 		List<KontaktPerson> kontaktPersonList = tq.getResultList();
 		for (KontaktPerson k : kontaktPersonList) {
-			String vorname = (k.getVorname() == null) ? "" : k.getVorname(); 
-			if (kp.getVorname().equalsIgnoreCase(vorname) ) {
-				if (vorname.length() > 0) 
+			String vorname = k.vornameProperty().getValueSafe(); 
+			String abteilung = k.getAbteilungSafe();
+			if (kp.getVorname().equalsIgnoreCase(vorname) && 
+				kp.getAbteilungSafe().equalsIgnoreCase(abteilung) ) {
+				if (vorname.length() > 0)   
 					vorname += " ";
-				return "Es gibt schon einen \"" + vorname + k.getNachname() + "\"";
+				if (abteilung.length() > 0) 
+					abteilung = " bei " + abteilung;
+				return "Es gibt schon einen \"" + vorname + k.getNachname() + "\"" + abteilung;
 			}
 		}
 		return null;
