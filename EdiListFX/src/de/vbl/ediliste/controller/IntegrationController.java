@@ -202,7 +202,7 @@ public class IntegrationController {
 				entityManager.remove(aktIntegration);
 				entityManager.getTransaction().commit();
 				aktIntegration = null;
-				mainCtr.loadKomponentenListData();
+				mainCtr.loadIntegrationListData();
 				mainCtr.setInfoText("Die Integration \"" + integrationName1 +
 									 "\" wurde erfolgreich gelöscht !");
 			} catch (RuntimeException er) {

@@ -11,12 +11,14 @@ import javafx.util.converter.NumberStringConverter;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.controlsfx.dialog.Dialog;
 
 import de.vbl.ediliste.model.EdiEintrag;
 
 public class NeuerEdiEintragController {
-    
+	private static final Logger logger = LogManager.getLogger(NeuerEdiEintragController.class.getName()); 
     @FXML private TextField tfEdiNr;
     @FXML private Label fehlertext;
     
@@ -25,6 +27,7 @@ public class NeuerEdiEintragController {
 	private EdiEintrag ediEintrag;
 
 	public void setEntityManager(EntityManager entityManager) {
+		logger.info("entered");
 		this.entityManager = entityManager;
 	}
 	
@@ -36,6 +39,7 @@ public class NeuerEdiEintragController {
 	}
 
 	public void start() {
+		logger.info("entered");
 		ediEintrag.setEdiNr(getHighestEdiNr()+1);
 	}
 	
@@ -45,8 +49,8 @@ public class NeuerEdiEintragController {
      * ----------------------------------------------------------------------*/
     @FXML
     void initialize() {
+		logger.info("entered");
     	checkFieldFromView();
-    	if (entityManager == null) System.out.println("NeuerEdieintragController.initialize em==null");
     	ediEintrag = new EdiEintrag();        
         setupBindings();
     }
@@ -107,6 +111,7 @@ public class NeuerEdiEintragController {
     }
     
     private Integer getHighestEdiNr() {
+		logger.info("entered");
     	Query query = entityManager.createQuery("SELECT e.ediNr FROM EdiEintrag e ORDER BY e.ediNr");
     	Integer max = 0;
     	for (Object zeile  : query.getResultList()) {
@@ -117,6 +122,7 @@ public class NeuerEdiEintragController {
     }
     
     private void checkFieldFromView() {
+		logger.info("entered");
         assert tfEdiNr != null : "fx:id=\"tfEdiNr\" was not injected: check your FXML file 'NeuerEdiEintrag.fxml'.";
         assert fehlertext != null : "fx:id=\"fehlertext\" was not injected: check your FXML file 'NeuerEdiEintrag.fxml'.";
 	}

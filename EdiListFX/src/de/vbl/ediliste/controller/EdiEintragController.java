@@ -990,19 +990,20 @@ public class EdiEintragController {
     void senderButton(ActionEvent event) {
     	Stage dialog = new Stage(StageStyle.UTILITY);
     	FXMLLoader loader = loadKomponentenAuswahl(dialog, 100, 250); 
-
-    	KomponentenAuswahlController komponentenAuswahlController = loader.getController();
-    	komponentenAuswahlController.setKomponente(KomponentenTyp.SENDER, akt.sender, entityManager);
-    	dialog.showAndWait();
-    	if (komponentenAuswahlController.getResponse() == Actions.OK ) {
-    		EdiKomponente selKomponente = komponentenAuswahlController.getSelectedKomponente();
-    	    if (akt.sender != selKomponente ) {
-    	    	akt.sender = selKomponente; 
-    	    	btnSender.textProperty().unbind();
-    	    	btnSender.textProperty().bind(akt.sender.fullnameProperty());
-    	    	senderIsSelected.set(true);
-    	    }
-    	    setChangeFlag(akt.sender != org.sender);
+    	if (loader != null) {
+    		KomponentenAuswahlController komponentenAuswahlController = loader.getController();
+    		komponentenAuswahlController.setKomponente(KomponentenTyp.SENDER, akt.sender, entityManager);
+    		dialog.showAndWait();
+    		if (komponentenAuswahlController.getResponse() == Actions.OK ) {
+    			EdiKomponente selKomponente = komponentenAuswahlController.getSelectedKomponente();
+    			if (akt.sender != selKomponente ) {
+    				akt.sender = selKomponente; 
+    				btnSender.textProperty().unbind();
+    				btnSender.textProperty().bind(akt.sender.fullnameProperty());
+    				senderIsSelected.set(true);
+    			}
+    			setChangeFlag(akt.sender != org.sender);
+    		}
     	}
     }
 
@@ -1036,17 +1037,18 @@ public class EdiEintragController {
     	String ret = null;
     	Stage dialog = new Stage(StageStyle.UTILITY);
     	FXMLLoader loader = loadKomponentenAuswahl(dialog, 400, 350); 
-    	
-    	KomponentenAuswahlController komponentenAuswahlController = loader.getController();
-    	komponentenAuswahlController.setKomponente(KomponentenTyp.RECEIVER, akt.empfaengerKomponente[btnNr], entityManager);
-    	dialog.showAndWait();
-    	if (komponentenAuswahlController.getResponse() == Actions.OK ) {
-    		if (akt.empfaengerKomponente[btnNr] != komponentenAuswahlController.getSelectedKomponente()) {
-    			akt.empfaengerKomponente[btnNr] = komponentenAuswahlController.getSelectedKomponente();
-    			ret = akt.empfaengerKomponente[btnNr].getFullname();
-    		}
-    		setChangeFlag(akt.empfaengerKomponente[btnNr] != org.empfaengerKomponente[btnNr]);
-    	}	
+    	if (loader!= null) {
+    		KomponentenAuswahlController komponentenAuswahlController = loader.getController();
+    		komponentenAuswahlController.setKomponente(KomponentenTyp.RECEIVER, akt.empfaengerKomponente[btnNr], entityManager);
+    		dialog.showAndWait();
+    		if (komponentenAuswahlController.getResponse() == Actions.OK ) {
+    			if (akt.empfaengerKomponente[btnNr] != komponentenAuswahlController.getSelectedKomponente()) {
+    				akt.empfaengerKomponente[btnNr] = komponentenAuswahlController.getSelectedKomponente();
+    				ret = akt.empfaengerKomponente[btnNr].getFullname();
+    			}
+    			setChangeFlag(akt.empfaengerKomponente[btnNr] != org.empfaengerKomponente[btnNr]);
+    		}	
+    	}
     	return ret;
     }
 
@@ -1091,7 +1093,12 @@ public class EdiEintragController {
     
     private FXMLLoader loadKomponentenAuswahl(Stage dialog, int xOffset, int yOffset) {
     	FXMLLoader loader = new FXMLLoader();
-    	loader.setLocation(getClass().getResource("../view/KomponentenAuswahl.fxml"));
+    	loader.setLocation(getClass().getResource("/de/vbl/ediliste/view/KomponentenAuswahl.fxml"));
+    	if (loader.getLocation()==null) {
+    		logger.error("Resource not found");
+    		mainController.setErrorText("Programm-FEHLER: Resource not found");
+    		return null;
+    	}
     	try {
     		loader.load();
     	} catch (IOException e) {

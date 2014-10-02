@@ -55,7 +55,7 @@ import de.vbl.ediliste.model.KontaktPerson;
 import de.vbl.ediliste.tools.ExportToExcel;
 
 public class EdiMainController {
-	private static final String APPL_NAME = "EDI-Liste";
+	private static final String APPL_NAME = "Integration Manager";
 	private static final String PERSISTENCE_UNIT_NAME = "EdiListFX";
 	private static final String SICHERHEITSABFRAGE = "Sicherheitsabfrage";
 	private static final Logger logger = LogManager.getLogger(EdiMainController.class.getName()); 
@@ -123,7 +123,6 @@ public class EdiMainController {
     @FXML private Tab tabGeschaeftsobjekte;
     @FXML private TableView<GeschaeftsObjekt> tableGeschaeftsobjektAuswahl;
     @FXML private TableColumn<GeschaeftsObjekt, String> tColAuswahlGeschaeftsobjektName;
-    @FXML private TableColumn<GeschaeftsObjekt, String> tColAuswahlGeschaeftsobjektAnzahl;
     
     @FXML private Button btnNewEdiNr;
     @FXML private Button btnDeleteEdiEintrag;
@@ -396,7 +395,6 @@ public class EdiMainController {
 	}
 
 	private void setupKontaktPersonPane() {
-		// TODO Auto-generated method stub
 		tableKontaktAuswahl.setItems(kontaktPersonList);
 		tColKontaktUserId.setCellValueFactory(cellData -> cellData.getValue().nummerProperty());
 		tColKontaktNachname.setCellValueFactory(cellData -> cellData.getValue().nachnameProperty());
@@ -409,15 +407,10 @@ public class EdiMainController {
     private void setupGeschaeftsobjektPane() {
     	tableGeschaeftsobjektAuswahl.setItems(geschaeftsobjektList);
     	tColAuswahlGeschaeftsobjektName.setCellValueFactory(cell -> cell.getValue().nameProperty());
-    	tColAuswahlGeschaeftsobjektAnzahl.setCellValueFactory(cell -> Bindings.format("%7d", cell.getValue().anzVerwendungenProperty()));
-    	
-//    	tColAuswahlGeschaeftsobjektAnzahl.setCellValueFactory(new PropertyValueFactory<GeschaeftsObjekt,Integer>("anzVerwendungen"));
     	
     	geschaeftsObjektController.geschaeftsObjektProperty().bind(tableGeschaeftsobjektAuswahl.getSelectionModel().selectedItemProperty());
     	geschaeftsObjekt.disableProperty().bind(Bindings.isNull(tableGeschaeftsobjektAuswahl.getSelectionModel().selectedItemProperty()));
     }
-//    	btnDeleteGeschaeftsobjekt.disableProperty().bind(
-//    			Bindings.isNull(tableGeschaeftsobjektAuswahl.getSelectionModel().selectedItemProperty()));
     
 	protected void loadEdiEintragListData() {
     	TypedQuery<EdiEintrag> tq = entityManager.createQuery(
@@ -497,7 +490,7 @@ public class EdiMainController {
 		}
 	}
 
-	private void loadKonfigurationListData() {
+	protected void loadKonfigurationListData() {
 		TypedQuery<Konfiguration> tq = entityManager.createQuery(
 				"SELECT k FROM Konfiguration k ORDER BY k.name", Konfiguration.class);
 		List<Konfiguration> aktuList = tq.getResultList();
@@ -538,17 +531,33 @@ public class EdiMainController {
     void btnUeber(ActionEvent event) {
 		Dialogs.create()
 			.owner(primaryStage).title(APPL_NAME)
-			.masthead("VBL-Tool zur Verwaltung der EDI-Liste")
-			.message("\nProgramm-Version 0.9.6 - 29.09.2014\n"
+			.masthead("VBL-Tool zur Verwaltung der Datentransfers")
+			.message("\nProgramm-Version 0.9.7 - 02.10.2014\n"
 			   	   + "\nJava-Runtime-Verion: " + System.getProperty("java.version"))
 			.showInformation();
     }
 	
+	
 	@FXML
-	void actionBearbeiten(ActionEvent event) throws Exception {
-		logger.info("entered");
-		throw (new Exception("Test Exception (actionBearbeiten)"));
+	void actionPartnerNew(ActionEvent event) throws Exception {
+		setInfoText("Zukünftige Funktion - Bitte Bedarf beim CAB melden");
 	}
+	
+	@FXML
+	void actionSystemNew(ActionEvent event) throws Exception {
+		setInfoText("Zukünftige Funktion - Bitte Bedarf beim CAB melden");
+	}
+		
+	@FXML
+	void actionKomponenteNew(ActionEvent event) throws Exception {
+		setInfoText("Zukünftige Funktion - Bitte Bedarf beim CAB melden");
+	}
+	
+//	@FXML
+//	void actionBearbeiten(ActionEvent event) throws Exception {
+//		logger.info("entered");
+//		throw (new Exception("Test Exception (actionBearbeiten)"));
+//	}
 	
 	@FXML
 	void showJavaInfo (ActionEvent event) {
@@ -567,10 +576,16 @@ public class EdiMainController {
     void newEdiNr(ActionEvent event) {
     
     	FXMLLoader loader = new FXMLLoader();
-    	loader.setLocation(getClass().getResource("../view/NeuerEdiEintrag.fxml"));
+    	loader.setLocation(getClass().getResource("/de/vbl/ediliste/view/NeuerEdiEintrag.fxml"));
+    	if (loader.getLocation()==null) {
+    		logger.error("Resource not found");
+    		setErrorText("Programm-FEHLER: Resource not found");
+    		return;
+    	}
     	try {
 			loader.load();
 		} catch (IOException e) {
+			logger.error("Fehler beim Laden der Resource (fxml)");
 			e.printStackTrace();
 		}
     	Parent root = loader.getRoot();
@@ -739,7 +754,6 @@ public class EdiMainController {
         
         assert tableGeschaeftsobjektAuswahl != null : "fx:id=\"tableGeschaeftsobjektAuswahl\" was not injected: check your FXML file 'EdiMain.fxml'.";
         assert tColAuswahlGeschaeftsobjektName != null : "fx:id=\"tColAuswahlGeschaeftsobjektName\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tColAuswahlGeschaeftsobjektAnzahl != null : "fx:id=\"tColAuswahlGeschaeftsobjektAnzahl\" was not injected: check your FXML file 'EdiMain.fxml'.";
         logger.info("passed");
     }
 }

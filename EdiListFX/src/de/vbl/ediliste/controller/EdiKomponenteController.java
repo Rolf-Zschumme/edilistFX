@@ -161,13 +161,9 @@ public class EdiKomponenteController implements Initializable  {
 					if (k == null || empty) {
 						setText(null);
 					} else {
-						String suffix = "";
-						if (k.getNummer() != null && k.getAbteilung() != null) {
-							suffix = k.getNummer() + "/" + k.getAbteilung();
-						} else if (k.getNummer() != null) {
+						String suffix = k.getAbteilungSafe();
+						if(suffix.equals("")  && k.getNummer() != null) {
 							suffix = k.getNummer();
-						} else if (k.getAbteilung() != null) {
-							suffix = k.getAbteilung();
 						}
 						if (suffix.equals("") ) {
 							setText(k.getVorname() + " " + k.getNachname());
@@ -411,6 +407,12 @@ public class EdiKomponenteController implements Initializable  {
     private KontaktPersonNeuanlageController loadKontaktPersonNeuanlage(Stage dialog) {
     	FXMLLoader loader = new FXMLLoader();
     	loader.setLocation(getClass().getResource("subs/KontaktPersonNeuanlage.fxml"));
+    	if (loader.getLocation()==null) {
+    		String msg = "FEHLER: Resource (KontaktPersonNeuanlage.fxml) nicht gefunden";
+    		mainCtr.setErrorText(msg);
+    		logger.error(msg);
+    		return null;
+    	}
     	try {
     		loader.load();
     	} catch (IOException e) {
@@ -432,10 +434,12 @@ public class EdiKomponenteController implements Initializable  {
     	logger.entry();
     	Stage dialog = new Stage(StageStyle.UTILITY);
     	KontaktPersonNeuanlageController controller = loadKontaktPersonNeuanlage(dialog);
-    	dialog.showAndWait();
-    	if (controller.getKontaktperson() != null) {
-    		kontaktpersonList.add(controller.getKontaktperson());
-			dataIsChanged.set(true);
+    	if (controller != null) {
+    		dialog.showAndWait();
+    		if (controller.getKontaktperson() != null) {
+    			kontaktpersonList.add(controller.getKontaktperson());
+    			dataIsChanged.set(true);
+    		}
     	}
     }
 

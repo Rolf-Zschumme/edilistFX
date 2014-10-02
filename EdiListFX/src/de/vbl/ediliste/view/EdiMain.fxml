@@ -16,11 +16,19 @@
 								<MenuItem mnemonicParsing="false" onAction="#onActionCLose" text="Beenden" />
 							</items>
 						</Menu>
-						<Menu mnemonicParsing="false" text="Bearbeiten">
+						<Menu mnemonicParsing="false" text="Partner">
 							<items>
-								<MenuItem mnemonicParsing="false" onAction="#actionBearbeiten" text="Löschen" />
+								<MenuItem mnemonicParsing="false" onAction="#actionPartnerNew" text="Neu..." />
 							</items>
-						</Menu>
+						</Menu><Menu mnemonicParsing="false" text="System">
+<items>
+<MenuItem mnemonicParsing="false" onAction="#actionSystemNew" text="Neu..." />
+</items>
+</Menu><Menu mnemonicParsing="false" text="Komponente">
+<items>
+<MenuItem mnemonicParsing="false" onAction="#actionKomponenteNew" text="Neu..." />
+</items>
+</Menu>
 						<Menu mnemonicParsing="false" text="Hilfe">
 							<items>
 								<MenuItem mnemonicParsing="false" onAction="#btnUeber" text="Über" />
@@ -211,15 +219,14 @@
 					
 						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <SplitPane dividerPositions="0.3724235963041933" prefHeight="716.0" prefWidth="1409.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <SplitPane dividerPositions="0.21961620469083157" prefHeight="716.0" prefWidth="1409.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                           <items>
 						
 							<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
 								<children>
 									<TableView fx:id="tableGeschaeftsobjektAuswahl" editable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 										<columns>
-											<TableColumn fx:id="tColAuswahlGeschaeftsobjektName" maxWidth="1.7976931348623157E308" minWidth="110.0" prefWidth="250.0" text="Geschäftsobjekt" />
-											<TableColumn fx:id="tColAuswahlGeschaeftsobjektAnzahl" editable="false" maxWidth="1.7976931348623157E308" minWidth="120.0" prefWidth="-1.0" text="Verwendungen" />
+											<TableColumn fx:id="tColAuswahlGeschaeftsobjektName" maxWidth="1.7976931348623157E308" minWidth="110.0" prefWidth="296.0" text="Geschäftsobjekt" />
 										</columns>
 									</TableView>
 								</children>

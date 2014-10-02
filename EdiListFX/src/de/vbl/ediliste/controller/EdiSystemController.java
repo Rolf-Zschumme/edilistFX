@@ -28,6 +28,8 @@ import javafx.stage.Stage;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
@@ -37,6 +39,7 @@ import de.vbl.ediliste.model.EdiEmpfaenger;
 import de.vbl.ediliste.model.EdiSystem;
 
 public class EdiSystemController {
+	private static final Logger logger = LogManager.getLogger(EdiSystemController.class.getName());
 	private static Stage primaryStage = null;
 	private static EdiMainController mainCtr;
 	private static EntityManager entityManager;
@@ -83,9 +86,8 @@ public class EdiSystemController {
 			@Override
 			public void changed(ObservableValue<? extends EdiSystem> ov,
 					EdiSystem oldSystem, EdiSystem newSystem) {
-				log("ChangeListener<EdiSystem>",
-					((oldSystem==null) ? "null" : oldSystem.getFullname()) + " -> " 
-				  + ((newSystem==null) ? "null" : newSystem.getFullname()) );
+				logger.info(((oldSystem==null) ? "null" : oldSystem.getFullname()) + " -> " 
+						  + ((newSystem==null) ? "null" : newSystem.getFullname()) );
 				btnLoeschen.disableProperty().unbind();
 				if (oldSystem != null) {
 					ediKomponentenList.clear();
@@ -94,7 +96,7 @@ public class EdiSystemController {
 				taBeschreibung.setText("");
 				if (newSystem != null) {
 					aktSystem = newSystem;
-					log("ediSystemListner.changed", "newSystem.Name="+ newSystem.getName());
+					logger.info("newSystem.Name="+ newSystem.getName());
 					aktFullName = aktSystem.getFullname();
 					readEdiListeforSystem(newSystem);
 					tfBezeichnung.setText(newSystem.getName());
@@ -111,14 +113,21 @@ public class EdiSystemController {
 		btnSpeichern.disableProperty().bind(Bindings.not(dataIsChanged));
 
 		tfBezeichnung.textProperty().addListener((observable, oldValue, newValue)  -> {
-			String msg = "";
-			if (aktSystem.getName().equals(newValue) == false) {
-				msg = checkSystemName(newValue);
-				dataIsChanged.set(true);
-			} else {	
-				dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
+			if (aktSystem == null) {
+				logger.error("aktSystem==null in Listener for tfBezeichnung");
 			}
-			mainCtr.setErrorText(msg);			
+			else if (aktSystem.getName() == null) {
+				logger.error("aktSystem.getName()==null in Listener for tfBezeichnung");
+			} else {	
+				String msg = "";
+				if (aktSystem.getName().equals(newValue) == false) {
+					msg = checkSystemName(newValue);
+					dataIsChanged.set(true);
+				} else {	
+					dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
+				}
+				mainCtr.setErrorText(msg);			
+			}
 		}); 
 
 		taBeschreibung.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -191,6 +200,7 @@ public class EdiSystemController {
 				.showConfirm();
 		if (response == Dialog.Actions.YES) {
 			try {
+				aktSystem.getEdiPartner().getEdiSystem().remove(aktSystem);
 				entityManager.getTransaction().begin();
 				entityManager.remove(aktSystem);
 				entityManager.getTransaction().commit();
@@ -219,7 +229,7 @@ public class EdiSystemController {
 	private static enum Checkmode { ONLY_CHECK, ASK_FOR_UPDATE, SAVE_DONT_ASK };
 	
 	private boolean checkForChangesAndSave(Checkmode checkmode) {
-		log("checkForChangesAndSave","aktSystem=" + (aktSystem==null ? "null" : aktSystem.getFullname()));
+		logger.info("aktSystem=" + (aktSystem==null ? "null" : aktSystem.getFullname()));
 		if (aktSystem == null ) {
 			return true;
 		}
@@ -230,7 +240,7 @@ public class EdiSystemController {
 		
 		if (orgName.equals(newName) &&
 			orgBeschreibung.equals(newBeschreibung) ) {
-			log("checkForChangesAndSave", "Name und Bezeichnung unverändert");
+			logger.info("Name und Bezeichnung unveraendert");
 		} else {
 			if (checkmode == Checkmode.ONLY_CHECK) {
 				return false;
@@ -255,7 +265,7 @@ public class EdiSystemController {
 				tfBezeichnung.requestFocus();
 				return false;
 			}
-			log("checkForChangesAndSave","Änderung erkannt -> update");
+			logger.info("Aenderung erkannt -> update");
 			entityManager.getTransaction().begin();
 			aktSystem.setName(newName);
 			aktSystem.setBeschreibung(newBeschreibung);
@@ -288,8 +298,8 @@ public class EdiSystemController {
 
 	private void readEdiListeforSystem( EdiSystem selSystem) {
 		ediKomponentenList.clear();
-		/* 1. lese alle EdiEinträge mit Sender = selekierter Komponente 
-		 * 		-> zeige jeweils alle zugehörigen Empfänger, falls kein Empfänger vorhanden dummy erzeugen
+		/* 1. lese alle EdiEintraege mit Sender = selekierter Komponente 
+		 * 		-> zeige jeweils alle zugehoerigen Empfaenger, falls kein Empfaenger vorhanden dummy erzeugen
 		*/
 		TypedQuery<EdiEintrag> tqS = entityManager.createQuery(
 				"SELECT e FROM EdiEintrag e WHERE e.ediKomponente.ediSystem = :s", EdiEintrag.class);
@@ -304,20 +314,20 @@ public class EdiSystemController {
 				ediKomponentenList.addAll(tmpE);
 			}
 		}
-		log("readEdiListeforKomponete", "für "+ selSystem.getName() + " " + 
-			ediList.size() + " EDI-Einträge" + " mit insgesamt " + 
-			ediKomponentenList.size() + " Empfänger gelesen");
+		logger.info("fuer "+ selSystem.getName() + " " + 
+			ediList.size() + " EDI-Eintraege" + " mit insgesamt " + 
+			ediKomponentenList.size() + " Empfaenger gelesen");
 		
-		/* 2. lese alle Empfänger mit Empfänger = selektierte Komponente 
-		 *    -> zeige alle Empfänger  
+		/* 2. lese alle Empfaenger mit Empfaenger = selektierte Komponente 
+		 *    -> zeige alle Empfaenger  
 		 */
 		
 		TypedQuery<EdiEmpfaenger> tqE = entityManager.createQuery(
 				"SELECT e FROM EdiEmpfaenger e WHERE e.komponente.ediSystem = :s", EdiEmpfaenger.class);
 		tqE.setParameter("s", selSystem);
 		ediKomponentenList.addAll(tqE.getResultList());
-		log("readEdiListeforKomponete", "für " + selSystem.getName() + " " + 
-			tqE.getResultList().size() + " EDI-Empfänger gelesen");
+		logger.info("fuer " + selSystem.getName() + " " + 
+			tqE.getResultList().size() + " EDI-Empfaenger gelesen");
 	}
 
 	public final ObjectProperty<EdiSystem> ediSystemProperty() {
@@ -332,11 +342,6 @@ public class EdiSystemController {
 		this.ediSystem.set(ediSystem);
 	}
     
-	private static void log(String methode, String message) {
-		String className = EdiSystemController.class.getName().substring(16);
-		System.out.println(className + "." + methode + "(): " + message); 
-	}
-		
     void checkFieldsFromView() {
  //   	assert ediSystemPane != null : "fx:id=\"ediSystemPane\" was not injected: check your FXML file 'EdiSystem.fxml'.";
     	assert tfBezeichnung != null : "fx:id=\"tfBezeichnung\" was not injected: check your FXML file 'EdiSystem.fxml'.";

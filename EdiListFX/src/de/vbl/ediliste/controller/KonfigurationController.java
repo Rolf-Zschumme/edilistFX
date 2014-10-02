@@ -165,7 +165,7 @@ public class KonfigurationController {
 				entityManager.remove(aktKonfiguration);
 				entityManager.getTransaction().commit();
 				aktKonfiguration = null;
-				mainCtr.loadKomponentenListData();
+				mainCtr.loadKonfigurationListData();
 				mainCtr.setInfoText("Die Integration \"" + integrationName1 +
 									 "\" wurde erfolgreich gelöscht !");
 			} catch (RuntimeException er) {
