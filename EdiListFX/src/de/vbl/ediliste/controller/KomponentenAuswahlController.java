@@ -290,29 +290,31 @@ public class KomponentenAuswahlController {
     void newPartnerPressed(ActionEvent event) {
     	Node source = (Node) event.getSource();
     	Stage stage = (Stage) source.getScene().getWindow();
-    	Optional<String> name = null;
+    	String aktName = "";
     	while(true) {
-			name = Dialogs.create().owner(stage).title(APPL_TITLE)
+			Optional<String> newName = Dialogs.create().owner(stage).title(APPL_TITLE)
 					.masthead("Neuen EdiPartner anlegen")
 					.message("Bezeichnung des Partners:")
-					.showTextInput(name.get());
-    		if (name.isPresent() == false)	
+					.showTextInput(aktName);
+    		if (!newName.isPresent()) {
     			break;
-    		if (name.get().length() < 3) {
+    		}
+			aktName = newName.get().trim();
+    		if (aktName.length() < 3) {
     			Dialogs.create().owner(stage).title(APPL_TITLE)
     				.masthead("Korrektur erforderlich")
     				.message("Bitte einen Namen mit mind. 3 Zeichen eingeben")
     				.showWarning();
     			continue;
     		}
-    		if (partnerNameExist(name.get())) {
+    		if (partnerNameExist(aktName)) {
     			Dialogs.create().owner(stage).title(APPL_TITLE)
     				.masthead("Duplikatsprüfung")
     				.message("Ein Partner mit diesem Namen ist bereits vorhanden")
     				.showWarning();
     			continue;
     		}
-    		EdiPartner ediPartner = new EdiPartner(name.get());
+    		EdiPartner ediPartner = new EdiPartner(aktName);
     		try {
     			entityManager.getTransaction().begin();
     			entityManager.persist(ediPartner);
@@ -343,31 +345,33 @@ public class KomponentenAuswahlController {
     void newSystemPressed(ActionEvent event) {
     	Node source = (Node) event.getSource();
     	Stage stage = (Stage) source.getScene().getWindow();
-    	Optional<String> name = null;
+    	String aktName = "";
     	EdiPartner aktPartner = partnerCB.getSelectionModel().getSelectedItem();
     	String partnerName = aktPartner.getName();
     	while(true) {
-			name = Dialogs.create().owner(stage).title(APPL_TITLE)
+			Optional<String> newName = Dialogs.create().owner(stage).title(APPL_TITLE)
 					.masthead("Neues System für Partner " + partnerName + " anlegen")
 					.message("Bezeichnung des neuen Systems:")
-					.showTextInput(name.get());
-    		if (name.isPresent() == false)	
+					.showTextInput(aktName);
+    		if (newName.isPresent() == false) {
     			break;
-    		if (name.get().length() < 3) {
+    		}
+			aktName = newName.get().trim();
+    		if (aktName.length() < 3) {
     			Dialogs.create().owner(stage).title(APPL_TITLE)
 					.masthead("Korrektur erforderlich")
 					.message("Der System-Name muß mindestens 3 Zeichen lang sein")
 					.showWarning();
     			continue;
     		}
-    		if (systemNameExist(name.get())) {
+    		if (systemNameExist(aktName)) {
     			Dialogs.create().owner(stage).title(APPL_TITLE)
 					.masthead("Duplikatsprüfung")
 					.message("Für den Partner " + partnerName + " ist bereits ein gleichnamiges System vorhanden")
 					.showWarning();
     			continue;
     		}
-    		EdiSystem ediSystem = new EdiSystem(name.get(), aktPartner);
+    		EdiSystem ediSystem = new EdiSystem(aktName, aktPartner);
     		try {
     			entityManager.getTransaction().begin();
     			entityManager.persist(ediSystem);
@@ -398,31 +402,33 @@ public class KomponentenAuswahlController {
     void newKomponentePressed(ActionEvent event) {
     	Node source = (Node) event.getSource();
     	Stage stage = (Stage) source.getScene().getWindow();
-    	Optional<String> name = null;
+    	String aktName = "";
     	EdiSystem aktSystem = systemCB.getSelectionModel().getSelectedItem();
     	String systemName = aktSystem.getFullname();
     	while(true) {
-			name = Dialogs.create().owner(stage).title(APPL_TITLE)
+			Optional<String> newName = Dialogs.create().owner(stage).title(APPL_TITLE)
 					.masthead("Neue Komponente für das System " + systemName + " anlegen")
 					.message("Bezeichnung der neuen Komponente:")
-					.showTextInput(name.get());
-    		if (name.isPresent() == false)	
+					.showTextInput(aktName);
+    		if (newName.isPresent() == false) {
     			break;
-    		if (name.get().length() < 2) {
+    		}
+			aktName = newName.get().trim();
+    		if (aktName.length() < 2) {
     			Dialogs.create().owner(stage).title(APPL_TITLE)
 					.masthead("Korrektur erforderlich")
 					.message("Der Komponenten-Name muß mindestens 2 Zeichen lang sein")
 					.showWarning();
     			continue;
     		}
-    		if (komponentenNameExist(name.get())) {
+    		if (komponentenNameExist(aktName)) {
     			Dialogs.create().owner(stage).title(APPL_TITLE)
 					.masthead("Duplikatsprüfung")
 					.message("Für das System " + systemName + " ist bereits eine gleichnamige Komponente vorhanden")
 					.showWarning();
     			continue;
     		} 
-    		EdiKomponente ediKomponente = new EdiKomponente(name.get(), aktSystem);
+    		EdiKomponente ediKomponente = new EdiKomponente(aktName, aktSystem);
     		try {
     			entityManager.getTransaction().begin();
     			entityManager.persist(ediKomponente);
@@ -438,7 +444,6 @@ public class KomponentenAuswahlController {
     		komponenteCB.getSelectionModel().select(ediKomponente);
     		break;
     	}	
-
     }
 
     private boolean komponentenNameExist(String name) {

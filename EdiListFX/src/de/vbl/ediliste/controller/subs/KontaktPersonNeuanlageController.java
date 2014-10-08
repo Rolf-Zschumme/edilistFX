@@ -21,6 +21,7 @@ import javax.persistence.TypedQuery;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.controlsfx.dialog.Dialog.Actions;
 
 import de.vbl.ediliste.controller.EdiMainController;
 import de.vbl.ediliste.model.KontaktPerson;
@@ -44,12 +45,26 @@ public class KontaktPersonNeuanlageController implements Initializable {
     @FXML private Label     lbHinweis;
     @FXML private Button    btnOK; 
 
+    private Actions retAction = Actions.CLOSE;
     private KontaktPerson kontaktperson = new KontaktPerson();
     private BooleanProperty nachnameFilled = new SimpleBooleanProperty(false);
     
     @Override
     public void initialize(URL location, ResourceBundle resources) {
     	logger.info("init");
+    	
+        try {
+			assert tfNachname != null : "fx:id=\"tfNachname\" was not injected: check your FXML file 'KontaktPersonNeuanlage.fxml'.";
+			assert tfNummer != null : "fx:id=\"tfNummer\" was not injected: check your FXML file 'KontaktPersonNeuanlage.fxml'.";
+			assert tfVorname != null : "fx:id=\"tfVorname\" was not injected: check your FXML file 'KontaktPersonNeuanlage.fxml'.";
+			assert tfAbteilung != null : "fx:id=\"tfAbteilung\" was not injected: check your FXML file 'KontaktPersonNeuanlage.fxml'.";
+			assert tfMailadresse != null : "fx:id=\"tfMailadresse\" was not injected: check your FXML file 'KontaktPersonNeuanlage.fxml'.";
+			assert tfTelefon != null : "fx:id=\"tfTelefon\" was not injected: check your FXML file 'KontaktPersonNeuanlage.fxml'.";
+			assert btnOK != null : "fx:id=\"btnOK\" was not injected: check your FXML file 'KontaktPersonNeuanlage.fxml'.";
+		} catch (AssertionError e) {
+			logger.error(e.getMessage(), e);
+		}
+    	
     	kontaktperson.setVorname("");
     	
     	tfNachname.textProperty().addListener((ov, oldValue, newValue) ->  {
@@ -62,7 +77,7 @@ public class KontaktPersonNeuanlageController implements Initializable {
     	});
     	
     	tfAbteilung.textProperty().addListener((ov, oldValue, newValue) -> {
-    		kontaktperson.setAbteilung(newValue);
+    		kontaktperson.setAbteilung(newValue.trim());
     	});
     	
     	tfTelefon.textProperty().addListener((ov, oldValue, newValue) -> {
@@ -84,21 +99,28 @@ public class KontaktPersonNeuanlageController implements Initializable {
 		applName = primaryStage.getTitle();
 	}
 
+	public Actions getResponse () {
+		return retAction;
+	}
 
+	public KontaktPerson getKontaktperson() {
+		return kontaktperson;
+	}
     
     @FXML
-    void okPressed(ActionEvent event) {
-    	if (applName == null && primaryStage == null && mainController == null && entityManager == null) {
+    private void okPressed(ActionEvent event) {
+    	if (applName == null && primaryStage == null && mainController == null ) {
     		;
     	}
     	if (saveInput() == true) {
+    		retAction = Actions.OK;
     		close(event);
     	}
     }
 
 	@FXML
-    void escapePressed(ActionEvent event) {
-		kontaktperson = null;
+    private void escapePressed(ActionEvent event) {
+		retAction = Actions.CANCEL;
     	close(event);
     }
     
@@ -143,9 +165,5 @@ public class KontaktPersonNeuanlageController implements Initializable {
 			}
 		}
 		return null;
-	}
-
-	public KontaktPerson getKontaktperson() {
-		return kontaktperson;
 	}
 }

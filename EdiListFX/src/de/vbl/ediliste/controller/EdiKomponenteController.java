@@ -43,8 +43,9 @@ import org.apache.logging.log4j.Logger;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
+import org.controlsfx.dialog.Dialog.Actions;
 
-import de.vbl.ediliste.controller.subs.KontaktPersonNeuanlageController;
+import de.vbl.ediliste.controller.subs.KontaktPersonAuswaehlenController;
 import de.vbl.ediliste.model.EdiEintrag;
 import de.vbl.ediliste.model.EdiEmpfaenger;
 import de.vbl.ediliste.model.EdiKomponente;
@@ -404,43 +405,19 @@ public class EdiKomponenteController implements Initializable  {
 //		log("readEdiListeforKomponente","size="+ ediEintragsSet.size());
 	}
 
-    private KontaktPersonNeuanlageController loadKontaktPersonNeuanlage(Stage dialog) {
-    	FXMLLoader loader = new FXMLLoader();
-    	loader.setLocation(getClass().getResource("subs/KontaktPersonNeuanlage.fxml"));
-    	if (loader.getLocation()==null) {
-    		String msg = "FEHLER: Resource (KontaktPersonNeuanlage.fxml) nicht gefunden";
-    		mainCtr.setErrorText(msg);
-    		logger.error(msg);
-    		return null;
-    	}
-    	try {
-    		loader.load();
-    	} catch (IOException e) {
-    		e.printStackTrace(); 
-    	}
-    	KontaktPersonNeuanlageController controller = loader.getController();
-    	controller.start(primaryStage, mainCtr, entityManager);
-    	Parent root = loader.getRoot();
-    	Scene scene = new Scene(root);
-    	dialog.initModality(Modality.APPLICATION_MODAL);
-    	dialog.initOwner(primaryStage);
-    	dialog.setTitle(primaryStage.getTitle());
-    	dialog.setScene(scene);
-		return controller;
-	}
-    
     @FXML
     void actionAddKontaktperson(ActionEvent event) {
     	logger.entry();
     	Stage dialog = new Stage(StageStyle.UTILITY);
-    	KontaktPersonNeuanlageController controller = loadKontaktPersonNeuanlage(dialog);
+    	KontaktPersonAuswaehlenController controller = loadKontaktPersonAuswahl(dialog);
     	if (controller != null) {
     		dialog.showAndWait();
-    		if (controller.getKontaktperson() != null) {
+    		if (controller.getResponse() == Actions.OK) {
     			kontaktpersonList.add(controller.getKontaktperson());
     			dataIsChanged.set(true);
     		}
     	}
+    	logger.exit();
     }
 
     @FXML
@@ -451,6 +428,40 @@ public class EdiKomponenteController implements Initializable  {
     	mainCtr.setInfoText("Die Kontaktperson \"" + toBeRemoved.getVorname() + " " + 
     					toBeRemoved.getNachname() + "\" wurde aus dieser Kontaktliste entfernt");
 		dataIsChanged.set(true);
+    }
+    
+    private KontaktPersonAuswaehlenController loadKontaktPersonAuswahl(Stage dialog) {
+    	KontaktPersonAuswaehlenController controller = null;
+    	FXMLLoader loader = load("subs/KontaktPersonAuswaehlen.fxml");
+    	if (loader != null) {
+    		controller = loader.getController();
+    		controller.start(primaryStage, mainCtr, entityManager);
+    		Parent root = loader.getRoot();
+    		Scene scene = new Scene(root);
+    		dialog.initModality(Modality.APPLICATION_MODAL);
+    		dialog.initOwner(primaryStage);
+    		dialog.setTitle(primaryStage.getTitle());
+    		dialog.setScene(scene);
+    	}
+    	return controller;
+	}
+    
+    private FXMLLoader load(String ressourceName) {
+    	FXMLLoader loader = new FXMLLoader();
+    	loader.setLocation(getClass().getResource(ressourceName));
+    	if (loader.getLocation()==null) {
+    		String msg = "Resource \"" + ressourceName + "\" nicht gefunden";
+    		mainCtr.setErrorText("FEHLER: " + msg);
+    		logger.error(msg);
+    	}
+    	try {
+    		loader.load();
+    	} catch (IOException e) {
+    		mainCtr.setErrorText("FEHLER: " + e.getMessage());
+    		logger.error(e);
+//    		e.printStackTrace();
+    	}
+    	return loader;
     }
     
 	public final ObjectProperty<EdiKomponente> komponenteProperty() {

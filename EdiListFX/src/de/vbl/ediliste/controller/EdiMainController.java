@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
@@ -12,15 +13,19 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
@@ -30,6 +35,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Callback;
 
 import javax.persistence.CacheStoreMode; 
 import javax.persistence.EntityManager;
@@ -55,11 +61,12 @@ import de.vbl.ediliste.model.KontaktPerson;
 import de.vbl.ediliste.tools.ExportToExcel;
 
 public class EdiMainController {
+	private static final Logger logger = LogManager.getLogger(EdiMainController.class.getName()); 
 	private static final String APPL_NAME = "Integration Manager";
 	private static final String PERSISTENCE_UNIT_NAME = "EdiListFX";
 	private static final String SICHERHEITSABFRAGE = "Sicherheitsabfrage";
-	private static final Logger logger = LogManager.getLogger(EdiMainController.class.getName()); 
 
+	private static String dbName;
 	private static int maxEdiNr;
 	private Stage primaryStage;
     private EntityManager entityManager;
@@ -316,9 +323,8 @@ public class EdiMainController {
 	}
 	
 	@FXML
-	void actionEdiNrContextMenuRequested (ActionEvent event) {
+	void actionEdiNrContextMenuRequested (Event event) {
 		// TODO
-		System.out.println("ContextMenuRequested");
 	}
 	
 	/* ************************************************************************
@@ -345,6 +351,26 @@ public class EdiMainController {
     			Bindings.isNull(tableEdiNrAuswahl.getSelectionModel().selectedItemProperty()));
     	ediEintragController.ediEintragProperty().bind(
     						    tableEdiNrAuswahl.getSelectionModel().selectedItemProperty());
+
+   	
+    	tableEdiNrAuswahl.setRowFactory(new Callback<TableView<EdiEintrag>, TableRow<EdiEintrag>>() {
+			@Override
+			public TableRow<EdiEintrag> call(TableView<EdiEintrag> table) {
+				final TableRow<EdiEintrag> row = new TableRow<EdiEintrag>();
+				final ContextMenu contextMenu = new ContextMenu();
+				final MenuItem removeMenuItem = new MenuItem("Löschen");
+				removeMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent event) {
+						ediEintragLoeschen();
+//						table.getItems().remove(row.getItem());
+					}
+				});
+				contextMenu.getItems().add(removeMenuItem);
+				row.contextMenuProperty().bind(Bindings.when(row.emptyProperty()).then((ContextMenu)null).otherwise(contextMenu));
+				return row;
+			}
+		});
     }
 	
 	private void setupEdiPartnerPane() {
@@ -532,8 +558,9 @@ public class EdiMainController {
 		Dialogs.create()
 			.owner(primaryStage).title(APPL_NAME)
 			.masthead("VBL-Tool zur Verwaltung der Datentransfers")
-			.message("\nProgramm-Version 0.9.7 - 02.10.2014\n"
-			   	   + "\nJava-Runtime-Verion: " + System.getProperty("java.version"))
+			.message("\nProgramm-Version 0.9.7 - 02.10.2014\n" +
+					 "\nDatenbank-Name: " + dbName +
+			   	     "\nJava-Runtime-Verion: " + System.getProperty("java.version"))
 			.showInformation();
     }
 	
@@ -614,16 +641,22 @@ public class EdiMainController {
     }    
 
     @FXML    
-    void deleteEdiEintrag(ActionEvent event) {
+    void handleEdiEintragLoeschen(ActionEvent event) {
+    	ediEintragLoeschen();
+    }
+    private void ediEintragLoeschen() {
     	EdiEintrag selectedlistElement = tableEdiNrAuswahl.getSelectionModel().getSelectedItem();
     	if (selectedlistElement != null) {
     		String ediNr = Integer.toString(selectedlistElement.ediNrProperty().get());
-    		Action response = Dialogs.create()
-    				.owner(primaryStage).title(APPL_NAME)
-    				.actions(Dialog.Actions.OK, Dialog.Actions.CANCEL)
-    				.masthead(SICHERHEITSABFRAGE)
-    				.message("EDI-Eintrag mit der Nr. " + ediNr + " wirklich löschen?")
-    				.showConfirm();
+    		Action response = Dialog.Actions.OK;
+    		if (selectedlistElement.getEdiKomponente() != null) {
+    			response = Dialogs.create()
+					.owner(primaryStage).title(APPL_NAME)
+					.actions(Dialog.Actions.OK, Dialog.Actions.CANCEL)
+					.masthead(SICHERHEITSABFRAGE)
+					.message("EDI-Eintrag mit der Nr. " + ediNr + " wirklich löschen?")
+					.showConfirm();
+    		}
     		if (response == Dialog.Actions.OK) {
     			EdiEintrag ediEintrag = entityManager.find(EdiEintrag.class, selectedlistElement.getId());
     			if (ediEintrag==null) {
@@ -699,7 +732,10 @@ public class EdiMainController {
     	// REFRESH = refresh data in cache on find and query 
     	// USE = use cache without refresh if data exists in cache (=default)
     	// BYPASS = do not use cache
-    	logger.info("Datenbankverbinding aufgebaut", entityManager.getProperties().toString());
+    	Map<String, Object> properties = entityManager.getProperties();
+    	String dbUrl = (String) properties.get("javax.persistence.jdbc.url");
+    	dbName = dbUrl.substring(dbUrl.lastIndexOf("/")+1);
+    	logger.info("Datenbankverbindung zur DB \"" + dbName + "\" erfolgreich hergestellt.");
     }
     
     private void checkFieldsFromView() throws Exception {

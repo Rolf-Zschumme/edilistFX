@@ -57,7 +57,7 @@
 														<ToolBar layoutX="-48.0" layoutY="14.0" prefWidth="200.0">
 															<items>
 																<Button fx:id="btnNewEdiNr" mnemonicParsing="false" onAction="#newEdiNr" text="Neu" />
-																<Button fx:id="btnDeleteEdiEintrag" disable="true" mnemonicParsing="false" onAction="#deleteEdiEintrag" text="Löschen" />
+																<Button fx:id="btnDeleteEdiEintrag" disable="true" mnemonicParsing="false" onAction="#handleEdiEintragLoeschen" text="Löschen" />
 															</items>
 														</ToolBar>
 														<TableView fx:id="tableEdiNrAuswahl" onContextMenuRequested="#actionEdiNrContextMenuRequested" prefHeight="702.0" prefWidth="535.0" tableMenuButtonVisible="true" VBox.vgrow="ALWAYS">

@@ -939,7 +939,6 @@ public class EdiEintragController {
 				.masthead(masterhead)
 				.message("Wie soll die neue Konfiguration heiﬂen?")
 				.showTextInput(aktName);
-			
 			if (newName.isPresent() == false) {
 				mainController.setInfoText("Neuanlager einer Konfiguartion wurde vom Benutzer abgebrochen");
 				break;
