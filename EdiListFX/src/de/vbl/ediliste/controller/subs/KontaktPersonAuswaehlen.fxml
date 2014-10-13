@@ -83,7 +83,7 @@
                         <TextField fx:id="tfMailadresseOutlook" disable="true" GridPane.columnIndex="2" GridPane.rowIndex="4" />
                         <TextField fx:id="tfTelefonOutlook" disable="true" GridPane.columnIndex="2" GridPane.rowIndex="5" />
                         <Label text="Telefon:" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                        <Label fx:id="lbHinweisOutlook" alignment="BASELINE_CENTER" maxWidth="1.7976931348623157E308" GridPane.columnSpan="2147483647" GridPane.rowIndex="6">
+                        <Label fx:id="lbHinweisOutlook" alignment="BASELINE_CENTER" maxWidth="1.7976931348623157E308" text="ACHTUNG: Diese Option ist noch nicht realisiert" GridPane.columnSpan="2147483647" GridPane.rowIndex="6">
                            <font>
                               <Font name="System Bold" size="14.0" />
                            </font>
