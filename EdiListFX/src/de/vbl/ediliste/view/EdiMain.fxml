@@ -198,25 +198,28 @@
 				<Tab fx:id="tabKontaktPersonen" text="Kontakt-Personen">
 				  <content>
     				<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-<children><SplitPane dividerPositions="0.5259417199715707" focusTraversable="true" prefHeight="716.0" prefWidth="1409.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-  <items>
-    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-<children><TableView fx:id="tableKontaktAuswahl" prefHeight="714.0" prefWidth="737.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-  <columns>
-    <TableColumn fx:id="tColKontaktUserId" prefWidth="86.0" text="User-ID" />
-    <TableColumn fx:id="tColKontaktNachname" prefWidth="131.0" text="Nachname" /><TableColumn fx:id="tColKontaktVorname" prefWidth="79.0" text="Vorname" /><TableColumn fx:id="tColKontaktAbteilung" prefWidth="175.0" text="Firma / Abteilung" /><TableColumn fx:id="tColKontaktTelefon" prefWidth="92.0" text="Telefon" /><TableColumn fx:id="tColKontaktMailadresse" prefWidth="173.0" text="Mailadresse" />
-  </columns>
-</TableView>
-</children></AnchorPane>
-    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
-  </items>
-</SplitPane>
-</children></AnchorPane>
+					<children>
+						<SplitPane dividerPositions="0.5259417199715707" focusTraversable="true" prefHeight="716.0" prefWidth="1409.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+					  		<items>
+		    					<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+									<children>
+										<TableView fx:id="tableKontaktAuswahl" prefHeight="714.0" prefWidth="737.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+		  									<columns>
+										    <TableColumn fx:id="tColKontaktUserId" prefWidth="86.0" text="User-ID" />
+										    <TableColumn fx:id="tColKontaktNachname" prefWidth="131.0" text="Nachname" /><TableColumn fx:id="tColKontaktVorname" prefWidth="79.0" text="Vorname" /><TableColumn fx:id="tColKontaktAbteilung" prefWidth="175.0" text="Firma / Abteilung" /><TableColumn fx:id="tColKontaktTelefon" prefWidth="92.0" text="Telefon" /><TableColumn fx:id="tColKontaktMailadresse" prefWidth="173.0" text="Mailadresse" />
+										  </columns>
+										</TableView>
+									</children>
+								</AnchorPane>
+	                           <fx:include fx:id="kontaktPerson" disable="true" source="KontaktPerson.fxml" />
+							 </items>
+						</SplitPane>
+					</children>
+					</AnchorPane>
 				  </content>
 				</Tab>
 				<Tab fx:id="tabGeschaeftsobjekte" text="Geschäftsobjekte">
 					<content>
-					
 						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
                         <SplitPane dividerPositions="0.21961620469083157" prefHeight="716.0" prefWidth="1409.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">

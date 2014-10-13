@@ -16,13 +16,9 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
 import javax.persistence.EntityManager;
@@ -34,10 +30,7 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
 
-import de.vbl.ediliste.model.EdiEintrag;
-import de.vbl.ediliste.model.EdiEmpfaenger;
 import de.vbl.ediliste.model.EdiKomponente;
-import de.vbl.ediliste.model.EdiSystem;
 import de.vbl.ediliste.model.KontaktPerson;
 
 public class KontaktPersonController {
@@ -54,14 +47,14 @@ public class KontaktPersonController {
 	@FXML private ResourceBundle resources;
     @FXML private URL location;
 
-	@FXML private TextField tfNachname; 
 	@FXML private TextField tfNummer; 
+	@FXML private TextField tfNachname; 
 	@FXML private TextField tfVorname; 
     @FXML private TextField tfAbteilung; 
     @FXML private TextField tfMailadresse; 
     @FXML private TextField tfTelefon;
     
-    @FXML private TableView<EdiKomponente> tvSysteme;
+    @FXML private TableView<EdiKomponente> tvKomponenten;
     @FXML private TableColumn<EdiKomponente, String> tcPartnerName;
     @FXML private TableColumn<EdiKomponente, String> tcSystemName;
     @FXML private TableColumn<EdiKomponente, String> tcKomponentenName;
@@ -101,12 +94,17 @@ public class KontaktPersonController {
 					aktKontaktPerson = newPerson;
 					logger.info("newPerson.Name="+ newPerson.getNachname());
 					readEdiKomponentenListeforPerson(newPerson);
-					tfBezeichnung.setText(newSystem.getName());
-					if (newSystem.getBeschreibung() == null) {
-						newSystem.setBeschreibung("");
-					}
-					taBeschreibung.setText(newSystem.getBeschreibung());
-					btnLoeschen.disableProperty().bind(Bindings.lessThan(0, aktKontaktPerson.anzKomponentenProperty()));
+					tfNummer.setText(newPerson.getNummer());
+					if (newPerson.getNachname() == null) newPerson.setNachname("");
+					tfNachname.setText(newPerson.getNachname());
+					if (newPerson.getVorname() == null) newPerson.setVorname("");
+					tfVorname.setText(newPerson.getVorname());
+					tfAbteilung.setText(newPerson.getAbteilungSafe());
+					if (newPerson.getMail() == null) newPerson.setMail("");
+					tfMailadresse.setText(newPerson.getMail());
+					if (newPerson.getTelefon() == null) newPerson.setTelefon("");
+					tfTelefon.setText(newPerson.getTelefon());
+					btnLoeschen.disableProperty().bind(Bindings.lessThan(0,Bindings.size(ediKomponentenList)));
 				}
 				dataIsChanged.set(false);
 			}
@@ -114,16 +112,11 @@ public class KontaktPersonController {
 		
 		btnSpeichern.disableProperty().bind(Bindings.not(dataIsChanged));
 
-		tfBezeichnung.textProperty().addListener((observable, oldValue, newValue)  -> {
-			if (aktKontaktPerson == null) {
-				logger.error("aktSystem==null in Listener for tfBezeichnung");
-			}
-			else if (aktKontaktPerson.getName() == null) {
-				logger.error("aktSystem.getName()==null in Listener for tfBezeichnung");
-			} else {	
+		tfNachname.textProperty().addListener((observable, oldValue, newValue)  -> {
+			if (aktKontaktPerson != null) {
 				String msg = "";
-				if (aktKontaktPerson.getName().equals(newValue) == false) {
-					msg = checkSystemName(newValue);
+				if (aktKontaktPerson.getNachname().equals(newValue) == false) {
+					msg = checkKontaktPersonName(newValue, tfVorname.getText(), tfAbteilung.getText());
 					dataIsChanged.set(true);
 				} else {	
 					dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
@@ -132,56 +125,65 @@ public class KontaktPersonController {
 			}
 		}); 
 
-		taBeschreibung.textProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue.equals(aktKontaktPerson.getBeschreibung()) == false) {
-				dataIsChanged.set(true);
-			} else {	
-				dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
+		tfVorname.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (aktKontaktPerson != null) {
+				String msg = "";
+				if (newValue.equals(aktKontaktPerson.getVorname()) == false) {
+					msg = checkKontaktPersonName(tfNachname.getText(), newValue, tfAbteilung.getText());
+					dataIsChanged.set(true);
+				} else {	
+					dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
+				}
+				mainCtr.setErrorText(msg);			
+			}
+		});
+		
+		tfAbteilung.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (aktKontaktPerson != null) {
+				String msg = "";
+				if (newValue.equals(aktKontaktPerson.getAbteilungSafe()) == false) {
+					msg = checkKontaktPersonName(tfNachname.getText(), tfVorname.getText(), newValue);
+					dataIsChanged.set(true);
+				} else {	
+					dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
+				}
+				mainCtr.setErrorText(msg);			
+			}
+		});
+		
+		tfMailadresse.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (aktKontaktPerson != null) {
+				String msg = "";
+				if (newValue.equals(aktKontaktPerson.getMail()) == false) {
+					dataIsChanged.set(true);
+				} else {	
+					dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
+				}
+				mainCtr.setErrorText(msg);			
+			}
+		});
+		
+		tfTelefon.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (aktKontaktPerson != null) {
+				String msg = "";
+				if (newValue.equals(aktKontaktPerson.getTelefon()) == false) {
+					dataIsChanged.set(true);
+				} else {	
+					dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
+				}
+				mainCtr.setErrorText(msg);			
 			}
 		});
 		
 //	    Setup for Sub-Panel    
 		
-		tvVerwendungen.setItems(ediKomponentenList);
-		tcEdiNr.setCellValueFactory(cellData -> 
-					Bindings.format(EdiEintrag.FORMAT_EDINR, cellData.getValue().getEdiNrProperty()));
+		tvKomponenten.setItems(ediKomponentenList);
+
+		tcKomponentenName.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
 		
-		tcSender.setCellValueFactory(cellData -> cellData.getValue().senderNameProperty());
-		tcSender.setCellFactory(column -> {
-			return new TableCell<EdiEmpfaenger, String>() {
-				@Override
-				protected void updateItem (String sender, boolean empty) {
-					super.updateItem(sender, empty);
-					if (sender == null || empty) 
-						setText(null); 
-					else {
-						setText(sender);
-						FontWeight fw = sender.startsWith(aktFullName) ? FontWeight.BOLD : FontWeight.NORMAL;
-						setFont(Font.font(null, fw, getFont().getSize()));
-					}
-				}
-			};
-		});
+		tcSystemName.setCellValueFactory(cellData -> cellData.getValue().getEdiSystem().nameProperty());
 		
-		tcEmpfaenger.setCellValueFactory(cellData -> cellData.getValue().empfaengerNameProperty());
-		tcEmpfaenger.setCellFactory(column -> {
-			return new TableCell<EdiEmpfaenger, String>() {
-				@Override
-				protected void updateItem (String empf, boolean empty) {
-					super.updateItem(empf, empty);
-					if (empf == null || empty) 
-						setText(null); 
-					else {
-						setText(empf);
-						FontWeight fw = empf.startsWith(aktFullName) ? FontWeight.BOLD : FontWeight.NORMAL;
-						setFont(Font.font(null, fw, getFont().getSize()));
-					}
-				}
-			};
-		});
-		tcGeschaeftsobjekt.setCellValueFactory(cellData -> cellData.getValue().geschaeftsObjektNameProperty());
-		tcDatumAb.setCellValueFactory(cellData -> cellData.getValue().getEdiEintrag().seitDatumProperty());
-		tcDatumBis.setCellValueFactory(cellData -> cellData.getValue().getEdiEintrag().bisDatumProperty());
+		tcPartnerName.setCellValueFactory(cellData -> cellData.getValue().getEdiSystem().getEdiPartner().nameProperty());
 	}
 
 	@FXML
@@ -190,19 +192,17 @@ public class KontaktPersonController {
 			mainCtr.setErrorText("Fehler: Komponente wird verwendet");
 			return;
 		}	
-		String aktName = "System \"" + aktKontaktPerson.getName() + "\"";
+		String aktName = "Kontakt-Person \"" + aktKontaktPerson.getNachname() + "\"";
 		String neuName = aktName;
-		if (aktKontaktPerson.getName().equals(tfBezeichnung.getText()) == false) {
-			neuName = aktName + " / \"" + tfBezeichnung.getText() + "\"";
+		if (aktKontaktPerson.getNachname().equals(tfNachname.getText()) == false) {
+			neuName = aktName + " / \"" + tfNachname.getText() + "\"";
 		}
 		Action response = Dialogs.create()
 				.owner(primaryStage).title(primaryStage.getTitle())
-				.message(neuName + " des Partners " + " \"" + 
-				aktKontaktPerson.getEdiPartner().getName() + "\" wirklich lˆschen ?")
+				.message(neuName +  " wirklich lˆschen ?")
 				.showConfirm();
 		if (response == Dialog.Actions.YES) {
 			try {
-				aktKontaktPerson.getEdiPartner().getEdiSystem().remove(aktKontaktPerson);
 				entityManager.getTransaction().begin();
 				entityManager.remove(aktKontaktPerson);
 				entityManager.getTransaction().commit();
@@ -231,18 +231,28 @@ public class KontaktPersonController {
 	private static enum Checkmode { ONLY_CHECK, ASK_FOR_UPDATE, SAVE_DONT_ASK };
 	
 	private boolean checkForChangesAndSave(Checkmode checkmode) {
-		logger.info("aktSystem=" + (aktKontaktPerson==null ? "null" : aktKontaktPerson.getFullname()));
+		logger.info("aktSystem=" + (aktKontaktPerson==null ? "null" : aktKontaktPerson.getVorname() + " " + aktKontaktPerson.getNachname()));
 		if (aktKontaktPerson == null ) {
 			return true;
 		}
-		String orgName = aktKontaktPerson.getName();
-		String newName = tfBezeichnung.getText();
-		String orgBeschreibung = aktKontaktPerson.getBeschreibung()==null ? "" : aktKontaktPerson.getBeschreibung();
-		String newBeschreibung = taBeschreibung.getText()==null ? "" : taBeschreibung.getText();
+		String orgNachname  = aktKontaktPerson.getNachname() == null ? "" : aktKontaktPerson.getNachname();
+		String newNachname  = tfNachname.getText()           == null ? "" : tfNachname.getText() ;
+		String orgVorname   = aktKontaktPerson.getVorname()  == null ? "" : aktKontaktPerson.getVorname();
+		String newVorname   = tfVorname.getText()            == null ? "" : tfVorname.getText();
+		String orgAbteilung = aktKontaktPerson.getAbteilungSafe();
+		String newAbteilung = tfAbteilung.getText()          == null ? "" : tfAbteilung.getText();
+		String orgMail      = aktKontaktPerson.getMail()     == null ? "" : aktKontaktPerson.getMail();
+		String newMail      = tfMailadresse.getText()        == null ? "" : tfMailadresse.getText();
+		String orgTelefon   = aktKontaktPerson.getTelefon()  == null ? "" : aktKontaktPerson.getTelefon();
+		String newTelefon   = tfTelefon.getText()            == null ? "" : tfTelefon.getText();
 		
-		if (orgName.equals(newName) &&
-			orgBeschreibung.equals(newBeschreibung) ) {
-			logger.info("Name und Bezeichnung unveraendert");
+		if (orgNachname.equals(newNachname)   &&
+			orgVorname.equals(newVorname)     &&
+			orgAbteilung.equals(newAbteilung) &&
+			orgMail.equals(newMail)           &&
+			orgTelefon.equals(newTelefon)        ) 
+		{
+			logger.info("Vorname, Nachname, Abteilung, Mail und Telefon unveraendert");
 		} else {
 			if (checkmode == Checkmode.ONLY_CHECK) {
 				return false;
@@ -251,7 +261,7 @@ public class KontaktPersonController {
 				Action response = Dialogs.create()
 						.owner(primaryStage).title(primaryStage.getTitle())
 						.actions(Dialog.Actions.YES, Dialog.Actions.NO, Dialog.Actions.CANCEL)
-						.message("Sollen die ƒnderungen an dem System " + orgName + " gespeichert werden ?")
+						.message("Sollen die ƒnderungen an dem Kontakt " + orgNachname + " gespeichert werden ?")
 						.showConfirm();
 				if (response == Dialog.Actions.CANCEL) {
 					return false;
@@ -261,38 +271,45 @@ public class KontaktPersonController {
 					return true;
 				}
 			}
-			String msg = checkSystemName(newName);
-			if (msg != null) {
-				mainCtr.setErrorText(msg);
-				tfBezeichnung.requestFocus();
-				return false;
+			if (!orgNachname.equals(newNachname)   ||
+				!orgVorname.equals(newVorname)     ||
+				!orgAbteilung.equals(newAbteilung)   )    
+			{
+				String msg = checkKontaktPersonName(newNachname, newVorname, newAbteilung);
+				if (msg != null) {
+					mainCtr.setErrorText(msg);
+					tfNachname.requestFocus();
+					return false;
+				}
 			}
 			logger.info("Aenderung erkannt -> update");
 			entityManager.getTransaction().begin();
-			aktKontaktPerson.setName(newName);
-			aktKontaktPerson.setBeschreibung(newBeschreibung);
+			aktKontaktPerson.setNachname(newNachname);
+			aktKontaktPerson.setVorname(newVorname);
+			aktKontaktPerson.setAbteilung(newAbteilung);
 			entityManager.getTransaction().commit();
 			readEdiKomponentenListeforPerson(aktKontaktPerson);
-			mainCtr.setInfoText("Das System " + orgName + " wurde gespeichert");
+			mainCtr.setInfoText("Die Daten der Kontaktperson wurde gespeichert");
 		}
 		return true;
 	}
 	
-	private String checkSystemName(String newName) {
-		if ("".equals(newName)) {
-			return "Eine Bezeichnung ist erforderlich";
+	private String checkKontaktPersonName(String nachname, String vorname, String abteilung) {
+		if ("".equals(nachname)) {
+			return "Ein Nachname ist erforderlich";
 		}
-		TypedQuery<EdiSystem> tq = entityManager.createQuery(
-				"SELECT s FROM EdiSystem s WHERE LOWER(s.name) = LOWER(:n)",EdiSystem.class);
-		tq.setParameter("n", newName);
-		List<EdiSystem> systemList = tq.getResultList();
-		for (EdiSystem s : systemList ) {
-			if (s.getId() != aktKontaktPerson.getId() &&
-				s.getEdiPartner().getId() == aktKontaktPerson.getEdiPartner().getId())  {
-				if (s.getName().equalsIgnoreCase(newName)) {
-					return "Eine anderes System des Partners \"" +
-							aktKontaktPerson.getEdiPartner().getName() + "\" heiﬂt bereits so!";
-				}
+		TypedQuery<KontaktPerson> tq = entityManager.createQuery(
+				"SELECT k FROM KontaktPerson k WHERE LOWER(k.nachname) = LOWER(:n)",KontaktPerson.class);
+		tq.setParameter("n", nachname);
+		List<KontaktPerson> kontaktPersonList = tq.getResultList();
+		for (KontaktPerson k : kontaktPersonList) {
+			if (k.getVorname().equalsIgnoreCase(vorname) && 
+				k.getAbteilungSafe().equalsIgnoreCase(abteilung) ) {
+				if (vorname.length() > 0)   
+					vorname += " ";
+				if (abteilung.length() > 0) 
+					abteilung = " bei " + abteilung;
+				return "Es gibt schon einen \"" + vorname + k.getNachname() + "\"" + abteilung;
 			}
 		}
 		return null;
@@ -300,61 +317,40 @@ public class KontaktPersonController {
 
 	private void readEdiKomponentenListeforPerson( KontaktPerson selKontaktPerson) {
 		ediKomponentenList.clear();
-		/* 1. lese alle EdiEintraege mit Sender = selekierter Komponente 
-		 * 		-> zeige jeweils alle zugehoerigen Empfaenger, falls kein Empfaenger vorhanden dummy erzeugen
-		*/
-		TypedQuery<EdiEintrag> tqS = entityManager.createQuery(
-				"SELECT e FROM EdiEintrag e WHERE e.ediKomponente.ediSystem = :s", EdiEintrag.class);
-		tqS.setParameter("s", selKontaktPerson);
-		List<EdiEintrag> ediList = tqS.getResultList();
-		for(EdiEintrag e : ediList ) {
-			if (e.getEdiEmpfaenger().size() > 0)
-				ediKomponentenList.addAll(e.getEdiEmpfaenger());
-			else {
-				EdiEmpfaenger tmpE = new EdiEmpfaenger();
-				tmpE.setEdiEintrag(e);
-				ediKomponentenList.addAll(tmpE);
+		TypedQuery<EdiKomponente> tqS = entityManager.createQuery(
+				"SELECT k FROM EdiKomponente k", EdiKomponente.class);
+		List<EdiKomponente> ediList = tqS.getResultList();
+		for(EdiKomponente k : ediList ) {
+			if (k.getKontaktPerson().size() > 0 &&  
+				k.getKontaktPerson().contains(selKontaktPerson) ) {
+				ediKomponentenList.add(k);
 			}
 		}
-		logger.info("fuer "+ selKontaktPerson.getName() + " " + 
-			ediList.size() + " EDI-Eintraege" + " mit insgesamt " + 
-			ediKomponentenList.size() + " Empfaenger gelesen");
-		
-		/* 2. lese alle Empfaenger mit Empfaenger = selektierte Komponente 
-		 *    -> zeige alle Empfaenger  
-		 */
-		
-		TypedQuery<EdiEmpfaenger> tqE = entityManager.createQuery(
-				"SELECT e FROM EdiEmpfaenger e WHERE e.komponente.ediSystem = :s", EdiEmpfaenger.class);
-		tqE.setParameter("s", selKontaktPerson);
-		ediKomponentenList.addAll(tqE.getResultList());
-		logger.info("fuer " + selKontaktPerson.getName() + " " + 
-			tqE.getResultList().size() + " EDI-Empfaenger gelesen");
+		logger.info("fuer "+ selKontaktPerson.getNachname() + " " + 
+			ediKomponentenList.size() + " Komponenten gefunden");
 	}
 
-	public final ObjectProperty<EdiSystem> ediSystemProperty() {
+	public final ObjectProperty<KontaktPerson> kontaktPersonProperty() {
 		return kontaktPerson;
 	}
 	
-	public final EdiSystem getEdiSystem() {
+	public final KontaktPerson getKontaktPerson() {
 		return kontaktPerson.get() ;
 	}
 	
-	public final void setEdiSystem(EdiSystem ediSystem) {
-		this.kontaktPerson.set(ediSystem);
+	public final void setEdiSystem(KontaktPerson kontaktPerson) {
+		this.kontaktPerson.set(kontaktPerson);
 	}
     
     void checkFieldsFromView() {
- //   	assert ediSystemPane != null : "fx:id=\"ediSystemPane\" was not injected: check your FXML file 'EdiSystem.fxml'.";
-    	assert tfBezeichnung != null : "fx:id=\"tfBezeichnung\" was not injected: check your FXML file 'EdiSystem.fxml'.";
-    	assert taBeschreibung != null : "fx:id=\"taBeschreibung\" was not injected: check your FXML file 'EdiSystem.fxml'.";
-    	assert tcEdiNr != null : "fx:id=\"tcEdiNr\" was not injected: check your FXML file 'EdiSystem.fxml'.";
-    	assert tcSender != null : "fx:id=\"tcSender\" was not injected: check your FXML file 'EdiSystem.fxml'.";
-        assert tcEmpfaenger != null : "fx:id=\"tcEmpfaenger\" was not injected: check your FXML file 'EdiSystem.fxml'.";
-        assert tcDatumBis != null : "fx:id=\"tcDatumBis\" was not injected: check your FXML file 'EdiSystem.fxml'.";
-        assert tvVerwendungen != null : "fx:id=\"tvVerwendungen\" was not injected: check your FXML file 'EdiSystem.fxml'.";
-        assert btnSpeichern != null : "fx:id=\"btnSpeichern\" was not injected: check your FXML file 'EdiSystem.fxml'.";
-        assert btnLoeschen != null : "fx:id=\"btnLoeschen\" was not injected: check your FXML file 'EdiSystem.fxml'.";
+    	assert tfNummer      != null : "fx:id=\"tfNummer\" was not injected: check your FXML file 'EdiSystem.fxml'.";
+    	assert tfNachname    != null : "fx:id=\"tfNachname\" was not injected: check your FXML file 'EdiSystem.fxml'.";
+    	assert tfVorname     != null : "fx:id=\"tfVorname\" was not injected: check your FXML file 'EdiSystem.fxml'.";
+    	assert tfAbteilung   != null : "fx:id=\"tfAbteilung\" was not injected: check your FXML file 'EdiSystem.fxml'.";
+        assert tfMailadresse != null : "fx:id=\"tfMailadresse\" was not injected: check your FXML file 'EdiSystem.fxml'.";
+        assert tfTelefon     != null : "fx:id=\"tfTelefon\" was not injected: check your FXML file 'EdiSystem.fxml'.";
+        assert tvKomponenten != null : "fx:id=\"tvKomponenten\" was not injected: check your FXML file 'EdiSystem.fxml'.";
+        assert btnSpeichern  != null : "fx:id=\"btnSpeichern\" was not injected: check your FXML file 'EdiSystem.fxml'.";
+        assert btnLoeschen   != null : "fx:id=\"btnLoeschen\" was not injected: check your FXML file 'EdiSystem.fxml'.";
     }
-    
 }

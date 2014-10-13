@@ -142,15 +142,16 @@ public class EdiMainController {
     @FXML private Pane ediKomponente;
     @FXML private Pane integration;
     @FXML private Pane konfiguration;
+    @FXML private Pane kontaktPerson;
     @FXML private Pane geschaeftsObjekt;
-
     
     @FXML private EdiEintragController ediEintragController;
     @FXML private EdiPartnerController ediPartnerController;
     @FXML private EdiSystemController ediSystemController;
     @FXML private EdiKomponenteController ediKomponenteController;
     @FXML private IntegrationController integrationController;
-    @FXML private KonfigurationController konfigurationController;   
+    @FXML private KonfigurationController konfigurationController;
+    @FXML private KontaktPersonController kontaktPersonController;
     @FXML private GeschaeftsObjektController geschaeftsObjektController;   
     
     @FXML
@@ -170,6 +171,7 @@ public class EdiMainController {
     	EdiKomponenteController.start(primaryStage, this, entityManager);
     	IntegrationController.start(primaryStage, this, entityManager);
     	KonfigurationController.start(primaryStage, this, entityManager);
+    	KontaktPersonController.start(primaryStage, this, entityManager);
     	GeschaeftsObjektController.start(primaryStage, this, entityManager);
         
     	// Check for data changes on close request from MainWindow
@@ -257,6 +259,9 @@ public class EdiMainController {
 		tableKonfigurationAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkKonfiguration(e));
 		tableKonfigurationAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkKonfiguration(e));
 		
+		tableKontaktAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkKontaktPerson(e));
+		tableKontaktAuswahl.addEventFilter(KeyEvent.KEY_PRESSED, e -> checkKontaktPerson(e));
+		
 		tableGeschaeftsobjektAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkGeschaeftsObjekt(e));
 		tableGeschaeftsobjektAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkGeschaeftsObjekt(e));
 		
@@ -304,13 +309,20 @@ public class EdiMainController {
 		}
 	}
 
+	private void checkKontaktPerson(Event event) {
+		if (kontaktPersonController.checkForChangesAndAskForSave() == false) {
+			event.consume();
+		}
+	}
+
 	private boolean checkAllOk() {
     	return ediEintragController.checkForChangesAndAskForSave() || 
     		   ediPartnerController.checkForChangesAndAskForSave() ||
     	       ediSystemController.checkForChangesAndAskForSave()  ||
     	       ediKomponenteController.checkForChangesAndAskForSave() ||
-    		   integrationController.checkForChangesAndAskForSave()   || 
-    		   konfigurationController.checkForChangesAndAskForSave() || 
+    		   integrationController.checkForChangesAndAskForSave()   ||
+    		   konfigurationController.checkForChangesAndAskForSave() ||
+    		   kontaktPersonController.checkForChangesAndAskForSave() ||
     		   geschaeftsObjektController.checkForChangesAndAskForSave(); 
 	}
 	
@@ -428,6 +440,9 @@ public class EdiMainController {
 		tColKontaktAbteilung.setCellValueFactory(cellData -> cellData.getValue().abteilungProperty());
 		tColKontaktTelefon.setCellValueFactory(cellData -> cellData.getValue().telefonProperty());
 		tColKontaktMailadresse.setCellValueFactory(cellData -> cellData.getValue().mailProperty());
+		
+		kontaktPersonController.kontaktPersonProperty().bind(tableKontaktAuswahl.getSelectionModel().selectedItemProperty());
+		kontaktPerson.disableProperty().bind(Bindings.isNull(tableKontaktAuswahl.getSelectionModel().selectedItemProperty()));
 	}
 	
     private void setupGeschaeftsobjektPane() {
