@@ -7,6 +7,7 @@
 	<classpathentry kind="lib" path="libs/logging/apache-log4j-2.0.2-bin/log4j-core-2.0.2.jar"/>
 	<classpathentry kind="lib" path="libs/miscellaneous/jxl.jar"/>
 	<classpathentry kind="lib" path="libs/miscellaneous/postgresql-9.1-903.jdbc4.jar"/>
+	<classpathentry kind="lib" path="libs/svnkit/lib/svnkit-1.8.5.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ExcelAPI"/>
 	<classpathentry kind="con" path="org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER"/>

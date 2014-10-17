@@ -740,7 +740,11 @@ public class EdiMainController {
     
     private void setupEntityManager() {
     	logger.info("Datenbankverbindung zu {} wird aufgebaut",PERSISTENCE_UNIT_NAME);
+    	
     	EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+    	
+//    	String db = (String) factory.getProperties().get("javax.persistence.jdbc.url");
+//    	System.out.println("DB: " + db);
     	entityManager = factory.createEntityManager();
     	entityManager.setProperty("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH);
     	// Explanation for CacheStoreMode:

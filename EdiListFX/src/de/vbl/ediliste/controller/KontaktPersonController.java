@@ -82,8 +82,8 @@ public class KontaktPersonController {
 			@Override
 			public void changed(ObservableValue<? extends KontaktPerson> ov,
 					KontaktPerson oldPerson, KontaktPerson newPerson) {
-				logger.info(((oldPerson==null) ? "null" : oldPerson.getNachname()) + " -> " 
-						  + ((newPerson==null) ? "null" : newPerson.getNachname()) );
+				logger.trace(((oldPerson==null) ? "null" : oldPerson.getNachname()) + " -> " 
+						   + ((newPerson==null) ? "null" : newPerson.getNachname()) );
 				btnLoeschen.disableProperty().unbind();
 				if (oldPerson != null) {
 					ediKomponentenList.clear();
@@ -92,7 +92,7 @@ public class KontaktPersonController {
 				tfVorname.setText("");
 				if (newPerson != null) {
 					aktKontaktPerson = newPerson;
-					logger.info("newPerson.Name="+ newPerson.getNachname());
+					logger.trace("newPerson.Name="+ newPerson.getNachname());
 					readEdiKomponentenListeforPerson(newPerson);
 					tfNummer.setText(newPerson.getNummer());
 					if (newPerson.getNachname() == null) newPerson.setNachname("");
@@ -231,7 +231,7 @@ public class KontaktPersonController {
 	private static enum Checkmode { ONLY_CHECK, ASK_FOR_UPDATE, SAVE_DONT_ASK };
 	
 	private boolean checkForChangesAndSave(Checkmode checkmode) {
-		logger.info("aktSystem=" + (aktKontaktPerson==null ? "null" : aktKontaktPerson.getVorname() + " " + aktKontaktPerson.getNachname()));
+		logger.trace("aktSystem=" + (aktKontaktPerson==null ? "null" : aktKontaktPerson.getVorname() + " " + aktKontaktPerson.getNachname()));
 		if (aktKontaktPerson == null ) {
 			return true;
 		}
@@ -252,7 +252,7 @@ public class KontaktPersonController {
 			orgMail.equals(newMail)           &&
 			orgTelefon.equals(newTelefon)        ) 
 		{
-			logger.info("Vorname, Nachname, Abteilung, Mail und Telefon unveraendert");
+			logger.trace("Vorname, Nachname, Abteilung, Mail und Telefon unveraendert");
 		} else {
 			if (checkmode == Checkmode.ONLY_CHECK) {
 				return false;
@@ -326,7 +326,7 @@ public class KontaktPersonController {
 				ediKomponentenList.add(k);
 			}
 		}
-		logger.info("fuer "+ selKontaktPerson.getNachname() + " " + 
+		logger.trace("fuer "+ selKontaktPerson.getNachname() + " " + 
 			ediKomponentenList.size() + " Komponenten gefunden");
 	}
 

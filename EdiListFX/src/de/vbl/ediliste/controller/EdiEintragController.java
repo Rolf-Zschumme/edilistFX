@@ -253,6 +253,15 @@ public class EdiEintragController {
 		setupIntegrationComboBox();
 		setupKonfigurationComboBox();
 		
+		tfBezeichnung.textProperty().addListener((observable, oldValue, newValue) -> {
+			String msg = "";
+			if (newValue != null) {
+				akt.bezeichnung = newValue;
+				setChangeFlag(!akt.bezeichnung.equals(org.bezeichnung));
+			}	
+			mainController.setErrorText(msg);
+		});
+		
 		taEdiBeschreibung.textProperty().addListener((observable, oldValue, newValue) -> {
 			String msg = "";
 			if (newValue != null) {
@@ -672,13 +681,15 @@ public class EdiEintragController {
 		if (ediEintrag.get() == null) {
 			return true;
 		}
-		if (akt.konfiguration == org.konfiguration &&
-			akt.sender == org.sender &&
-			verifyEmpfaengerAreUnchanged() == true   &&
-			localDateEquals(akt.seitDatum, org.seitDatum)  &&
-			localDateEquals(akt.bisDatum, org.bisDatum)  &&
-			akt.beschreibung.equals(org.beschreibung)  &&
-			akt.ediIntervallName.equals(org.ediIntervallName)) {
+		if (akt.konfiguration == org.konfiguration        &&
+			akt.sender == org.sender                      &&
+			verifyEmpfaengerAreUnchanged() == true        &&
+			localDateEquals(akt.seitDatum, org.seitDatum) &&
+			localDateEquals(akt.bisDatum, org.bisDatum)   &&
+			akt.bezeichnung.equals(org.bezeichnung)       &&
+			akt.beschreibung.equals(org.beschreibung)     &&
+			akt.ediIntervallName.equals(org.ediIntervallName) ) 
+		{
 			logger.debug(checkmode + ": no change found -> no update");
 			return true;  
 		}
@@ -746,8 +757,8 @@ public class EdiEintragController {
     		return false;
     	}
     	
-    	// end validation -> start update/insert
-    	// -------------------------------------
+    	// end of validation -> start update/insert
+    	// ----------------------------------------
 		try {
 			EdiEintrag aktEdi = ediEintrag.get();
 			entityManager.getTransaction().begin();
@@ -801,11 +812,15 @@ public class EdiEintragController {
 			}
 			aktEdi.setEdiEmpfaenger(tmpEmpfaengerList);
 			
-			String tmpEdiBezeichnung = aktEdi.autoBezeichnung(); 
-			if (aktEdi.getBezeichnung().equals(tmpEdiBezeichnung) == false) {
-				aktEdi.setBezeichnung(tmpEdiBezeichnung);
-				tfBezeichnung.textProperty().set(aktEdi.autoBezeichnung());
-			}
+//			old: auto generation of field
+//			String tmpEdiBezeichnung = aktEdi.autoBezeichnung(); 
+//			if (aktEdi.getBezeichnung().equals(tmpEdiBezeichnung) == false) {
+//				aktEdi.setBezeichnung(tmpEdiBezeichnung);
+//				tfBezeichnung.textProperty().set(aktEdi.autoBezeichnung());
+//			}
+//			new: normal manuell input			
+			aktEdi.setBezeichnung(akt.bezeichnung);
+			
 			LocalDate aktSeitDatum = dpProduktivSeit.getValue();
 			aktEdi.seitDatumProperty().set(aktSeitDatum==null ? "" : aktSeitDatum.toString());
 			
