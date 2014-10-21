@@ -49,6 +49,8 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
 
+import de.vbl.ediliste.controller.subs.DokumentAuswaehlenController;
+import de.vbl.ediliste.controller.subs.KontaktPersonAuswaehlenController;
 import de.vbl.ediliste.model.EdiEintrag;
 import de.vbl.ediliste.model.EdiEmpfaenger;
 import de.vbl.ediliste.model.EdiKomponente;
@@ -337,6 +339,7 @@ public class EdiMainController {
 	@FXML
 	void actionEdiNrContextMenuRequested (Event event) {
 		// TODO
+		System.out.println("Contextmenu for EdiNr-Table requested");
 	}
 	
 	/* ************************************************************************
@@ -697,6 +700,63 @@ public class EdiMainController {
     	}
     }
     
+    /* ------------------------------------------------------------------------
+     * Loads von Sub-Controller
+     * --------------------------------------------------------------------- */
+    
+    public KontaktPersonAuswaehlenController loadKontaktPersonAuswahl(Stage dialog) {
+    	KontaktPersonAuswaehlenController controller = null;
+    	FXMLLoader loader = load("subs/KontaktPersonAuswaehlen.fxml");
+    	if (loader != null) {
+    		controller = loader.getController();
+    		controller.start(primaryStage, this, entityManager);
+    		Parent root = loader.getRoot();
+    		Scene scene = new Scene(root);
+    		dialog.initModality(Modality.APPLICATION_MODAL);
+    		dialog.initOwner(primaryStage);
+    		dialog.setTitle(primaryStage.getTitle());
+    		dialog.setScene(scene);
+    	}
+    	return controller;
+	}
+    
+    public DokumentAuswaehlenController loadDokumentAuswahl(Stage dialog) {
+    	DokumentAuswaehlenController controller = null;
+    	FXMLLoader loader = load("subs/DokumentAuswaehlen.fxml");
+    	if (loader != null) {
+    		controller = loader.getController();
+    		controller.start(primaryStage, this, entityManager);
+    		Parent root = loader.getRoot();
+    		Scene scene = new Scene(root);
+    		dialog.initModality(Modality.APPLICATION_MODAL);
+    		dialog.initOwner(primaryStage);
+    		dialog.setTitle(primaryStage.getTitle());
+    		dialog.setScene(scene);
+    	}
+    	return controller;
+	}
+    
+    private FXMLLoader load(String ressourceName) {
+    	FXMLLoader loader = new FXMLLoader();
+    	loader.setLocation(getClass().getResource(ressourceName));
+    	if (loader.getLocation()==null) {
+    		String msg = "Resource \"" + ressourceName + "\" nicht gefunden";
+    		setErrorText("FEHLER: " + msg);
+    		logger.error(msg);
+    	}
+    	try {
+    		loader.load();
+    	} catch (IOException e) {
+    		if (txtInfoZeile == null) { 
+    			e.printStackTrace();
+    		} else {
+    			setErrorText("FEHLER: " + e.getMessage());
+    		}	
+    		logger.error(e);
+    	}
+    	return loader;
+    }
+    
     static String initialExportFilePath = System.getProperty("user.home");
     static String initialExportFileName = "EDI-List-Excel-Export.xlsx";
 
@@ -738,7 +798,7 @@ public class EdiMainController {
     	}
     }
     
-    private void setupEntityManager() {
+    public void setupEntityManager() {
     	logger.info("Datenbankverbindung zu {} wird aufgebaut",PERSISTENCE_UNIT_NAME);
     	
     	EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);

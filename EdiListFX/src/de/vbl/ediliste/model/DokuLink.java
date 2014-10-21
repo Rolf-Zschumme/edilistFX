@@ -1,41 +1,39 @@
 package de.vbl.ediliste.model;
 
 import static javax.persistence.GenerationType.IDENTITY;
-import static javax.persistence.TemporalType.DATE;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
+import static javax.persistence.TemporalType.TIMESTAMP;
 
-/** 
+/**
  * Entity implementation class for Entity: Dokumentation
- * 
+ *  
  */
-@Entity 
-public class DokuLink implements Serializable {
 
+@Entity
+public class DokuLink implements Serializable {
+	private static final long serialVersionUID = 1L;
+	public static enum DokuStatus { OHNE_VORHABEN, NUR_VORHABEN, ABGENOMMEN, ALT_VORHABEN, NEU_VORHABEN };
+	
 	private StringProperty name;
 	private Long id;
-	private static final long serialVersionUID = 1L;
-	private String pfad;
-	private Date bisDatum;
-	private Integer revision;
-	private Collection<Integration> integration;
-	private Collection<SVN_Repository> sVN_Repository;
-	public DokuLink() {
-		super();
-	}
+	private StringProperty pfad;
+	private Date datum;
+	private long revision;
+	private Repository repository;
+	private StringProperty vorhaben;
+	private DokuStatus status; 
+
 
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
@@ -57,51 +55,82 @@ public class DokuLink implements Serializable {
 	}
 
 	public void setName(String param) {
-		name.set(param);
+		if (name==null) {
+			name = new SimpleStringProperty(param);
+		} 
+		else {
+			name.set(param);
+		}	
 	}
 
-	public String getPfad() {
+	// ------------------------------------------------------------------------
+	public StringProperty pfadProperty() {
 		return pfad;
 	}
 
+	public String getPfad() {
+		return pfad.get();
+	}
+
 	public void setPfad(String param) {
-		this.pfad = param;
+		if (pfad==null) {
+			pfad = new SimpleStringProperty(param);
+		}
+		else {
+			pfad.set(param);
+		}
 	}
 
-	@Temporal(DATE)
-	public Date getBisDatum() {
-		return bisDatum;
+	// ------------------------------------------------------------------------
+	public StringProperty vorhabenProperty() {
+		return vorhaben;
 	}
 
-	public void setBisDatum(Date param) {
-		this.bisDatum = param;
+	public String getVorhaben() {
+		return vorhaben.get();
 	}
 
-	public Integer getRevision() {
+	public void setVorhaben(String param) {
+		if (vorhaben==null) {
+			vorhaben = new SimpleStringProperty(param);
+		}
+		else {
+			vorhaben.set(param);
+		}
+	}
+
+	// ------------------------------------------------------------------------
+	@Temporal(TIMESTAMP) 
+	public Date getDatum() {
+		return datum;
+	}
+
+	public void setDatum(Date param) {
+		this.datum = param;
+	}
+
+	public long getRevision() {
 		return revision;
 	}
 
-	public void setRevision(Integer param) {
+	public void setRevision(long param) {
 		this.revision = param;
 	}
 
-	@ManyToMany
-	@JoinTable(joinColumns = @JoinColumn(name = "vorhaben_id", referencedColumnName = "id"))
-	public Collection<Integration> getIntegration() {
-	    return integration;
+	@ManyToOne
+	public Repository getRepository() {
+	    return repository;
 	}
 
-	public void setIntegration(Collection<Integration> param) {
-	    this.integration = param;
-	} 
-
-	@OneToMany
-	@JoinColumn
-	public Collection<SVN_Repository> getSVN_Repository() {
-	    return sVN_Repository;
+	public void setRepository(Repository param) {
+	    this.repository = param;
 	}
 
-	public void setSVN_Repository(Collection<SVN_Repository> param) {
-	    this.sVN_Repository = param;
+	public DokuStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(DokuStatus status) {
+		this.status = status;
 	}
 }

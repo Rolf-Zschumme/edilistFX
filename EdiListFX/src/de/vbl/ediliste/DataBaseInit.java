@@ -15,11 +15,10 @@ import de.vbl.ediliste.model.EdiSystem;
 import de.vbl.ediliste.model.GeschaeftsObjekt;
 import de.vbl.ediliste.model.Integration;
 import de.vbl.ediliste.model.Konfiguration;
+import de.vbl.ediliste.model.Repository;
 
 public class DataBaseInit {
 	private static final String PERSISTENCE_UNIT_NAME = "EdiListFX";
-	
-	
 	private static EntityManager em = null;
 
 	public static void main(String[] args) {
@@ -48,6 +47,7 @@ public class DataBaseInit {
 					case 2:		generateRealObjekts();
 					case 3: 	generateGeschaeftobjekte();
 					case 4: 	generateSzenarios();
+					case 5:     generateRepository();
 				}
 			}
 
@@ -79,6 +79,19 @@ public class DataBaseInit {
 			
 	}
 	
+
+	private static void generateRepository() {
+		Repository repro = new Repository();
+		
+		repro.setName("QS-Akte");
+		repro.setLocation("svn://itneu/SE-Akten");
+		repro.setStartPfad("/03_QS-Akte");
+		repro.setBenutzer("adelfinop");
+		repro.setPasswort("16WKGE");
+		em.persist(repro);
+		System.out.println("Repository für " + repro.getName() + " angelegt.");
+	}
+
 
 	private static String toString(Integer i, Integer minlen) {
 		String ret = Integer.toString(i);

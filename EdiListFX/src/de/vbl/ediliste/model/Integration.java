@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import de.vbl.ediliste.model.DokuLink;
 
 /**
  * Entity implementation class for Entity: Anbindung
@@ -87,14 +88,13 @@ public class Integration {
 	    this.vorhaben = param;
 	}
 
-	@ManyToMany(mappedBy = "integration")
-	public Collection<DokuLink> getEdiDokuLink() {
+	@ManyToMany
+	public Collection<DokuLink> getDokuLink() {
 	    return dokuLink;
 	}
 
-	public void setEdiDokuLink(Collection<DokuLink> param) {
+	public void setDokuLink(Collection<DokuLink> param) {
 	    this.dokuLink = param;
 	}
-
 
 }

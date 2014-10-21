@@ -60,6 +60,7 @@ import org.controlsfx.dialog.Dialog.Actions;
 import org.controlsfx.dialog.Dialogs;
 
 import de.vbl.ediliste.controller.KomponentenAuswahlController.KomponentenTyp;
+import de.vbl.ediliste.controller.subs.DokumentAuswaehlenController;
 import de.vbl.ediliste.model.EdiEintrag;
 import de.vbl.ediliste.model.EdiEmpfaenger;
 import de.vbl.ediliste.model.EdiIntervall;
@@ -377,6 +378,21 @@ public class EdiEintragController {
 		});
 	}
 
+    @FXML 
+    void actionDocumentContextMenuRequested() {
+    	
+    	Stage dialog = new Stage(StageStyle.UTILITY);
+    	DokumentAuswaehlenController controller = mainController.loadDokumentAuswahl(dialog);
+    	if (controller != null) {
+    		dialog.showAndWait();
+    		if (controller.getResponse() == Actions.OK) {
+    			// TODO
+    			System.out.println("ok");
+    		}
+    	}
+    }
+    
+    
 	private void setupKonfigurationComboBox() {
 		
 		cmbKonfiguration.disableProperty().bind(cmbIntegration.getSelectionModel().selectedItemProperty().isNull());

@@ -1,6 +1,5 @@
 package de.vbl.ediliste.controller;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -17,10 +16,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -31,7 +27,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -42,8 +37,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
-import org.controlsfx.dialog.Dialogs;
 import org.controlsfx.dialog.Dialog.Actions;
+import org.controlsfx.dialog.Dialogs;
 
 import de.vbl.ediliste.controller.subs.KontaktPersonAuswaehlenController;
 import de.vbl.ediliste.model.EdiEintrag;
@@ -409,7 +404,7 @@ public class EdiKomponenteController implements Initializable  {
     void actionAddKontaktperson(ActionEvent event) {
     	logger.entry();
     	Stage dialog = new Stage(StageStyle.UTILITY);
-    	KontaktPersonAuswaehlenController controller = loadKontaktPersonAuswahl(dialog);
+    	KontaktPersonAuswaehlenController controller = mainCtr.loadKontaktPersonAuswahl(dialog);
     	if (controller != null) {
     		dialog.showAndWait();
     		if (controller.getResponse() == Actions.OK) {
@@ -430,39 +425,39 @@ public class EdiKomponenteController implements Initializable  {
 		dataIsChanged.set(true);
     }
     
-    private KontaktPersonAuswaehlenController loadKontaktPersonAuswahl(Stage dialog) {
-    	KontaktPersonAuswaehlenController controller = null;
-    	FXMLLoader loader = load("subs/KontaktPersonAuswaehlen.fxml");
-    	if (loader != null) {
-    		controller = loader.getController();
-    		controller.start(primaryStage, mainCtr, entityManager);
-    		Parent root = loader.getRoot();
-    		Scene scene = new Scene(root);
-    		dialog.initModality(Modality.APPLICATION_MODAL);
-    		dialog.initOwner(primaryStage);
-    		dialog.setTitle(primaryStage.getTitle());
-    		dialog.setScene(scene);
-    	}
-    	return controller;
-	}
+//    private KontaktPersonAuswaehlenController loadKontaktPersonAuswahl(Stage dialog) {
+//    	KontaktPersonAuswaehlenController controller = null;
+//    	FXMLLoader loader = load("subs/KontaktPersonAuswaehlen.fxml");
+//    	if (loader != null) {
+//    		controller = loader.getController();
+//    		controller.start(primaryStage, mainCtr, entityManager);
+//    		Parent root = loader.getRoot();
+//    		Scene scene = new Scene(root);
+//    		dialog.initModality(Modality.APPLICATION_MODAL);
+//    		dialog.initOwner(primaryStage);
+//    		dialog.setTitle(primaryStage.getTitle());
+//    		dialog.setScene(scene);
+//    	}
+//    	return controller;
+//	}
     
-    private FXMLLoader load(String ressourceName) {
-    	FXMLLoader loader = new FXMLLoader();
-    	loader.setLocation(getClass().getResource(ressourceName));
-    	if (loader.getLocation()==null) {
-    		String msg = "Resource \"" + ressourceName + "\" nicht gefunden";
-    		mainCtr.setErrorText("FEHLER: " + msg);
-    		logger.error(msg);
-    	}
-    	try {
-    		loader.load();
-    	} catch (IOException e) {
-    		mainCtr.setErrorText("FEHLER: " + e.getMessage());
-    		logger.error(e);
-//    		e.printStackTrace();
-    	}
-    	return loader;
-    }
+//    private FXMLLoader load(String ressourceName) {
+//    	FXMLLoader loader = new FXMLLoader();
+//    	loader.setLocation(getClass().getResource(ressourceName));
+//    	if (loader.getLocation()==null) {
+//    		String msg = "Resource \"" + ressourceName + "\" nicht gefunden";
+//    		mainCtr.setErrorText("FEHLER: " + msg);
+//    		logger.error(msg);
+//    	}
+//    	try {
+//    		loader.load();
+//    	} catch (IOException e) {
+//    		mainCtr.setErrorText("FEHLER: " + e.getMessage());
+//    		logger.error(e);
+////    		e.printStackTrace();
+//    	}
+//    	return loader;
+//    }
     
 	public final ObjectProperty<EdiKomponente> komponenteProperty() {
 		return edikomponente;

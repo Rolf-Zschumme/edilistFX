@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane minHeight="389.0" minWidth="440.0" prefHeight="543.0" prefWidth="814.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.ediliste.controller.subs.DokumentAuswaehlenController">
+   <top>
+      <AnchorPane minHeight="60.0">
+         <children>
+            <Label alignment="CENTER" prefHeight="60.0" prefWidth="952.0" text="Dokument auswählen und Referenz  übernehmen" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" BorderPane.alignment="CENTER">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+   </top>
+   <bottom>
+<VBox>
+<children>
+<AnchorPane>
+<children><Label fx:id="lbHinweis" alignment="CENTER" prefHeight="17.0" prefWidth="814.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+</children>
+</AnchorPane>
+      <HBox alignment="CENTER" prefHeight="64.0" prefWidth="760.0" spacing="25.0" BorderPane.alignment="CENTER">
+         <children>
+            <Button fx:id="btnOK" defaultButton="true" disable="true" mnemonicParsing="false" onAction="#okPressed" prefWidth="100.0" text="OK" textAlignment="CENTER" />
+            <Button cancelButton="true" mnemonicParsing="false" onAction="#escapePressed" prefWidth="100.0" text="Abbruch" />
+         </children>
+      </HBox>
+</children>
+</VBox>
+   </bottom>
+<center>
+<VBox>
+<children><ToolBar prefWidth="200.0">
+  <items>
+<HBox spacing="8.0">
+<children><Label maxHeight="1.7976931348623157E308" text="Repository:" /><ComboBox fx:id="cmbRepository" prefWidth="120.0" /><Label maxHeight="1.7976931348623157E308" text="Stufe 1:" /><ComboBox fx:id="cmbFirstLevel" prefWidth="180.0" /><Label maxHeight="1.7976931348623157E308" text="Such-Text:" /><TextField fx:id="tfSearch" text="TSpez_" />
+</children>
+</HBox>
+    <Button fx:id="btnSearch" mnemonicParsing="false" onAction="#searchPressed" text="suche starten" />
+  </items>
+</ToolBar>
+<AnchorPane>
+<children>
+                  <TableView fx:id="tableDokuLinkAuswahl" prefHeight="419.0" prefWidth="814.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" BorderPane.alignment="CENTER">
+                    <columns>
+                      <TableColumn fx:id="tColDokumentVorhaben" maxWidth="75.0" prefWidth="75.0" text="Vorhaben" />
+                        <TableColumn fx:id="tColDokumentDatum" maxWidth="100.0" minWidth="20.0" prefWidth="100.0" text="Datum" />
+                      <TableColumn fx:id="tColDokumentName" maxWidth="800.0" minWidth="350.0" prefWidth="-1.0" text="Betzeichnung des Dokumentes" />
+                        <TableColumn fx:id="tColDokumentPfad" maxWidth="800.0" minWidth="350.0" prefWidth="-1.0" text="Pfad" />
+                    </columns>
+                  </TableView>
+</children>
+</AnchorPane>
+</children>
+</VBox>
+</center>
+</BorderPane>

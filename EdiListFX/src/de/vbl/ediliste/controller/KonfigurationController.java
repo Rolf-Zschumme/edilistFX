@@ -36,6 +36,15 @@ import de.vbl.ediliste.model.EdiEintrag;
 import de.vbl.ediliste.model.EdiEmpfaenger;
 import de.vbl.ediliste.model.Konfiguration;
 
+/*
+ * Konfiguration: 
+ * 
+ *  - gehört zu genau einer Integration und 
+ *  - besteht aus einer oder mehreren EDI-Nummern
+ * 
+ */
+
+
 public class KonfigurationController {
 	private static final Logger logger = LogManager.getLogger(KonfigurationController.class.getName());
 	private static Stage primaryStage = null;
