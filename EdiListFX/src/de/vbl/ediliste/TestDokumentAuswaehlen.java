@@ -1,22 +1,26 @@
 package de.vbl.ediliste;
 
+import javax.persistence.EntityManager;
+
 import org.controlsfx.dialog.Dialog.Actions;
 
 import de.vbl.ediliste.controller.EdiMainController;
 import de.vbl.ediliste.controller.subs.DokumentAuswaehlenController;
+import de.vbl.ediliste.model.DokuLink;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
 
 public class TestDokumentAuswaehlen extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-
-		
 		EdiMainController mainCtr = new EdiMainController();
 		mainCtr.setupEntityManager();
-		mainCtr.start(primaryStage);
+		EntityManager em = mainCtr.getEntityManager();
+		mainCtr.setPrimaryStage(primaryStage);
+		primaryStage.setTitle("Test:KontaktPersonAuswaehlen");
 		
     	Stage dialog = new Stage(StageStyle.UTILITY);
     	DokumentAuswaehlenController controller = mainCtr.loadDokumentAuswahl(dialog);
@@ -24,6 +28,13 @@ public class TestDokumentAuswaehlen extends Application {
     		dialog.showAndWait();
     		if (controller.getResponse() == Actions.OK) {
     			System.out.println("ok");
+    			DokuLink dokuLink = controller.getSelectedDokuLink();
+    			System.out.println("Name: " + dokuLink.getName());
+    			System.out.println("Repo: " + dokuLink.getRepository().getName());
+    			em.getTransaction().begin();
+    			em.persist(dokuLink);
+    			System.out.println("ID  : " + dokuLink.getId());
+    			em.getTransaction().commit();
     		}
     	}
 		

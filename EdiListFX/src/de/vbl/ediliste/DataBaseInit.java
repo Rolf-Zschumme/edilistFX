@@ -83,6 +83,7 @@ public class DataBaseInit {
 	private static void generateRepository() {
 		Repository repro = new Repository();
 		
+		repro.setId(1L);
 		repro.setName("QS-Akte");
 		repro.setLocation("svn://itneu/SE-Akten");
 		repro.setStartPfad("/03_QS-Akte");

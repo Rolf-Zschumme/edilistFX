@@ -70,7 +70,7 @@ public class EdiMainController {
 
 	private static String dbName;
 	private static int maxEdiNr;
-	private Stage primaryStage;
+	private static Stage primaryStage;
     private EntityManager entityManager;
     private ObservableList<EdiEintrag> ediEintraegeList = FXCollections.observableArrayList();
     private ObservableList<EdiPartner> ediPartnerList = FXCollections.observableArrayList();    
@@ -167,14 +167,15 @@ public class EdiMainController {
     public void start(Stage stage) {
     	primaryStage = stage;
     	primaryStage.setTitle(APPL_NAME);
-    	EdiEintragController.start(primaryStage, this, entityManager);
-    	EdiPartnerController.start(primaryStage, this, entityManager);
-    	EdiSystemController.start(primaryStage, this, entityManager);
-    	EdiKomponenteController.start(primaryStage, this, entityManager);
-    	IntegrationController.start(primaryStage, this, entityManager);
-    	KonfigurationController.start(primaryStage, this, entityManager);
-    	KontaktPersonController.start(primaryStage, this, entityManager);
-    	GeschaeftsObjektController.start(primaryStage, this, entityManager);
+    	
+    	EdiEintragController.setParent(this);
+    	EdiPartnerController.setParent(this);
+    	EdiSystemController.setParent(this);
+    	EdiKomponenteController.setParent(this);
+    	IntegrationController.setParent(this);
+    	KonfigurationController.setParent(this);
+    	KontaktPersonController.setParent(this);
+    	GeschaeftsObjektController.setParent(this);
         
     	// Check for data changes on close request from MainWindow
     	primaryStage.setOnCloseRequest(event -> {
@@ -182,6 +183,18 @@ public class EdiMainController {
     			event.consume();
     		}
     	});
+    }
+    
+	public void setPrimaryStage(Stage primaryStage) {
+		EdiMainController.primaryStage = primaryStage;
+	}
+	
+    static public Stage getStage() {
+    	return primaryStage;
+    }
+    	
+    public EntityManager getEntityManager() {
+    	return entityManager;
     }
     
     public void setInfoText(String txt) {
@@ -488,7 +501,6 @@ public class EdiMainController {
 //				p1.anzSystemeProperty().set(p.anzSystemeProperty().get());
 				p1.anzKomponentenProperty().set(p.anzKomponentenProperty().get());
 			}
-				
 		}
 	}
 
@@ -805,6 +817,7 @@ public class EdiMainController {
     	
 //    	String db = (String) factory.getProperties().get("javax.persistence.jdbc.url");
 //    	System.out.println("DB: " + db);
+    	
     	entityManager = factory.createEntityManager();
     	entityManager.setProperty("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH);
     	// Explanation for CacheStoreMode:
@@ -871,4 +884,5 @@ public class EdiMainController {
         assert tColAuswahlGeschaeftsobjektName != null : "fx:id=\"tColAuswahlGeschaeftsobjektName\" was not injected: check your FXML file 'EdiMain.fxml'.";
         logger.info("passed");
     }
+
 }

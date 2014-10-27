@@ -1,9 +1,16 @@
 package de.vbl.ediliste.controller.subs;
 
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Collection;
+import java.util.List;
 import java.util.ResourceBundle;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -13,12 +20,17 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,12 +48,13 @@ public class DokumentAuswaehlenController implements Initializable {
 	private static EdiMainController mainController;
     private static EntityManager entityManager = null;
     
+    private ObservableList<Repository> reposiList = FXCollections.observableArrayList();
     private ObservableList<DokuLink> dokuLinkList = FXCollections.observableArrayList();
     private ObservableList<String> firstLevelList = FXCollections.observableArrayList();
 	/**
 	 * injection from 'DokumentAuswaehlen.fxml'
 	 */
-	@FXML private ComboBox<String> cmbRepository; 
+	@FXML private ComboBox<Repository> cmbRepository; 
 	@FXML private ComboBox<String> cmbFirstLevel; 
 	@FXML private TextField tfSearch; 
     
@@ -50,21 +63,23 @@ public class DokumentAuswaehlenController implements Initializable {
     @FXML private TableColumn<DokuLink, String> tColDokumentName;
     @FXML private TableColumn<DokuLink, String> tColDokumentPfad;
     @FXML private TableColumn<DokuLink, String> tColDokumentRevision;
-    @FXML private TableColumn<DokuLink, String> tColDokumentDatum;
+    @FXML private TableColumn<DokuLink, LocalDateTime> tColDokumentDatum;
     
     @FXML private Label     lbHinweis;
-    @FXML private Button    btnSearch; 
+    @FXML private Button    btnSearch;
+    @FXML private Button    btnOK;
 
-//  private BooleanProperty listIsNotSelected = new SimpleBooleanProperty();
+    private DokuLink selDokuLink = null;
+    private BooleanProperty listIsNotSelected = new SimpleBooleanProperty();
     
-    private String aktRepository = "QS-Akte";
+    private Repository aktRepository = null;
     private String searchText = "TSpez_0";
     private Actions retAction = Actions.CLOSE;
     
+    final static String filename = "DokumentAuswaehlen.fxml";
+    final static String errtxt = "' was not injected: check FXML-file '" + filename + "'.";
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-    	final String filename = "DokumentAuswaehlen.xml";
-    	final String errtxt = "' was not injected: check FXML-file '" + filename + "'.";
         try {
         	assert tableDokuLinkAuswahl != null : "fixid='tableDokuLinkAuswahl" + errtxt; 
         	assert cmbRepository 		!= null : "fx:id='cmbRepository" 		+ errtxt;
@@ -72,37 +87,80 @@ public class DokumentAuswaehlenController implements Initializable {
         	assert tfSearch      		!= null : "fx:id='tfsearch"      		+ errtxt;
         	assert btnSearch     		!= null : "fx:id='btnSearch"     		+ errtxt;
         	assert lbHinweis     		!= null : "fx:id='lbHinweis"     		+ errtxt;
+        	assert btnOK	     		!= null : "fx:id='btnOK"	     		+ errtxt;
 		} catch (AssertionError e) {
 			logger.error(e.getMessage(), e);
 		}
-        cmbRepository.getSelectionModel().select(aktRepository);
+        
+		cmbRepository.setCellFactory((cmbBx) -> {
+			return new ListCell<Repository>() {
+				@Override
+				protected void updateItem(Repository repo, boolean empty) {
+					super.updateItem(repo, empty);
+					if (repo == null || empty) {
+						setText(null);
+					} else {
+						setText(repo.getName());
+					}
+				}
+			};
+		});
+		cmbRepository.setConverter(new StringConverter<Repository>() {
+			@Override
+			public String toString(Repository repo) {
+				if (repo == null) {
+					return null;
+				} else {
+					return repo.getName();
+				}
+			}
+			@Override
+			public Repository fromString(String string) {
+				return null; // No conversion fromString needed
+			}
+		});
+		cmbRepository.valueProperty().addListener((ov, oldValue, newValue) -> {
+			System.out.println("cmbReposity.valueProperty().addListener wurde gerufen: " + newValue);
+			newValue.open();
+			aktRepository = newValue;
+		});
+
         getFirstLevels();
         cmbFirstLevel.setItems(firstLevelList);
         cmbFirstLevel.getSelectionModel().select(1);
-        
         tfSearch.setText(searchText);
         
 		tableDokuLinkAuswahl.setItems(dokuLinkList);
 		tColDokumentVorhaben.setCellValueFactory(cellData -> cellData.getValue().vorhabenProperty());
 		tColDokumentName.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
 		tColDokumentPfad.setCellValueFactory(cellData -> cellData.getValue().pfadProperty());
-//		tColDokumentDatum.setCellValueFactory(cellData -> cellData.getValue().);
-
-		cmbRepository.valueProperty().addListener((ov, oldValue, newValue) -> {
-			aktRepository = newValue;
+		tColDokumentDatum.setCellValueFactory(cellData -> cellData.getValue().datumProperty());
+		
+		DateTimeFormatter dtf = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT, FormatStyle.SHORT);
+		
+		tColDokumentDatum.setCellFactory(column -> {
+			return new TableCell<DokuLink, LocalDateTime>() {
+				@Override
+				protected void updateItem (LocalDateTime item, boolean empty) {
+					super.updateItem(item, empty);
+					if (item == null || empty) {
+						setText(null);
+						setStyle("");
+					} else {
+						setText(dtf.format(item));
+					}
+				}
+			};
 		});
 
-		
-    	tfSearch.textProperty().addListener((ov, oldValue, newValue) ->  {
+		tfSearch.textProperty().addListener((ov, oldValue, newValue) ->  {
     		searchText = newValue.trim();
     		lbHinweis.setText("");
     	}); 
     	
-//    	listIsNotSelected.bind(tabDokuLinkListe.selectedProperty().and(Bindings.isNull(tableKontaktAuswahl.getSelectionModel().selectedItemProperty())));
-//    	outlookIsNotSelected.bind(tabOutlookAuswahl.selectedProperty().and(Bindings.isEmpty(tfNummerOutlook.promptTextProperty())));
-//    	newPersonNotEntered.bind(tabNeueingabe.selectedProperty().and(Bindings.not(nachnameFilled)));
-//    	
-//    	btnOK.disableProperty().bind(listIsNotSelected.or(outlookIsNotSelected).or(newPersonNotEntered));
+    	listIsNotSelected.bind(Bindings.isNull(tableDokuLinkAuswahl.getSelectionModel().selectedItemProperty()));
+    	
+    	btnOK.disableProperty().bind(listIsNotSelected);
     	
     }
 
@@ -113,7 +171,27 @@ public class DokumentAuswaehlenController implements Initializable {
     	DokumentAuswaehlenController.mainController = mainController;
 		applName = primaryStage.getTitle();
 		
-    	tfSearch.requestFocus();
+		readRepositoriesFromDB(entityManager);
+		
+		if (reposiList.size() < 1) {
+			lbHinweis.setText("Kein Repositry verfügbar. Bitte eintragen!");
+			lbHinweis.setTextFill(Color.RED);
+			btnSearch.disableProperty().setValue(true);
+			tfSearch.disableProperty().setValue(true);
+		} else {
+			cmbRepository.getSelectionModel().select(0);
+			tfSearch.requestFocus();
+		}
+		
+	}
+
+	private void readRepositoriesFromDB(EntityManager em) {
+    	TypedQuery<Repository> tq = entityManager.createQuery(
+				"SELECT r FROM Repository r ORDER BY r.name", Repository.class);
+		List<Repository> aktuList = tq.getResultList();
+		reposiList.retainAll(aktuList);
+		reposiList.addAll(aktuList);
+		cmbRepository.setItems(reposiList);
 	}
 
 	@FXML
@@ -125,9 +203,9 @@ public class DokumentAuswaehlenController implements Initializable {
 		lbHinweis.setText("");
 		Collection<DokuLink> dokuLinkCollection = null; 
 		try {
-			Repository repository = new Repository(aktRepository, entityManager);
+//			Repository repository = new Repository(aktRepository.getName(), entityManager);
 			String aktFirstLevel = cmbFirstLevel.getSelectionModel().getSelectedItem();
-			dokuLinkCollection = repository.findEntries(searchText, aktFirstLevel);
+			dokuLinkCollection = aktRepository.findtESTEntries(searchText, aktFirstLevel);
 			dokuLinkList.clear();
 			if (aktFirstLevel == "") {
 				dokuLinkList.addAll(dokuLinkCollection);
@@ -141,6 +219,7 @@ public class DokumentAuswaehlenController implements Initializable {
 			System.out.println("fertig");
 			
 		} catch (Exception e) {
+			System.out.println(e.getMessage());
 			e.printStackTrace();
 		}
 	}
@@ -150,22 +229,9 @@ public class DokumentAuswaehlenController implements Initializable {
     	if (applName == null && mainController == null && primaryStage == null ) {
     		// TODO just for suppressing "unused" warning;
     	}
-//    	Tab akttab = tabPane.getSelectionModel().getSelectedItem();
-    	
-//    	if (tabDokuLinkListe.isSelected()) {
-//    		kontaktperson = tableKontaktAuswahl.getSelectionModel().selectedItemProperty().get();
-//    		retAction = Actions.OK;
-//    		close(event);
-//    	} else if ( tabOutlookAuswahl.isSelected()) {
-//    		
-//    		// TODO
-//    		
-//    	} else if ( tabNeueingabe.isSelected()) {
-//    		if (saveInputData() == true) {
-//    			retAction = Actions.OK;
-//    			close(event);
-//    		}
-//    	}	
+		selDokuLink = tableDokuLinkAuswahl.getSelectionModel().selectedItemProperty().get();
+		retAction = Actions.OK;
+		close(event);
     }
 
 	@FXML
@@ -183,6 +249,12 @@ public class DokumentAuswaehlenController implements Initializable {
     public Actions getResponse () {
     	return retAction;
     }
+    
+    public DokuLink getSelectedDokuLink () {
+    	selDokuLink.setRepository(aktRepository);
+    	return selDokuLink;
+    }
+    
     
 	private void getFirstLevels() {
 		firstLevelList.clear();

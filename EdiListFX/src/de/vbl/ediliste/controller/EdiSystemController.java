@@ -70,12 +70,12 @@ public class EdiSystemController {
     	this.ediSystem = new SimpleObjectProperty<>(this, "ediSystem", null);
     }
 
-	public static void start(Stage 			   primaryStage, 
-							 EdiMainController mainController, 
-							 EntityManager     entityManager) {
-		EdiSystemController.primaryStage = primaryStage;
+	public static void setParent(EdiMainController mainController) {
+		logger.entry();
 		EdiSystemController.mainCtr = mainController;
-		EdiSystemController.entityManager = entityManager;
+		EdiSystemController.primaryStage = EdiMainController.getStage();
+		EdiSystemController.entityManager = mainController.getEntityManager();
+		logger.exit();
 	}
 
 	@FXML

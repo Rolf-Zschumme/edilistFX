@@ -14,7 +14,8 @@ public class TestKontaktPersonAuswaehlen extends Application {
 	public void start(Stage primaryStage) {
 		EdiMainController mainCtr = new EdiMainController();
 		mainCtr.setupEntityManager();
-		mainCtr.start(primaryStage);
+		mainCtr.setPrimaryStage(primaryStage);
+		primaryStage.setTitle("Test:KontaktPersonAuswaehlen");
 		
     	Stage dialog = new Stage(StageStyle.UTILITY);
     	KontaktPersonAuswaehlenController controller = mainCtr.loadKontaktPersonAuswahl(dialog);

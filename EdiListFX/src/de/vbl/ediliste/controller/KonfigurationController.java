@@ -76,13 +76,12 @@ public class KonfigurationController {
     	this.ediEintragsSet = FXCollections.observableSet();
     }
 
-	public static void start(Stage 			   primaryStage, 
-							 EdiMainController mainController, 
-							 EntityManager     entityManager) {
+	public static void setParent(EdiMainController mainController) {
 		logger.entry();
-		KonfigurationController.primaryStage = primaryStage;
 		KonfigurationController.mainCtr = mainController;
-		KonfigurationController.entityManager = entityManager;
+		KonfigurationController.primaryStage = EdiMainController.getStage();
+		KonfigurationController.entityManager = mainController.getEntityManager();
+		logger.exit();
 	}
 
 	@FXML

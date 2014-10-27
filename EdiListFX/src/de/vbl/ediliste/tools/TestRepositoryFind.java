@@ -46,22 +46,22 @@ public class TestRepositoryFind {
 //		} catch (Exception e) {
 //			e.printStackTrace();
 //		}
-		testKontaktPerson();
+//		testKontaktPerson();
 	}
 	
 	
-	static private void testKontaktPerson() {
-		EdiMainController mainCtr = new EdiMainController();
-    	Stage dialog = new Stage(StageStyle.UTILITY);
-    	KontaktPersonAuswaehlenController controller = mainCtr.loadKontaktPersonAuswahl(dialog);
-    	if (controller != null) {
-    		dialog.showAndWait();
-    		if (controller.getResponse() == Actions.OK) {
-    			System.out.println("ok");
-//    			kontaktpersonList.add(controller.getKontaktperson());
-    		}
-    	}
-	}
+//	static private void testKontaktPerson() {
+//		EdiMainController mainCtr = new EdiMainController();
+//    	Stage dialog = new Stage(StageStyle.UTILITY);
+//    	KontaktPersonAuswaehlenController controller = mainCtr.loadKontaktPersonAuswahl(dialog);
+//    	if (controller != null) {
+//    		dialog.showAndWait();
+//    		if (controller.getResponse() == Actions.OK) {
+//    			System.out.println("ok");
+////    			kontaktpersonList.add(controller.getKontaktperson());
+//    		}
+//    	}
+//	}
 	
 //	private void 
 	

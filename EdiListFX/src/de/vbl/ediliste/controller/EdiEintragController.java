@@ -176,11 +176,13 @@ public class EdiEintragController {
 		readOnlyAccess.set(false);
 	}
 
-	public static void start(Stage primaryStage, EdiMainController mainController, EntityManager entityManager) {
-		EdiEintragController.primaryStage = primaryStage;
-		EdiEintragController.entityManager = entityManager;
+	public static void setParent(EdiMainController mainController) {
+		logger.entry();
 		EdiEintragController.mainController = mainController;
+		EdiEintragController.primaryStage = EdiMainController.getStage();
+		EdiEintragController.entityManager = mainController.getEntityManager();
 		applName = primaryStage.getTitle();
+		logger.exit();
 	}
 
     @FXML 

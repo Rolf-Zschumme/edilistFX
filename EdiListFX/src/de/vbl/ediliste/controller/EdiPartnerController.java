@@ -75,13 +75,11 @@ public class EdiPartnerController {
     	this.ediSystemAnzahl = new SimpleIntegerProperty(0);
     }
 
-	public static void start(Stage 			   primaryStage, 
-							 EdiMainController mainController, 
-							 EntityManager     entityManager) {
+	public static void setParent(EdiMainController mainController) {
 		logger.entry(primaryStage);
-		EdiPartnerController.primaryStage = primaryStage;
 		EdiPartnerController.mainCtr = mainController;
-		EdiPartnerController.entityManager = entityManager;
+		EdiPartnerController.primaryStage = EdiMainController.getStage();
+		EdiPartnerController.entityManager = mainController.getEntityManager();
 		logger.exit();
 	}
 

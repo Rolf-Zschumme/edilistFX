@@ -69,13 +69,12 @@ public class IntegrationController {
     	this.ediEintragsSet = FXCollections.observableSet();
     }
 
-	public static void start(Stage 			   primaryStage, 
-							 EdiMainController mainController, 
-							 EntityManager     entityManager) {
+	public static void setParent(EdiMainController mainController) {
 		logger.entry();
-		IntegrationController.primaryStage = primaryStage;
 		IntegrationController.mainCtr = mainController;
-		IntegrationController.entityManager = entityManager;
+		IntegrationController.primaryStage = EdiMainController.getStage();
+		IntegrationController.entityManager = mainController.getEntityManager();
+		logger.exit();
 	}
 
 	@FXML

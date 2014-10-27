@@ -66,12 +66,12 @@ public class KontaktPersonController {
     	this.kontaktPerson = new SimpleObjectProperty<>(this, "kontaktPerson", null);
     }
 
-	public static void start(Stage 			   primaryStage, 
-							 EdiMainController mainController, 
-							 EntityManager     entityManager) {
-		KontaktPersonController.primaryStage = primaryStage;
+	public static void setParent(EdiMainController mainController) {
+		logger.entry();
 		KontaktPersonController.mainCtr = mainController;
-		KontaktPersonController.entityManager = entityManager;
+		KontaktPersonController.primaryStage = EdiMainController.getStage();
+		KontaktPersonController.entityManager = mainController.getEntityManager();
+		logger.exit();
 	}
 
 	@FXML

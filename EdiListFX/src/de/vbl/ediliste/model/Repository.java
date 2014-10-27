@@ -1,15 +1,19 @@
 package de.vbl.ediliste.model;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.Id;
-import javax.persistence.Column;
 import javax.persistence.Transient;
 import javax.persistence.TypedQuery;
 
@@ -48,6 +52,7 @@ public class Repository implements Serializable {
 	
 	public Repository() {
 		super();
+		DAVRepositoryFactory.setup();
 	}   
 
 	public Repository(String name, EntityManager em) {
@@ -63,7 +68,6 @@ public class Repository implements Serializable {
 		if (repoList.size() > 1) {
 			System.out.println("HINWEIS: Repository " + name + " nicht eindeutig");
 		}
-		DAVRepositoryFactory.setup();
 
 		Repository aktRepo = repoList.get(0);
 		this.id        = aktRepo.id;
@@ -72,6 +76,9 @@ public class Repository implements Serializable {
 		this.startPfad = aktRepo.startPfad;
 		this.benutzer  = aktRepo.benutzer; 
 		
+	}
+	
+	public void open () {
 		try {
 			SVNURL url = SVNURL.parseURIEncoded(this.location);
 			svn_repository = SVNRepositoryFactory.create(url);
@@ -80,9 +87,11 @@ public class Repository implements Serializable {
 		}
 		ISVNAuthenticationManager authManager = SVNWCUtil
 				.createDefaultAuthenticationManager(
-						this.benutzer, aktRepo.getPasswort());
+						this.benutzer, this.getPasswort());
+
 		svn_repository.setAuthenticationManager(authManager);
 	}
+	
 	
 	public long getId() {
 		return this.id;
@@ -130,7 +139,7 @@ public class Repository implements Serializable {
 	
     public Collection<DokuLink> findEntries(String name, String firstLevel) {
 		if (svn_repository == null) {
-			throw new RuntimeException("Repository is null");
+			throw new RuntimeException("Repository ist nicht göffnet");
 		}
 		Collection<DokuLink> dokuLinkList = new ArrayList<DokuLink>();
 		
@@ -144,6 +153,54 @@ public class Repository implements Serializable {
 		}
 		return dokuLinkList;
 	}
+    
+	public Collection<DokuLink> findtESTEntries(String name, String firstLevel) 
+	{
+		Collection<DokuLink> dokuLinkList = new ArrayList<DokuLink>();
+		int startpfadlength = startPfad.length();
+		
+		DokuLink dok = null; 
+		SVNURL url = null;
+		SVNURL root = null;
+		try {
+			url  = SVNURL.parseURIEncoded(this.location);
+			root = null;
+		} catch (SVNException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Calendar cal = Calendar.getInstance(); Date createdDate;
+		String docName = name + "_Testdokument.docx";
+		String path = "/ddd/cccc/eeee/eeee/hhhh/VH_3205";
+		cal.set(2013,7,1,12,58,30);			
+		createdDate = cal.getTime();
+		
+		SVNDirEntry entry = new SVNDirEntry(url, root, docName,  null, 32000L, false, 1001, createdDate, "Author");
+		String vorhaben = "     ";
+		DokuLink.DokuStatus status = DokuStatus.OHNE_VORHABEN;
+		if (path.contains("abgenommen")) {
+			vorhaben = " abgen.";
+			status = DokuStatus.ABGENOMMEN;
+		} else {	
+			int vh_startpos = path.lastIndexOf("/VH_");
+			if (vh_startpos > 0) {
+				vorhaben = path.substring(vh_startpos + 1, vh_startpos + 8);
+			}
+			status = DokuStatus.NUR_VORHABEN;
+		}
+		for (int i=0; i<5; ++i) {
+			dok = new DokuLink();
+			dok.setName(i + entry.getName());
+			dok.setPfad(path.substring(startpfadlength));
+			dok.setRevision(entry.getRevision());
+			dok.setVorhaben(vorhaben);
+			dok.setStatus(status);
+			dok.setDatum(LocalDateTime.ofInstant(entry.getDate().toInstant(), ZoneId.systemDefault()));
+			dokuLinkList.add(dok);
+		}
+		return dokuLinkList;
+	}
+    
 
 	private static void findEntries(SVNRepository 		 	 svn_repo, 
 									String 		  		     path, 
@@ -179,7 +236,7 @@ public class Repository implements Serializable {
 				dok.setRevision(entry.getRevision());
 				dok.setVorhaben(vorhaben);
 				dok.setStatus(status);
-				dok.setDatum(entry.getDate());
+				dok.setDatum(LocalDateTime.ofInstant(entry.getDate().toInstant(), ZoneId.systemDefault()));
 				dokuLinkList.add(dok);
 			}
 			if (entry.getKind() == SVNNodeKind.DIR) {

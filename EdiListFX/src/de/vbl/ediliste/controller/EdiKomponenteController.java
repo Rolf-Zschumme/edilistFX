@@ -81,13 +81,12 @@ public class EdiKomponenteController implements Initializable  {
     	kontaktpersonList = FXCollections.observableArrayList();
     }
 
-	public static void start(Stage 			   primaryStage, 
-							 EdiMainController mainController, 
-							 EntityManager     entityManager) {
+	public static void setParent(EdiMainController mainController) {
 		logger.entry();
-		EdiKomponenteController.primaryStage = primaryStage;
 		EdiKomponenteController.mainCtr = mainController;
-		EdiKomponenteController.entityManager = entityManager;
+		EdiKomponenteController.primaryStage = EdiMainController.getStage();
+		EdiKomponenteController.entityManager = mainController.getEntityManager();
+		logger.exit();
 	}
 
 	@Override

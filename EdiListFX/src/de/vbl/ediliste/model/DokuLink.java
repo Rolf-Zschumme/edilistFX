@@ -3,8 +3,10 @@ package de.vbl.ediliste.model;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -12,8 +14,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.Temporal;
-import static javax.persistence.TemporalType.TIMESTAMP;
 
 /**
  * Entity implementation class for Entity: Dokumentation
@@ -25,10 +25,10 @@ public class DokuLink implements Serializable {
 	private static final long serialVersionUID = 1L;
 	public static enum DokuStatus { OHNE_VORHABEN, NUR_VORHABEN, ABGENOMMEN, ALT_VORHABEN, NEU_VORHABEN };
 	
+	private long id;
 	private StringProperty name;
-	private Long id;
 	private StringProperty pfad;
-	private Date datum;
+	private ObjectProperty<LocalDateTime> datum;
 	private long revision;
 	private Repository repository;
 	private StringProperty vorhaben;
@@ -100,15 +100,23 @@ public class DokuLink implements Serializable {
 	}
 
 	// ------------------------------------------------------------------------
-	@Temporal(TIMESTAMP) 
-	public Date getDatum() {
+	public ObjectProperty<LocalDateTime> datumProperty() {
 		return datum;
 	}
-
-	public void setDatum(Date param) {
-		this.datum = param;
+	
+	public LocalDateTime getDatum() {
+		return datum.get();
 	}
 
+	public void setDatum(LocalDateTime param) {
+		if (datum==null) {
+			datum = new SimpleObjectProperty<LocalDateTime>(param);
+		} else {
+			datum.set(param);
+		}
+	}
+
+	// ------------------------------------------------------------------------
 	public long getRevision() {
 		return revision;
 	}

@@ -49,7 +49,7 @@
                   <TableView fx:id="tableDokuLinkAuswahl" prefHeight="419.0" prefWidth="814.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" BorderPane.alignment="CENTER">
                     <columns>
                       <TableColumn fx:id="tColDokumentVorhaben" maxWidth="75.0" prefWidth="75.0" text="Vorhaben" />
-                        <TableColumn fx:id="tColDokumentDatum" maxWidth="100.0" minWidth="20.0" prefWidth="100.0" text="Datum" />
+                        <TableColumn fx:id="tColDokumentDatum" maxWidth="200.0" minWidth="20.0" prefWidth="110.0" text="Datum" />
                       <TableColumn fx:id="tColDokumentName" maxWidth="800.0" minWidth="350.0" prefWidth="-1.0" text="Betzeichnung des Dokumentes" />
                         <TableColumn fx:id="tColDokumentPfad" maxWidth="800.0" minWidth="350.0" prefWidth="-1.0" text="Pfad" />
                     </columns>

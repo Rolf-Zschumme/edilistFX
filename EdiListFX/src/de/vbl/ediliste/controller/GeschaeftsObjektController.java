@@ -75,13 +75,11 @@ public class GeschaeftsObjektController {
     	this.ediSystemAnzahl = new SimpleIntegerProperty(0);
     }
 
-	public static void start(Stage 			   primaryStage, 
-							 EdiMainController mainController, 
-							 EntityManager     entityManager) {
+	public static void setParent(EdiMainController mainController) {
 		logger.entry(primaryStage);
-		GeschaeftsObjektController.primaryStage = primaryStage;
 		GeschaeftsObjektController.mainCtr = mainController;
-		GeschaeftsObjektController.entityManager = entityManager;
+		GeschaeftsObjektController.primaryStage = EdiMainController.getStage();
+		GeschaeftsObjektController.entityManager = mainController.getEntityManager();
 		logger.exit();
 	}
 
