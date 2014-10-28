@@ -9,6 +9,11 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
+
+import javafx.beans.value.ChangeListener;
+import javafx.concurrent.Task;
+import javafx.beans.value.ObservableValue;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,6 +32,7 @@ import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
+import de.vbl.ediliste.model.DokuLink;
 import de.vbl.ediliste.model.DokuLink.DokuStatus;
 
 /**
@@ -137,7 +143,7 @@ public class Repository implements Serializable {
 		this.passwort = passwort;
 	}
 	
-    public Collection<DokuLink> findEntries(String name, String firstLevel) {
+    public final Collection<DokuLink> findEntries(String name, String firstLevel) {
 		if (svn_repository == null) {
 			throw new RuntimeException("Repository ist nicht göffnet");
 		}
@@ -153,54 +159,87 @@ public class Repository implements Serializable {
 		}
 		return dokuLinkList;
 	}
-    
-	public Collection<DokuLink> findtESTEntries(String name, String firstLevel) 
-	{
-		Collection<DokuLink> dokuLinkList = new ArrayList<DokuLink>();
-		int startpfadlength = startPfad.length();
+
+	public final Task<DokuLink> findTestEntries(String name, String firstLevel, Collection<DokuLink> dokuLinkList) {
+		dokuLinkList.clear();
 		
-		DokuLink dok = null; 
-		SVNURL url = null;
-		SVNURL root = null;
-		try {
-			url  = SVNURL.parseURIEncoded(this.location);
-			root = null;
-		} catch (SVNException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		Calendar cal = Calendar.getInstance(); Date createdDate;
-		String docName = name + "_Testdokument.docx";
-		String path = "/ddd/cccc/eeee/eeee/hhhh/VH_3205";
-		cal.set(2013,7,1,12,58,30);			
-		createdDate = cal.getTime();
-		
-		SVNDirEntry entry = new SVNDirEntry(url, root, docName,  null, 32000L, false, 1001, createdDate, "Author");
-		String vorhaben = "     ";
-		DokuLink.DokuStatus status = DokuStatus.OHNE_VORHABEN;
-		if (path.contains("abgenommen")) {
-			vorhaben = " abgen.";
-			status = DokuStatus.ABGENOMMEN;
-		} else {	
-			int vh_startpos = path.lastIndexOf("/VH_");
-			if (vh_startpos > 0) {
-				vorhaben = path.substring(vh_startpos + 1, vh_startpos + 8);
+		Task<DokuLink> findWorker = createfindWorker(name, firstLevel, this);
+
+		findWorker.valueProperty().addListener(new ChangeListener<DokuLink>() {
+			public void changed(ObservableValue<? extends DokuLink> observable, DokuLink oldValue, DokuLink newValue) {
+				if (newValue != null) {
+					dokuLinkList.add(newValue);
+				}	
 			}
-			status = DokuStatus.NUR_VORHABEN;
-		}
-		for (int i=0; i<5; ++i) {
-			dok = new DokuLink();
-			dok.setName(i + entry.getName());
-			dok.setPfad(path.substring(startpfadlength));
-			dok.setRevision(entry.getRevision());
-			dok.setVorhaben(vorhaben);
-			dok.setStatus(status);
-			dok.setDatum(LocalDateTime.ofInstant(entry.getDate().toInstant(), ZoneId.systemDefault()));
-			dokuLinkList.add(dok);
-		}
-		return dokuLinkList;
+		}); 
+		
+		Thread thread = new Thread(findWorker);
+		thread.setDaemon(true);
+		thread.start();
+		
+		return findWorker;
+	}
+
+	private final static  Task<DokuLink> createfindWorker(String name, String firstLevel, Repository repository) 
+	{
+		return new Task<DokuLink>() {
+			@Override
+			protected DokuLink call() throws Exception {
+				int startpfadlength = repository.getStartPfad().length();
+				
+				DokuLink dok = null; 
+				SVNURL url = null;
+				SVNURL root = null;
+				try {
+					url  = SVNURL.parseURIEncoded(repository.location);
+					root = null;
+				} catch (SVNException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				Calendar cal = Calendar.getInstance(); Date createdDate;
+				String docName = name + "_Testdokument.docx";
+				String path = "/ddd/cccc/eeee/eeee/hhhh/VH_3205";
+				cal.set(2013,7,1,12,58,30);			
+				createdDate = cal.getTime();
+				
+				SVNDirEntry entry = new SVNDirEntry(url, root, docName,  null, 32000L, false, 1001, createdDate, "Author");
+				String vorhaben = "     ";
+				DokuLink.DokuStatus status = DokuStatus.OHNE_VORHABEN;
+				if (path.contains("abgenommen")) {
+					vorhaben = " abgen.";
+					status = DokuStatus.ABGENOMMEN;
+				} else {	
+					int vh_startpos = path.lastIndexOf("/VH_");
+					if (vh_startpos > 0) {
+						vorhaben = path.substring(vh_startpos + 1, vh_startpos + 8);
+					}
+					status = DokuStatus.NUR_VORHABEN;
+				}
+				for (int i=0; i<5; ++i) {
+					simulateTime();
+					dok = new DokuLink();
+					dok.setName(i + entry.getName());
+					dok.setPfad(path.substring(startpfadlength));
+					dok.setRevision(entry.getRevision());
+					dok.setVorhaben(vorhaben);
+					dok.setStatus(status);
+					dok.setDatum(LocalDateTime.ofInstant(entry.getDate().toInstant(), ZoneId.systemDefault()));
+					updateValue(dok);
+//					dokuLinkList.add(dok);
+				}
+				return null;
+			}
+			
+		};
 	}
     
+
+	private static void simulateTime() throws InterruptedException {
+//		Random rnd = new Random(System.currentTimeMillis());
+//		long millis = rnd.nextInt(250);
+		Thread.sleep(50);
+	}
 
 	private static void findEntries(SVNRepository 		 	 svn_repo, 
 									String 		  		     path, 

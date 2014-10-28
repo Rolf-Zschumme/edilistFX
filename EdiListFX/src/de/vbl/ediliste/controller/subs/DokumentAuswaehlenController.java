@@ -4,6 +4,7 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -13,6 +14,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -136,7 +138,7 @@ public class DokumentAuswaehlenController implements Initializable {
 		tColDokumentPfad.setCellValueFactory(cellData -> cellData.getValue().pfadProperty());
 		tColDokumentDatum.setCellValueFactory(cellData -> cellData.getValue().datumProperty());
 		
-		DateTimeFormatter dtf = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT, FormatStyle.SHORT);
+		DateTimeFormatter dtf = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT);
 		
 		tColDokumentDatum.setCellFactory(column -> {
 			return new TableCell<DokuLink, LocalDateTime>() {
@@ -176,7 +178,7 @@ public class DokumentAuswaehlenController implements Initializable {
 		if (reposiList.size() < 1) {
 			lbHinweis.setText("Kein Repositry verfügbar. Bitte eintragen!");
 			lbHinweis.setTextFill(Color.RED);
-			btnSearch.disableProperty().setValue(true);
+//			btnSearch.disableProperty().setValue(true);
 			tfSearch.disableProperty().setValue(true);
 		} else {
 			cmbRepository.getSelectionModel().select(0);
@@ -201,26 +203,17 @@ public class DokumentAuswaehlenController implements Initializable {
 			return;
 		}
 		lbHinweis.setText("");
-		Collection<DokuLink> dokuLinkCollection = null; 
+		String btnSearchText = btnSearch.getText();
+		btnSearch.setText("");
 		try {
-//			Repository repository = new Repository(aktRepository.getName(), entityManager);
 			String aktFirstLevel = cmbFirstLevel.getSelectionModel().getSelectedItem();
-			dokuLinkCollection = aktRepository.findtESTEntries(searchText, aktFirstLevel);
-			dokuLinkList.clear();
-			if (aktFirstLevel == "") {
-				dokuLinkList.addAll(dokuLinkCollection);
-			}
-			else {
-				for (DokuLink dok : dokuLinkCollection) {
-					dok.setPfad(dok.getPfad().substring(aktFirstLevel.length()));
-					dokuLinkList.add(dok);
-				}
-			}
-			System.out.println("fertig");
-			
+			Task<DokuLink> w = aktRepository.findTestEntries(searchText, aktFirstLevel, dokuLinkList);
+			btnSearch.disableProperty().bind(w.runningProperty());
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
+		} finally {
+			btnSearch.setText(btnSearchText);
 		}
 	}
 	
