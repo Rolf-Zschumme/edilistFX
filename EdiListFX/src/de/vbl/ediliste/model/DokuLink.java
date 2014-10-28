@@ -4,6 +4,8 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -14,6 +16,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
+import javax.persistence.Temporal;
+import static javax.persistence.TemporalType.TIMESTAMP;
 
 /**
  * Entity implementation class for Entity: Dokumentation
@@ -28,7 +33,8 @@ public class DokuLink implements Serializable {
 	private long id;
 	private StringProperty name;
 	private StringProperty pfad;
-	private ObjectProperty<LocalDateTime> datum;
+	private ObjectProperty<LocalDateTime> datumProp;
+	private Date datum;
 	private long revision;
 	private Repository repository;
 	private StringProperty vorhaben;
@@ -100,20 +106,26 @@ public class DokuLink implements Serializable {
 	}
 
 	// ------------------------------------------------------------------------
+	@Transient
 	public ObjectProperty<LocalDateTime> datumProperty() {
-		return datum;
+		return datumProp;
 	}
 	
-	public LocalDateTime getDatum() {
-		return datum.get();
+	@Temporal(TIMESTAMP)
+	public Date getDatum() {
+		return datum;
 	}
 
-	public void setDatum(LocalDateTime param) {
-		if (datum==null) {
-			datum = new SimpleObjectProperty<LocalDateTime>(param);
-		} else {
-			datum.set(param);
+	public void setDatum(Date param) {
+		if (param != null) {
+			LocalDateTime ld = LocalDateTime.ofInstant(param.toInstant(), ZoneId.systemDefault());
+			if (datumProp == null) {
+				datumProp = new SimpleObjectProperty<LocalDateTime>(ld);
+			} else {
+				datumProp.set(ld);
+			}
 		}
+		datum = param;
 	}
 
 	// ------------------------------------------------------------------------

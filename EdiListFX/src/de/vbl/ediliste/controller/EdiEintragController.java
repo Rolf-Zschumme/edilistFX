@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -35,6 +36,9 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
@@ -61,6 +65,7 @@ import org.controlsfx.dialog.Dialogs;
 
 import de.vbl.ediliste.controller.KomponentenAuswahlController.KomponentenTyp;
 import de.vbl.ediliste.controller.subs.DokumentAuswaehlenController;
+import de.vbl.ediliste.model.DokuLink;
 import de.vbl.ediliste.model.EdiEintrag;
 import de.vbl.ediliste.model.EdiEmpfaenger;
 import de.vbl.ediliste.model.EdiIntervall;
@@ -92,6 +97,7 @@ public class EdiEintragController {
     	private EdiKomponente empfaengerKomponente[] = new EdiKomponente[MAX_EMPFAENGER];
     	private GeschaeftsObjekt geschaeftsObjekt[] = new GeschaeftsObjekt[MAX_EMPFAENGER];
     	private String ediIntervallName;
+//    	private Collection<DokuLink> dokuLink = 
     	
     	void setData (EdiEintrag s) {
     		EdiNr = s.getEdiNr();
@@ -132,6 +138,14 @@ public class EdiEintragController {
     @FXML private ComboBox<Integration> cmbIntegration;
     @FXML private Button btnNewSzenario;
     @FXML private Button btnNewConfiguration;
+
+    @FXML private TableView<DokuLink> tvDokuLinks;
+    @FXML private TableColumn<DokuLink, String> tColDokumentVorhaben;
+    @FXML private TableColumn<DokuLink, String> tColDokumentName;
+    @FXML private TableColumn<DokuLink, LocalDateTime> tColDokumentDatum;
+    @FXML private TableColumn<DokuLink, String> tColDokumentQuelle;
+    @FXML private TableColumn<DokuLink, String> tColDokumentRevision;
+    @FXML private TableColumn<DokuLink, String> tColDokumentPfad;
     
     @FXML private TextArea  taEdiBeschreibung;
     @FXML private ComboBox<String> cmbIntervall;
@@ -170,6 +184,8 @@ public class EdiEintragController {
     private Map<String,GeschaeftsObjekt> businessObjectMap; 
     private ObservableList<String> businessObjectName = FXCollections.observableArrayList();
     private ObservableList<String> ediIntervallName   = FXCollections.observableArrayList();
+    private ObservableList<DokuLink> dokuLinkList = FXCollections.observableArrayList();
+
     
 	public EdiEintragController() {
     	this.ediEintrag = new SimpleObjectProperty<>(this, "ediEintrag", null);
@@ -212,6 +228,10 @@ public class EdiEintragController {
     			org.setData(newEintrag);
     			akt.setData(newEintrag);
     			cmbIntegration.getSelectionModel().select(akt.integration);
+    			dokuLinkList.clear();
+    			if(akt.integration != null) {
+    				dokuLinkList.addAll(akt.integration.getDokuLink());
+    			}
     			cmbKonfiguration.getSelectionModel().select(akt.konfiguration);
     			tabAktEdiNr.setText(EDI_PANE_PREFIX +  newEintrag.getEdiNrStr());
     			tfBezeichnung.setText(akt.bezeichnung);
@@ -227,13 +247,14 @@ public class EdiEintragController {
     			setAktEmpfaenger();
     			
     			setLastChangeField(ediLastChange, newEintrag.getLaeDatum(), newEintrag.getLaeUser());
+    			
     		}
     		dpProduktivSeit.setValue(akt.seitDatum);
     		dpProduktivBis.setValue(akt.bisDatum);
     		dataIsChanged.set(false);
 		});
     }	
-
+    
     private void setLastChangeField(TextField tf, String dateTime, String laeUser) {
     	if (dateTime == null) {
     		tf.setText("");
@@ -337,11 +358,21 @@ public class EdiEintragController {
     	dpProduktivSeit.setOnAction(event -> {
     		akt.seitDatum = dpProduktivSeit.getValue();
     		setChangeFlag(akt.seitDatum != org.seitDatum);
+    		if (akt.bisDatum != null && akt.seitDatum.isAfter(akt.bisDatum)) {
+        		mainController.setInfoText("Seit-Datum sollte vor Bis-Datum liegen");  			
+    		} else {
+    			mainController.setInfoText("");  			
+    		}
     	});
     	
     	dpProduktivBis.setOnAction(event -> {
     		akt.bisDatum = dpProduktivBis.getValue();
     		setChangeFlag(akt.bisDatum != org.bisDatum);
+    		if (akt.seitDatum != null && akt.bisDatum.isBefore(akt.seitDatum)) {
+        		mainController.setInfoText("Bis-Datum sollte nach Set-Datum liegen");  			
+    		} else {
+    			mainController.setInfoText("");  			
+    		}
     	});
 	}
 	
@@ -378,18 +409,48 @@ public class EdiEintragController {
 			akt.integration = selIntegration;
 			readCmbKonfigurationList(akt.integration);
 		});
+		
+		tvDokuLinks.setItems(dokuLinkList);
+		tColDokumentVorhaben.setCellValueFactory(cellData -> cellData.getValue().vorhabenProperty());
+		tColDokumentName.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
+//		tColDokumentPfad.setCellValueFactory(cellData -> cellData.getValue().pfadProperty());
+		
+		tColDokumentDatum.setCellValueFactory(cellData -> cellData.getValue().datumProperty());
+		DateTimeFormatter dtf = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT);
+		tColDokumentDatum.setCellFactory(column -> {
+			return new TableCell<DokuLink, LocalDateTime>() {
+				@Override
+				protected void updateItem (LocalDateTime item, boolean empty) {
+					super.updateItem(item, empty);
+					if (item == null || empty) {
+						setText(null);
+						setStyle("");
+					} else {
+						setText(dtf.format(item));
+					}
+				}
+			};
+		});
+		
+		tColDokumentQuelle.setCellValueFactory(cellData -> cellData.getValue().getRepository().nameProperty());
+
 	}
 
     @FXML 
     void actionDocumentContextMenuRequested() {
-    	
-    	Stage dialog = new Stage(StageStyle.UTILITY);
-    	DokumentAuswaehlenController controller = mainController.loadDokumentAuswahl(dialog);
-    	if (controller != null) {
-    		dialog.showAndWait();
-    		if (controller.getResponse() == Actions.OK) {
-    			// TODO
-    			System.out.println("ok");
+    	if (akt.integration == null) {
+    		mainController.setInfoText("Bitte zuerst Integration auswählen");
+    	}
+    	else {
+    		Stage dialog = new Stage(StageStyle.UTILITY);
+    		DokumentAuswaehlenController controller = mainController.loadDokumentAuswahl(dialog);
+    		if (controller != null) {
+    			dialog.showAndWait();
+    			if (controller.getResponse() == Actions.OK) {
+        			DokuLink dokuLink = controller.getSelectedDokuLink();
+        			dokuLinkList.add(dokuLink);
+        			setChangeFlag(org.integration == null || org.integration.getDokuLink() == null);
+    			}
     		}
     	}
     }
@@ -706,7 +767,8 @@ public class EdiEintragController {
 			localDateEquals(akt.bisDatum, org.bisDatum)   &&
 			akt.bezeichnung.equals(org.bezeichnung)       &&
 			akt.beschreibung.equals(org.beschreibung)     &&
-			akt.ediIntervallName.equals(org.ediIntervallName) ) 
+			akt.ediIntervallName.equals(org.ediIntervallName) &&
+			verifyDokuLinkListIsUnchanged() == true			     )
 		{
 			logger.debug(checkmode + ": no change found -> no update");
 			return true;  
@@ -786,6 +848,20 @@ public class EdiEintragController {
 			}
 			if (akt.integration.getId() == 0L) {
 				entityManager.persist(akt.integration);
+			}
+			// if dokuLinks are removed they must be removed from org.integration 
+			if (org.integration != null && org.integration.getDokuLink() != null) {
+				for (DokuLink dok : org.integration.getDokuLink()) {
+					if (akt.integration.getDokuLink().contains(dok) == false) {
+						entityManager.remove(dok);
+						org.integration.getDokuLink().remove(dok);
+					}
+				}
+			}
+			for (DokuLink dok : akt.integration.getDokuLink()) {
+				if (dok.getId() == 0L) {
+					entityManager.persist(dok);
+				}
 			}
 			if (akt.konfiguration.getId() == 0L) {    	// new configuration for persistence
 				entityManager.persist(akt.konfiguration);
@@ -900,6 +976,20 @@ public class EdiEintragController {
 		return false;
 	}
 
+	private boolean verifyDokuLinkListIsUnchanged() {
+		Collection<DokuLink> orgDokuLink = org.integration == null ? null : org.integration.getDokuLink();
+		if ( orgDokuLink == null) {
+			return dokuLinkList.size() == 0;
+		}
+		if (( orgDokuLink.size()  != dokuLinkList.size() )	  ||
+			  orgDokuLink.containsAll(dokuLinkList) == false  ||
+			  dokuLinkList.containsAll(orgDokuLink) == false  )
+		{
+			return false;
+		}	
+		return true;
+	}
+	
 	private boolean verifyEmpfaengerAreUnchanged () {
 		for(int i=0; i < MAX_EMPFAENGER; ++i ) {
 			if (akt.empfaengerKomponente[i] != org.empfaengerKomponente[i] ||

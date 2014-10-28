@@ -29,8 +29,9 @@ public class TestDokumentAuswaehlen extends Application {
     		if (controller.getResponse() == Actions.OK) {
     			System.out.println("ok");
     			DokuLink dokuLink = controller.getSelectedDokuLink();
-    			System.out.println("Name: " + dokuLink.getName());
-    			System.out.println("Repo: " + dokuLink.getRepository().getName());
+    			System.out.println("Name : " + dokuLink.getName());
+    			System.out.println("Datum: " + dokuLink.getDatum());
+    			System.out.println("Repo : " + dokuLink.getRepository().getName());
     			em.getTransaction().begin();
     			em.persist(dokuLink);
     			System.out.println("ID  : " + dokuLink.getId());

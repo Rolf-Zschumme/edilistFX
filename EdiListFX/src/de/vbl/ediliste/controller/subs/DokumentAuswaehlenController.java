@@ -4,8 +4,6 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -18,6 +16,7 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -75,6 +74,7 @@ public class DokumentAuswaehlenController implements Initializable {
     private BooleanProperty listIsNotSelected = new SimpleBooleanProperty();
     
     private Repository aktRepository = null;
+    private String aktFirstLevel = null;
     private String searchText = "TSpez_0";
     private Actions retAction = Actions.CLOSE;
     
@@ -122,15 +122,23 @@ public class DokumentAuswaehlenController implements Initializable {
 			}
 		});
 		cmbRepository.valueProperty().addListener((ov, oldValue, newValue) -> {
-			System.out.println("cmbReposity.valueProperty().addListener wurde gerufen: " + newValue);
 			newValue.open();
 			aktRepository = newValue;
+			getFirstLevels();
+			cmbFirstLevel.setItems(firstLevelList);
+	        cmbFirstLevel.getSelectionModel().select(1);
+			lbHinweis.setText("");
 		});
 
-        getFirstLevels();
-        cmbFirstLevel.setItems(firstLevelList);
-        cmbFirstLevel.getSelectionModel().select(1);
-        tfSearch.setText(searchText);
+		cmbFirstLevel.valueProperty().addListener((ov, oldValue, newValue) -> {
+			aktFirstLevel = newValue;
+			lbHinweis.setText("");
+		});
+		
+        tfSearch.textProperty().addListener((ov, oldValue, newValue) ->  {
+        	searchText = newValue.trim();
+        	lbHinweis.setText("");
+        }); 
         
 		tableDokuLinkAuswahl.setItems(dokuLinkList);
 		tColDokumentVorhaben.setCellValueFactory(cellData -> cellData.getValue().vorhabenProperty());
@@ -155,11 +163,6 @@ public class DokumentAuswaehlenController implements Initializable {
 			};
 		});
 
-		tfSearch.textProperty().addListener((ov, oldValue, newValue) ->  {
-    		searchText = newValue.trim();
-    		lbHinweis.setText("");
-    	}); 
-    	
     	listIsNotSelected.bind(Bindings.isNull(tableDokuLinkAuswahl.getSelectionModel().selectedItemProperty()));
     	
     	btnOK.disableProperty().bind(listIsNotSelected);
@@ -178,13 +181,12 @@ public class DokumentAuswaehlenController implements Initializable {
 		if (reposiList.size() < 1) {
 			lbHinweis.setText("Kein Repositry verfügbar. Bitte eintragen!");
 			lbHinweis.setTextFill(Color.RED);
-//			btnSearch.disableProperty().setValue(true);
 			tfSearch.disableProperty().setValue(true);
 		} else {
 			cmbRepository.getSelectionModel().select(0);
 			tfSearch.requestFocus();
 		}
-		
+        tfSearch.setText(searchText);
 	}
 
 	private void readRepositoriesFromDB(EntityManager em) {
@@ -202,18 +204,28 @@ public class DokumentAuswaehlenController implements Initializable {
 			lbHinweis.setText("Bitte mindesten ein Zeichen eingeben");
 			return;
 		}
-		lbHinweis.setText("");
-		String btnSearchText = btnSearch.getText();
-		btnSearch.setText("");
+//		btnSearch.setText("");
+		dokuLinkList.clear();
+//		tableDokuLinkAuswahl.setItems(dokuLinkList);
+		if (primaryStage.getScene() != null) {
+			primaryStage.getScene().setCursor(Cursor.WAIT);
+		}
 		try {
-			String aktFirstLevel = cmbFirstLevel.getSelectionModel().getSelectedItem();
-			Task<DokuLink> w = aktRepository.findTestEntries(searchText, aktFirstLevel, dokuLinkList);
+//			Task<DokuLink> w = aktRepository.findTestEntries(searchText, aktFirstLevel, dokuLinkList, lbHinweis);
+//			btnSearch.disableProperty().bind(w.runningProperty());
+//			Task<ObservableList<DokuLink>> w = aktRepository.findTest2Entries(searchText, aktFirstLevel, lbHinweis);
+//			dokuLinkList = w.get();
+			Task<String> w = aktRepository.findTest3Entries(searchText, aktFirstLevel, dokuLinkList, lbHinweis);
 			btnSearch.disableProperty().bind(w.runningProperty());
+			tableDokuLinkAuswahl.setItems(dokuLinkList);
+			lbHinweis.setText(w.get());
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
 		} finally {
-			btnSearch.setText(btnSearchText);
+			if (primaryStage.getScene() != null) {
+				primaryStage.getScene().setCursor(Cursor.DEFAULT);
+			}
 		}
 	}
 	

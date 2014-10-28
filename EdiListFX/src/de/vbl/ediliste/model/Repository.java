@@ -1,23 +1,25 @@
 package de.vbl.ediliste.model;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
+import static javax.persistence.GenerationType.IDENTITY;
+
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.concurrent.Task;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
+import javafx.scene.control.Label;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Transient;
 import javax.persistence.TypedQuery;
@@ -32,8 +34,9 @@ import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
-import de.vbl.ediliste.model.DokuLink;
 import de.vbl.ediliste.model.DokuLink.DokuStatus;
+import javax.persistence.Access;
+import static javax.persistence.AccessType.PROPERTY;
 
 /**
  * Entity implementation class for Entity: SVN_Repository
@@ -41,14 +44,12 @@ import de.vbl.ediliste.model.DokuLink.DokuStatus;
  */
 @Entity  
  
-public class Repository implements Serializable {
-	private static final long serialVersionUID = 1L;
-	public static enum DokuArt { FSPEZ, TSPEZ, xSPEZ }; 
+@Access(PROPERTY)
+public class Repository {
+//	public static enum DokuArt { FSPEZ, TSPEZ, xSPEZ }; 
 
-	@Id
 	private long id;
-	@Column(unique = true, nullable = true)
-	private String name;
+	private StringProperty name;
 	private String location;
 	private String startPfad;
 	private String benutzer;
@@ -57,7 +58,7 @@ public class Repository implements Serializable {
 	SVNRepository svn_repository = null;
 	
 	public Repository() {
-		super();
+		name = new SimpleStringProperty();
 		DAVRepositoryFactory.setup();
 	}   
 
@@ -98,20 +99,26 @@ public class Repository implements Serializable {
 		svn_repository.setAuthenticationManager(authManager);
 	}
 	
-	
+	@Id
+	@GeneratedValue(strategy = IDENTITY)
 	public long getId() {
 		return this.id;
 	}
 
 	public void setId(long id) {
 		this.id = id;
-	}   
+	}
+	
+	public StringProperty nameProperty() {
+		return name;
+	}
+	
 	public String getName() {
-		return this.name;
+		return name.getValueSafe();
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setName(String n) {
+		name.set(n);
 	}   
 	public String getLocation() {
 		return this.location;
@@ -143,35 +150,20 @@ public class Repository implements Serializable {
 		this.passwort = passwort;
 	}
 	
-    public final Collection<DokuLink> findEntries(String name, String firstLevel) {
-		if (svn_repository == null) {
-			throw new RuntimeException("Repository ist nicht göffnet");
-		}
-		Collection<DokuLink> dokuLinkList = new ArrayList<DokuLink>();
-		
-		int startPfadLaenge = startPfad.length();
-		System.out.println("Start:" + startPfad + firstLevel);
-		try {
-			findEntries(svn_repository, startPfad + firstLevel, 
-						startPfadLaenge, name.toLowerCase(), dokuLinkList);
-		} catch (SVNException e) {
-			e.printStackTrace();
-		}
-		return dokuLinkList;
-	}
-
-	public final Task<DokuLink> findTestEntries(String name, String firstLevel, Collection<DokuLink> dokuLinkList) {
+	public final Task<DokuLink> findTestEntries(String name, String firstLevel, ObservableList<DokuLink> dokuLinkList, Label lbHinweis) {
+		lbHinweis.setText("Einträge werden gelesen. Bitte warten...");
 		dokuLinkList.clear();
-		
-		Task<DokuLink> findWorker = createfindWorker(name, firstLevel, this);
+		Task<DokuLink> findWorker = createfindWorkerTest0(name, firstLevel, this);
 
 		findWorker.valueProperty().addListener(new ChangeListener<DokuLink>() {
 			public void changed(ObservableValue<? extends DokuLink> observable, DokuLink oldValue, DokuLink newValue) {
 				if (newValue != null) {
 					dokuLinkList.add(newValue);
+				} else {	
+					lbHinweis.setText(getErgebnisText(dokuLinkList.size()));
 				}	
 			}
-		}); 
+		});
 		
 		Thread thread = new Thread(findWorker);
 		thread.setDaemon(true);
@@ -180,7 +172,7 @@ public class Repository implements Serializable {
 		return findWorker;
 	}
 
-	private final static  Task<DokuLink> createfindWorker(String name, String firstLevel, Repository repository) 
+	private final static  Task<DokuLink> createfindWorkerTest0(String name, String firstLevel, Repository repository) 
 	{
 		return new Task<DokuLink>() {
 			@Override
@@ -216,15 +208,16 @@ public class Repository implements Serializable {
 					}
 					status = DokuStatus.NUR_VORHABEN;
 				}
-				for (int i=0; i<5; ++i) {
+				for (int i=1; i<=8; ++i) {
 					simulateTime();
 					dok = new DokuLink();
-					dok.setName(i + entry.getName());
+					dok.setName(entry.getName().substring(0,7) + "00" + i + entry.getName().substring(6));
 					dok.setPfad(path.substring(startpfadlength));
 					dok.setRevision(entry.getRevision());
 					dok.setVorhaben(vorhaben);
 					dok.setStatus(status);
-					dok.setDatum(LocalDateTime.ofInstant(entry.getDate().toInstant(), ZoneId.systemDefault()));
+//					dok.setDatum(LocalDateTime.ofInstant(entry.getDate().toInstant(), ZoneId.systemDefault()));
+					dok.setDatum(entry.getDate());
 					updateValue(dok);
 //					dokuLinkList.add(dok);
 				}
@@ -233,12 +226,183 @@ public class Repository implements Serializable {
 			
 		};
 	}
+
+	public final Task<ObservableList<DokuLink>> findTest2Entries(String name, String firstLevel, Label lbHinweis) {
+		lbHinweis.setText("Einträge werden gelesen. Bitte warten...");
+//		dokuLinkList.clear();
+//		private ObservableList<DokuLink> dokuLinkList = FXCollections.observableArrayList();		
+		Task<ObservableList<DokuLink>> findWorker = createfindWorker2(name, firstLevel, this);
+
+		Thread thread = new Thread(findWorker);
+		thread.setDaemon(true);
+		thread.start();
+		return findWorker;
+	}
+	
+	private final static  Task<ObservableList<DokuLink>> createfindWorker2(String name, String firstLevel, Repository repository) 
+	{
+		return new Task<ObservableList<DokuLink>>() {
+			@Override
+			protected ObservableList<DokuLink> call() throws Exception {
+				final ObservableList<DokuLink> dokuLinkList = FXCollections.observableArrayList();		
+				int startpfadlength = repository.getStartPfad().length();
+				
+				DokuLink dok = null; 
+				SVNURL url = null;
+				SVNURL root = null;
+				try {
+					url  = SVNURL.parseURIEncoded(repository.location);
+					root = null;
+				} catch (SVNException e) {
+					e.printStackTrace();
+				}
+				Calendar cal = Calendar.getInstance(); Date createdDate;
+				String docName = name + "_Testdokument.docx";
+				String path = "/ddd/cccc/eeee/eeee/hhhh/VH_3205";
+				cal.set(2013,7,1,12,58,30);			
+				createdDate = cal.getTime();
+				
+				SVNDirEntry entry = new SVNDirEntry(url, root, docName,  null, 32000L, false, 1001, createdDate, "Author");
+				String vorhaben = "     ";
+				DokuLink.DokuStatus status = DokuStatus.OHNE_VORHABEN;
+				if (path.contains("abgenommen")) {
+					vorhaben = " abgen.";
+					status = DokuStatus.ABGENOMMEN;
+				} else {	
+					int vh_startpos = path.lastIndexOf("/VH_");
+					if (vh_startpos > 0) {
+						vorhaben = path.substring(vh_startpos + 1, vh_startpos + 8);
+					}
+					status = DokuStatus.NUR_VORHABEN;
+				}
+				for (int i=1; i<=8; ++i) {
+					simulateTime();
+					dok = new DokuLink();
+					dok.setName(entry.getName().substring(0,7) + "00" + i + entry.getName().substring(6));
+					dok.setPfad(path.substring(startpfadlength));
+					dok.setRevision(entry.getRevision());
+					dok.setVorhaben(vorhaben);
+					dok.setStatus(status);
+					dok.setDatum(entry.getDate());
+					dokuLinkList.add(dok);
+				}
+				return dokuLinkList;
+			}
+			
+		};
+	}
     
+	public final Task<String> findTest3Entries(String name, String firstLevel,	ObservableList<DokuLink> dokuLinkList, 
+																									  Label lbHinweis) {
+		lbHinweis.setText("Einträge werden gelesen. Bitte warten...");
+		dokuLinkList.clear();
+		Task<String> findWorker = createfindWorker3(name, firstLevel, this, dokuLinkList);
+
+		Thread thread = new Thread(findWorker);
+		thread.setDaemon(true);
+		thread.start();
+		return findWorker;
+	}
+	
+	private final static  Task<String> createfindWorker3(String name, String firstLevel, Repository repository,
+																							ObservableList<DokuLink> dokuLinkList) 
+	{
+		return new Task<String>() {
+			@Override
+			protected String call() throws Exception {
+				int startpfadlength = repository.getStartPfad().length();
+				
+				DokuLink dok = null; 
+				SVNURL url = null;
+				SVNURL root = null;
+				try {
+					url  = SVNURL.parseURIEncoded(repository.location);
+					root = null;
+				} catch (SVNException e) {
+					e.printStackTrace();
+				}
+				Calendar cal = Calendar.getInstance(); Date createdDate;
+				String docName = name + "_Testdokument.docx";
+				String path = "/ddd/cccc/eeee/eeee/hhhh/VH_3205";
+				cal.set(2013,7,1,12,58,30);			
+				createdDate = cal.getTime();
+				
+				SVNDirEntry entry = new SVNDirEntry(url, root, docName,  null, 32000L, false, 1001, createdDate, "Author");
+				String vorhaben = "     ";
+				DokuLink.DokuStatus status = DokuStatus.OHNE_VORHABEN;
+				if (path.contains("abgenommen")) {
+					vorhaben = " abgen.";
+					status = DokuStatus.ABGENOMMEN;
+				} else {	
+					int vh_startpos = path.lastIndexOf("/VH_");
+					if (vh_startpos > 0) {
+						vorhaben = path.substring(vh_startpos + 1, vh_startpos + 8);
+					}
+					status = DokuStatus.NUR_VORHABEN;
+				}
+				for (int i=1; i<=8; ++i) {
+//					simulateTime();
+					dok = new DokuLink();
+					dok.setName(entry.getName().substring(0,7) + "00" + i + entry.getName().substring(6));
+					dok.setPfad(path.substring(startpfadlength));
+					dok.setRevision(entry.getRevision());
+					dok.setVorhaben(vorhaben);
+					dok.setStatus(status);
+					dok.setDatum(entry.getDate());
+					dokuLinkList.add(dok);
+				}
+				return getErgebnisText(dokuLinkList.size());
+			}
+			
+		};
+	}
 
 	private static void simulateTime() throws InterruptedException {
 //		Random rnd = new Random(System.currentTimeMillis());
 //		long millis = rnd.nextInt(250);
-		Thread.sleep(50);
+		Thread.sleep(60);
+	}
+	
+	private static String getErgebnisText(int size) {
+		if (size > 1)
+			return "Es wurden " + size + " Eintrag gefunden";
+		else if (size == 1)
+			return "Es wurde 1 Eintrag gefunden";
+		else
+			return "Es wurde kein Eintrag gefunden";
+	}
+
+    public final Task<String> findEntries(String name, String firstLevel, ObservableList<DokuLink> dokuLinkList, Label lbHinweis) {
+		if (svn_repository == null) {
+			throw new RuntimeException("Repository ist nicht göffnet");
+		}
+		lbHinweis.setText("Einträge werden gelesen. Bitte warten...");
+		dokuLinkList.clear();
+		int startPfadLaenge = this.getStartPfad().length(); 
+		
+		Task<String> findWorker = createfindWorker(name, firstLevel, startPfadLaenge, dokuLinkList);		
+
+		Thread thread = new Thread(findWorker);
+		thread.setDaemon(true);
+		thread.start();
+		return findWorker;
+	}
+    
+    private Task<String> createfindWorker(String name, String firstLevel,
+			int startPfadLaenge, ObservableList<DokuLink> dokuLinkList) {
+    	
+		return new Task<String>() {
+			@Override
+			protected String call() throws Exception {
+				try {
+					findEntries(svn_repository, startPfad + firstLevel, 
+							startPfadLaenge, name.toLowerCase(), dokuLinkList);
+				} catch (SVNException e) {
+					e.printStackTrace();
+				}
+				return getErgebnisText(dokuLinkList.size());
+			}
+		};	
 	}
 
 	private static void findEntries(SVNRepository 		 	 svn_repo, 
@@ -275,7 +439,7 @@ public class Repository implements Serializable {
 				dok.setRevision(entry.getRevision());
 				dok.setVorhaben(vorhaben);
 				dok.setStatus(status);
-				dok.setDatum(LocalDateTime.ofInstant(entry.getDate().toInstant(), ZoneId.systemDefault()));
+				dok.setDatum(entry.getDate());
 				dokuLinkList.add(dok);
 			}
 			if (entry.getKind() == SVNNodeKind.DIR) {
