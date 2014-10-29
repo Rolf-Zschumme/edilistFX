@@ -18,7 +18,7 @@
 		
 		<logger name="de.vbl.ediliste" level="INFO" />
 		<logger name="de.vbl.ediliste.controller" level="INFO" />
-		<logger name="de.vbl.ediliste.controller.subs" level="INFO" />
+		<logger name="de.vbl.ediliste.controller.subs" level="TRACE" />
 		<logger name="de.vbl.ediliste.tools" level="INFO" />
 		<logger name="de.vbl.ediliste.model" level="INFO" />
 		

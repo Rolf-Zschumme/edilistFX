@@ -2,6 +2,7 @@ package de.vbl.ediliste.model;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -27,6 +28,7 @@ import javax.persistence.TypedQuery;
 import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNNodeKind;
+import org.tmatesoft.svn.core.SVNProperties;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager;
 import org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory;
@@ -35,7 +37,9 @@ import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
 import de.vbl.ediliste.model.DokuLink.DokuStatus;
+
 import javax.persistence.Access;
+
 import static javax.persistence.AccessType.PROPERTY;
 
 /**
@@ -55,7 +59,7 @@ public class Repository {
 	private String benutzer;
 	private String passwort;
 	@Transient
-	SVNRepository svn_repository = null;
+	private SVNRepository svn_repository = null;
 	
 	public Repository() {
 		name = new SimpleStringProperty();
@@ -83,20 +87,6 @@ public class Repository {
 		this.startPfad = aktRepo.startPfad;
 		this.benutzer  = aktRepo.benutzer; 
 		
-	}
-	
-	public void open () {
-		try {
-			SVNURL url = SVNURL.parseURIEncoded(this.location);
-			svn_repository = SVNRepositoryFactory.create(url);
-		} catch (SVNException e) {
-			e.printStackTrace();
-		}
-		ISVNAuthenticationManager authManager = SVNWCUtil
-				.createDefaultAuthenticationManager(
-						this.benutzer, this.getPasswort());
-
-		svn_repository.setAuthenticationManager(authManager);
 	}
 	
 	@Id
@@ -135,7 +125,7 @@ public class Repository {
 		this.startPfad = pfad;
 	}
 
-	public String getUser() {
+	public String getBenutzer() {
 		return this.benutzer;
 	}
 
@@ -148,6 +138,37 @@ public class Repository {
  
 	public void setPasswort(String passwort) {
 		this.passwort = passwort;
+	}
+	
+	public SVNRepository open () {
+		try {
+			SVNURL url = SVNURL.parseURIEncoded(this.location);
+			svn_repository = SVNRepositoryFactory.create(url);
+		} catch (SVNException e) {
+			e.printStackTrace();
+		}
+		ISVNAuthenticationManager authManager = SVNWCUtil
+				.createDefaultAuthenticationManager(
+						this.benutzer, this.getPasswort());
+		svn_repository.setAuthenticationManager(authManager);
+		try {
+			svn_repository.testConnection();
+		} catch (SVNException e) {
+			e.printStackTrace();
+		}
+		return svn_repository;
+	}
+	
+	public ByteArrayOutputStream getFileStream (String filePath, int revision) {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		if (revision == 0) revision = -1;
+		SVNProperties fileProperties = new SVNProperties();
+		try {
+			svn_repository.getFile(filePath, -1, fileProperties, baos);
+		} catch (SVNException e) {
+			e.printStackTrace();
+		}
+		return baos;
 	}
 	
 	public final Task<DokuLink> findTestEntries(String name, String firstLevel, ObservableList<DokuLink> dokuLinkList, Label lbHinweis) {

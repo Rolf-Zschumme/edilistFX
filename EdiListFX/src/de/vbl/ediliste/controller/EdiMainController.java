@@ -588,7 +588,7 @@ public class EdiMainController {
 		Dialogs.create()
 			.owner(primaryStage).title(APPL_NAME)
 			.masthead("VBL-Tool zur Verwaltung der Datentransfers")
-			.message("\nProgramm-Version 0.9.7 - 02.10.2014\n" +
+			.message("\nProgramm-Version 0.9.8 - 29.10.2014\n" +
 					 "\nDatenbank-Name: " + dbName +
 			   	     "\nJava-Runtime-Verion: " + System.getProperty("java.version"))
 			.showInformation();

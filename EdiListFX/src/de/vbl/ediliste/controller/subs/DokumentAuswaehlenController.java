@@ -204,24 +204,20 @@ public class DokumentAuswaehlenController implements Initializable {
 			lbHinweis.setText("Bitte mindesten ein Zeichen eingeben");
 			return;
 		}
-//		btnSearch.setText("");
 		dokuLinkList.clear();
-//		tableDokuLinkAuswahl.setItems(dokuLinkList);
 		if (primaryStage.getScene() != null) {
 			primaryStage.getScene().setCursor(Cursor.WAIT);
 		}
 		try {
-//			Task<DokuLink> w = aktRepository.findTestEntries(searchText, aktFirstLevel, dokuLinkList, lbHinweis);
-//			btnSearch.disableProperty().bind(w.runningProperty());
-//			Task<ObservableList<DokuLink>> w = aktRepository.findTest2Entries(searchText, aktFirstLevel, lbHinweis);
-//			dokuLinkList = w.get();
-			Task<String> w = aktRepository.findTest3Entries(searchText, aktFirstLevel, dokuLinkList, lbHinweis);
+//			Task<String> w = aktRepository.findTest3Entries(searchText, aktFirstLevel, dokuLinkList, lbHinweis);
+			Task<String> w = aktRepository.findEntries(searchText, aktFirstLevel, dokuLinkList, lbHinweis);
 			btnSearch.disableProperty().bind(w.runningProperty());
 			tableDokuLinkAuswahl.setItems(dokuLinkList);
 			lbHinweis.setText(w.get());
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			e.printStackTrace();
+			String msg = "FEHLER: " + e.getMessage();
+			logger.error(msg);
+			lbHinweis.setText(msg);
 		} finally {
 			if (primaryStage.getScene() != null) {
 				primaryStage.getScene().setCursor(Cursor.DEFAULT);
@@ -232,7 +228,7 @@ public class DokumentAuswaehlenController implements Initializable {
     @FXML
     private void okPressed(ActionEvent event) {
     	if (applName == null && mainController == null && primaryStage == null ) {
-    		// TODO just for suppressing "unused" warning;
+    		// just for suppressing "unused" warning;
     	}
 		selDokuLink = tableDokuLinkAuswahl.getSelectionModel().selectedItemProperty().get();
 		retAction = Actions.OK;

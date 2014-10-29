@@ -1,6 +1,10 @@
 
 package de.vbl.ediliste.controller;
 
+import java.awt.Desktop;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,6 +27,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -30,14 +35,17 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -51,6 +59,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Callback;
 import javafx.util.StringConverter;
 
 import javax.persistence.EntityManager;
@@ -62,6 +71,8 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialog.Actions;
 import org.controlsfx.dialog.Dialogs;
+import org.tmatesoft.svn.core.SVNNodeKind;
+import org.tmatesoft.svn.core.io.SVNRepository;
 
 import de.vbl.ediliste.controller.KomponentenAuswahlController.KomponentenTyp;
 import de.vbl.ediliste.controller.subs.DokumentAuswaehlenController;
@@ -73,6 +84,7 @@ import de.vbl.ediliste.model.EdiKomponente;
 import de.vbl.ediliste.model.GeschaeftsObjekt;
 import de.vbl.ediliste.model.Integration;
 import de.vbl.ediliste.model.Konfiguration;
+import de.vbl.ediliste.model.Repository;
 
 
 public class EdiEintragController {
@@ -434,8 +446,60 @@ public class EdiEintragController {
 		
 		tColDokumentQuelle.setCellValueFactory(cellData -> cellData.getValue().getRepository().nameProperty());
 
+    	tvDokuLinks.setRowFactory(new Callback<TableView<DokuLink>, TableRow<DokuLink>>() {
+			@Override
+			public TableRow<DokuLink> call(TableView<DokuLink> table) {
+				final TableRow<DokuLink> row = new TableRow<DokuLink>();
+				final ContextMenu contextMenu = new ContextMenu();
+				final MenuItem openMenuItem = new MenuItem("Öffnen");
+				openMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent event) {
+						dokuAnzeigen(row.getItem());
+					}
+				});
+				final MenuItem removeMenuItem = new MenuItem("Löschen");
+				removeMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent event) {
+//						ediEintragLoeschen();
+						table.getItems().remove(row.getItem());
+					}
+				});
+				contextMenu.getItems().addAll(openMenuItem, removeMenuItem);
+				row.contextMenuProperty().bind(Bindings.when(row.emptyProperty()).then((ContextMenu)null).otherwise(contextMenu));
+				return row;
+			}
+		});
+		
 	}
 
+	private void dokuAnzeigen(DokuLink doku) {
+		System.out.println("Name        : " + doku.getName());
+		Repository repository = doku.getRepository();
+		String filePath = repository.getStartPfad() + doku.getPfad() + "/" + doku.getName();
+		System.out.println("SVN FilePath: " + filePath);
+		repository.open();
+		ByteArrayOutputStream baos = repository.getFileStream(filePath, -1);
+		
+		int extPos = filePath.indexOf(".");
+		String ext = filePath.substring(extPos);
+		try {
+			baos.writeTo(new FileOutputStream("tmpfile-IM" + ext));
+			Desktop desktop = null;
+			if (Desktop.isDesktopSupported()) {
+				desktop = Desktop.getDesktop();
+			}
+
+			desktop.open(new File("tmpfile-IM" + ext));
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+    
+    
     @FXML 
     void actionDocumentContextMenuRequested() {
     	if (akt.integration == null) {
@@ -849,20 +913,6 @@ public class EdiEintragController {
 			if (akt.integration.getId() == 0L) {
 				entityManager.persist(akt.integration);
 			}
-			// if dokuLinks are removed they must be removed from org.integration 
-			if (org.integration != null && org.integration.getDokuLink() != null) {
-				for (DokuLink dok : org.integration.getDokuLink()) {
-					if (akt.integration.getDokuLink().contains(dok) == false) {
-						entityManager.remove(dok);
-						org.integration.getDokuLink().remove(dok);
-					}
-				}
-			}
-			for (DokuLink dok : akt.integration.getDokuLink()) {
-				if (dok.getId() == 0L) {
-					entityManager.persist(dok);
-				}
-			}
 			if (akt.konfiguration.getId() == 0L) {    	// new configuration for persistence
 				entityManager.persist(akt.konfiguration);
 				akt.konfiguration.setIntegration(akt.integration);
@@ -871,6 +921,25 @@ public class EdiEintragController {
 				akt.konfiguration.getEdiEintrag().add(aktEdi);
 			}
 			aktEdi.setKonfiguration(akt.konfiguration);
+			
+			// if dokuLinks are removed they must be removed from org.integration 
+			if (akt.integration.getDokuLink() != null) {
+				for (DokuLink dok : akt.integration.getDokuLink()) {
+					if (dokuLinkList.contains(dok) == false) {
+						entityManager.remove(dok);
+						akt.integration.getDokuLink().remove(dok);
+					}
+				}
+			}
+			for (DokuLink dok : dokuLinkList) {
+				if (dok.getId() == 0L) {
+					entityManager.persist(dok);
+				}
+				if (akt.integration.getDokuLink().contains(dok) == false) {
+					akt.integration.getDokuLink().add(dok);
+				}
+			}
+			
 			aktEdi.setEdiKomponente(akt.sender); 
 			aktEdi.setBeschreibung(akt.beschreibung);
 			
