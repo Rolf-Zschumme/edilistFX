@@ -16,6 +16,7 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -27,11 +28,13 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import javax.swing.GroupLayout.Alignment;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -210,18 +213,31 @@ public class DokumentAuswaehlenController implements Initializable {
 		}
 		try {
 //			Task<String> w = aktRepository.findTest3Entries(searchText, aktFirstLevel, dokuLinkList, lbHinweis);
-			Task<String> w = aktRepository.findEntries(searchText, aktFirstLevel, dokuLinkList, lbHinweis);
-			btnSearch.disableProperty().bind(w.runningProperty());
-			tableDokuLinkAuswahl.setItems(dokuLinkList);
-			lbHinweis.setText(w.get());
+			
+			Task<String> worker = aktRepository.findEntries(searchText, aktFirstLevel, dokuLinkList, lbHinweis);
+			btnSearch.disableProperty().bind(worker.runningProperty());
+			lbHinweis.setAlignment(Pos.CENTER_LEFT);
+			lbHinweis.textProperty().bind(worker.messageProperty());
+			worker.setOnSucceeded(e -> {
+				btnSearch.disableProperty().unbind();
+				lbHinweis.textProperty().unbind();
+				String tmp = lbHinweis.getText();
+				lbHinweis.setAlignment(Pos.CENTER);
+				lbHinweis.setText(tmp);
+				if (primaryStage.getScene() != null) {
+					primaryStage.getScene().setCursor(Cursor.DEFAULT);
+				}
+			});
+//			lbHinweis.setText(w.get());
+//			tableDokuLinkAuswahl.setItems(dokuLinkList);
+			
+			
 		} catch (Exception e) {
 			String msg = "FEHLER: " + e.getMessage();
 			logger.error(msg);
+			lbHinweis.textProperty().unbind();
 			lbHinweis.setText(msg);
 		} finally {
-			if (primaryStage.getScene() != null) {
-				primaryStage.getScene().setCursor(Cursor.DEFAULT);
-			}
 		}
 	}
 	

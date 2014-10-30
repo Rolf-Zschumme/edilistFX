@@ -36,8 +36,15 @@
 <RowConstraints minHeight="0.0" prefHeight="6.0" vgrow="SOMETIMES" />
 									</rowConstraints>
 									<children>
+<VBox spacing="15.0" GridPane.rowIndex="2">
+<children>
 										<Label alignment="CENTER_RIGHT" layoutX="9.600000381469727" layoutY="51.60000038146973" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Dokumente:" GridPane.rowIndex="2">
-										</Label>
+										</Label><Button fx:id="btnNewDokuLink" mnemonicParsing="false" onAction="#actionNewDokuLink" text="Dokument hinzufügen..." textAlignment="CENTER" wrapText="true" />
+</children>
+<GridPane.margin>
+<Insets top="30.0" />
+</GridPane.margin>
+</VBox>
 										<ComboBox fx:id="cmbIntegration" layoutX="9.600000381469727" layoutY="9.600000381469727" maxWidth="1.7976931348623157E308" AnchorPane.leftAnchor="90.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 										<Label alignment="CENTER_RIGHT" layoutX="9.600000381469727" layoutY="68.60000038146973" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Konfiguration:" GridPane.rowIndex="3">
 										</Label>
@@ -48,10 +55,10 @@
 											<columns>
 												<TableColumn fx:id="tColDokumentVorhaben" maxWidth="80.0" text="Vorhaben" />
 												<TableColumn fx:id="tColDokumentName" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="500.0" text="Bezeichnung des Dokuments" />
-												<TableColumn fx:id="tColDokumentDatum" editable="false" maxWidth="353.0000305175781" minWidth="61.0" prefWidth="126.0" resizable="false" text="Datum" />
-												<TableColumn fx:id="tColDokumentQuelle" editable="false" maxWidth="269.0" minWidth="0.0" prefWidth="128.0" resizable="false" text="Quelle" />
+												<TableColumn fx:id="tColDokumentDatum" editable="false" maxWidth="100.0" minWidth="-1.0" prefWidth="100.0" resizable="false" text="Datum" />
+												<TableColumn fx:id="tColDokumentQuelle" editable="false" maxWidth="250.0" minWidth="20.0" prefWidth="120.0" resizable="false" text="Quelle" /><TableColumn fx:id="tColDokumentPfad" editable="false" maxWidth="1.7976931348623157E308" minWidth="50.0" prefWidth="300.0" text="Pfad" visible="false" /><TableColumn fx:id="tColDokumentRevision" editable="false" maxWidth="80.0" minWidth="-1.0" resizable="false" text="Revision" visible="false" />
 											</columns>
-										</TableView><Button fx:id="btnNewSzenario" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#newSzenario" text="Neues Szenrio anlegen..." GridPane.columnIndex="2" GridPane.rowIndex="1" /><Button fx:id="btnNewConfiguration" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#newKonfiguration" text="Neue Konfiguration anlegen..." GridPane.columnIndex="2" GridPane.rowIndex="3" />
+										</TableView><Button fx:id="btnNewScenario" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#newScenario" text="Neues Szenrio anlegen..." GridPane.columnIndex="2" GridPane.rowIndex="1" /><Button fx:id="btnNewConfiguration" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#newKonfiguration" text="Neue Konfiguration anlegen..." GridPane.columnIndex="2" GridPane.rowIndex="3" />
 									</children>
 <padding>
 <Insets left="5.0" right="8.0" />

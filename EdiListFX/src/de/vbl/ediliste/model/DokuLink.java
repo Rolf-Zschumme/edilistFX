@@ -7,7 +7,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
+import javafx.beans.property.LongProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -18,6 +20,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 import javax.persistence.Temporal;
+
 import static javax.persistence.TemporalType.TIMESTAMP;
 
 /**
@@ -35,12 +38,19 @@ public class DokuLink implements Serializable {
 	private StringProperty pfad;
 	private ObjectProperty<LocalDateTime> datumProp;
 	private Date datum;
-	private long revision;
+	private LongProperty revision;
 	private Repository repository;
 	private StringProperty vorhaben;
 	private DokuStatus status; 
 
-
+	public DokuLink() {
+		vorhaben = new SimpleStringProperty();
+		name = new SimpleStringProperty();
+		pfad = new SimpleStringProperty();
+		revision = new SimpleLongProperty();
+		datumProp = new SimpleObjectProperty<LocalDateTime>();
+	}
+	
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
 	public long getId() {
@@ -61,12 +71,7 @@ public class DokuLink implements Serializable {
 	}
 
 	public void setName(String param) {
-		if (name==null) {
-			name = new SimpleStringProperty(param);
-		} 
-		else {
-			name.set(param);
-		}	
+		name.set(param);
 	}
 
 	// ------------------------------------------------------------------------
@@ -79,12 +84,7 @@ public class DokuLink implements Serializable {
 	}
 
 	public void setPfad(String param) {
-		if (pfad==null) {
-			pfad = new SimpleStringProperty(param);
-		}
-		else {
-			pfad.set(param);
-		}
+		pfad.set(param);
 	}
 
 	// ------------------------------------------------------------------------
@@ -97,12 +97,7 @@ public class DokuLink implements Serializable {
 	}
 
 	public void setVorhaben(String param) {
-		if (vorhaben==null) {
-			vorhaben = new SimpleStringProperty(param);
-		}
-		else {
-			vorhaben.set(param);
-		}
+		vorhaben.set(param);
 	}
 
 	// ------------------------------------------------------------------------
@@ -119,22 +114,26 @@ public class DokuLink implements Serializable {
 	public void setDatum(Date param) {
 		if (param != null) {
 			LocalDateTime ld = LocalDateTime.ofInstant(param.toInstant(), ZoneId.systemDefault());
-			if (datumProp == null) {
-				datumProp = new SimpleObjectProperty<LocalDateTime>(ld);
-			} else {
-				datumProp.set(ld);
-			}
+//			if (datumProp == null) {
+//				datumProp = new SimpleObjectProperty<LocalDateTime>(ld);
+//			} else {
+			    datumProp.set(ld);
+//			}
 		}
 		datum = param;
 	}
 
 	// ------------------------------------------------------------------------
-	public long getRevision() {
+	@Transient
+	public LongProperty revisionProperty() {
 		return revision;
+	}
+	public long getRevision() {
+		return revision.get();
 	}
 
 	public void setRevision(long param) {
-		this.revision = param;
+		revision.set(param);
 	}
 
 	@ManyToOne

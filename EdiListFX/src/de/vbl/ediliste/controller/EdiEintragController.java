@@ -71,8 +71,6 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialog.Actions;
 import org.controlsfx.dialog.Dialogs;
-import org.tmatesoft.svn.core.SVNNodeKind;
-import org.tmatesoft.svn.core.io.SVNRepository;
 
 import de.vbl.ediliste.controller.KomponentenAuswahlController.KomponentenTyp;
 import de.vbl.ediliste.controller.subs.DokumentAuswaehlenController;
@@ -148,10 +146,11 @@ public class EdiEintragController {
     
     @FXML private ComboBox<Konfiguration> cmbKonfiguration;
     @FXML private ComboBox<Integration> cmbIntegration;
-    @FXML private Button btnNewSzenario;
+    @FXML private Button btnNewScenario;
     @FXML private Button btnNewConfiguration;
 
     @FXML private TableView<DokuLink> tvDokuLinks;
+    @FXML private Button btnNewDokuLink;
     @FXML private TableColumn<DokuLink, String> tColDokumentVorhaben;
     @FXML private TableColumn<DokuLink, String> tColDokumentName;
     @FXML private TableColumn<DokuLink, LocalDateTime> tColDokumentDatum;
@@ -427,8 +426,9 @@ public class EdiEintragController {
 		tColDokumentName.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
 //		tColDokumentPfad.setCellValueFactory(cellData -> cellData.getValue().pfadProperty());
 		
-		tColDokumentDatum.setCellValueFactory(cellData -> cellData.getValue().datumProperty());
 		DateTimeFormatter dtf = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT);
+		
+		tColDokumentDatum.setCellValueFactory(cellData -> cellData.getValue().datumProperty());
 		tColDokumentDatum.setCellFactory(column -> {
 			return new TableCell<DokuLink, LocalDateTime>() {
 				@Override
@@ -445,24 +445,26 @@ public class EdiEintragController {
 		});
 		
 		tColDokumentQuelle.setCellValueFactory(cellData -> cellData.getValue().getRepository().nameProperty());
+		tColDokumentPfad.setCellValueFactory(cellData -> cellData.getValue().pfadProperty());
+		tColDokumentRevision.setCellValueFactory(cellData -> Bindings.format("%5d",cellData.getValue().revisionProperty()));
+
 
     	tvDokuLinks.setRowFactory(new Callback<TableView<DokuLink>, TableRow<DokuLink>>() {
 			@Override
 			public TableRow<DokuLink> call(TableView<DokuLink> table) {
 				final TableRow<DokuLink> row = new TableRow<DokuLink>();
 				final ContextMenu contextMenu = new ContextMenu();
-				final MenuItem openMenuItem = new MenuItem("Öffnen");
+				final MenuItem openMenuItem = new MenuItem("Dokument öffnen");
 				openMenuItem.setOnAction(new EventHandler<ActionEvent>() {
 					@Override
 					public void handle(ActionEvent event) {
 						dokuAnzeigen(row.getItem());
 					}
 				});
-				final MenuItem removeMenuItem = new MenuItem("Löschen");
+				final MenuItem removeMenuItem = new MenuItem("Referenz löschen");
 				removeMenuItem.setOnAction(new EventHandler<ActionEvent>() {
 					@Override
 					public void handle(ActionEvent event) {
-//						ediEintragLoeschen();
 						table.getItems().remove(row.getItem());
 					}
 				});
@@ -474,7 +476,7 @@ public class EdiEintragController {
 		
 	}
 
-	private void dokuAnzeigen(DokuLink doku) {
+    private void dokuAnzeigen(DokuLink doku) {
 		System.out.println("Name        : " + doku.getName());
 		Repository repository = doku.getRepository();
 		String filePath = repository.getStartPfad() + doku.getPfad() + "/" + doku.getName();
@@ -484,24 +486,41 @@ public class EdiEintragController {
 		
 		int extPos = filePath.indexOf(".");
 		String ext = filePath.substring(extPos);
+		FileOutputStream fos = null;
 		try {
-			baos.writeTo(new FileOutputStream("tmpfile-IM" + ext));
-			Desktop desktop = null;
-			if (Desktop.isDesktopSupported()) {
-				desktop = Desktop.getDesktop();
+			fos = new FileOutputStream(doku.getName() + ext);
+			baos.writeTo(fos);
+
+		} catch (IOException e) {
+			mainController.setErrorText(e.getMessage());
+			return;
+		} finally {
+			try {
+				if (baos != null) baos.close();
+				if (fos != null)  fos.close();
+			} catch (IOException e) {
+				mainController.setErrorText(e.getMessage());
 			}
-
-			desktop.open(new File("tmpfile-IM" + ext));
-
+		}
+		Desktop desktop = null;
+		if (Desktop.isDesktopSupported()) {
+			desktop = Desktop.getDesktop();
+		}
+		try {
+			desktop.open(new File(doku.getName() + ext));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-    
-    
+       
     @FXML 
     void actionDocumentContextMenuRequested() {
+    	actionNewDokuLink();
+    }
+    
+    @FXML 
+    void actionNewDokuLink() {
     	if (akt.integration == null) {
     		mainController.setInfoText("Bitte zuerst Integration auswählen");
     	}
@@ -518,7 +537,6 @@ public class EdiEintragController {
     		}
     	}
     }
-    
     
 	private void setupKonfigurationComboBox() {
 		
@@ -1070,7 +1088,7 @@ public class EdiEintragController {
 	}
 		
     @FXML
-    void newSzenario(ActionEvent event) {
+    void newScenario(ActionEvent event) {
     	String aktName = "";
     	String masterhead = null;
 		while (true) {
@@ -1319,10 +1337,17 @@ public class EdiEintragController {
 	}
 
     private void checkFieldFromView() {
-        assert paneSzenario != null : "fx:id=\"paneSzenario\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert btnSpeichern != null : "fx:id=\"btnSpeichern\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert btnNewSzenario != null : "fx:id=\"btnNewSzenario\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert cmbKonfiguration != null : "fx:id=\"cmbKonfiguration\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert paneSzenario         != null : "fx:id=\"paneSzenario\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert btnSpeichern         != null : "fx:id=\"btnSpeichern\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert btnNewScenario       != null : "fx:id=\"btnNewScenario\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert cmbKonfiguration     != null : "fx:id=\"cmbKonfiguration\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert btnNewDokuLink       != null : "fx:id=\"btnNewDokuLink\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert tColDokumentName     != null : "fx:id=\"tColDokumentName\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert tColDokumentVorhaben != null : "fx:id=\"tColDokumentVorhaben\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert tColDokumentDatum    != null : "fx:id=\"tColDokumentDatum\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert tColDokumentQuelle   != null : "fx:id=\"tColDokumentQuelle\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert tColDokumentRevision != null : "fx:id=\"tColDokumentRevision\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert tColDokumentPfad     != null : "fx:id=\"tColDokumentPfad\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
 
         assert taEdiBeschreibung != null : "fx:id=\"taEdiBeschreibung\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
         assert eintragVBox != null : "fx:id=\"eintragVBox\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
