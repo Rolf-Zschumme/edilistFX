@@ -454,21 +454,21 @@ public class EdiEintragController {
 			public TableRow<DokuLink> call(TableView<DokuLink> table) {
 				final TableRow<DokuLink> row = new TableRow<DokuLink>();
 				final ContextMenu contextMenu = new ContextMenu();
-				final MenuItem openMenuItem = new MenuItem("Dokument öffnen");
-				openMenuItem.setOnAction(new EventHandler<ActionEvent>() {
-					@Override
-					public void handle(ActionEvent event) {
-						dokuAnzeigen(row.getItem());
-					}
+				
+				final MenuItem openMenuItem = new MenuItem("Dokument (extern) öffnen");
+				openMenuItem.setOnAction( event -> { 
+					dokuAnzeigen(row.getItem()); 	
 				});
-				final MenuItem removeMenuItem = new MenuItem("Referenz löschen");
-				removeMenuItem.setOnAction(new EventHandler<ActionEvent>() {
-					@Override
-					public void handle(ActionEvent event) {
-						table.getItems().remove(row.getItem());
-					}
+				final MenuItem validateMenuItem = new MenuItem("Aktialität des Eintrages prüfen");
+				validateMenuItem.setOnAction(event -> { 
+					mainController.setInfoText("Diese Option ist noch nicht realisiert");
 				});
-				contextMenu.getItems().addAll(openMenuItem, removeMenuItem);
+				final MenuItem removeMenuItem = new MenuItem("Referenz auf Dokument löschen");
+				removeMenuItem.setOnAction( event -> {
+					table.getItems().remove(row.getItem());
+				});
+				contextMenu.getItems().addAll(openMenuItem, validateMenuItem, removeMenuItem);
+				
 				row.contextMenuProperty().bind(Bindings.when(row.emptyProperty()).then((ContextMenu)null).otherwise(contextMenu));
 				return row;
 			}
