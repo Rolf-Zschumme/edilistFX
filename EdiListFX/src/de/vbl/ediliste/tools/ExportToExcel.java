@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -93,12 +93,12 @@ public class ExportToExcel {
 		createCell(row, ++s, styleHeader, "Partner --- System --- Komponente");
 		createCell(row, ++s, styleHeader, "Beschreibung");
 		
-    	Query query = em.createQuery( "SELECT p FROM EdiPartner p ORDER BY p.name",EdiPartner.class);
+    	TypedQuery<EdiPartner> partnerQuery = em.createQuery(
+    			"SELECT p FROM EdiPartner p ORDER BY p.name",EdiPartner.class);
     	int p_znr = 0;
     	int s_znr = 0;
     	int k_znr = 0;
-    	for (Object p : query.getResultList()) {
-    		EdiPartner partner = (EdiPartner) p;
+    	for (EdiPartner partner : partnerQuery.getResultList()) {
     		row =  p_Sheet.createRow(++p_znr);
     		++anz_zeilen;
     		createCell(row, s=0, styleNormal, p_znr); 
@@ -151,10 +151,10 @@ public class ExportToExcel {
 		createCell(row, ++s, styleHeader, "Geschäftsobjet");
 		++anz_zeilen;
 		
-    	query = em.createQuery( "SELECT g FROM GeschaeftsObjekt g ORDER BY g.name",GeschaeftsObjekt.class);
+    	TypedQuery<GeschaeftsObjekt> geschaeftsObjektQuery = em.createQuery(
+    			"SELECT g FROM GeschaeftsObjekt g ORDER BY g.name",GeschaeftsObjekt.class);
     	int g_znr = 0;
-    	for (Object g : query.getResultList()) {
-    		GeschaeftsObjekt gObjekt = (GeschaeftsObjekt) g;
+    	for (GeschaeftsObjekt gObjekt : geschaeftsObjektQuery.getResultList()) {
     		row =  g_Sheet.createRow(++g_znr);
     		++anz_zeilen;
     		createCell(row, s=0, styleNormal, g_znr); 
@@ -192,12 +192,12 @@ public class ExportToExcel {
 		createCell(row, ++s, styleHeader, "bis Datum");
 		++anz_zeilen;
 		
-    	query = em.createQuery( "SELECT i FROM Integration i ORDER BY i.name",Integration.class);
+    	TypedQuery<Integration> integrationQuery = em.createQuery(
+    			"SELECT i FROM Integration i ORDER BY i.name",Integration.class);
     	int i_znr = 0;
     	int c_znr = 0;
     	int e_znr = 0;
-    	for (Object i : query.getResultList()) {
-    		Integration integration = (Integration) i;
+    	for (Integration integration : integrationQuery.getResultList()) {
     		row =  i_Sheet.createRow(++i_znr);
     		++anz_zeilen;
     		createCell(row, s=0, styleNormal, i_znr); 
@@ -222,7 +222,8 @@ public class ExportToExcel {
             		createCell(row, ++s, styleNormal, ediEintrag.getBezeichnung());				
             		createCeFo(row, ++s, styleNormal, KOMPONENTEN_SHEET + "!F" + 
             				komponentenZeilenNr.get(ediEintrag.getEdiKomponente().getId()));
-            		createCell(row, ++s, styleNormal, ediEintrag.getEdiIntervall().getName());
+            		String intervall = ediEintrag.getEdiIntervall() == null ? "" : ediEintrag.getEdiIntervall().getName();
+            		createCell(row, ++s, styleNormal, intervall);
             		createCell(row, ++s, styleNormal, ediEintrag.getSeitDatum());
             		createCell(row, ++s, styleNormal, ediEintrag.getBisDatum());
         		}
@@ -238,8 +239,6 @@ public class ExportToExcel {
     	e_Sheet.setColumnWidth(2, i_MaxLen);
     	e_Sheet.setColumnWidth(3, c_MaxLen);
     	e_Sheet.setColumnWidth(5, p_MaxLen + s_MaxLen + k_MaxLen);
-    	
-    	
     	
 		FileOutputStream out = new FileOutputStream(file);
 		wb.write(out);

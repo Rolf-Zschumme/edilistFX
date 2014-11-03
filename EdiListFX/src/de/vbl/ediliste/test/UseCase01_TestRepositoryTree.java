@@ -1,4 +1,4 @@
-package de.vbl.ediliste;
+package de.vbl.ediliste.test;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;

@@ -1,4 +1,4 @@
-package de.vbl.ediliste;
+package de.vbl.ediliste.test;
 
 import javax.persistence.EntityManager;
 

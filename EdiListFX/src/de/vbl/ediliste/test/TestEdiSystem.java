@@ -2,7 +2,6 @@ package de.vbl.ediliste.test;
 
 import java.io.IOException;
 
-import de.vbl.ediliste.controller.EdiSystemController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

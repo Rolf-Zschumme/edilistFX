@@ -1,4 +1,4 @@
-package de.vbl.ediliste;
+package de.vbl.ediliste.test;
 
 import org.controlsfx.dialog.Dialog.Actions;
 

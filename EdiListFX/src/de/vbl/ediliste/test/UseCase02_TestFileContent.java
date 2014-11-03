@@ -1,4 +1,4 @@
-package de.vbl.ediliste;
+package de.vbl.ediliste.test;
 
 import java.awt.Desktop;
 import java.io.ByteArrayOutputStream;
@@ -12,7 +12,6 @@ import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.SVNProperties;
-import org.tmatesoft.svn.core.SVNProperty;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager;
 import org.tmatesoft.svn.core.io.SVNRepository;
@@ -54,11 +53,11 @@ public class UseCase02_TestFileContent {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			repository.getFile(filePath, -1, fileProperties, baos);
 
-			String mimeType = (String) fileProperties
-					.getStringValue(SVNProperty.MIME_TYPE);
-			boolean isTextType = SVNProperty.isTextMimeType(mimeType);
+//			String mimeType = (String) fileProperties
+//					.getStringValue(SVNProperty.MIME_TYPE);
+//			boolean isTextType = SVNProperty.isTextMimeType(mimeType);
 
-			Iterator iterator = fileProperties.nameSet().iterator();
+			Iterator<?> iterator = fileProperties.nameSet().iterator();
 			while (iterator.hasNext()) {
 				String propertyName = (String) iterator.next();
 				String propertyValue = (String) fileProperties
@@ -105,9 +104,9 @@ public class UseCase02_TestFileContent {
 	public static void listEntries(SVNRepository repository, String path)
 			throws SVNException {
 
-		Collection entries = repository.getDir(path, -1, null,
-				(Collection) null);
-		Iterator iterator = entries.iterator();
+		Collection<?> entries = repository.getDir(path, -1, null,
+				(Collection<?>) null);
+		Iterator<?> iterator = entries.iterator();
 
 		while (iterator.hasNext()) {
 			SVNDirEntry entry = (SVNDirEntry) iterator.next();

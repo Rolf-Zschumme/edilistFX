@@ -260,7 +260,7 @@ public class EdiMainController {
         tableEdiNrAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkEdiEintrag(e));
 
         tablePartnerAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkPartner(e));
-        tablePartnerAuswahl.addEventFilter(KeyEvent.KEY_PRESSED, e -> checkPartner(e));
+        tablePartnerAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkPartner(e));
         
         tableSystemAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkSystem(e));
         tableSystemAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkSystem(e));
@@ -275,7 +275,7 @@ public class EdiMainController {
 		tableKonfigurationAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkKonfiguration(e));
 		
 		tableKontaktAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkKontaktPerson(e));
-		tableKontaktAuswahl.addEventFilter(KeyEvent.KEY_PRESSED, e -> checkKontaktPerson(e));
+		tableKontaktAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkKontaktPerson(e));
 		
 		tableGeschaeftsobjektAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkGeschaeftsObjekt(e));
 		tableGeschaeftsobjektAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkGeschaeftsObjekt(e));

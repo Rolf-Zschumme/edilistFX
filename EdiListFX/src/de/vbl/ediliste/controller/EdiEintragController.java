@@ -107,7 +107,6 @@ public class EdiEintragController {
     	private EdiKomponente empfaengerKomponente[] = new EdiKomponente[MAX_EMPFAENGER];
     	private GeschaeftsObjekt geschaeftsObjekt[] = new GeschaeftsObjekt[MAX_EMPFAENGER];
     	private String ediIntervallName;
-//    	private Collection<DokuLink> dokuLink = 
     	
     	void setData (EdiEintrag s) {
     		EdiNr = s.getEdiNr();
@@ -233,12 +232,10 @@ public class EdiEintragController {
     			akt.seitDatum = null;
     			akt.bisDatum = null;
     		} else {
-    			logger.info("newEintrag:" + newEintrag.getEdiNr());
     			readBusinessObject();
     			readEdiIntervall();
     			readIntegrationList();
     			akt.setData(newEintrag);
-    			logger.info("newEintrag:" + newEintrag.getEdiNr());
     			cmbIntegration.getSelectionModel().select(akt.integration);
     			cmbKonfiguration.getSelectionModel().select(akt.konfiguration);
     			tabAktEdiNr.setText(EDI_PANE_PREFIX +  newEintrag.getEdiNrStr());
@@ -416,11 +413,29 @@ public class EdiEintragController {
 			if (akt.EdiNr == org.EdiNr && 
 				akt.integration == org.integration) {
 				if (verifyDokuLinkListIsUnchanged() == false) {
-					logger.info("DokuLinkListe ist nicht mehr identisch -> Eintragungen gehen eventuell verloren ("+akt.integration.getName()+")");
-					// TODO ask User if changes should be stored
-					entityManager.getTransaction().begin();
-					updateDokuLinkListInDatabase();
-					entityManager.getTransaction().commit();
+					// DokuLinkListe has been changed -> this changes may be lost  
+					// ask User if changes should be stored
+					Action response = Dialogs.create().owner(primaryStage)
+							.title(SICHERHEITSABFRAGE)
+							.message("Sollen die Änderungen an den Doku-Referenzen für " + akt.integration.getName() +
+									 " gespeichert werden?")
+							.actions(Dialog.Actions.YES, Dialog.Actions.NO)
+							.showConfirm();
+					if (response == Dialog.Actions.YES) {
+						try {
+							entityManager.getTransaction().begin();
+							updateDokuLinkListInDatabase();
+							entityManager.getTransaction().commit();
+							logger.info("Transaktionstatus(isActive):" + entityManager.getTransaction().isActive());
+						} catch (RuntimeException er) {
+							Dialogs.create().owner(primaryStage)
+							.title(applName).masthead("Datenbankfehler")
+							.message("Fehler beim Speichern der DokuLinkList-Anderungen")
+							.showException(er);
+						}
+
+					}
+						
 				}
 			}
 //			Integration selIntegration = cmbIntegration.getSelectionModel().getSelectedItem();
@@ -430,7 +445,7 @@ public class EdiEintragController {
 //			readCmbKonfigurationList(akt.integration);
 		});
 		cmbIntegration.getSelectionModel().selectedItemProperty().addListener((ov, oldValue, newValue) -> {
-			logger.info("selected Integration:" + (newValue == null ? "null" : newValue.getName()) + 
+			logger.trace("selected Integration:" + (newValue == null ? "null" : newValue.getName()) + 
 					  				   " (old:" + (oldValue == null ? "null" : oldValue.getName()) + ")");
 			setChangeFlag(newValue != org.integration);
 			akt.integration = newValue;
@@ -492,6 +507,7 @@ public class EdiEintragController {
 				final MenuItem removeMenuItem = new MenuItem("Referenz auf Dokument löschen");
 				removeMenuItem.setOnAction( event -> {
 					table.getItems().remove(row.getItem());
+	    			setChangeFlag(org.integration == null || org.integration.getDokuLink() == null);
 				});
 				contextMenu.getItems().addAll(openMenuItem, validateMenuItem, removeMenuItem);
 				
@@ -551,19 +567,14 @@ public class EdiEintragController {
     
     @FXML 
     void actionNewDokuLink() {
-    	if (akt.integration == null) {
-    		mainController.setInfoText("Bitte zuerst Integration auswählen");
-    	}
-    	else {
-    		Stage dialog = new Stage(StageStyle.UTILITY);
-    		DokumentAuswaehlenController controller = mainController.loadDokumentAuswahl(dialog);
-    		if (controller != null) {
-    			dialog.showAndWait();
-    			if (controller.getResponse() == Actions.OK) {
-        			DokuLink dokuLink = controller.getSelectedDokuLink();
-        			dokuLinkList.add(dokuLink);
-        			setChangeFlag(org.integration == null || org.integration.getDokuLink() == null);
-    			}
+    	Stage dialog = new Stage(StageStyle.UTILITY);
+    	DokumentAuswaehlenController controller = mainController.loadDokumentAuswahl(dialog);
+    	if (controller != null) {
+    		dialog.showAndWait();
+    		if (controller.getResponse() == Actions.OK) {
+    			DokuLink dokuLink = controller.getSelectedDokuLink();
+    			dokuLinkList.add(dokuLink);
+    			setChangeFlag(org.integration == null || org.integration.getDokuLink() == null);
     		}
     	}
     }
@@ -899,7 +910,7 @@ public class EdiEintragController {
 				return false;
 			} 
 			if (response == Dialog.Actions.NO) {
-				logger.info("Kein Speichern ausgewaehlt");
+				logger.info("Aenderungen nicht Speichern ausgewaehlt");
 				return true;
 			}
 		}
@@ -1042,7 +1053,7 @@ public class EdiEintragController {
 		} catch (RuntimeException e) {
 			Dialogs.create().owner(primaryStage)
 			.title(applName).masthead("Datenbankfehler")
-			.message("Fehler beim speichern des Geschäftsobjektes")
+			.message("Fehler beim Speichern des EDI-Eintrages")
 			.showException(e);
 		}	
 		dataIsChanged.set(false);
@@ -1053,11 +1064,15 @@ public class EdiEintragController {
 	private void updateDokuLinkListInDatabase() {
 		// if dokuLinks are removed they must be removed from database 
 		if (akt.integration.getDokuLink() != null) {
+			Collection<DokuLink> toBeRemoved = new ArrayList<DokuLink>();
 			for (DokuLink dok : akt.integration.getDokuLink()) {
 				if (dokuLinkList.contains(dok) == false) {
-					entityManager.remove(dok);
-					akt.integration.getDokuLink().remove(dok);
+					toBeRemoved.add(dok);
 				}
+			}
+			for (DokuLink dok : toBeRemoved) {
+				akt.integration.getDokuLink().remove(dok);
+				entityManager.remove(dok);
 			}
 		}
 		for (DokuLink dok : dokuLinkList) {

@@ -37,6 +37,9 @@ import javax.persistence.TypedQuery;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.controlsfx.control.action.Action;
+import org.controlsfx.dialog.Dialog;
+import org.controlsfx.dialog.Dialogs;
 import org.controlsfx.dialog.Dialog.Actions;
 
 import de.vbl.ediliste.controller.EdiMainController;
@@ -197,6 +200,7 @@ public class DokumentAuswaehlenController implements Initializable {
     	
     	btnOK.disableProperty().bind(listIsNotSelected);
     	
+    	
     }
 
     public void start(Stage primaryStage, EdiMainController mainController, EntityManager entityManager) {
@@ -212,7 +216,7 @@ public class DokumentAuswaehlenController implements Initializable {
 			lbHinweis.setText("Kein Repositry verfügbar. Bitte zuvor eintragen!");
 			lbHinweis.setTextFill(Color.RED);
 		} else {
-			cmbRepository.getSelectionModel().select(reposiList.size()-1);
+			cmbRepository.getSelectionModel().select(0);
 		}
 //		btnSearch.disableProperty().bind(Bindings.isEmpty(reposiList));
 	}
@@ -263,8 +267,20 @@ public class DokumentAuswaehlenController implements Initializable {
     		// just for suppressing "unused" warning;
     	}
 		selDokuLink = tableDokuLinkAuswahl.getSelectionModel().selectedItemProperty().get();
-		retAction = Actions.OK;
-		close(event);
+		Action response = Dialog.Actions.YES;
+		if (selDokuLink.getPfad().startsWith("/02_xSpez_abgenommen") == false) {
+			response = Dialogs.create().owner(primaryStage)
+					.title("Hinweis")
+					.message("Das gewählte Dokument\n\n" + selDokuLink.getName() + 
+						 "\n ist nicht in \"02_xSpez_abgenommen\" gespeichert." +
+						 "\n\nDas bedeutet es gilt nicht als abgenommen !")
+					.actions(Dialog.Actions.YES, Dialog.Actions.NO)
+					.showWarning();
+		}
+		if (response == Dialog.Actions.YES) {
+			retAction = Actions.OK;
+			close(event);
+		}
     }
 
 	@FXML

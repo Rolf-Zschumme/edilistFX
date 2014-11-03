@@ -265,19 +265,20 @@ public class DataBaseInit {
 	}
 	
 	private static void generateGeschaeftobjekte() {
-		em.persist(new GeschaeftsObjekt("ZGP-Stammdaten"));
-		em.persist(new GeschaeftsObjekt("ZGP-Beziehungen"));
-		em.persist(new GeschaeftsObjekt("Zahlungsanweisung"));
-		em.persist(new GeschaeftsObjekt("ZA-Protokolle"));
-		em.persist(new GeschaeftsObjekt("ANW-Meldungen"));
-		em.persist(new GeschaeftsObjekt("ANW-Meldungsdokumente"));
-		em.persist(new GeschaeftsObjekt("ZfA-Meldungen"));
-		em.persist(new GeschaeftsObjekt("MM-Bestellanfrage"));
-		em.persist(new GeschaeftsObjekt("MM-Bestellung"));
-		em.persist(new GeschaeftsObjekt("MM-Bestelländerung"));
-		em.persist(new GeschaeftsObjekt("MM-Materialstammdaten"));
-		em.persist(new GeschaeftsObjekt("MM-Einkaufsinfosätze"));
-		System.out.println("12 Geschaeftobjekte() angelegt");
+		int anzGO = 0;
+		em.persist(new GeschaeftsObjekt("ZGP-Stammdaten"));   		++anzGO;
+		em.persist(new GeschaeftsObjekt("ZGP-Beziehungen"));		++anzGO;
+		em.persist(new GeschaeftsObjekt("Zahlungsanweisung"));		++anzGO;
+		em.persist(new GeschaeftsObjekt("ZA-Protokolle"));			++anzGO;
+		em.persist(new GeschaeftsObjekt("ANW-Meldungen"));			++anzGO;
+		em.persist(new GeschaeftsObjekt("ANW-Meldungsdokumente"));	++anzGO;
+		em.persist(new GeschaeftsObjekt("ZfA-Meldungen"));			++anzGO;
+		em.persist(new GeschaeftsObjekt("MM-Bestellanfrage"));		++anzGO;
+		em.persist(new GeschaeftsObjekt("MM-Bestellung"));			++anzGO;
+		em.persist(new GeschaeftsObjekt("MM-Bestelländerung"));		++anzGO;
+		em.persist(new GeschaeftsObjekt("MM-Materialstammdaten"));	++anzGO;
+		em.persist(new GeschaeftsObjekt("MM-Einkaufsinfosätze"));	++anzGO;
+		System.out.println(anzGO + " Geschaeftobjekte() angelegt");
 	}
 	
 	private static Integration newIntegration (String integrationName) {
