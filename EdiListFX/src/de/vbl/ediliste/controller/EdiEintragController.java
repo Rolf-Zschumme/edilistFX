@@ -27,7 +27,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -71,6 +70,7 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialog.Actions;
 import org.controlsfx.dialog.Dialogs;
+import org.tmatesoft.svn.core.SVNException;
 
 import de.vbl.ediliste.controller.KomponentenAuswahlController.KomponentenTyp;
 import de.vbl.ediliste.controller.subs.DokumentAuswaehlenController;
@@ -148,9 +148,9 @@ public class EdiEintragController {
     @FXML private ComboBox<Integration> cmbIntegration;
     @FXML private Button btnNewScenario;
     @FXML private Button btnNewConfiguration;
+    @FXML private Button btnNewDokuLink;
 
     @FXML private TableView<DokuLink> tvDokuLinks;
-    @FXML private Button btnNewDokuLink;
     @FXML private TableColumn<DokuLink, String> tColDokumentVorhaben;
     @FXML private TableColumn<DokuLink, String> tColDokumentName;
     @FXML private TableColumn<DokuLink, LocalDateTime> tColDokumentDatum;
@@ -227,22 +227,19 @@ public class EdiEintragController {
     			tabAktEdiNr.setText(EDI_PANE_PREFIX + "000");
     			btnSender.textProperty().unbind();
     		}
-    		cmbIntegration.setValue(null);
     		if (newEintrag == null) {
     			EdiEintragController.mainController.setInfoText("Edi-Nummer wurde reserviert");
+    			cmbIntegration.setValue(null);
     			akt.seitDatum = null;
     			akt.bisDatum = null;
     		} else {
+    			logger.info("newEintrag:" + newEintrag.getEdiNr());
     			readBusinessObject();
     			readEdiIntervall();
     			readIntegrationList();
-    			org.setData(newEintrag);
     			akt.setData(newEintrag);
+    			logger.info("newEintrag:" + newEintrag.getEdiNr());
     			cmbIntegration.getSelectionModel().select(akt.integration);
-    			dokuLinkList.clear();
-    			if(akt.integration != null) {
-    				dokuLinkList.addAll(akt.integration.getDokuLink());
-    			}
     			cmbKonfiguration.getSelectionModel().select(akt.konfiguration);
     			tabAktEdiNr.setText(EDI_PANE_PREFIX +  newEintrag.getEdiNrStr());
     			tfBezeichnung.setText(akt.bezeichnung);
@@ -257,6 +254,7 @@ public class EdiEintragController {
     			senderIsSelected.set(akt.sender != null);
     			setAktEmpfaenger();
     			
+    			org.setData(newEintrag);
     			setLastChangeField(ediLastChange, newEintrag.getLaeDatum(), newEintrag.getLaeUser());
     			
     		}
@@ -286,6 +284,7 @@ public class EdiEintragController {
 		btnSpeichern.disableProperty().bind(Bindings.not(dataIsChanged));
 		
 		setupIntegrationComboBox();
+		setupDokuLink();
 		setupKonfigurationComboBox();
 		
 		tfBezeichnung.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -387,7 +386,7 @@ public class EdiEintragController {
     	});
 	}
 	
-    private void setupIntegrationComboBox() {
+	private void setupIntegrationComboBox() {
     	
 		cmbIntegration.setCellFactory((cmbBx) -> {
 			return new ListCell<Integration>() {
@@ -413,14 +412,41 @@ public class EdiEintragController {
 				return null; // No conversion fromString needed
 			}
 		});
-		
 		cmbIntegration.setOnAction((event) -> {
-			Integration selIntegration = cmbIntegration.getSelectionModel().getSelectedItem();
-			setChangeFlag(akt.integration != org.integration);
-			akt.integration = selIntegration;
+			if (akt.EdiNr == org.EdiNr && 
+				akt.integration == org.integration) {
+				if (verifyDokuLinkListIsUnchanged() == false) {
+					logger.info("DokuLinkListe ist nicht mehr identisch -> Eintragungen gehen eventuell verloren ("+akt.integration.getName()+")");
+					// TODO ask User if changes should be stored
+					entityManager.getTransaction().begin();
+					updateDokuLinkListInDatabase();
+					entityManager.getTransaction().commit();
+				}
+			}
+//			Integration selIntegration = cmbIntegration.getSelectionModel().getSelectedItem();
+//			logger.info("selected Integration:" + selIntegration.getName());
+//			setChangeFlag(akt.integration != org.integration);
+//			akt.integration = selIntegration;
+//			readCmbKonfigurationList(akt.integration);
+		});
+		cmbIntegration.getSelectionModel().selectedItemProperty().addListener((ov, oldValue, newValue) -> {
+			logger.info("selected Integration:" + (newValue == null ? "null" : newValue.getName()) + 
+					  				   " (old:" + (oldValue == null ? "null" : oldValue.getName()) + ")");
+			setChangeFlag(newValue != org.integration);
+			akt.integration = newValue;
+			// refresh dokuLinkList
+			if (oldValue != newValue) {
+				dokuLinkList.clear();
+				if(akt.integration != null) {
+					dokuLinkList.addAll(akt.integration.getDokuLink());
+				}
+			}
 			readCmbKonfigurationList(akt.integration);
 		});
-		
+	}
+	
+    private void setupDokuLink() {
+		btnNewDokuLink.disableProperty().bind(cmbIntegration.getSelectionModel().selectedItemProperty().isNull());
 		tvDokuLinks.setItems(dokuLinkList);
 		tColDokumentVorhaben.setCellValueFactory(cellData -> cellData.getValue().vorhabenProperty());
 		tColDokumentName.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
@@ -457,7 +483,7 @@ public class EdiEintragController {
 				
 				final MenuItem openMenuItem = new MenuItem("Dokument (extern) öffnen");
 				openMenuItem.setOnAction( event -> { 
-					dokuAnzeigen(row.getItem()); 	
+					dokumentExternAnzeigen(row.getItem()); 	
 				});
 				final MenuItem validateMenuItem = new MenuItem("Aktialität des Eintrages prüfen");
 				validateMenuItem.setOnAction(event -> { 
@@ -473,15 +499,18 @@ public class EdiEintragController {
 				return row;
 			}
 		});
-		
 	}
 
-    private void dokuAnzeigen(DokuLink doku) {
-		System.out.println("Name        : " + doku.getName());
+    private void dokumentExternAnzeigen(DokuLink doku) {
+    	
 		Repository repository = doku.getRepository();
+		try {
+			repository.open();
+		} catch (SVNException e) {
+			mainController.setErrorText("Fehler beim öffen des Repository " + repository.getName() + " :" + e.getMessage());
+			return;
+		}
 		String filePath = repository.getStartPfad() + doku.getPfad() + "/" + doku.getName();
-		System.out.println("SVN FilePath: " + filePath);
-		repository.open();
 		ByteArrayOutputStream baos = repository.getFileStream(filePath, -1);
 		
 		int extPos = filePath.indexOf(".");
@@ -490,8 +519,8 @@ public class EdiEintragController {
 		try {
 			fos = new FileOutputStream(doku.getName() + ext);
 			baos.writeTo(fos);
-
 		} catch (IOException e) {
+			logger.error(e.getMessage(),e);
 			mainController.setErrorText(e.getMessage());
 			return;
 		} finally {
@@ -499,6 +528,7 @@ public class EdiEintragController {
 				if (baos != null) baos.close();
 				if (fos != null)  fos.close();
 			} catch (IOException e) {
+				logger.error(e.getMessage(),e);
 				mainController.setErrorText(e.getMessage());
 			}
 		}
@@ -509,8 +539,8 @@ public class EdiEintragController {
 		try {
 			desktop.open(new File(doku.getName() + ext));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(),e);
+			mainController.setErrorText(e.getMessage());
 		}
 	}
        
@@ -869,6 +899,7 @@ public class EdiEintragController {
 				return false;
 			} 
 			if (response == Dialog.Actions.NO) {
+				logger.info("Kein Speichern ausgewaehlt");
 				return true;
 			}
 		}
@@ -940,23 +971,7 @@ public class EdiEintragController {
 			}
 			aktEdi.setKonfiguration(akt.konfiguration);
 			
-			// if dokuLinks are removed they must be removed from org.integration 
-			if (akt.integration.getDokuLink() != null) {
-				for (DokuLink dok : akt.integration.getDokuLink()) {
-					if (dokuLinkList.contains(dok) == false) {
-						entityManager.remove(dok);
-						akt.integration.getDokuLink().remove(dok);
-					}
-				}
-			}
-			for (DokuLink dok : dokuLinkList) {
-				if (dok.getId() == 0L) {
-					entityManager.persist(dok);
-				}
-				if (akt.integration.getDokuLink().contains(dok) == false) {
-					akt.integration.getDokuLink().add(dok);
-				}
-			}
+			updateDokuLinkListInDatabase();
 			
 			aktEdi.setEdiKomponente(akt.sender); 
 			aktEdi.setBeschreibung(akt.beschreibung);
@@ -1035,6 +1050,26 @@ public class EdiEintragController {
 		return true;
 	}	
 	
+	private void updateDokuLinkListInDatabase() {
+		// if dokuLinks are removed they must be removed from database 
+		if (akt.integration.getDokuLink() != null) {
+			for (DokuLink dok : akt.integration.getDokuLink()) {
+				if (dokuLinkList.contains(dok) == false) {
+					entityManager.remove(dok);
+					akt.integration.getDokuLink().remove(dok);
+				}
+			}
+		}
+		for (DokuLink dok : dokuLinkList) {
+			if (dok.getId() == 0L) {
+				entityManager.persist(dok);
+			}
+			if (akt.integration.getDokuLink().contains(dok) == false) {
+				akt.integration.getDokuLink().add(dok);
+			}
+		}
+	}
+
 	private EdiIntervall newEdiIntervall(String iName) {
 		logger.entry();
 		EdiIntervall ediIntervall;
@@ -1064,9 +1099,9 @@ public class EdiEintragController {
 	}
 
 	private boolean verifyDokuLinkListIsUnchanged() {
-		Collection<DokuLink> orgDokuLink = org.integration == null ? null : org.integration.getDokuLink();
+		Collection<DokuLink> orgDokuLink = (org.integration == null) ? null : org.integration.getDokuLink();
 		if ( orgDokuLink == null) {
-			return dokuLinkList.size() == 0;
+			return dokuLinkList.size() == 0; // org is 0 -> unchanged if dokLinkList == 0 
 		}
 		if (( orgDokuLink.size()  != dokuLinkList.size() )	  ||
 			  orgDokuLink.containsAll(dokuLinkList) == false  ||

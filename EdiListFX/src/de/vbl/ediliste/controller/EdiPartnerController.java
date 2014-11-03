@@ -19,6 +19,8 @@ import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -27,6 +29,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -36,10 +39,13 @@ import org.apache.logging.log4j.Logger;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
+import org.controlsfx.dialog.Dialog.Actions;
 
+import de.vbl.ediliste.controller.subs.KontaktPersonAuswaehlenController;
 import de.vbl.ediliste.model.EdiEintrag;
 import de.vbl.ediliste.model.EdiEmpfaenger;
 import de.vbl.ediliste.model.EdiPartner;
+import de.vbl.ediliste.model.KontaktPerson;
 
 public class EdiPartnerController {
 	private static final Logger logger = LogManager.getLogger(EdiPartnerController.class.getName());
@@ -48,6 +54,7 @@ public class EdiPartnerController {
 	private static EntityManager entityManager;
 	private final ObjectProperty<EdiPartner> ediPartner;
 	private final ObservableSet<EdiEintrag> ediEintragsSet;      // all assigned EDI-Entities
+	private final ObservableList<KontaktPerson> kontaktpersonList; 
 	private final IntegerProperty ediSystemAnzahl; 
 	
 	private EdiPartner aktPartner = null;
@@ -58,6 +65,7 @@ public class EdiPartnerController {
     @FXML private URL location;
     @FXML private TextField tfBezeichnung;
     @FXML private TextArea taBeschreibung;
+    @FXML private ListView<KontaktPerson> lvAnsprechpartner;
     @FXML private TableView<EdiEmpfaenger> tvVerwendungen;
     @FXML private TableColumn<EdiEmpfaenger, String> tcEmpfaenger;
     @FXML private TableColumn<EdiEmpfaenger, String> tcEdiNr;
@@ -68,11 +76,13 @@ public class EdiPartnerController {
     
     @FXML private Button btnSpeichern;
     @FXML private Button btnLoeschen;
+    @FXML private Button btnRemoveKontaktPerson;
     
     public EdiPartnerController() {
     	this.ediPartner = new SimpleObjectProperty<>(this, "ediPartner", null);
     	this.ediEintragsSet = FXCollections.observableSet();
     	this.ediSystemAnzahl = new SimpleIntegerProperty(0);
+    	this.kontaktpersonList = FXCollections.observableArrayList();
     }
 
 	public static void setParent(EdiMainController mainController) {
@@ -95,11 +105,14 @@ public class EdiPartnerController {
 				log("ChangeListener<EdiPartner>",
 					((oldPartner==null) ? "null" : oldPartner.getName() + " -> " 
 				  + ((newPartner==null) ? "null" : newPartner.getName() )));
-				if (oldPartner != null && newPartner == null) {
-					ediEintragsSet.clear();
-					tfBezeichnung.setText("");
-					taBeschreibung.setText("");
+				if (oldPartner != null) {
+					if (newPartner == null) {
+						tfBezeichnung.setText("");
+						taBeschreibung.setText("");
+					}
 					ediSystemAnzahl.unbind();
+					kontaktpersonList.clear();
+					ediEintragsSet.clear();
 				}
 				if (newPartner != null) {
 					aktPartner = newPartner;
@@ -110,6 +123,8 @@ public class EdiPartnerController {
 					}
 					taBeschreibung.setText(newPartner.getBeschreibung());
 					ediSystemAnzahl.bind(aktPartner.anzSystemeProperty());
+					kontaktpersonList.addAll(newPartner.getKontaktPerson());
+					btnRemoveKontaktPerson.disableProperty().bind(lvAnsprechpartner.getSelectionModel().selectedItemProperty().isNull());
 				}
 				dataIsChanged.set(false);
 			}
@@ -136,6 +151,29 @@ public class EdiPartnerController {
 			} else {	
 				dataIsChanged.set(!checkForChangesWithMode(Checkmode.ONLY_CHECK));
 			}
+		});
+		
+		lvAnsprechpartner.setItems(kontaktpersonList);
+		lvAnsprechpartner.setCellFactory( (list) -> {
+			return new ListCell<KontaktPerson>() {
+				@Override
+				protected void updateItem(KontaktPerson k, boolean empty) {
+					super.updateItem(k, empty);
+					if (k == null || empty) {
+						setText(null);
+					} else {
+						String suffix = k.getAbteilungSafe();
+						if(suffix.equals("")  && k.getNummer() != null) {
+							suffix = k.getNummer();
+						}
+						if (suffix.equals("") ) {
+							setText(k.getVorname() + " " + k.getNachname());
+						} else {
+							setText(k.getVorname() + " " + k.getNachname() + " (" + suffix + ")");
+						}
+					}
+				}
+			};
 		});
 		
 //	    Setup for Sub-Panel    
@@ -251,7 +289,10 @@ public class EdiPartnerController {
 		String newBeschreibung = taBeschreibung.getText()==null ? "" : taBeschreibung.getText();
 
 		if (orgName.equals(newName) &&
-			orgBeschreibung.equals(newBeschreibung) ) {
+			orgBeschreibung.equals(newBeschreibung) && 
+			aktPartner.getKontaktPerson().containsAll(kontaktpersonList) &&
+			kontaktpersonList.containsAll(aktPartner.getKontaktPerson())    ) 
+		{
 			log("checkForChangesWithMode", "Name und Bezeichnung sind unverändert");
 		} else {	
 			if (checkmode == Checkmode.ONLY_CHECK) {
@@ -281,6 +322,12 @@ public class EdiPartnerController {
 			entityManager.getTransaction().begin();
 			aktPartner.setName(newName);
 			aktPartner.setBeschreibung(newBeschreibung);
+			aktPartner.getKontaktPerson().retainAll(kontaktpersonList);
+			for (KontaktPerson k : kontaktpersonList) {
+				if (aktPartner.getKontaktPerson().contains(k)== false) {
+					aktPartner.getKontaktPerson().add(k);
+				}
+			}
 			entityManager.getTransaction().commit();
 			readEdiListeforPartner(aktPartner);
 			mainCtr.setInfoText("Der Partner \"" + aktPartner.getName() + "\" wurde gespeichert");
@@ -310,9 +357,6 @@ public class EdiPartnerController {
 		tvVerwendungen.getItems().clear();
 		ObservableList<EdiEmpfaenger> empfaengerList = FXCollections.observableArrayList();
 		ediEintragsSet.clear(); 
-		/* 1. lese alle EdiEinträge mit Sender = selekierter Partner 
-		 * 		-> zeige jeweils alle zugehörigen Empfänger, falls kein Empfänger vorhanden dummy erzeugen
-		*/
 		TypedQuery<EdiEintrag> tqS = entityManager.createQuery(
 				"SELECT e FROM EdiEintrag e WHERE e.ediKomponente.ediSystem.ediPartner = :p", EdiEintrag.class);
 		tqS.setParameter("p", newPartner);
@@ -321,37 +365,48 @@ public class EdiPartnerController {
 			ediEintragsSet.add(e);
 			if (e.getEdiEmpfaenger().size() > 0) {
 				empfaengerList.addAll(e.getEdiEmpfaenger());
-//				for(EdiEmpfaenger ee : e.getEdiEmpfaenger() ) ediKomponenteList.add(ee); 
 			} else {
 				EdiEmpfaenger tmpE = new EdiEmpfaenger();
 				tmpE.setEdiEintrag(e);
 				empfaengerList.add(tmpE);
 			}
 		}
-//		log("readEdiListeforKomponete", "für "+ selKomponente.getName() + " " + 
-//			ediList.size() + " EDI-Einträge" + " mit insgesamt " + 
-//			empfaengerList.size() + " Empfänger gelesen (Refresh=" + cache+ ")");
-		
-		/* 2. lese alle Empfänger mit Empfänger = selektierte Komponente 
-		 *    -> zeige alle Empfänger  
-		 */
-		
 		TypedQuery<EdiEmpfaenger> tqE = entityManager.createQuery(
 				"SELECT e FROM EdiEmpfaenger e WHERE e.komponente.ediSystem.ediPartner = :p", EdiEmpfaenger.class);
 		tqE.setParameter("p", newPartner);
-//		ediKomponenteList.addAll(tqE.getResultList());
 		for(EdiEmpfaenger e : tqE.getResultList() ) {
 			log("readEdiListeforKomponete", "Empfaenger:" + e.getKomponente().getFullname() + " add");
 			empfaengerList.add(e);
 			ediEintragsSet.add(e.getEdiEintrag());
 		}
-//		log("readEdiListeforKomponete", "für " + selKomponente.getName() + " " + 
-//			tqE.getResultList().size() + " EDI-Empfänger gelesen (Refresh=" + cache+ ")");
-		
 		tvVerwendungen.setItems(empfaengerList);
-//		log("readEdiListeforKomponente","size="+ ediEintragsSet.size());
 	}
 
+    @FXML
+    void actionAddKontaktPerson(ActionEvent event) {
+    	logger.entry();
+    	Stage dialog = new Stage(StageStyle.UTILITY);
+    	KontaktPersonAuswaehlenController controller = mainCtr.loadKontaktPersonAuswahl(dialog);
+    	if (controller != null) {
+    		dialog.showAndWait();
+    		if (controller.getResponse() == Actions.OK) {
+    			kontaktpersonList.add(controller.getKontaktperson());
+    			dataIsChanged.set(true);
+    		}
+    	}
+    	logger.exit();
+    }
+
+    @FXML
+    void actionRemoveKontaktPerson(ActionEvent event) {
+    	logger.entry();
+    	KontaktPerson toBeRemoved = lvAnsprechpartner.getSelectionModel().getSelectedItem();
+    	kontaktpersonList.remove(toBeRemoved);
+    	mainCtr.setInfoText("Die Kontaktperson \"" + toBeRemoved.getVorname() + " " + 
+    					toBeRemoved.getNachname() + "\" wurde aus dieser Kontaktliste entfernt");
+		dataIsChanged.set(true);
+    }
+	
 	public final ObjectProperty<EdiPartner> ediPartnerProperty() {
 		return ediPartner;
 	}
@@ -370,18 +425,22 @@ public class EdiPartnerController {
 			System.out.println(className + "." + methode + "(): " + message); 
 		}
 	}
-
+	
+	final static String fxmlFilename = "EdiPartner.fxml";
+	final static String fxmlErrortxt = "' was not injected: check FXML-file '" + fxmlFilename + "'.";
 	void checkFieldsFromView() {
-//    	assert ediPartnerPane != null : "fx:id=\"ediPartnerPane\" was not injected: check your FXML file 'EdiPartner.fxml'.";
-    	assert tfBezeichnung != null : "fx:id=\"tfBezeichnung\" was not injected: check your FXML file 'EdiPartner.fxml'.";
-    	assert taBeschreibung != null : "fx:id=\"taBeschreibung\" was not injected: check your FXML file 'EdiPartner.fxml'.";
-    	assert tcEdiNr != null : "fx:id=\"tcEdiNr\" was not injected: check your FXML file 'EdiPartner.fxml'.";
-    	assert tcSender != null : "fx:id=\"tcSender\" was not injected: check your FXML file 'EdiPartner.fxml'.";
-        assert tcEmpfaenger != null : "fx:id=\"tcEmpfaenger\" was not injected: check your FXML file 'EdiPartner.fxml'.";
-        assert tcDatumBis != null : "fx:id=\"tcDatumBis\" was not injected: check your FXML file 'EdiPartner.fxml'.";
-        assert tvVerwendungen != null : "fx:id=\"tvVerwendungen\" was not injected: check your FXML file 'EdiPartner.fxml'.";
-        assert btnLoeschen != null : "fx:id=\"btnLoeschen\" was not injected: check your FXML file 'EdiPartner.fxml'.";
-        assert btnSpeichern != null : "fx:id=\"btnSpeichern\" was not injected: check your FXML file 'EdiPartner.fxml'.";
+    	assert tfBezeichnung 			!= null : "fx:id='tfBezeichnung"   			+ fxmlErrortxt;
+    	assert taBeschreibung			!= null : "fx:id='taBeschreibung"  			+ fxmlErrortxt;
+    	assert tcEdiNr					!= null : "fx:id='tcEdiNr"  				+ fxmlErrortxt;
+    	assert tcSender					!= null : "fx:id='tcSender"  				+ fxmlErrortxt;
+        assert tcEmpfaenger				!= null : "fx:id='tcEmpfaenger"  			+ fxmlErrortxt;
+        assert tcGeschaeftsobjekt		!= null : "fx:id='tcGeschaeftsobjekt"  		+ fxmlErrortxt;
+        assert tcDatumAb				!= null : "fx:id='tcDatumAb"  				+ fxmlErrortxt;
+        assert tcDatumBis				!= null : "fx:id='tcDatumBis"  				+ fxmlErrortxt;
+        assert tvVerwendungen			!= null : "fx:id='tvVerwendungen"  			+ fxmlErrortxt;
+        assert lvAnsprechpartner		!= null : "fx:id='lvAnsprechpartner"		+ fxmlErrortxt;
+        assert btnLoeschen				!= null : "fx:id='btnLoeschen"  			+ fxmlErrortxt;
+        assert btnSpeichern 			!= null : "fx:id='btnSpeichern"  			+ fxmlErrortxt;
+        assert btnRemoveKontaktPerson	!= null : "fx:id='btnRemoveKontaktPerson"	+ fxmlErrortxt;
     }
-    
 }

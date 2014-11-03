@@ -81,16 +81,26 @@ public class DataBaseInit {
 	
 
 	private static void generateRepository() {
-		Repository repro = new Repository();
+		Repository repro1 = new Repository();
 		
-		repro.setId(1L);
-		repro.setName("QS-Akte");
-		repro.setLocation("svn://itneu/SE-Akten");
-		repro.setStartPfad("/03_QS-Akte");
-		repro.setBenutzer("adelfinop");
-		repro.setPasswort("16WKGE");
-		em.persist(repro);
-		System.out.println("Repository für " + repro.getName() + " angelegt.");
+		repro1.setId(1L);
+		repro1.setName("QS-Akte");
+		repro1.setLocation("svn://itneu/SE-Akten");
+		repro1.setStartPfad("/03_QS-Akte");
+		repro1.setBenutzer("adelfinop");
+		repro1.setPasswort("16WKGE");
+		em.persist(repro1);
+		System.out.println("Repository für " + repro1.getName() + " angelegt.");
+		
+		Repository repro2 = new Repository();
+		repro2.setId(2L);
+		repro2.setName("Test-SVN");
+		repro2.setLocation("svn://Test-Server/");
+		repro2.setStartPfad("/");
+		repro2.setBenutzer("Tester");
+		repro2.setPasswort("******");
+		em.persist(repro2);
+		System.out.println("Repository für " + repro2.getName() + " angelegt.");
 	}
 
 

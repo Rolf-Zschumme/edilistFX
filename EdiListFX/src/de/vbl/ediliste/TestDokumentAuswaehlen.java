@@ -8,6 +8,8 @@ import de.vbl.ediliste.controller.EdiMainController;
 import de.vbl.ediliste.controller.subs.DokumentAuswaehlenController;
 import de.vbl.ediliste.model.DokuLink;
 import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -20,6 +22,8 @@ public class TestDokumentAuswaehlen extends Application {
 		mainCtr.setupEntityManager();
 		EntityManager em = mainCtr.getEntityManager();
 		mainCtr.setPrimaryStage(primaryStage);
+		Scene scene = new Scene(new Pane());
+		primaryStage.setScene(scene);
 		primaryStage.setTitle("Test:KontaktPersonAuswaehlen");
 		
     	Stage dialog = new Stage(StageStyle.UTILITY);

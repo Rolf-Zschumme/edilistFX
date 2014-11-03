@@ -26,10 +26,14 @@
 <content>
     			<AnchorPane maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0">
 					<children>
-						<Label layoutX="8.0" layoutY="15.0" prefWidth="81.0" text="Bezeichnung:" />
-						<TextField fx:id="tfBezeichnung" layoutX="89.0" layoutY="11.0" prefHeight="25.0" prefWidth="200.0" AnchorPane.topAnchor="5.0" />
-						<Label layoutX="8.0" layoutY="58.0" text="Beschreibung:" />
-						<TextArea fx:id="taBeschreibung" layoutX="89.0" layoutY="58.0" maxHeight="1.7976931348623157E308" AnchorPane.bottomAnchor="9.0" AnchorPane.topAnchor="45.0" />
+						<Label layoutX="8.0" layoutY="15.0" prefWidth="81.0" text="Bezeichnung:" AnchorPane.leftAnchor="12.0" AnchorPane.topAnchor="5.0" />
+						<TextField fx:id="tfBezeichnung" layoutX="89.0" layoutY="11.0" prefHeight="25.0" prefWidth="200.0" AnchorPane.leftAnchor="100.0" AnchorPane.topAnchor="5.0" />
+						<Label layoutX="324.0" layoutY="15.0" text="Beschreibung:" AnchorPane.leftAnchor="320.0" AnchorPane.topAnchor="5.0" />
+						<TextArea fx:id="taBeschreibung" layoutX="411.0" layoutY="7.0" maxHeight="1.7976931348623157E308" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="400.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
+                                    <Button fx:id="btnRemoveKontaktPerson" disable="true" mnemonicParsing="false" onAction="#actionRemoveKontaktPerson" prefWidth="80.0" text="entfernen" AnchorPane.leftAnchor="12.0" AnchorPane.topAnchor="105.0" />
+                                    <Button mnemonicParsing="false" onAction="#actionAddKontaktPerson" prefWidth="80.0" text="hinzufügen" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="65.0" />
+                                    <Label alignment="CENTER" disable="true" text="Kontaktperson:" AnchorPane.leftAnchor="12.0" AnchorPane.topAnchor="40.0" />
+                                    <ListView fx:id="lvAnsprechpartner" prefWidth="200.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="100.0" AnchorPane.topAnchor="40.0" />
 					</children>
 				</AnchorPane>
 </content>

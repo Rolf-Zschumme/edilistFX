@@ -31,6 +31,8 @@ import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
 
 import de.vbl.ediliste.model.EdiKomponente;
+import de.vbl.ediliste.model.EdiPartner;
+import de.vbl.ediliste.model.EdiSystem;
 import de.vbl.ediliste.model.KontaktPerson;
 
 public class KontaktPersonController {
@@ -189,7 +191,7 @@ public class KontaktPersonController {
 	@FXML
 	void loeschen(ActionEvent event) {
 		if (ediKomponentenList.size() > 0) {
-			mainCtr.setErrorText("Fehler: Komponente wird verwendet");
+			mainCtr.setErrorText("Fehler: Löschung nicht möglich da Eintragungen vorhanden");
 			return;
 		}	
 		String aktName = "Kontakt-Person \"" + aktKontaktPerson.getNachname() + "\"";
@@ -317,13 +319,35 @@ public class KontaktPersonController {
 
 	private void readEdiKomponentenListeforPerson( KontaktPerson selKontaktPerson) {
 		ediKomponentenList.clear();
-		TypedQuery<EdiKomponente> tqS = entityManager.createQuery(
+		TypedQuery<EdiKomponente> tqK = entityManager.createQuery(
 				"SELECT k FROM EdiKomponente k", EdiKomponente.class);
-		List<EdiKomponente> ediList = tqS.getResultList();
+		List<EdiKomponente> ediList = tqK.getResultList();
 		for(EdiKomponente k : ediList ) {
 			if (k.getKontaktPerson().size() > 0 &&  
 				k.getKontaktPerson().contains(selKontaktPerson) ) {
 				ediKomponentenList.add(k);
+			}
+		}
+		TypedQuery<EdiSystem> tqS = entityManager.createQuery(
+				"SELECT s FROM EdiSystem s", EdiSystem.class);
+		List<EdiSystem> ediSystemList = tqS.getResultList();
+		for(EdiSystem s : ediSystemList ) {
+			if (s.getKontaktPerson().size() > 0 &&  
+				s.getKontaktPerson().contains(selKontaktPerson) ) {
+				EdiPartner tmpEdiPartner = new EdiPartner(s.getEdiPartner().getName());
+				EdiSystem tmpEdiSystem = new EdiSystem(s.getName(), tmpEdiPartner);
+				ediKomponentenList.add(new EdiKomponente("-", tmpEdiSystem));
+			}
+		}
+		TypedQuery<EdiPartner> tqP = entityManager.createQuery(
+				"SELECT p FROM EdiPartner p", EdiPartner.class);
+		List<EdiPartner> ediPartnerList = tqP.getResultList();
+		for(EdiPartner p : ediPartnerList ) {
+			if (p.getKontaktPerson().size() > 0 &&  
+				p.getKontaktPerson().contains(selKontaktPerson) ) {
+				EdiPartner tmpEdiPartner = new EdiPartner(p.getName());
+				EdiSystem tmpEdiSystem = new EdiSystem("-", tmpEdiPartner);
+				ediKomponentenList.add(new EdiKomponente("-", tmpEdiSystem));
 			}
 		}
 		logger.trace("fuer "+ selKontaktPerson.getNachname() + " " + 

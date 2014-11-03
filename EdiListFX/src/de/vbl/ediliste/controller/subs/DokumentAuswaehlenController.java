@@ -1,3 +1,4 @@
+
 package de.vbl.ediliste.controller.subs;
 
 import java.net.URL;
@@ -28,13 +29,11 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import javax.swing.GroupLayout.Alignment;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -75,6 +74,7 @@ public class DokumentAuswaehlenController implements Initializable {
 
     private DokuLink selDokuLink = null;
     private BooleanProperty listIsNotSelected = new SimpleBooleanProperty();
+    private BooleanProperty repositoryIsOpen = new SimpleBooleanProperty(false);
     
     private Repository aktRepository = null;
     private String aktFirstLevel = null;
@@ -108,9 +108,22 @@ public class DokumentAuswaehlenController implements Initializable {
 						setText(repo.getName());
 					}
 				}
-			};
-		});
-		cmbRepository.setConverter(new StringConverter<Repository>() {
+			} ;
+		} );
+		cmbRepository.setCellFactory((cmbBx) -> {
+			return new ListCell<Repository>() {
+				@Override
+				protected void updateItem(Repository repo, boolean empty) {
+					super.updateItem(repo, empty);
+					if (repo == null || empty) {
+						setText(null);
+					} else {
+						setText(repo.getName());
+					}
+				}
+			} ;
+		} );
+		cmbRepository.setConverter( new StringConverter<Repository>() {
 			@Override
 			public String toString(Repository repo) {
 				if (repo == null) {
@@ -123,25 +136,39 @@ public class DokumentAuswaehlenController implements Initializable {
 			public Repository fromString(String string) {
 				return null; // No conversion fromString needed
 			}
-		});
-		cmbRepository.valueProperty().addListener((ov, oldValue, newValue) -> {
-			newValue.open();
-			aktRepository = newValue;
-			getFirstLevels();
-			cmbFirstLevel.setItems(firstLevelList);
-	        cmbFirstLevel.getSelectionModel().select(1);
-			lbHinweis.setText("");
+		} );
+		cmbRepository.valueProperty().addListener((ov, oldValue, newRepository) -> {
+			String msg = "";
+			aktRepository = newRepository;
+			firstLevelList.clear();
+			if (newRepository.getName().equals("Test-SVN")) {
+				repositoryIsOpen.set(true);
+			} else {
+				repositoryIsOpen.set(false);
+				try {
+					aktRepository.open();
+					repositoryIsOpen.set(true);
+					getFirstLevels();
+					cmbFirstLevel.getSelectionModel().select(1);
+				} catch (Exception e) {
+					msg = "FEHLER beim öffnen des Repository: " + e.getMessage();
+				}
+			}
+	        lbHinweis.setText(msg);
 		});
 
+		cmbFirstLevel.setItems(firstLevelList);
 		cmbFirstLevel.valueProperty().addListener((ov, oldValue, newValue) -> {
-			aktFirstLevel = newValue;
 			lbHinweis.setText("");
+			aktFirstLevel = newValue;
 		});
 		
         tfSearch.textProperty().addListener((ov, oldValue, newValue) ->  {
-        	searchText = newValue.trim();
         	lbHinweis.setText("");
-        }); 
+        	searchText = newValue.trim();
+
+        });
+        btnSearch.disableProperty().bind(Bindings.not(repositoryIsOpen));
         
 		tableDokuLinkAuswahl.setItems(dokuLinkList);
 		tColDokumentVorhaben.setCellValueFactory(cellData -> cellData.getValue().vorhabenProperty());
@@ -182,14 +209,12 @@ public class DokumentAuswaehlenController implements Initializable {
 		readRepositoriesFromDB(entityManager);
 		
 		if (reposiList.size() < 1) {
-			lbHinweis.setText("Kein Repositry verfügbar. Bitte eintragen!");
+			lbHinweis.setText("Kein Repositry verfügbar. Bitte zuvor eintragen!");
 			lbHinweis.setTextFill(Color.RED);
-			tfSearch.disableProperty().setValue(true);
 		} else {
-			cmbRepository.getSelectionModel().select(0);
-			tfSearch.requestFocus();
+			cmbRepository.getSelectionModel().select(reposiList.size()-1);
 		}
-        tfSearch.setText(searchText);
+//		btnSearch.disableProperty().bind(Bindings.isEmpty(reposiList));
 	}
 
 	private void readRepositoriesFromDB(EntityManager em) {
@@ -208,37 +233,28 @@ public class DokumentAuswaehlenController implements Initializable {
 			return;
 		}
 		dokuLinkList.clear();
-		if (primaryStage.getScene() != null) {
-			primaryStage.getScene().setCursor(Cursor.WAIT);
-		}
+		primaryStage.getScene().setCursor(Cursor.WAIT);
 		try {
-//			Task<String> w = aktRepository.findTest3Entries(searchText, aktFirstLevel, dokuLinkList, lbHinweis);
-			
-			Task<String> worker = aktRepository.findEntries(searchText, aktFirstLevel, dokuLinkList, lbHinweis);
+			Task<?> worker = aktRepository.findEntries(searchText, aktFirstLevel, dokuLinkList, lbHinweis);
 			btnSearch.disableProperty().bind(worker.runningProperty());
 			lbHinweis.setAlignment(Pos.CENTER_LEFT);
 			lbHinweis.textProperty().bind(worker.messageProperty());
 			worker.setOnSucceeded(e -> {
-				btnSearch.disableProperty().unbind();
-				lbHinweis.textProperty().unbind();
-				String tmp = lbHinweis.getText();
-				lbHinweis.setAlignment(Pos.CENTER);
-				lbHinweis.setText(tmp);
-				if (primaryStage.getScene() != null) {
-					primaryStage.getScene().setCursor(Cursor.DEFAULT);
-				}
+				cleanSearchTask(lbHinweis.getText());
 			});
-//			lbHinweis.setText(w.get());
-//			tableDokuLinkAuswahl.setItems(dokuLinkList);
-			
-			
 		} catch (Exception e) {
 			String msg = "FEHLER: " + e.getMessage();
-			logger.error(msg);
-			lbHinweis.textProperty().unbind();
-			lbHinweis.setText(msg);
-		} finally {
+			e.printStackTrace();
+			cleanSearchTask(msg);
+			logger.error(msg,e);
 		}
+	}
+	private void cleanSearchTask(String msg) {
+		btnSearch.disableProperty().unbind();
+		lbHinweis.textProperty().unbind();
+		lbHinweis.setAlignment(Pos.CENTER);
+		lbHinweis.setText(msg);
+		primaryStage.getScene().setCursor(Cursor.DEFAULT);
 	}
 	
     @FXML
@@ -274,7 +290,6 @@ public class DokumentAuswaehlenController implements Initializable {
     
     
 	private void getFirstLevels() {
-		firstLevelList.clear();
 		firstLevelList.add("/01_xSpez_Reviews");
 		firstLevelList.add("/02_xSpez_abgenommen");
 		firstLevelList.add("");

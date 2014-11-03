@@ -71,6 +71,7 @@ public class Repository {
 		
 		List<Repository> repoList = tq.getResultList();
 		if (repoList.size() == 0) {
+			System.out.println("Repository " +  name + "nicht vorhanden");
 			throw new IllegalArgumentException("Repository '" + name + "' nicht DB eingetragen");
 		}
 		if (repoList.size() > 1) {
@@ -137,9 +138,9 @@ public class Repository {
 		this.passwort = passwort;
 	}
 	
-	public SVNRepository open () {
+	public SVNRepository open () throws SVNException {
+		SVNURL url = SVNURL.parseURIEncoded(this.location);
 		try {
-			SVNURL url = SVNURL.parseURIEncoded(this.location);
 			svn_repository = SVNRepositoryFactory.create(url);
 		} catch (SVNException e) {
 			e.printStackTrace();
@@ -148,11 +149,7 @@ public class Repository {
 				.createDefaultAuthenticationManager(
 						this.benutzer, this.getPasswort());
 		svn_repository.setAuthenticationManager(authManager);
-		try {
-			svn_repository.testConnection();
-		} catch (SVNException e) {
-			e.printStackTrace();
-		}
+		svn_repository.testConnection();
 		return svn_repository;
 	}
 	
@@ -168,38 +165,30 @@ public class Repository {
 		return baos;
 	}
 	
-	public final Task<String> findEntries_TEST(String name, String firstLevel,	ObservableList<DokuLink> dokuLinkList, 
-																									  Label lbHinweis) {
-		lbHinweis.setText("Einträge werden gelesen. Bitte warten...");
-		dokuLinkList.clear();
-		Task<String> findWorker = createfindWorkerTest(name, firstLevel, this, dokuLinkList);
-
-		Thread thread = new Thread(findWorker);
-		thread.setDaemon(true);
-		thread.start();
-		return findWorker;
-	}
+//	public final Task<?> findTestEntries(String name, String firstLevel,	ObservableList<DokuLink> dokuLinkList, 
+//																									  Label lbHinweis) {
+//		dokuLinkList.clear();
+//		Task<?> findWorker = createTESTfindWorker(name, firstLevel, this, dokuLinkList);
+//
+//		Thread thread = new Thread(findWorker);
+//		thread.setDaemon(true);
+//		thread.start();
+//		return findWorker; //  findWorker;
+//	}
 	
-	private final static  Task<String> createfindWorkerTest(String name, String firstLevel, Repository repository,
+	private final static Task<Object> createTESTfindWorker(String name, String firstLevel, int startPfadLaenge,
 																							ObservableList<DokuLink> dokuLinkList) 
 	{
-		return new Task<String>() {
+		return new Task<Object>() {
 			@Override
-			protected String call() throws Exception {
-				int startpfadlength = repository.getStartPfad().length();
+			protected Object call() throws Exception {
 				int anz = 0;
 				DokuLink dok = null; 
 				SVNURL url = null;
 				SVNURL root = null;
-				try {
-					url  = SVNURL.parseURIEncoded(repository.location);
-					root = null;
-				} catch (SVNException e) {
-					e.printStackTrace();
-				}
 				Calendar cal = Calendar.getInstance(); Date createdDate;
 				String docName = name + "_Testdokument.docx";
-				String path = "/ddd/cccc/eeee/eeee/hhhh/VH_3205";
+				String path = "/VerzeichnisROOT/Ebene1/SubVerzeichnis/VH_3205";
 				cal.set(2013,7,1,12,58,30);			
 				createdDate = cal.getTime();
 				
@@ -218,10 +207,9 @@ public class Repository {
 				}
 				for (int i=1; i<=8; ++i) {
 					++anz;
-//					Thread.sleep(1);
 					dok = new DokuLink();
 					dok.setName(entry.getName().substring(0,7) + "00" + i + entry.getName().substring(6));
-					dok.setPfad(path.substring(startpfadlength));
+					dok.setPfad(path.substring(startPfadLaenge));
 					dok.setRevision(entry.getRevision());
 					dok.setVorhaben(vorhaben);
 					dok.setStatus(status);
@@ -243,16 +231,18 @@ public class Repository {
 			return "Kein einziger Eintrag (von " + gelesen + ") zutreffend";
 	}
 
-    public final Task<String> findEntries(String name, String firstLevel, ObservableList<DokuLink> dokuLinkList, Label lbHinweis) {
-		if (svn_repository == null) {
-			String repoName = this.getName() != null ? this.getName() : "?";  
-			throw new RuntimeException("Repository " + repoName + " ist nicht göffnet");
-		}
-		lbHinweis.setText("Einträge werden gelesen. Bitte warten...");
+    public final Task<Object> findEntries(String name, String firstLevel, ObservableList<DokuLink> dokuLinkList, Label lbHinweis) {
+//		if (svn_repository == null) {
+//			String repoName = this.getName() != null ? this.getName() : "?";  
+//			throw new RuntimeException("Repository " + repoName + " ist nicht göffnet");
+//		}
 		dokuLinkList.clear();
 		int startPfadLaenge = this.getStartPfad().length(); 
-		
-		Task<String> findWorker = createfindWorker(name, firstLevel, startPfadLaenge, dokuLinkList);		
+		Task<Object> findWorker = null;
+		if (this.getName().equals("Test-SVN") == true)
+			findWorker = createTESTfindWorker(name, firstLevel, startPfadLaenge, dokuLinkList);		
+		else	
+		    findWorker = createfindWorker    (name, firstLevel, startPfadLaenge, dokuLinkList);		
 
 		Thread thread = new Thread(findWorker);
 		thread.setDaemon(true);
@@ -260,13 +250,13 @@ public class Repository {
 		return findWorker;
 	}
     
-    private Task<String> createfindWorker(String name, String firstLevel,
+    private Task<Object> createfindWorker(String name, String firstLevel,
     									  int startPfadLaenge, 
     									  ObservableList<DokuLink> dokuLinkList) {
     	String searchname = name.toLowerCase();
-		return new Task<String>() {
+		return new Task<Object>() {
 			@Override
-			protected String call() throws Exception {
+			protected Object call() throws Exception {
 				int anz = 0;
 				try {
 					anz = findEntries( startPfad + firstLevel);
@@ -274,7 +264,7 @@ public class Repository {
 					e.printStackTrace();
 				}
 				updateMessage(getErgebnisText(dokuLinkList.size(),anz));
-				return ""; // getErgebnisText(dokuLinkList.size(),anz);
+				return null; //  ""; // getErgebnisText(dokuLinkList.size(),anz);
 			}
 			
 	    	private int findEntries(String path) throws SVNException 
@@ -324,4 +314,11 @@ public class Repository {
 		
 	}
 
+    @Override
+    public String toString() {
+    	String ret = 
+    		"\nName    : " + (this.name     == null ? "" : this.name.get()) +  
+    		"\nLocation: " + (this.location == null ? "" : this.location  );
+    	return ret; 
+    }
 }

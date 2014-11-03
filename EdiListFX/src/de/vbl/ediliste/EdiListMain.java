@@ -28,8 +28,7 @@ public class EdiListMain extends Application {
 		try {
 			launch(args);
 		} catch (Exception e) {
-			logger.error("Fehler in der Anwendung EdiListMain");
-			e.printStackTrace();
+			logger.error("Fehler in der Anwendung EdiListMain",e);
 		}
 	}
 	
@@ -37,6 +36,7 @@ public class EdiListMain extends Application {
 	
 	@Override
 	public void start(Stage stage) {
+		System.out.println("EdiListMain.start()");
 		primaryStage = stage;
 		try {
 			Parent root = loadAndStartController();
@@ -63,7 +63,6 @@ public class EdiListMain extends Application {
 			root = (Parent) loader.load();
 		} catch (Exception e) {
 			logger.error("Fehler beim Laden der fxml-Resource", e);
-			e.printStackTrace();
 		}
 		
 		controller = loader.getController();

@@ -97,8 +97,8 @@ public class Integration {
 	    this.dokuLink = param;
 	}
 
-	public boolean equalDokuLinkList (Integration integration2) {
-		Collection dokuLink2 = integration2.dokuLink;
-		return dokuLink.equals(integration2.dokuLink);
-	}
+//	public boolean equalDokuLinkList (Integration integration2) {
+//		Collection dokuLink2 = integration2.dokuLink;
+//		return dokuLink.equals(integration2.dokuLink);
+//	}
 }

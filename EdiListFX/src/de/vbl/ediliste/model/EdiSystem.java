@@ -3,6 +3,7 @@ package de.vbl.ediliste.model;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import java.util.Collection;
+import java.util.Set;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
@@ -16,6 +17,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
@@ -25,8 +27,9 @@ public class EdiSystem {
 	private long id;
 	private StringProperty name;
 	private EdiPartner ediPartner;
-	private ObservableList<EdiKomponente> ediKomponente;
 	private String beschreibung;
+	private ObservableList<EdiKomponente> ediKomponente;
+	private Set<KontaktPerson> kontaktPerson;
 	
 	private StringProperty fullname;
 	private IntegerProperty anzKomponenten;
@@ -150,5 +153,15 @@ public class EdiSystem {
 
 	public void setBeschreibung(String param) {
 		this.beschreibung = param;
+	}
+	
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
+	@ManyToMany
+	public Set<KontaktPerson> getKontaktPerson() {
+	    return kontaktPerson;
+	}
+
+	public void setKontaktPerson(Set<KontaktPerson> param) {
+	    this.kontaktPerson = param;
 	}
 }

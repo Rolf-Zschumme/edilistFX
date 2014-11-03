@@ -16,6 +16,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
@@ -31,6 +32,8 @@ public class EdiPartner {
 	private String beschreibung;
 //	private Collection<EdiSystem> ediSystem;
 	private ObservableList<EdiSystem> ediSystem;
+	private Collection<KontaktPerson> kontaktPerson;
+	
 
 	private IntegerProperty anzSysteme;
 	private IntegerProperty anzKomponenten;
@@ -129,4 +132,14 @@ public class EdiPartner {
 		anzKomponenten.set(anzK);
 		return anzKomponenten;
 	}
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
+	@ManyToMany
+	public Collection<KontaktPerson> getKontaktPerson() {
+	    return kontaktPerson;
+	}
+
+	public void setKontaktPerson(Collection<KontaktPerson> param) {
+	    this.kontaktPerson = param;
+	}
+	
 }
