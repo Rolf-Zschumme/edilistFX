@@ -18,6 +18,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
 
 import de.vbl.ediliste.model.EdiEintrag;
+import de.vbl.ediliste.model.EdiEmpfaenger;
 import de.vbl.ediliste.model.EdiKomponente;
 import de.vbl.ediliste.model.EdiPartner;
 import de.vbl.ediliste.model.EdiSystem;
@@ -33,6 +34,7 @@ public class ExportToExcel {
 	private static final String INTEGRATION_SHEET = "Integrationen";
 	private static final String KONFIGURATION_SHEET = "Konfigurationen";
 	private static final String EDI_SHEET = "EDI-Eintrag";
+	private static final String EDI_SHEET_MIT_EMPFAENGER = "EDI-Eintrag mit Empfängern";
 
 	private EntityManager em;
 	
@@ -46,7 +48,10 @@ public class ExportToExcel {
 
 	public int write(File file) throws IOException {
 	
-		Map<Long, String> komponentenZeilenNr = new HashMap<Long, String>();
+		Map<Long, String> komponentenZeilenNr   = new HashMap<Long, String>();
+		Map<Long, String> integrationZeilenNr   = new HashMap<Long, String>();
+		Map<Long, String> konfigurationZeilenNr = new HashMap<Long, String>();
+		Map<Long, String> geschaeftsObZeilenNr  = new HashMap<Long, String>();
 		
 		int anz_zeilen = 0; 
 		CellStyle styleHeader;
@@ -159,6 +164,7 @@ public class ExportToExcel {
     		++anz_zeilen;
     		createCell(row, s=0, styleNormal, g_znr); 
     		createCell(row, ++s, styleNormal, gObjekt.getName());
+    		geschaeftsObZeilenNr.put(gObjekt.getId(), Integer.toString(g_znr+1));
     	}
     	for (s=0; s<2; ++s) g_Sheet.autoSizeColumn(s);
 
@@ -227,7 +233,9 @@ public class ExportToExcel {
             		createCell(row, ++s, styleNormal, ediEintrag.getSeitDatum());
             		createCell(row, ++s, styleNormal, ediEintrag.getBisDatum());
         		}
+        		konfigurationZeilenNr.put(configuration.getId(), c_zStr);
     		}
+    		integrationZeilenNr.put(integration.getId(), i_zStr);
     	}
     	for (s=0; s<=2; ++s) i_Sheet.autoSizeColumn(s);
     	for (s=0; s<=3; ++s) c_Sheet.autoSizeColumn(s);
@@ -240,7 +248,56 @@ public class ExportToExcel {
     	e_Sheet.setColumnWidth(3, c_MaxLen);
     	e_Sheet.setColumnWidth(5, p_MaxLen + s_MaxLen + k_MaxLen);
     	
-		FileOutputStream out = new FileOutputStream(file);
+    	Sheet ee_Sheet = wb.createSheet(EDI_SHEET_MIT_EMPFAENGER);
+    	row = ee_Sheet.createRow(0);
+		row.setHeightInPoints(20);
+		createCell(row, s=0, styleHeader, "lfd-Nr.");
+		createCell(row, ++s, styleHeader, "EDI-Nr.");
+		createCell(row, ++s, styleHeader, "Integration");
+		createCell(row, ++s, styleHeader, "Konfiguration");
+		createCell(row, ++s, styleHeader, "Bezeichnung");
+		createCell(row, ++s, styleHeader, "Sender");
+		createCell(row, ++s, styleHeader, "Intervall");
+		createCell(row, ++s, styleHeader, "ab Datum");
+		createCell(row, ++s, styleHeader, "bis Datum");
+		createCell(row, ++s, styleHeader, "Empfänger");
+		++anz_zeilen;
+		
+    	TypedQuery<EdiEintrag> ediEintragQuery = em.createQuery(
+    			"SELECT e FROM EdiEintrag e ORDER BY e.ediNr", EdiEintrag.class);
+    	e_znr = 0;
+    	for(EdiEintrag ediEintrag : ediEintragQuery.getResultList()) {
+			
+			for(EdiEmpfaenger ediEmpfaenger : ediEintrag.getEdiEmpfaenger()) {
+				row = ee_Sheet.createRow(++e_znr);
+				++anz_zeilen;
+				createCell(row, s=0, styleNormal, e_znr); 
+				createCell(row, ++s, styleNormal, ediEintrag.getEdiNr());			
+				createCeFo(row, ++s, styleNormal, INTEGRATION_SHEET + "!B" + 
+						integrationZeilenNr.get(ediEintrag.getKonfiguration().getIntegration().getId()));				
+				createCeFo(row, ++s, styleNormal, KONFIGURATION_SHEET + "!B" +
+						konfigurationZeilenNr.get(ediEintrag.getKonfiguration().getId()));				
+				createCell(row, ++s, styleNormal, ediEintrag.getBezeichnung());				
+				createCeFo(row, ++s, styleNormal, KOMPONENTEN_SHEET + "!F" + 
+						komponentenZeilenNr.get(ediEintrag.getEdiKomponente().getId()));
+				String intervall = ediEintrag.getEdiIntervall() == null ? "" : ediEintrag.getEdiIntervall().getName();
+				createCell(row, ++s, styleNormal, intervall);
+				createCell(row, ++s, styleNormal, ediEintrag.getSeitDatum());
+				createCell(row, ++s, styleNormal, ediEintrag.getBisDatum());
+				createCeFo(row, ++s, styleNormal, KOMPONENTEN_SHEET + "!F" +
+						komponentenZeilenNr.get(ediEmpfaenger.getKomponente().getId()));;
+				createCeFo(row, ++s, styleNormal, G_OBJEKT_SHEET + "!B" +
+						geschaeftsObZeilenNr.get(ediEmpfaenger.getGeschaeftsObjekt().getId()));;
+			}	
+		}
+    	for (s=0; s<=14; ++s) ee_Sheet.autoSizeColumn(s);
+    	
+    	ee_Sheet.setColumnWidth(2, i_MaxLen);
+    	ee_Sheet.setColumnWidth(3, c_MaxLen);
+    	ee_Sheet.setColumnWidth(5, p_MaxLen + s_MaxLen + k_MaxLen);
+    	
+
+    	FileOutputStream out = new FileOutputStream(file);
 		wb.write(out);
 		out.close();
 		return anz_zeilen;
