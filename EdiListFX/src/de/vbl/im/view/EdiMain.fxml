@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane prefHeight="795.0" prefWidth="1409.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.im.controller.EdiMainController">
+	<top>
+		<VBox>
+			<children>
+				<MenuBar BorderPane.alignment="CENTER">
+					<menus>
+						<Menu mnemonicParsing="false" text="Datei">
+							<items>
+								<MenuItem mnemonicParsing="false" onAction="#btnExportExcel" text="Export nach Excel" />
+								<MenuItem mnemonicParsing="false" onAction="#onActionCLose" text="Beenden" />
+							</items>
+						</Menu>
+						<Menu mnemonicParsing="false" text="Partner">
+							<items>
+								<MenuItem mnemonicParsing="false" onAction="#actionPartnerNew" text="Neu..." />
+							</items>
+						</Menu><Menu mnemonicParsing="false" text="System">
+<items>
+<MenuItem mnemonicParsing="false" onAction="#actionSystemNew" text="Neu..." />
+</items>
+</Menu><Menu mnemonicParsing="false" text="Komponente">
+<items>
+<MenuItem mnemonicParsing="false" onAction="#actionKomponenteNew" text="Neu..." />
+</items>
+</Menu>
+						<Menu mnemonicParsing="false" text="Hilfe">
+							<items>
+								<MenuItem mnemonicParsing="false" onAction="#btnUeber" text="Über" />
+								<MenuItem mnemonicParsing="false" onAction="#showJavaInfo" text="Java-Laufzeit-Info anzeigen" />
+							</items>
+						</Menu>
+					</menus>
+				</MenuBar>
+				<TextField fx:id="txtInfoZeile" alignment="CENTER" disable="true" editable="false" />
+			</children>
+		</VBox>
+	</top>
+	<center>
+		<TabPane fx:id="tabPaneObjekte" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+			<tabs>
+				<Tab fx:id="tabEdiNr" text="EDI-Nr.">
+					<content>
+						<AnchorPane minHeight="0.0" minWidth="0.0">
+							<children>
+								<SplitPane dividerPositions="0.32338308457711445" prefHeight="739.0" prefWidth="1407.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+									<items>
+										<AnchorPane minHeight="0.0" minWidth="0.0">
+											<children>
+												<VBox prefHeight="739.0" prefWidth="1407.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+													<children>
+														<ToolBar layoutX="-48.0" layoutY="14.0" prefWidth="200.0">
+															<items>
+																<Button fx:id="btnNewEdiNr" mnemonicParsing="false" onAction="#newEdiNr" text="Neu" />
+																<Button fx:id="btnDeleteEdiEintrag" disable="true" mnemonicParsing="false" onAction="#handleEdiEintragLoeschen" text="Löschen" />
+															</items>
+														</ToolBar>
+														<TableView fx:id="tableEdiNrAuswahl" onContextMenuRequested="#actionEdiNrContextMenuRequested" prefHeight="702.0" prefWidth="535.0" tableMenuButtonVisible="true" VBox.vgrow="ALWAYS">
+															<columns>
+																<TableColumn fx:id="tColAuswahlEdiNr" editable="false" maxWidth="120.0" minWidth="0.0" prefWidth="35.0" text="Nr." />
+																<TableColumn fx:id="tColAuswahlEdiNrIngration" prefWidth="127.0" text="Integration" />
+																<TableColumn fx:id="tColAuswahlEdiNrSender" prefWidth="85.0" text="Sender" />
+																<TableColumn fx:id="tColAuswahlEdiNrBezeichnung" editable="false" maxWidth="1.7976931348623157E308" minWidth="200.0" prefWidth="-1.0" text="Bezeichnung (EDI-Nr.)" />
+															</columns>
+														</TableView>
+													</children>
+												</VBox>
+											</children>
+										</AnchorPane>
+										<fx:include fx:id="ediEintrag" disable="true" source="EdiEintrag.fxml" />
+									</items>
+								</SplitPane>
+							</children>
+						</AnchorPane>
+					</content>
+				</Tab>
+				<Tab fx:id="tabPartner" text="Partner">
+					<content>
+						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+							<children>
+								<SplitPane dividerPositions="0.24" prefHeight="716.0" prefWidth="1409.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+									<items>
+										<AnchorPane>
+											<children>
+												<TableView fx:id="tablePartnerAuswahl" editable="true" maxWidth="1.7976931348623157E308" prefHeight="471.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+													<columns>
+														<TableColumn fx:id="tColAuswahlPartnerName" prefWidth="116.0" text="Partner" />
+														<TableColumn fx:id="tColAuswahlPartnerSysteme" editable="false" prefWidth="65.0" text="Systeme" />
+														<TableColumn fx:id="tColAuswahlPartnerKomponenten" editable="false" prefWidth="91.0" text="Komponenten" />
+													</columns>
+												</TableView>
+											</children>
+										</AnchorPane>
+										<fx:include fx:id="ediPartner" disable="true" source="EdiPartner.fxml" />
+									</items>
+								</SplitPane>
+							</children>
+						</AnchorPane>
+					</content>
+				</Tab>
+				<Tab fx:id="tabSysteme" text="Systeme">
+					<content>
+						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+							<children>
+								<SplitPane dividerPositions="0.3" layoutX="7.0" prefHeight="716.0" prefWidth="1409.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+									<items>
+										<AnchorPane>
+											<children>
+												<TableView fx:id="tableSystemAuswahl" editable="true" prefHeight="471.0" prefWidth="306.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+													<columns>
+														<TableColumn fx:id="tColSelSystemSystemName" prefWidth="159.0" text="System" />
+														<TableColumn fx:id="tColSelSystemPartnerName" editable="false" prefWidth="153.0" text="Partner" />
+														<TableColumn fx:id="tColSelSystemKomponenten" editable="false" prefWidth="106.0" text="Komponenten" />
+													</columns>
+												</TableView>
+											</children>
+										</AnchorPane>
+										<fx:include fx:id="ediSystem" disable="true" source="EdiSystem.fxml" />
+									</items>
+								</SplitPane>
+							</children>
+						</AnchorPane>
+					</content>
+				</Tab>
+				<Tab fx:id="tabKomponenten" text="Komponenten">
+					<content>
+						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+							<children>
+								<SplitPane dividerPositions="0.29797979797979796" prefHeight="739.0" prefWidth="1407.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+									<items>
+										<AnchorPane>
+											<children>
+												<TableView fx:id="tableKomponentenAuswahl" editable="true" prefHeight="471.0" prefWidth="306.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+													<columns>
+														<TableColumn fx:id="tColSelKompoKomponten" prefWidth="113.0" text="Komponente" />
+														<TableColumn fx:id="tColSelKompoSysteme" editable="false" prefWidth="117.0" text="System" />
+														<TableColumn fx:id="tColSelKompoPartner" editable="false" prefWidth="145.0" text="Partner" />
+													</columns>
+												</TableView>
+											</children>
+										</AnchorPane>
+										<fx:include fx:id="ediKomponente" disable="true" source="EdiKomponente.fxml" />
+									</items>
+								</SplitPane>
+							</children>
+						</AnchorPane>
+					</content>
+				</Tab>
+				<Tab fx:id="tabIntegrationen" text="Integrationen">
+					<content>
+						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <SplitPane dividerPositions="0.3070362473347548" prefHeight="716.0" prefWidth="1409.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <items>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                                 <children>
+                                    <TableView fx:id="tableIntegrationAuswahl" prefHeight="714.0" prefWidth="416.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                      <columns>
+                                        <TableColumn fx:id="tColSelIntegrationName" prefWidth="426.0" text="Integrations-Name" />
+                                        <TableColumn fx:id="tColSelIntegrationKonfigurationAnzahl" prefWidth="147.0" text="Anzahl Konfigurationen" visible="false" />
+                                      </columns>
+                                    </TableView>
+                                 </children>
+                              </AnchorPane>
+                            <fx:include fx:id="integration" disable="true" source="Integration.fxml" />
+                          </items>
+                        </SplitPane>
+                     </children></AnchorPane>
+					</content>
+				</Tab>
+				<Tab fx:id="tabKonfigurationen" text="Konfigurationen">
+					<content>
+						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <SplitPane dividerPositions="0.3724235963041933" prefHeight="716.0" prefWidth="1409.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <items>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                                 <children>
+                                    <TableView fx:id="tableKonfigurationAuswahl" prefHeight="714.0" prefWidth="416.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                      <columns>
+                                        <TableColumn fx:id="tColSelKonfigurationName" prefWidth="314.0" text="Konfigurations-Name" />
+                                        <TableColumn fx:id="tColSelKonfigIntegrationName" prefWidth="259.0" text="gehört zu Integration" />
+                                      </columns>
+                                    </TableView>
+                                 </children>
+                              </AnchorPane>
+                            <fx:include fx:id="konfiguration" disable="true" source="Konfiguration.fxml" />
+                          </items>
+                        </SplitPane>
+                     </children></AnchorPane>
+					</content>
+				</Tab>
+				<Tab fx:id="tabKontaktPersonen" text="Kontakt-Personen">
+				  <content>
+    				<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+					<children>
+						<SplitPane dividerPositions="0.5259417199715707" prefHeight="716.0" prefWidth="1409.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+					  		<items>
+		    					<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+									<children>
+										<TableView fx:id="tableKontaktAuswahl" prefHeight="714.0" prefWidth="737.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+		  									<columns>
+										    <TableColumn fx:id="tColKontaktUserId" prefWidth="86.0" text="User-ID" />
+										    <TableColumn fx:id="tColKontaktNachname" prefWidth="131.0" text="Nachname" /><TableColumn fx:id="tColKontaktVorname" prefWidth="79.0" text="Vorname" /><TableColumn fx:id="tColKontaktAbteilung" prefWidth="175.0" text="Firma / Abteilung" /><TableColumn fx:id="tColKontaktTelefon" prefWidth="92.0" text="Telefon" /><TableColumn fx:id="tColKontaktMailadresse" prefWidth="173.0" text="Mailadresse" />
+										  </columns>
+										</TableView>
+									</children>
+								</AnchorPane>
+	                           <fx:include fx:id="kontaktPerson" disable="true" source="KontaktPerson.fxml" />
+							 </items>
+						</SplitPane>
+					</children>
+					</AnchorPane>
+				  </content>
+				</Tab>
+				<Tab fx:id="tabGeschaeftsobjekte" text="Geschäftsobjekte">
+					<content>
+						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <SplitPane dividerPositions="0.21961620469083157" prefHeight="716.0" prefWidth="1409.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <items>
+						
+							<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+								<children>
+									<TableView fx:id="tableGeschaeftsobjektAuswahl" editable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+										<columns>
+											<TableColumn fx:id="tColAuswahlGeschaeftsobjektName" maxWidth="1.7976931348623157E308" minWidth="110.0" prefWidth="296.0" text="Geschäftsobjekt" />
+										</columns>
+									</TableView>
+								</children>
+							</AnchorPane>
+							
+                            <fx:include fx:id="geschaeftsObjekt" disable="true" source="GeschaeftsObjekt.fxml" />
+                          </items>
+                        </SplitPane>
+                     </children></AnchorPane>
+						
+					</content>
+				</Tab>
+			</tabs>
+		</TabPane>
+	</center>
+</BorderPane>

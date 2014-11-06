@@ -10,9 +10,10 @@
 	<classpathentry kind="lib" path="libs/logging/apache-log4j-2.0.2-bin/log4j-jcl-2.0.2.jar"/>
 	<classpathentry kind="lib" path="libs/logging/apache-log4j-2.0.2-bin/log4j-jmx-gui-2.0.2.jar"/>
 	<classpathentry kind="lib" path="libs/logging/apache-log4j-2.0.2-bin/log4j-nosql-2.0.2.jar"/>
+	<classpathentry kind="lib" path="libs/miscellaneous/sqlite-jdbc-3.7.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/EclipseLink">
 		<attributes>
-			<attribute name="owner.project.facets" value="#system#;jpt.jpa"/>
+			<attribute name="owner.project.facets" value="jpt.jpa;#system#"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
@@ -21,5 +22,10 @@
 	<classpathentry kind="con" path="org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER"/>
 	<classpathentry kind="lib" path="libs/poi-3.10.1/poi-ooxml-schemas-3.10.1-20140818.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/EclipseLink-Local">
+		<attributes>
+			<attribute name="owner.project.facets" value="jpt.jpa"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
