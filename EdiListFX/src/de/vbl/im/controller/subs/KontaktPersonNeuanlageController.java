@@ -23,7 +23,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.controlsfx.dialog.Dialog.Actions;
 
-import de.vbl.im.controller.EdiMainController;
+import de.vbl.im.controller.IntegrationManagerController;
 import de.vbl.im.model.KontaktPerson;
 
 public class KontaktPersonNeuanlageController implements Initializable {
@@ -31,7 +31,7 @@ public class KontaktPersonNeuanlageController implements Initializable {
 
 	private static Stage primaryStage = null;
     private static String applName = null;
-	private static EdiMainController mainController;
+	private static IntegrationManagerController managerController;
     private static EntityManager entityManager = null;
 	/**
 	 * injection from 'KontaktPersonNeuanlage.fxml'
@@ -91,11 +91,11 @@ public class KontaktPersonNeuanlageController implements Initializable {
     	btnOK.disableProperty().bind(Bindings.not(nachnameFilled));
     }
 
-    public void start(Stage primaryStage, EdiMainController mainController, EntityManager entityManager) {
+    public void start(Stage primaryStage, IntegrationManagerController managerController, EntityManager entityManager) {
 
     	KontaktPersonNeuanlageController.primaryStage = primaryStage;
     	KontaktPersonNeuanlageController.entityManager = entityManager;
-    	KontaktPersonNeuanlageController.mainController = mainController;
+    	KontaktPersonNeuanlageController.managerController = managerController;
 		applName = primaryStage.getTitle();
 	}
 
@@ -109,7 +109,7 @@ public class KontaktPersonNeuanlageController implements Initializable {
     
     @FXML
     private void okPressed(ActionEvent event) {
-    	if (applName == null && primaryStage == null && mainController == null ) {
+    	if (applName == null && primaryStage == null && managerController == null ) {
     		;
     	}
     	if (saveInput() == true) {

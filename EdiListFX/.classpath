@@ -13,7 +13,7 @@
 	<classpathentry kind="lib" path="libs/miscellaneous/sqlite-jdbc-3.7.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/EclipseLink">
 		<attributes>
-			<attribute name="owner.project.facets" value="jpt.jpa;#system#"/>
+			<attribute name="owner.project.facets" value="#system#;jpt.jpa"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>

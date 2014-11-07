@@ -72,12 +72,14 @@ import org.controlsfx.dialog.Dialog.Actions;
 import org.controlsfx.dialog.Dialogs;
 import org.tmatesoft.svn.core.SVNException;
 
-import de.vbl.im.controller.KomponentenAuswahlController.KomponentenTyp;
 import de.vbl.im.controller.subs.DokumentAuswaehlenController;
+import de.vbl.im.controller.subs.KomponentenAuswahlController;
+import de.vbl.im.controller.subs.NeuerEdiEintragController;
+import de.vbl.im.controller.subs.KomponentenAuswahlController.KomponentenTyp;
 import de.vbl.im.model.DokuLink;
 import de.vbl.im.model.EdiEintrag;
 import de.vbl.im.model.EdiEmpfaenger;
-import de.vbl.im.model.EdiIntervall;
+import de.vbl.im.model.Intervall;
 import de.vbl.im.model.EdiKomponente;
 import de.vbl.im.model.GeschaeftsObjekt;
 import de.vbl.im.model.Integration;
@@ -94,48 +96,6 @@ public class EdiEintragController {
 
 	private final ObjectProperty<EdiEintrag> ediEintrag;
 
-    private static class EdiEintragPlus {
-    	private int EdiNr;
-    	private Integration integration;
-    	private Konfiguration konfiguration;
-    	private String bezeichnung;
-    	private String beschreibung;
-    	private LocalDate seitDatum;
-    	private LocalDate bisDatum;
-    	private EdiKomponente sender; 
-    	private EdiEmpfaenger empfaenger[] = new EdiEmpfaenger[MAX_EMPFAENGER];
-    	private EdiKomponente empfaengerKomponente[] = new EdiKomponente[MAX_EMPFAENGER];
-    	private GeschaeftsObjekt geschaeftsObjekt[] = new GeschaeftsObjekt[MAX_EMPFAENGER];
-    	private String ediIntervallName;
-    	
-    	void setData (EdiEintrag s) {
-    		EdiNr = s.getEdiNr();
-    		konfiguration = s.getKonfiguration();
-    		integration = konfiguration==null ? null : konfiguration.getIntegration();
-    		bezeichnung = s.getBezeichnung()==null ? "" : s.getBezeichnung();
-    		beschreibung = s.getBeschreibung()==null ? "" : s.getBeschreibung();
-    		ediIntervallName = s.getEdiIntervall()==null ? "" : s.getEdiIntervall().getName();
-    		sender = s.getEdiKomponente();
-			String seitStr = s.seitDatumProperty().getValueSafe();
-			seitDatum = seitStr.equals("") ? null : LocalDate.parse(seitStr);
-			String bisStr = s.bisDatumProperty().getValueSafe();
-			bisDatum = bisStr.equals("") ? null : LocalDate.parse(bisStr);
-			int i=0;
-			for(EdiEmpfaenger e : s.getEdiEmpfaenger()) {
-				empfaenger[i] = e;
-				empfaengerKomponente[i] = e.getKomponente();
-				geschaeftsObjekt[i++] = e.getGeschaeftsObjekt();
-			}
-			while(i < MAX_EMPFAENGER) {
-				empfaenger[i] = null;
-				empfaengerKomponente[i] = null;
-				geschaeftsObjekt[i++] = null;
-			}
-    	}
-    }
-    EdiEintragPlus akt = new EdiEintragPlus();
-    EdiEintragPlus org = new EdiEintragPlus();
-    
 	@FXML private AnchorPane ediEintragPane;
     @FXML private VBox eintragVBox;
 
@@ -145,6 +105,9 @@ public class EdiEintragController {
     
     @FXML private ComboBox<Konfiguration> cmbKonfiguration;
     @FXML private ComboBox<Integration> cmbIntegration;
+    @FXML private Button btnSpeichern;
+//  @FXML private Button btnNewSST;
+    @FXML private Button btnDeleteSST;
     @FXML private Button btnNewScenario;
     @FXML private Button btnNewConfiguration;
     @FXML private Button btnNewDokuLink;
@@ -167,7 +130,6 @@ public class EdiEintragController {
     @FXML private DatePicker dpProduktivSeit;
     @FXML private DatePicker dpProduktivBis;
 
-    @FXML private Button btnSpeichern;
     @FXML private Button btnSender;
     @FXML private Button btnEmpfaenger1;
     @FXML private Button btnEmpfaenger2;
@@ -178,7 +140,7 @@ public class EdiEintragController {
     
     private static Stage primaryStage = null;
     private static String applName = null;
-	private static EdiMainController mainController;
+	private static IntegrationManagerController managerController;
     private static EntityManager entityManager = null;
 
     private BooleanProperty dataIsChanged = new SimpleBooleanProperty(false);
@@ -193,26 +155,71 @@ public class EdiEintragController {
     
     private Map<String,GeschaeftsObjekt> businessObjectMap; 
     private ObservableList<String> businessObjectName = FXCollections.observableArrayList();
-    private ObservableList<String> ediIntervallName   = FXCollections.observableArrayList();
-    private ObservableList<DokuLink> dokuLinkList = FXCollections.observableArrayList();
+    private ObservableList<String> intervallNameList  = FXCollections.observableArrayList();
+    private ObservableList<DokuLink> dokuLinkList     = FXCollections.observableArrayList();
 
+    private static class EdiEintragPlus {
+    	private int EdiNr;
+    	private Integration integration;
+    	private Konfiguration konfiguration;
+    	private String bezeichnung;
+    	private String beschreibung;
+    	private LocalDate seitDatum;
+    	private LocalDate bisDatum;
+    	private EdiKomponente sender; 
+    	private EdiEmpfaenger empfaenger[] = new EdiEmpfaenger[MAX_EMPFAENGER];
+    	private EdiKomponente empfaengerKomponente[] = new EdiKomponente[MAX_EMPFAENGER];
+    	private GeschaeftsObjekt geschaeftsObjekt[] = new GeschaeftsObjekt[MAX_EMPFAENGER];
+    	private String intervallName;
+    	
+    	void setData (EdiEintrag s) {
+    		EdiNr = s.getEdiNr();
+    		konfiguration = s.getKonfiguration();
+    		integration = konfiguration==null ? null : konfiguration.getIntegration();
+    		bezeichnung = s.getBezeichnung()==null ? "" : s.getBezeichnung();
+    		beschreibung = s.getBeschreibung()==null ? "" : s.getBeschreibung();
+    		intervallName = s.getIntervall()==null ? "" : s.getIntervall().getName();
+    		sender = s.getEdiKomponente();
+			String seitStr = s.seitDatumProperty().getValueSafe();
+			seitDatum = seitStr.equals("") ? null : LocalDate.parse(seitStr);
+			String bisStr = s.bisDatumProperty().getValueSafe();
+			bisDatum = bisStr.equals("") ? null : LocalDate.parse(bisStr);
+			int i=0;
+			for(EdiEmpfaenger e : s.getEdiEmpfaenger()) {
+				empfaenger[i] = e;
+				empfaengerKomponente[i] = e.getKomponente();
+				geschaeftsObjekt[i++] = e.getGeschaeftsObjekt();
+			}
+			while(i < MAX_EMPFAENGER) {
+				empfaenger[i] = null;
+				empfaengerKomponente[i] = null;
+				geschaeftsObjekt[i++] = null;
+			}
+    	}
+    }
+    EdiEintragPlus akt = new EdiEintragPlus();
+    EdiEintragPlus org = new EdiEintragPlus();
+    
     
 	public EdiEintragController() {
     	this.ediEintrag = new SimpleObjectProperty<>(this, "ediEintrag", null);
 		readOnlyAccess.set(false);
 	}
 
-	public static void setParent(EdiMainController mainController) {
+	public static void setParent(IntegrationManagerController managerController) {
 		logger.entry();
-		EdiEintragController.mainController = mainController;
-		EdiEintragController.primaryStage = EdiMainController.getStage();
-		EdiEintragController.entityManager = mainController.getEntityManager();
+		logger.info("ManagerController:" + managerController);
+		EdiEintragController.managerController = managerController;
+		EdiEintragController.primaryStage = IntegrationManagerController.getStage();
+		EdiEintragController.entityManager = managerController.getEntityManager();
+		logger.info("EntityManager:" + entityManager);
 		applName = primaryStage.getTitle();
 		logger.exit();
 	}
 
     @FXML 
     void initialize() {
+    	logger.info("init");
     	checkFieldFromView();
     	setupLocalBindings();
     	ediEintrag.addListener( (ov, oldEintrag ,newEintrag) -> {
@@ -227,13 +234,13 @@ public class EdiEintragController {
     			btnSender.textProperty().unbind();
     		}
     		if (newEintrag == null) {
-    			EdiEintragController.mainController.setInfoText("Edi-Nummer wurde reserviert");
+    			managerController.setInfoText("Edi-Nummer wurde reserviert");
     			cmbIntegration.setValue(null);
     			akt.seitDatum = null;
     			akt.bisDatum = null;
     		} else {
     			readBusinessObject();
-    			readEdiIntervall();
+    			readIntervalle();
     			readIntegrationList();
     			akt.setData(newEintrag);
     			cmbIntegration.getSelectionModel().select(akt.integration);
@@ -241,7 +248,7 @@ public class EdiEintragController {
     			tabAktEdiNr.setText(EDI_PANE_PREFIX +  newEintrag.getEdiNrStr());
     			tfBezeichnung.setText(akt.bezeichnung);
     			taEdiBeschreibung.setText(akt.beschreibung);
-    			cmbIntervall.getSelectionModel().select(akt.ediIntervallName);
+    			cmbIntervall.getSelectionModel().select(akt.intervallName);
     			if (akt.sender != null) {
     				btnSender.textProperty().bind(akt.sender.fullnameProperty());
     			} else {
@@ -279,6 +286,7 @@ public class EdiEintragController {
 		btnNewConfiguration.disableProperty().bind(cmbIntegration.getSelectionModel().selectedItemProperty().isNull());
 		
 		btnSpeichern.disableProperty().bind(Bindings.not(dataIsChanged));
+		btnDeleteSST.disableProperty().bind(this.ediEintrag.isNull());
 		
 		setupIntegrationComboBox();
 		setupDokuLink();
@@ -290,7 +298,7 @@ public class EdiEintragController {
 				akt.bezeichnung = newValue;
 				setChangeFlag(!akt.bezeichnung.equals(org.bezeichnung));
 			}	
-			mainController.setErrorText(msg);
+			managerController.setErrorText(msg);
 		});
 		
 		taEdiBeschreibung.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -299,19 +307,19 @@ public class EdiEintragController {
 				akt.beschreibung = newValue;
 				setChangeFlag(!akt.beschreibung.equals(org.beschreibung));
 			}	
-			mainController.setErrorText(msg);
+			managerController.setErrorText(msg);
 		});
 
-		cmbIntervall.setItems(ediIntervallName);
+		cmbIntervall.setItems(intervallNameList);
 		
 		cmbIntervall.valueProperty().addListener((ov, oldValue, newValue) -> {
 			String msg = "";
-			if (newValue != null && akt.ediIntervallName.equals(newValue) == false) {
+			if (newValue != null && akt.intervallName.equals(newValue) == false) {
 				logger.debug("cmbIntervall.changed to " + newValue);
-				akt.ediIntervallName = newValue;
-				setChangeFlag(!akt.ediIntervallName.equals(org.ediIntervallName));
+				akt.intervallName = newValue;
+				setChangeFlag(!akt.intervallName.equals(org.intervallName));
 			}
-			mainController.setErrorText(msg);			
+			managerController.setErrorText(msg);			
 		});
 		
 		businessObjectMap = new HashMap<String,GeschaeftsObjekt>();		
@@ -366,9 +374,9 @@ public class EdiEintragController {
     		akt.seitDatum = dpProduktivSeit.getValue();
     		setChangeFlag(akt.seitDatum != org.seitDatum);
     		if (akt.bisDatum != null && akt.seitDatum.isAfter(akt.bisDatum)) {
-        		mainController.setInfoText("Seit-Datum sollte vor Bis-Datum liegen");  			
+        		managerController.setInfoText("Seit-Datum sollte vor Bis-Datum liegen");  			
     		} else {
-    			mainController.setInfoText("");  			
+    			managerController.setInfoText("");  			
     		}
     	});
     	
@@ -376,9 +384,9 @@ public class EdiEintragController {
     		akt.bisDatum = dpProduktivBis.getValue();
     		setChangeFlag(akt.bisDatum != org.bisDatum);
     		if (akt.seitDatum != null && akt.bisDatum.isBefore(akt.seitDatum)) {
-        		mainController.setInfoText("Bis-Datum sollte nach Set-Datum liegen");  			
+        		managerController.setInfoText("Bis-Datum sollte nach Set-Datum liegen");  			
     		} else {
-    			mainController.setInfoText("");  			
+    			managerController.setInfoText("");  			
     		}
     	});
 	}
@@ -502,7 +510,7 @@ public class EdiEintragController {
 				});
 				final MenuItem validateMenuItem = new MenuItem("Aktialität des Eintrages prüfen");
 				validateMenuItem.setOnAction(event -> { 
-					mainController.setInfoText("Diese Option ist noch nicht realisiert");
+					managerController.setInfoText("Diese Option ist noch nicht realisiert");
 				});
 				final MenuItem removeMenuItem = new MenuItem("Referenz auf Dokument löschen");
 				removeMenuItem.setOnAction( event -> {
@@ -523,7 +531,7 @@ public class EdiEintragController {
 		try {
 			repository.open();
 		} catch (SVNException e) {
-			mainController.setErrorText("Fehler beim öffen des Repository " + repository.getName() + " :" + e.getMessage());
+			managerController.setErrorText("Fehler beim öffen des Repository " + repository.getName() + " :" + e.getMessage());
 			return;
 		}
 		String filePath = repository.getStartPfad() + doku.getPfad() + "/" + doku.getName();
@@ -537,7 +545,7 @@ public class EdiEintragController {
 			baos.writeTo(fos);
 		} catch (IOException e) {
 			logger.error(e.getMessage(),e);
-			mainController.setErrorText(e.getMessage());
+			managerController.setErrorText(e.getMessage());
 			return;
 		} finally {
 			try {
@@ -545,7 +553,7 @@ public class EdiEintragController {
 				if (fos != null)  fos.close();
 			} catch (IOException e) {
 				logger.error(e.getMessage(),e);
-				mainController.setErrorText(e.getMessage());
+				managerController.setErrorText(e.getMessage());
 			}
 		}
 		Desktop desktop = null;
@@ -556,7 +564,7 @@ public class EdiEintragController {
 			desktop.open(new File(doku.getName() + ext));
 		} catch (IOException e) {
 			logger.error(e.getMessage(),e);
-			mainController.setErrorText(e.getMessage());
+			managerController.setErrorText(e.getMessage());
 		}
 	}
        
@@ -568,7 +576,7 @@ public class EdiEintragController {
     @FXML 
     void actionNewDokuLink() {
     	Stage dialog = new Stage(StageStyle.UTILITY);
-    	DokumentAuswaehlenController controller = mainController.loadDokumentAuswahl(dialog);
+    	DokumentAuswaehlenController controller = managerController.loadDokumentAuswahl(dialog);
     	if (controller != null) {
     		dialog.showAndWait();
     		if (controller.getResponse() == Actions.OK) {
@@ -665,7 +673,7 @@ public class EdiEintragController {
 					}
 					if (e != null) {
 						if(checkForChangesAndAskForSave()) {
-							mainController.setSelectedEdiEintrag(e);
+							managerController.setSelectedEdiEintrag(e);
 						}
 						event.consume();
 					}
@@ -683,7 +691,7 @@ public class EdiEintragController {
 				e = (EdiEintrag) tabPane.getSelectionModel().selectedItemProperty().get().getUserData();
 				if (e != null) {
 					if(checkForChangesAndAskForSave()) {
-						mainController.setSelectedEdiEintrag(e);
+						managerController.setSelectedEdiEintrag(e);
 					}
 				}
 			}
@@ -732,7 +740,7 @@ public class EdiEintragController {
 		List<GeschaeftsObjekt> gList = tq.getResultList();
 		
 		if (gList.size() > 0) {
-			mainController.setInfoText("Geschäftsobjekt ist bereits "+ gList.size() +" mal vorhanden");
+			managerController.setInfoText("Geschäftsobjekt ist bereits "+ gList.size() +" mal vorhanden");
 			return gList.get(0);
 		}
 		try {
@@ -742,7 +750,7 @@ public class EdiEintragController {
 			entityManager.getTransaction().commit();
 			businessObjectName.add(aktName);
 			businessObjectMap.put(aktName.toUpperCase(), newBusObj);
-			mainController.setInfoText("Das Geschäftsobjekt \"" + 
+			managerController.setInfoText("Das Geschäftsobjekt \"" + 
 					aktName + "\" wurde erfolgreich gespeichert");
 			return newBusObj;
 		} catch (RuntimeException er) {
@@ -766,13 +774,13 @@ public class EdiEintragController {
 		}
 	}
 	
-	private void readEdiIntervall() {
-		ediIntervallName.clear();
-		TypedQuery<EdiIntervall> tq = entityManager.createQuery(
-				"SELECT i FROM EdiIntervall i ORDER BY i.name", EdiIntervall.class);
-		final List<EdiIntervall> iList = tq.getResultList();
-		for (EdiIntervall iObject : iList) {
-			ediIntervallName.add(iObject.getName());
+	private void readIntervalle() {
+		intervallNameList.clear();
+		TypedQuery<Intervall> tq = entityManager.createQuery(
+				"SELECT i FROM Intervall i ORDER BY i.name", Intervall.class);
+		final List<Intervall> iList = tq.getResultList();
+		for (Intervall iObject : iList) {
+			intervallNameList.add(iObject.getName());
 		}
 	}
 	
@@ -854,6 +862,59 @@ public class EdiEintragController {
 		}
     }
 
+    @FXML
+    void actionNewSST(ActionEvent event) {
+
+    	if (checkForChangesAndAskForSave() == false) {
+    		return;
+    	}
+    	FXMLLoader loader = new FXMLLoader();
+    	String fullname = "subs/NeuerEdiEintrag.fxml";
+    	loader.setLocation(getClass().getResource(fullname));
+    	if (loader.getLocation()==null) {
+    		logger.error("Resource not found :" + fullname);
+    		managerController.setErrorText("FEHLER: Resource ("+fullname+") not found");
+    		return;
+    	}
+    	try {
+    		loader.load();
+    	} catch (IOException e) {
+    		logger.error("Fehler beim Laden der Resource:" + e.getMessage());
+    		managerController.setErrorText("FEHLER: " + e.getMessage());
+    		return;
+    	}
+    	Parent root = loader.getRoot();
+    	Scene scene = new Scene(root);
+    	
+    	Stage dialog = new Stage(StageStyle.UTILITY);
+    	dialog.initModality(Modality.APPLICATION_MODAL);
+    	dialog.initOwner(primaryStage);
+    	dialog.setTitle(primaryStage.getTitle());
+    	
+    	NeuerEdiEintragController dialogController = loader.getController();
+    	dialogController.setEntityManager(entityManager);
+    	dialogController.start();
+    	
+    	dialog.setScene(scene);
+    	dialog.setX(primaryStage.getX() + 250);
+    	dialog.setY(primaryStage.getY() + 100);
+    	dialog.showAndWait();
+    	
+    	if (dialogController.getResponse() == Dialog.Actions.OK) {
+    		EdiEintrag newEE = dialogController.getNewEdiEintrag();
+    		managerController.loadEdiEintragListData();
+    		managerController.setSelectedEdiEintrag(newEE);
+    	}
+    }    
+
+    @FXML
+    void actionSSTloeschen(ActionEvent event) {
+    	managerController.handleEdiEintragLoeschen(event);
+    	// TODO
+    }
+    
+    
+    
 //	public boolean checkForContinueEditing() {
 //		if (aktEdi != null && aktEdiEqualPersistence() == false) {
 //		}
@@ -890,7 +951,7 @@ public class EdiEintragController {
 			localDateEquals(akt.bisDatum, org.bisDatum)   &&
 			akt.bezeichnung.equals(org.bezeichnung)       &&
 			akt.beschreibung.equals(org.beschreibung)     &&
-			akt.ediIntervallName.equals(org.ediIntervallName) &&
+			akt.intervallName.equals(org.intervallName) &&
 			verifyDokuLinkListIsUnchanged() == true			     )
 		{
 			logger.debug(checkmode + ": no change found -> no update");
@@ -930,7 +991,7 @@ public class EdiEintragController {
     		if (empf == null) {
     			if (i==0) {
     				String msg = "Ein Empfänger ist erforderlich";
-    	    		mainController.setErrorText(msg);
+    	    		managerController.setErrorText(msg);
     				btnEmpfaenger1.requestFocus();
     				return false;
     			}
@@ -940,7 +1001,7 @@ public class EdiEintragController {
     				
     				String msg = "Bitte zum Empfänger \"" + empf.getFullname() 
     					+ "\" auch ein Geschäftsobjekt eintragen/auswählen";
-    	    		mainController.setErrorText(msg);
+    	    		managerController.setErrorText(msg);
     				switch(i) {
     				case 0: cmbBuOb1.requestFocus(); break;
     				case 1: cmbBuOb2.requestFocus(); break;
@@ -951,12 +1012,12 @@ public class EdiEintragController {
     		}
     	}
     	if(akt.integration == null) {
-    		mainController.setErrorText("Eine Integration muss ausgewählt oder angelegt werden");
+    		managerController.setErrorText("Eine Integration muss ausgewählt oder angelegt werden");
     		cmbIntegration.requestFocus();
     		return false;
     	}
     	if (akt.konfiguration == null) {
-    		mainController.setErrorText("Eine Konfiguration muss ausgewählt oder angelegt werden");
+    		managerController.setErrorText("Eine Konfiguration muss ausgewählt oder angelegt werden");
     		cmbKonfiguration.requestFocus();
     		return false;
     	}
@@ -987,8 +1048,8 @@ public class EdiEintragController {
 			aktEdi.setEdiKomponente(akt.sender); 
 			aktEdi.setBeschreibung(akt.beschreibung);
 			
-			if (!akt.ediIntervallName.equals(org.ediIntervallName)) {
-				aktEdi.setEdiIntervall(newEdiIntervall(akt.ediIntervallName));
+			if (!akt.intervallName.equals(org.intervallName)) {
+				aktEdi.setIntervall(newIntervall(akt.intervallName));
 			}
 			
 			Collection<EdiEmpfaenger> tmpEmpfaengerList = new ArrayList<EdiEmpfaenger>();
@@ -1040,15 +1101,15 @@ public class EdiEintragController {
 			entityManager.getTransaction().commit();
 			
 			// do things that are necessary after DB-update:
-			if (!akt.ediIntervallName.equals(org.ediIntervallName)) {
-				readEdiIntervall();	// this will remove selection -> refresh 
-				cmbIntervall.getSelectionModel().select(akt.ediIntervallName);
+			if (!akt.intervallName.equals(org.intervallName)) {
+				readIntervalle();	// this will remove selection -> refresh 
+				cmbIntervall.getSelectionModel().select(akt.intervallName);
 			}
 			setLastChangeField(ediLastChange, aktEdi.getLaeDatum(), aktEdi.getLaeUser());			
 			akt.setData(aktEdi);
 			org.setData(aktEdi);
 			
-			mainController.setInfoText("Der EDI-Eintrag wurde gespeichert");
+			managerController.setInfoText("Der EDI-Eintrag wurde gespeichert");
 			
 		} catch (RuntimeException e) {
 			Dialogs.create().owner(primaryStage)
@@ -1085,23 +1146,23 @@ public class EdiEintragController {
 		}
 	}
 
-	private EdiIntervall newEdiIntervall(String iName) {
+	private Intervall newIntervall(String iName) {
 		logger.entry();
-		EdiIntervall ediIntervall;
-		String select = "SELECT i FROM EdiIntervall i WHERE LOWER(i.name) = LOWER(:i)";
-		TypedQuery<EdiIntervall> tq = entityManager.createQuery(select, EdiIntervall.class);
+		Intervall intervall;
+		String select = "SELECT i FROM Intervall i WHERE LOWER(i.name) = LOWER(:i)";
+		TypedQuery<Intervall> tq = entityManager.createQuery(select, Intervall.class);
 		tq.setParameter("i", iName);
-		List<EdiIntervall> iList = tq.getResultList();
+		List<Intervall> iList = tq.getResultList();
 		
 		logger.info("iListe.size=" + iList.size());
 		if (iList.size() == 0) {
-			ediIntervall = new EdiIntervall();
-			entityManager.persist(ediIntervall);
+			intervall = new Intervall();
+			entityManager.persist(intervall);
 		} else {
-			ediIntervall = iList.get(0);
+			intervall = iList.get(0);
 		}
-		ediIntervall.setName(iName);
-		return ediIntervall;
+		intervall.setName(iName);
+		return intervall;
 	}
 
 	private boolean localDateEquals(LocalDate x, LocalDate y) {
@@ -1148,7 +1209,7 @@ public class EdiEintragController {
 				.message("Wie soll das neue Integrations-Szenario heißen?")
 				.showTextInput(aktName);
 			if ( !newName.isPresent() ) {
-				mainController.setInfoText("Integrations-Szenario-Neuanlage wurde vom Benutzer abgebrochen");
+				managerController.setInfoText("Integrations-Szenario-Neuanlage wurde vom Benutzer abgebrochen");
 				break;
 			}
 			aktName = newName.get().trim();
@@ -1177,7 +1238,7 @@ public class EdiEintragController {
 				cmbIntegration.getSelectionModel().select(integration);
 				btnNewConfiguration.requestFocus();
 				
-				mainController.setInfoText("Die Integration \"" + aktName + "\"" + 
+				managerController.setInfoText("Die Integration \"" + aktName + "\"" + 
 					" wurde erfolgreich erstellt und hier ausgewählt");
 				return;
 			} catch (RuntimeException er) {
@@ -1200,7 +1261,7 @@ public class EdiEintragController {
 				.message("Wie soll die neue Konfiguration heißen?")
 				.showTextInput(aktName);
 			if (newName.isPresent() == false) {
-				mainController.setInfoText("Neuanlager einer Konfiguartion wurde vom Benutzer abgebrochen");
+				managerController.setInfoText("Neuanlager einer Konfiguartion wurde vom Benutzer abgebrochen");
 				break;
 			}
 			aktName = newName.get().trim();
@@ -1231,7 +1292,7 @@ public class EdiEintragController {
 				cmbKonfiguration.getSelectionModel().select(konfiguration);
 				cmbKonfiguration.requestFocus();
 				
-				mainController.setInfoText("Die Konfiguartion \"" + aktName + "\"" + 
+				managerController.setInfoText("Die Konfiguartion \"" + aktName + "\"" + 
 					" wurde der Integration \"" + akt.integration.getName()  + "\"" +
 					" erfolgreich zugefügt und hier ausgewählt");
 				return;
@@ -1352,10 +1413,11 @@ public class EdiEintragController {
     
     private FXMLLoader loadKomponentenAuswahl(Stage dialog, int xOffset, int yOffset) {
     	FXMLLoader loader = new FXMLLoader();
-    	loader.setLocation(getClass().getResource("/de/vbl/ediliste/view/KomponentenAuswahl.fxml"));
+    	String fullName = "subs/KomponentenAuswahl.fxml";
+  		loader.setLocation(getClass().getResource(fullName));
     	if (loader.getLocation()==null) {
-    		logger.error("Resource not found");
-    		mainController.setErrorText("Programm-FEHLER: Resource not found");
+    		logger.error("Resource not found :" + fullName);
+    		managerController.setErrorText("FEHLER: Resource ("+fullName+") not found");
     		return null;
     	}
     	try {

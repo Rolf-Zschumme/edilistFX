@@ -1,4 +1,4 @@
-package de.vbl.im.controller;
+package de.vbl.im.controller.subs;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

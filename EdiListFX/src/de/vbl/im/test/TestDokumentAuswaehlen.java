@@ -4,7 +4,7 @@ import javax.persistence.EntityManager;
 
 import org.controlsfx.dialog.Dialog.Actions;
 
-import de.vbl.im.controller.EdiMainController;
+import de.vbl.im.controller.IntegrationManagerController;
 import de.vbl.im.controller.subs.DokumentAuswaehlenController;
 import de.vbl.im.model.DokuLink;
 import javafx.application.Application;
@@ -18,7 +18,7 @@ public class TestDokumentAuswaehlen extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-		EdiMainController mainCtr = new EdiMainController();
+		IntegrationManagerController mainCtr = new IntegrationManagerController();
 		mainCtr.setupEntityManager();
 		EntityManager em = mainCtr.getEntityManager();
 		mainCtr.setPrimaryStage(primaryStage);

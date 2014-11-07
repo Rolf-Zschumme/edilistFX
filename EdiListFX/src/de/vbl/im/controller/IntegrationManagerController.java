@@ -51,6 +51,7 @@ import org.controlsfx.dialog.Dialogs;
 
 import de.vbl.im.controller.subs.DokumentAuswaehlenController;
 import de.vbl.im.controller.subs.KontaktPersonAuswaehlenController;
+import de.vbl.im.controller.subs.NeuerEdiEintragController;
 import de.vbl.im.model.EdiEintrag;
 import de.vbl.im.model.EdiEmpfaenger;
 import de.vbl.im.model.EdiKomponente;
@@ -62,8 +63,8 @@ import de.vbl.im.model.Konfiguration;
 import de.vbl.im.model.KontaktPerson;
 import de.vbl.im.tools.ExportToExcel;
 
-public class EdiMainController {
-	private static final Logger logger = LogManager.getLogger(EdiMainController.class.getName()); 
+public class IntegrationManagerController {
+	private static final Logger logger = LogManager.getLogger(IntegrationManagerController.class.getName()); 
 	private static final String APPL_NAME = "Integration Manager";
 	private static final String PERSISTENCE_UNIT_NAME = "IntegrationManager";
 	private static final String SICHERHEITSABFRAGE = "Sicherheitsabfrage";
@@ -186,7 +187,7 @@ public class EdiMainController {
     }
     
 	public void setPrimaryStage(Stage primaryStage) {
-		EdiMainController.primaryStage = primaryStage;
+		IntegrationManagerController.primaryStage = primaryStage;
 	}
 	
     static public Stage getStage() {
@@ -223,7 +224,7 @@ public class EdiMainController {
         			@Override
         			public void changed(ObservableValue<? extends Tab> ov, Tab talt, Tab tneu) {
         				final Tab akttab = tneu;
-						logger.info("tabPane.changed", akttab.textProperty().get());
+						logger.info("tabPane.changed:", akttab.textProperty().get());
 
 						primaryStage.getScene().setCursor(Cursor.WAIT);
 						
@@ -373,10 +374,11 @@ public class EdiMainController {
     	tColAuswahlEdiNrIngration.setCellValueFactory(cellData -> 
     			cellData.getValue().intregrationName());
 
-    	btnDeleteEdiEintrag.disableProperty().bind(
-    			Bindings.isNull(tableEdiNrAuswahl.getSelectionModel().selectedItemProperty()));
-    	ediEintrag.disableProperty().bind(
-    			Bindings.isNull(tableEdiNrAuswahl.getSelectionModel().selectedItemProperty()));
+//    	btnDeleteEdiEintrag.disableProperty().bind(
+//    			Bindings.isNull(tableEdiNrAuswahl.getSelectionModel().selectedItemProperty()));
+//    	ediEintrag.disableProperty().bind(
+//    			Bindings.isNull(tableEdiNrAuswahl.getSelectionModel().selectedItemProperty()));
+    	ediEintrag.setDisable(false);
     	ediEintragController.ediEintragProperty().bind(
     						    tableEdiNrAuswahl.getSelectionModel().selectedItemProperty());
 
@@ -629,47 +631,55 @@ public class EdiMainController {
 		Dialogs.create().title(APPL_NAME).masthead(javaVersion).message(message).showInformation();
 	}
 
+//    @FXML
+//    void newEdiNr(ActionEvent event) {
+//    
+//    	FXMLLoader loader = new FXMLLoader();
+//    	String fullname = "subs/NeuerEdiEintrag.fxml";
+//    	loader.setLocation(getClass().getResource(fullname));
+//    	if (loader.getLocation()==null) {
+//    		logger.error("Resource not found :" + fullname);
+//    		setErrorText("FEHLER: Resource ("+fullname+") not found");
+//    		return;
+//    	}
+//    	try {
+//			loader.load();
+//		} catch (IOException e) {
+//			logger.error("Fehler beim Laden der Resource:" + e.getMessage());
+//			setErrorText("FEHLER: " + e.getMessage());
+//			return;
+//		}
+//    	Parent root = loader.getRoot();
+//    	Scene scene = new Scene(root);
+//    	
+//    	Stage dialog = new Stage(StageStyle.UTILITY);
+//    	dialog.initModality(Modality.APPLICATION_MODAL);
+//    	dialog.initOwner(primaryStage);
+//    	dialog.setTitle(primaryStage.getTitle());
+//    	
+//    	NeuerEdiEintragController dialogController = loader.getController();
+//    	dialogController.setEntityManager(entityManager);
+//    	dialogController.start();
+//    	
+//    	dialog.setScene(scene);
+//    	dialog.setX(primaryStage.getX() + 250);
+//    	dialog.setY(primaryStage.getY() + 100);
+//    	dialog.showAndWait();
+//
+//    	if (dialogController.getResponse() == Dialog.Actions.OK) {
+//    		EdiEintrag newEE = dialogController.getNewEdiEintrag();
+//			ediEintraegeList.add(newEE);
+//			if (newEE.getEdiNr() > maxEdiNr) 
+//				maxEdiNr = newEE.getEdiNr();
+//			tableEdiNrAuswahl.getSelectionModel().select(newEE);
+//    	}
+//    }    
+
     @FXML
-    void newEdiNr(ActionEvent event) {
-    
-    	FXMLLoader loader = new FXMLLoader();
-    	loader.setLocation(getClass().getResource("/de/vbl/ediliste/view/NeuerEdiEintrag.fxml"));
-    	if (loader.getLocation()==null) {
-    		logger.error("Resource not found");
-    		setErrorText("Programm-FEHLER: Resource not found");
-    		return;
-    	}
-    	try {
-			loader.load();
-		} catch (IOException e) {
-			logger.error("Fehler beim Laden der Resource (fxml)");
-			e.printStackTrace();
-		}
-    	Parent root = loader.getRoot();
-    	Scene scene = new Scene(root);
-    	
-    	Stage dialog = new Stage(StageStyle.UTILITY);
-    	dialog.initModality(Modality.APPLICATION_MODAL);
-    	dialog.initOwner(primaryStage);
-    	
-    	NeuerEdiEintragController dialogController = loader.getController();
-    	dialogController.setEntityManager(entityManager);
-    	dialogController.start();
-    	
-    	dialog.setScene(scene);
-    	dialog.setX(primaryStage.getX() + 250);
-    	dialog.setY(primaryStage.getY() + 100);
-    	dialog.showAndWait();
-
-    	if (dialogController.getResponse() == Dialog.Actions.OK) {
-    		EdiEintrag newEE = dialogController.getNewEdiEintrag();
-			ediEintraegeList.add(newEE);
-			if (newEE.getEdiNr() > maxEdiNr) 
-				maxEdiNr = newEE.getEdiNr();
-			tableEdiNrAuswahl.getSelectionModel().select(newEE);
-    	}
-    }    
-
+    void actionSSTloeschen(ActionEvent event) {
+    	logger.info("löschen");
+    	// TODO
+    }
     @FXML    
     void handleEdiEintragLoeschen(ActionEvent event) {
     	ediEintragLoeschen();
@@ -816,9 +826,10 @@ public class EdiMainController {
     	try {
     		factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
     	} catch (RuntimeException e) {
+    		logger.error("Message:"+ e.getMessage(),e);
 			Dialogs.create().owner(primaryStage).title(APPL_NAME)
 				.masthead("FEHLER")
-				.message("Fehler beim Aufbau der Datenbankverbindung")
+				.message("Fehler beim Aufbau der Datenbankverbindung:\n" + e.getMessage())
 				.showException(e);
     	}
     	

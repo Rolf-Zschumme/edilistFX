@@ -28,12 +28,12 @@ import static javax.persistence.TemporalType.TIMESTAMP;
  *  
  */
 
-@Entity
+@Entity 
 public class DokuLink implements Serializable {
 	private static final long serialVersionUID = 1L;
 	public static enum DokuStatus { OHNE_VORHABEN, NUR_VORHABEN, ABGENOMMEN, ALT_VORHABEN, NEU_VORHABEN };
 	
-	private long id;
+	private long id; 
 	private StringProperty name;
 	private StringProperty pfad;
 	private ObjectProperty<LocalDateTime> datumProp;

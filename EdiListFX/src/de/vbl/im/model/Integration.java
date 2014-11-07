@@ -89,7 +89,7 @@ public class Integration {
 	    this.vorhaben = param;
 	}
 
-	@ManyToMany
+	@ManyToMany 
 	public Collection<DokuLink> getDokuLink() {
 	    return dokuLink;
 	}

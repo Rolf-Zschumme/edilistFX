@@ -2,7 +2,7 @@ package de.vbl.im.test;
 
 import org.controlsfx.dialog.Dialog.Actions;
 
-import de.vbl.im.controller.EdiMainController;
+import de.vbl.im.controller.IntegrationManagerController;
 import de.vbl.im.controller.subs.KontaktPersonAuswaehlenController;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -12,7 +12,7 @@ public class TestKontaktPersonAuswaehlen extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-		EdiMainController mainCtr = new EdiMainController();
+		IntegrationManagerController mainCtr = new IntegrationManagerController();
 		mainCtr.setupEntityManager();
 		mainCtr.setPrimaryStage(primaryStage);
 		primaryStage.setTitle("Test:KontaktPersonAuswaehlen");

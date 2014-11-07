@@ -1,5 +1,6 @@
 package de.vbl.im.model;
 
+import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import java.util.ArrayList;
@@ -13,15 +14,12 @@ import javafx.beans.property.StringProperty;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.JoinColumn;
-
-import static javax.persistence.CascadeType.ALL;
-import de.vbl.im.model.EdiIntervall;
 
 @Entity
-public class EdiEintrag {
+public class EdiEintrag { 
 	public static final int EDI_NR_MIN_LEN = 3;
 	public static final String FORMAT_EDINR = " %03d";
 	private long id;
@@ -39,7 +37,7 @@ public class EdiEintrag {
 	private StringProperty senderName;
 	private StringProperty integrationName;
 	private StringProperty konfigurationName;
-	private EdiIntervall ediIntervall;
+	private Intervall intervall;
 
 	public EdiEintrag() {
 		ediNr = new SimpleIntegerProperty();
@@ -225,11 +223,11 @@ public class EdiEintrag {
     }
 
 	@ManyToOne
-	public EdiIntervall getEdiIntervall() {
-	    return ediIntervall;
+	public Intervall getIntervall() {
+	    return intervall;
 	}
 
-	public void setEdiIntervall(EdiIntervall param) {
-	    this.ediIntervall = param;
+	public void setIntervall(Intervall param) {
+	    this.intervall = param;
 	}
 }

@@ -42,7 +42,7 @@ import de.vbl.im.model.GeschaeftsObjekt;
 public class GeschaeftsObjektController {
 	private static final Logger logger = LogManager.getLogger(GeschaeftsObjektController.class.getName());
 	private static Stage primaryStage = null;
-	private static EdiMainController mainCtr;
+	private static IntegrationManagerController mainCtr;
 	private static EntityManager entityManager;
 	
 	private final ObjectProperty<GeschaeftsObjekt> geschaeftsObjekt;
@@ -75,11 +75,11 @@ public class GeschaeftsObjektController {
     	this.ediSystemAnzahl = new SimpleIntegerProperty(0);
     }
 
-	public static void setParent(EdiMainController mainController) {
+	public static void setParent(IntegrationManagerController managerController) {
 		logger.entry(primaryStage);
-		GeschaeftsObjektController.mainCtr = mainController;
-		GeschaeftsObjektController.primaryStage = EdiMainController.getStage();
-		GeschaeftsObjektController.entityManager = mainController.getEntityManager();
+		GeschaeftsObjektController.mainCtr = managerController;
+		GeschaeftsObjektController.primaryStage = IntegrationManagerController.getStage();
+		GeschaeftsObjektController.entityManager = managerController.getEntityManager();
 		logger.exit();
 	}
 

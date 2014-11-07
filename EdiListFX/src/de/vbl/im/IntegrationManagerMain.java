@@ -12,13 +12,13 @@ import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.vbl.im.controller.EdiMainController;
+import de.vbl.im.controller.IntegrationManagerController;
 
 
-public class EdiListMain extends Application {
+public class IntegrationManagerMain extends Application {
 	
-	private static final Logger logger = LogManager.getLogger(EdiListMain.class.getName());
-	EdiMainController controller;
+	private static final Logger logger = LogManager.getLogger(IntegrationManagerMain.class.getName());
+	IntegrationManagerController controller;
 	
 	public static void main(String[] args) {
 		Date date = java.util.Calendar.getInstance().getTime();
@@ -28,7 +28,7 @@ public class EdiListMain extends Application {
 		try {
 			launch(args);
 		} catch (Exception e) {
-			logger.error("Fehler in der Anwendung EdiListMain",e);
+			logger.error("Fehler in der Anwendung IntegrationManagerMain",e);
 		}
 	}
 	
@@ -36,7 +36,6 @@ public class EdiListMain extends Application {
 	
 	@Override
 	public void start(Stage stage) {
-		System.out.println("EdiListMain.start()");
 		primaryStage = stage;
 		try {
 			Parent root = loadAndStartController();
@@ -45,7 +44,7 @@ public class EdiListMain extends Application {
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch (Exception e) {
-			logger.error("Fehler in EdiListMain.start()");
+			logger.error("Fehler in IntegrationManagerMain.start()");
 			e.printStackTrace();
 		}
 	}
@@ -56,7 +55,7 @@ public class EdiListMain extends Application {
 	}
 
 	public Parent loadAndStartController() {
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("view/EdiMain.fxml"));
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("view/IntegrationManager.fxml"));
 		Parent root = null;
 
 		try {

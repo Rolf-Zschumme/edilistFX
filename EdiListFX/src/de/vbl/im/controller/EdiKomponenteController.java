@@ -49,7 +49,7 @@ import de.vbl.im.model.KontaktPerson;
 public class EdiKomponenteController implements Initializable  {
 	private static final Logger logger = LogManager.getLogger(EdiKomponenteController.class.getName());
 	private static Stage primaryStage = null;
-	private static EdiMainController mainCtr;
+	private static IntegrationManagerController mainCtr;
 	private static EntityManager entityManager;
 	private final ObjectProperty<EdiKomponente> edikomponente;
 	private final ObservableSet<EdiEintrag> ediEintragsSet;      // all assigned EDI-Entities
@@ -81,11 +81,11 @@ public class EdiKomponenteController implements Initializable  {
     	kontaktpersonList = FXCollections.observableArrayList();
     }
 
-	public static void setParent(EdiMainController mainController) {
+	public static void setParent(IntegrationManagerController managerController) {
 		logger.entry();
-		EdiKomponenteController.mainCtr = mainController;
-		EdiKomponenteController.primaryStage = EdiMainController.getStage();
-		EdiKomponenteController.entityManager = mainController.getEntityManager();
+		EdiKomponenteController.mainCtr = managerController;
+		EdiKomponenteController.primaryStage = IntegrationManagerController.getStage();
+		EdiKomponenteController.entityManager = managerController.getEntityManager();
 		logger.exit();
 	}
 

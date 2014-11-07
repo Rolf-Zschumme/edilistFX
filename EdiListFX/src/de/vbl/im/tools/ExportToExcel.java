@@ -228,7 +228,7 @@ public class ExportToExcel {
             		createCell(row, ++s, styleNormal, ediEintrag.getBezeichnung());				
             		createCeFo(row, ++s, styleNormal, KOMPONENTEN_SHEET + "!F" + 
             				komponentenZeilenNr.get(ediEintrag.getEdiKomponente().getId()));
-            		String intervall = ediEintrag.getEdiIntervall() == null ? "" : ediEintrag.getEdiIntervall().getName();
+            		String intervall = ediEintrag.getIntervall() == null ? "" : ediEintrag.getIntervall().getName();
             		createCell(row, ++s, styleNormal, intervall);
             		createCell(row, ++s, styleNormal, ediEintrag.getSeitDatum());
             		createCell(row, ++s, styleNormal, ediEintrag.getBisDatum());
@@ -280,7 +280,7 @@ public class ExportToExcel {
 				createCell(row, ++s, styleNormal, ediEintrag.getBezeichnung());				
 				createCeFo(row, ++s, styleNormal, KOMPONENTEN_SHEET + "!F" + 
 						komponentenZeilenNr.get(ediEintrag.getEdiKomponente().getId()));
-				String intervall = ediEintrag.getEdiIntervall() == null ? "" : ediEintrag.getEdiIntervall().getName();
+				String intervall = ediEintrag.getIntervall() == null ? "" : ediEintrag.getIntervall().getName();
 				createCell(row, ++s, styleNormal, intervall);
 				createCell(row, ++s, styleNormal, ediEintrag.getSeitDatum());
 				createCell(row, ++s, styleNormal, ediEintrag.getBisDatum());

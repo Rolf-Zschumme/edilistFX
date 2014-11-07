@@ -1,18 +1,38 @@
 package de.vbl.im.test;
 
 import java.io.IOException;
+import java.net.URL;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import de.vbl.im.controller.EdiEintragController;
+import de.vbl.im.controller.EdiKomponenteController;
+import de.vbl.im.controller.EdiPartnerController;
+import de.vbl.im.controller.EdiSystemController;
+import de.vbl.im.controller.IntegrationManagerController;
 
 public class TestEdiSystem extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("view/EdiSystem.fxml"));
+		String src;
+		src = EdiKomponenteController.class.getName();
+		src = EdiPartnerController.class.getName();
+		src = EdiSystemController.class.getName();
+		src = EdiEintragController.class.getName();
+		src = IntegrationManagerController.class.getName();
+		int lastPkt = src.lastIndexOf(".");
+		src = src.substring(lastPkt + 1).replace("Controller", "");
+		System.out.println(src);
+		URL url = getClass().getResource("../view/" + src + ".fxml");
+		System.out.println("url:" + url);
+		FXMLLoader loader = new FXMLLoader(url);
+		if (loader.getLocation() == null) {
+			System.out.println("loader.getLocation() ist NULL");
+		}
 		Parent root = null;
 		try {
 			root = (Parent) loader.load();
@@ -23,7 +43,7 @@ public class TestEdiSystem extends Application {
 //		controller.setParent();
 		
 		Scene scene = new Scene (root);
-		scene.getStylesheets().add(getClass().getResource("view/application.css").toExternalForm());
+		scene.getStylesheets().add(getClass().getResource("../view/application.css").toExternalForm());
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}

@@ -4,6 +4,7 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
 <AnchorPane fx:id="ediEintrag" prefHeight="664.0" prefWidth="923.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.im.controller.EdiEintragController">
 	<children>
@@ -11,8 +12,7 @@
 			<children>
 				<ToolBar>
 					<items>
-						<Button fx:id="btnSpeichern" disable="true" mnemonicParsing="false" onAction="#speichern" text="Änderungen speichern" />
-						<Button disable="true" mnemonicParsing="false" prefHeight="25.0" prefWidth="148.0" text="Steckbrief drucken" />
+						<Button fx:id="btnSpeichern" disable="true" mnemonicParsing="false" onAction="#speichern" prefWidth="136.0" text="Änderungen speichern" /><Button fx:id="btnNewSST" mnemonicParsing="false" onAction="#actionNewSST" prefWidth="136.0" text="Neue Schnittstelle" /><Button fx:id="btnDeleteSST" disable="true" mnemonicParsing="false" onAction="#actionSSTloeschen" prefWidth="136.0" text="Löschen" />
 					</items>
 					<VBox.margin>
 						<Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
@@ -39,7 +39,22 @@
 <VBox spacing="15.0" GridPane.rowIndex="2">
 <children>
 										<Label alignment="CENTER_RIGHT" layoutX="9.600000381469727" layoutY="51.60000038146973" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Dokumente:" GridPane.rowIndex="2">
-										</Label><Button fx:id="btnNewDokuLink" mnemonicParsing="false" onAction="#actionNewDokuLink" text="Dokument hinzufügen..." textAlignment="CENTER" wrapText="true" />
+										</Label>
+<VBox alignment="CENTER_RIGHT">
+<children><Button fx:id="btnNewDokuLink" alignment="CENTER_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#actionNewDokuLink" text="+">
+<font>
+<Font name="System Bold" size="13.0" />
+</font></Button>
+<Button alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="59.0" layoutY="10.0" mnemonicParsing="false" onAction="#actionNewDokuLink" prefWidth="28.0" text="-">
+<font>
+<Font name="System Bold" size="15.0" />
+</font>
+<VBox.margin>
+<Insets top="5.0" />
+</VBox.margin>
+</Button>
+</children>
+</VBox>
 </children>
 <GridPane.margin>
 <Insets top="30.0" />
@@ -72,7 +87,7 @@
                <children>
                   <TabPane fx:id="tabPaneEdiNr" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <tabs>
-                      <Tab fx:id="tabAktEdiNr" text="EDI 000">
+                      <Tab fx:id="tabAktEdiNr" text="SST 000">
                            <content>
             						<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="301.0">
                                  <children>
@@ -130,7 +145,7 @@
                                                       <ComboBox fx:id="cmbIntervall" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                                       <DatePicker fx:id="dpProduktivSeit" GridPane.columnIndex="3" GridPane.rowIndex="2" />
                                                       <DatePicker fx:id="dpProduktivBis" GridPane.columnIndex="3" GridPane.rowIndex="4" />
-                                                      <Label alignment="CENTER_RIGHT" layoutX="15.0" layoutY="52.0" maxWidth="1.7976931348623157E308" text="Bezeichnung (EDI-Nr):" />
+                                                      <Label alignment="CENTER_RIGHT" layoutX="15.0" layoutY="52.0" maxWidth="1.7976931348623157E308" text="SST-Bezeichnung:" />
                                                       <TextField fx:id="tfBezeichnung" focusTraversable="false" layoutX="864.0" layoutY="13.0" maxWidth="1.7976931348623157E308" prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="3" />
                               											</children>
                               											<padding>

@@ -42,7 +42,7 @@ import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
 import org.controlsfx.dialog.Dialog.Actions;
 
-import de.vbl.im.controller.EdiMainController;
+import de.vbl.im.controller.IntegrationManagerController;
 import de.vbl.im.model.DokuLink;
 import de.vbl.im.model.Repository;
 
@@ -51,7 +51,7 @@ public class DokumentAuswaehlenController implements Initializable {
 
 	private static Stage primaryStage = null;
     private static String applName = null;
-	private static EdiMainController mainController;
+	private static IntegrationManagerController managerController;
     private static EntityManager entityManager = null;
     
     private ObservableList<Repository> reposiList = FXCollections.observableArrayList();
@@ -203,11 +203,11 @@ public class DokumentAuswaehlenController implements Initializable {
     	
     }
 
-    public void start(Stage primaryStage, EdiMainController mainController, EntityManager entityManager) {
+    public void start(Stage primaryStage, IntegrationManagerController managerController, EntityManager entityManager) {
 
     	DokumentAuswaehlenController.primaryStage = primaryStage;
     	DokumentAuswaehlenController.entityManager = entityManager;
-    	DokumentAuswaehlenController.mainController = mainController;
+    	DokumentAuswaehlenController.managerController = managerController;
 		applName = primaryStage.getTitle();
 		
 		readRepositoriesFromDB(entityManager);
@@ -263,7 +263,7 @@ public class DokumentAuswaehlenController implements Initializable {
 	
     @FXML
     private void okPressed(ActionEvent event) {
-    	if (applName == null && mainController == null && primaryStage == null ) {
+    	if (applName == null && managerController == null && primaryStage == null ) {
     		// just for suppressing "unused" warning;
     	}
 		selDokuLink = tableDokuLinkAuswahl.getSelectionModel().selectedItemProperty().get();

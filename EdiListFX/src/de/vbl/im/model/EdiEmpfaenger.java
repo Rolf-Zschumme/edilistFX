@@ -64,9 +64,8 @@ public class EdiEmpfaenger {
 	}
 	
 	@ManyToOne
-	@JoinColumn(name = "geschaeftsObjekt_id", referencedColumnName = "id")
 	public GeschaeftsObjekt getGeschaeftsObjekt() {
-	    return geschaeftsObjekt;
+	    return geschaeftsObjekt; 
 	}
 	
 	public void setGeschaeftsObjekt(GeschaeftsObjekt newGeOb) {

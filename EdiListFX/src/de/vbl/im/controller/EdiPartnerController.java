@@ -50,7 +50,7 @@ import de.vbl.im.model.KontaktPerson;
 public class EdiPartnerController {
 	private static final Logger logger = LogManager.getLogger(EdiPartnerController.class.getName());
 	private static Stage primaryStage = null;
-	private static EdiMainController mainCtr;
+	private static IntegrationManagerController mainCtr;
 	private static EntityManager entityManager;
 	private final ObjectProperty<EdiPartner> ediPartner;
 	private final ObservableSet<EdiEintrag> ediEintragsSet;      // all assigned EDI-Entities
@@ -85,11 +85,11 @@ public class EdiPartnerController {
     	this.kontaktpersonList = FXCollections.observableArrayList();
     }
 
-	public static void setParent(EdiMainController mainController) {
+	public static void setParent(IntegrationManagerController managerController) {
 		logger.entry(primaryStage);
-		EdiPartnerController.mainCtr = mainController;
-		EdiPartnerController.primaryStage = EdiMainController.getStage();
-		EdiPartnerController.entityManager = mainController.getEntityManager();
+		EdiPartnerController.mainCtr = managerController;
+		EdiPartnerController.primaryStage = IntegrationManagerController.getStage();
+		EdiPartnerController.entityManager = managerController.getEntityManager();
 		logger.exit();
 	}
 

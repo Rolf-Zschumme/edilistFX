@@ -19,7 +19,7 @@ import static javax.persistence.GenerationType.IDENTITY;
  */
 @Entity
 
-public class EdiIntervall implements Serializable {
+public class Intervall implements Serializable {
 	/**
 	 * 
 	 */
@@ -27,7 +27,7 @@ public class EdiIntervall implements Serializable {
 	private long id;
 	private StringProperty name;
 
-	public EdiIntervall() {
+	public Intervall() {
 		name = new SimpleStringProperty("");
 	}   
 	@Id

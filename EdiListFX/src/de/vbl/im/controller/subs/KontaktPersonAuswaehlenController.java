@@ -29,7 +29,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.controlsfx.dialog.Dialog.Actions;
 
-import de.vbl.im.controller.EdiMainController;
+import de.vbl.im.controller.IntegrationManagerController;
 import de.vbl.im.model.KontaktPerson;
 
 public class KontaktPersonAuswaehlenController implements Initializable {
@@ -37,7 +37,7 @@ public class KontaktPersonAuswaehlenController implements Initializable {
 
 	private static Stage primaryStage = null;
     private static String applName = null;
-	private static EdiMainController mainController;
+	private static IntegrationManagerController managerController;
     private static EntityManager entityManager = null;
     
     private ObservableList<KontaktPerson> kontaktPersonList = FXCollections.observableArrayList();
@@ -153,11 +153,11 @@ public class KontaktPersonAuswaehlenController implements Initializable {
     	
     }
 
-    public void start(Stage primaryStage, EdiMainController mainController, EntityManager entityManager) {
+    public void start(Stage primaryStage, IntegrationManagerController managerController, EntityManager entityManager) {
 
     	KontaktPersonAuswaehlenController.primaryStage = primaryStage;
     	KontaktPersonAuswaehlenController.entityManager = entityManager;
-    	KontaktPersonAuswaehlenController.mainController = mainController;
+    	KontaktPersonAuswaehlenController.managerController = managerController;
 		applName = primaryStage.getTitle();
 		
 		loadKontaktPersonListData();
@@ -173,7 +173,7 @@ public class KontaktPersonAuswaehlenController implements Initializable {
     
     @FXML
     private void okPressed(ActionEvent event) {
-    	if (applName == null && mainController == null && primaryStage == null ) {
+    	if (applName == null && managerController == null && primaryStage == null ) {
     		// TODO just for suppressing "unused" warning;
     	}
 //    	Tab akttab = tabPane.getSelectionModel().getSelectedItem();

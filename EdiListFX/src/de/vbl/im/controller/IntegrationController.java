@@ -39,7 +39,7 @@ import de.vbl.im.model.Integration;
 public class IntegrationController {
 	private static final Logger logger = LogManager.getLogger(IntegrationController.class.getName()); 
 	private static Stage primaryStage = null;
-	private static EdiMainController mainCtr;
+	private static IntegrationManagerController mainCtr;
 	private static EntityManager entityManager;
 	private final ObjectProperty<Integration> integration;
 	private final ObservableSet<EdiEintrag> ediEintragsSet;      // all assigned EDI-Entities
@@ -69,11 +69,11 @@ public class IntegrationController {
     	this.ediEintragsSet = FXCollections.observableSet();
     }
 
-	public static void setParent(EdiMainController mainController) {
+	public static void setParent(IntegrationManagerController managerController) {
 		logger.entry();
-		IntegrationController.mainCtr = mainController;
-		IntegrationController.primaryStage = EdiMainController.getStage();
-		IntegrationController.entityManager = mainController.getEntityManager();
+		IntegrationController.mainCtr = managerController;
+		IntegrationController.primaryStage = IntegrationManagerController.getStage();
+		IntegrationController.entityManager = managerController.getEntityManager();
 		logger.exit();
 	}
 

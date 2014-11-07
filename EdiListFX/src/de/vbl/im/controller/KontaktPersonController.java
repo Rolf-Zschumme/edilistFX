@@ -38,7 +38,7 @@ import de.vbl.im.model.KontaktPerson;
 public class KontaktPersonController {
 	private static final Logger logger = LogManager.getLogger(KontaktPersonController.class.getName());
 	private static Stage primaryStage = null;
-	private static EdiMainController mainCtr;
+	private static IntegrationManagerController mainCtr;
 	private static EntityManager entityManager;
 	private final ObjectProperty<KontaktPerson> kontaktPerson;
 	private final ObservableList<EdiKomponente> ediKomponentenList = FXCollections.observableArrayList();
@@ -68,11 +68,11 @@ public class KontaktPersonController {
     	this.kontaktPerson = new SimpleObjectProperty<>(this, "kontaktPerson", null);
     }
 
-	public static void setParent(EdiMainController mainController) {
+	public static void setParent(IntegrationManagerController managerController) {
 		logger.entry();
-		KontaktPersonController.mainCtr = mainController;
-		KontaktPersonController.primaryStage = EdiMainController.getStage();
-		KontaktPersonController.entityManager = mainController.getEntityManager();
+		KontaktPersonController.mainCtr = managerController;
+		KontaktPersonController.primaryStage = IntegrationManagerController.getStage();
+		KontaktPersonController.entityManager = managerController.getEntityManager();
 		logger.exit();
 	}
 
