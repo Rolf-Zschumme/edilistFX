@@ -125,28 +125,25 @@ public class EdiSystemController {
 		btnSpeichern.disableProperty().bind(Bindings.not(dataIsChanged));
 
 		tfBezeichnung.textProperty().addListener((observable, oldValue, newValue)  -> {
-			if (aktSystem == null) {
-				logger.error("aktSystem==null in Listener for tfBezeichnung");
-			}
-			else if (aktSystem.getName() == null) {
-				logger.error("aktSystem.getName()==null in Listener for tfBezeichnung");
-			} else {	
-				String msg = "";
+			if (aktSystem != null) {
+				String userMsg = "";
 				if (aktSystem.getName().equals(newValue) == false) {
-					msg = checkSystemName(newValue);
-					dataIsChanged.set(true);
-				} else {	
-					dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
+					userMsg = checkSystemName(newValue);
 				}
-				mainCtr.setErrorText(msg);			
+				dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
+				mainCtr.setErrorText(userMsg);			
 			}
 		}); 
 
 		taBeschreibung.textProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue.equals(aktSystem.getBeschreibung()) == false) {
-				dataIsChanged.set(true);
-			} else {	
-				dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
+			if (aktSystem != null) {
+				String userMsg = "";
+				if (newValue.equals(aktSystem.getBeschreibung()) == false) {
+					dataIsChanged.set(true);
+				} else {	
+					dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
+				}
+				mainCtr.setErrorText(userMsg);			
 			}
 		});
 		
@@ -159,15 +156,7 @@ public class EdiSystemController {
 					if (k == null || empty) {
 						setText(null);
 					} else {
-						String suffix = k.getAbteilungSafe();
-						if(suffix.equals("")  && k.getNummer() != null) {
-							suffix = k.getNummer();
-						}
-						if (suffix.equals("") ) {
-							setText(k.getVorname() + " " + k.getNachname());
-						} else {
-							setText(k.getVorname() + " " + k.getNachname() + " (" + suffix + ")");
-						}
+						setText(k.getArtVornameNachnameFirma());
 					}
 				}
 			};
@@ -264,8 +253,8 @@ public class EdiSystemController {
 	private static enum Checkmode { ONLY_CHECK, ASK_FOR_UPDATE, SAVE_DONT_ASK };
 	
 	private boolean checkForChangesAndSave(Checkmode checkmode) {
-		logger.info("aktSystem=" + (aktSystem==null ? "null" : aktSystem.getFullname()));
 		if (aktSystem == null ) {
+			logger.info("aktSystem=NULL?");
 			return true;
 		}
 		String orgName = aktSystem.getName();
@@ -278,45 +267,58 @@ public class EdiSystemController {
 			aktSystem.getKontaktPerson().containsAll(kontaktpersonList) &&
 			kontaktpersonList.containsAll(aktSystem.getKontaktPerson())    ) 
 		{
-			logger.info("Name und Bezeichnung unveraendert");
-		} else {
-			if (checkmode == Checkmode.ONLY_CHECK) {
+			return true;  // no changes -> nothing to do  
+		}
+		if (checkmode == Checkmode.ONLY_CHECK) {
+			return false;
+		}
+		if (checkmode == Checkmode.ASK_FOR_UPDATE) {
+			Action response = Dialogs.create()
+					.owner(primaryStage).title(primaryStage.getTitle())
+					.actions(Dialog.Actions.YES, Dialog.Actions.NO, Dialog.Actions.CANCEL)
+					.message("Sollen die Änderungen an dem System " + orgName + " gespeichert werden ?")
+					.showConfirm();
+			if (response == Dialog.Actions.CANCEL) {
 				return false;
 			}
-			if (checkmode == Checkmode.ASK_FOR_UPDATE) {
-				Action response = Dialogs.create()
-						.owner(primaryStage).title(primaryStage.getTitle())
-						.actions(Dialog.Actions.YES, Dialog.Actions.NO, Dialog.Actions.CANCEL)
-						.message("Sollen die Änderungen an dem System " + orgName + " gespeichert werden ?")
-						.showConfirm();
-				if (response == Dialog.Actions.CANCEL) {
-					return false;
-				}
-				if (response == Dialog.Actions.NO) {
-					aktSystem = null;
-					return true;
-				}
+			if (response == Dialog.Actions.NO) {
+				aktSystem = null;
+				return true;
 			}
-			String msg = checkSystemName(newName);
-			if (msg != null) {
-				mainCtr.setErrorText(msg);
-				tfBezeichnung.requestFocus();
-				return false;
-			}
-			logger.info("Aenderung erkannt -> update");
+		}
+		String msg = checkSystemName(newName);
+		if (msg != null) {
+			mainCtr.setErrorText(msg);
+			tfBezeichnung.requestFocus();
+			return false;
+		}
+		logger.info("Update System " + newName);
+		try {
 			entityManager.getTransaction().begin();
 			aktSystem.setName(newName);
 			aktSystem.setBeschreibung(newBeschreibung);
-			aktSystem.getKontaktPerson().retainAll(kontaktpersonList);
+			boolean kontaktListChanged = aktSystem.getKontaktPerson().retainAll(kontaktpersonList);
 			for (KontaktPerson k : kontaktpersonList) {
 				if (aktSystem.getKontaktPerson().contains(k)== false) {
 					aktSystem.getKontaktPerson().add(k);
+					kontaktListChanged = true;
 				}
 			}
 			entityManager.getTransaction().commit();
-			readEdiListeforSystem(aktSystem);
+			if (kontaktListChanged) {
+				mainCtr.refreshKontaktReferences();
+			}
 			mainCtr.setInfoText("Das System " + orgName + " wurde gespeichert");
-		}
+			dataIsChanged.set(false);
+    	} catch (RuntimeException e) {
+    		logger.error("Message:"+ e.getMessage(),e);
+			Dialogs.create().owner(primaryStage)
+				.title(primaryStage.getTitle())
+				.masthead("FEHLER")
+				.message("Fehler beim Speichern der Systemdaten:\n" + e.getMessage())
+				.showException(e);
+    	}
+		readEdiListeforSystem(aktSystem);
 		return true;
 	}
 	
@@ -342,9 +344,6 @@ public class EdiSystemController {
 
 	private void readEdiListeforSystem( EdiSystem selSystem) {
 		ediKomponentenList.clear();
-		/* 1. lese alle EdiEintraege mit Sender = selekierter Komponente 
-		 * 		-> zeige jeweils alle zugehoerigen Empfaenger, falls kein Empfaenger vorhanden dummy erzeugen
-		*/
 		TypedQuery<EdiEintrag> tqS = entityManager.createQuery(
 				"SELECT e FROM EdiEintrag e WHERE e.ediKomponente.ediSystem = :s", EdiEintrag.class);
 		tqS.setParameter("s", selSystem);
@@ -358,45 +357,41 @@ public class EdiSystemController {
 				ediKomponentenList.addAll(tmpE);
 			}
 		}
-		logger.info("fuer "+ selSystem.getName() + " " + 
-			ediList.size() + " EDI-Eintraege" + " mit insgesamt " + 
-			ediKomponentenList.size() + " Empfaenger gelesen");
-		
-		/* 2. lese alle Empfaenger mit Empfaenger = selektierte Komponente 
-		 *    -> zeige alle Empfaenger  
-		 */
-		
 		TypedQuery<EdiEmpfaenger> tqE = entityManager.createQuery(
 				"SELECT e FROM EdiEmpfaenger e WHERE e.komponente.ediSystem = :s", EdiEmpfaenger.class);
 		tqE.setParameter("s", selSystem);
 		ediKomponentenList.addAll(tqE.getResultList());
-		logger.info("fuer " + selSystem.getName() + " " + 
-			tqE.getResultList().size() + " EDI-Empfaenger gelesen");
 	}
 
     @FXML
     void actionAddKontaktPerson(ActionEvent event) {
-    	logger.entry();
     	Stage dialog = new Stage(StageStyle.UTILITY);
     	KontaktPersonAuswaehlenController controller = mainCtr.loadKontaktPersonAuswahl(dialog);
     	if (controller != null) {
     		dialog.showAndWait();
+    		String userInfo = "Die Kontakt-Auswahl wurde abgebrochen"; 
     		if (controller.getResponse() == Actions.OK) {
-    			kontaktpersonList.add(controller.getKontaktperson());
-    			dataIsChanged.set(true);
+    			KontaktPerson selectedKontakt = controller.getKontaktperson();
+    			if (kontaktpersonList.contains(selectedKontakt)) {
+    				userInfo = "Der ausgewählte Kontakt ist bereits eingetragen";
+    			} else {
+    				kontaktpersonList.add(selectedKontakt);
+					dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
+    				userInfo = "Der ausgewählte Kontakt wurde ergänzt";
+    			}
     		}
+    		mainCtr.setInfoText(userInfo);
     	}
-    	logger.exit();
     }
 
     @FXML
     void actionRemoveKontaktPerson(ActionEvent event) {
-    	logger.entry();
     	KontaktPerson toBeRemoved = lvAnsprechpartner.getSelectionModel().getSelectedItem();
+    	logger.info("remove Kontakt " + toBeRemoved.getNachname());
     	kontaktpersonList.remove(toBeRemoved);
     	mainCtr.setInfoText("Die Kontaktperson \"" + toBeRemoved.getVorname() + " " + 
     					toBeRemoved.getNachname() + "\" wurde aus dieser Kontaktliste entfernt");
-		dataIsChanged.set(true);
+		dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
     }
 	
 	public final ObjectProperty<EdiSystem> ediSystemProperty() {

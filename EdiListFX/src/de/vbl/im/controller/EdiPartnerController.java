@@ -102,9 +102,6 @@ public class EdiPartnerController {
 			@Override
 			public void changed(ObservableValue<? extends EdiPartner> ov,
 					EdiPartner oldPartner, EdiPartner newPartner) {
-				log("ChangeListener<EdiPartner>",
-					((oldPartner==null) ? "null" : oldPartner.getName() + " -> " 
-				  + ((newPartner==null) ? "null" : newPartner.getName() )));
 				if (oldPartner != null) {
 					if (newPartner == null) {
 						tfBezeichnung.setText("");
@@ -135,22 +132,22 @@ public class EdiPartnerController {
 //		btnLoeschen.disableProperty().bind(Bindings.not(Bindings.greaterThanOrEqual(0, Bindings.size(ediEintragsSet))));
 
 		tfBezeichnung.textProperty().addListener((observable, oldValue, newValue)  -> {
-			String msg = "";
+			String userMsg = "";
 			if (aktPartner.getName().equals(newValue) == false) {
-				msg = checkPartnerName(newValue);
-				dataIsChanged.set(true);
-			} else {	
-				dataIsChanged.set(!checkForChangesWithMode(Checkmode.ONLY_CHECK));
+				userMsg = checkPartnerName(newValue);
 			}
-			mainCtr.setErrorText(msg);
+			dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
+			mainCtr.setErrorText(userMsg);
 		}); 
 
 		taBeschreibung.textProperty().addListener((observable, oldValue, newValue) -> {
+			String userMsg = "";
 			if (newValue.equals(aktPartner.getBeschreibung()) == false) {
 				dataIsChanged.set(true);
 			} else {	
-				dataIsChanged.set(!checkForChangesWithMode(Checkmode.ONLY_CHECK));
+				dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
 			}
+			mainCtr.setErrorText(userMsg);
 		});
 		
 		lvAnsprechpartner.setItems(kontaktpersonList);
@@ -162,15 +159,7 @@ public class EdiPartnerController {
 					if (k == null || empty) {
 						setText(null);
 					} else {
-						String suffix = k.getAbteilungSafe();
-						if(suffix.equals("")  && k.getNummer() != null) {
-							suffix = k.getNummer();
-						}
-						if (suffix.equals("") ) {
-							setText(k.getVorname() + " " + k.getNachname());
-						} else {
-							setText(k.getVorname() + " " + k.getNachname() + " (" + suffix + ")");
-						}
+						setText(k.getArtVornameNachnameFirma());
 					}
 				}
 			};
@@ -224,7 +213,7 @@ public class EdiPartnerController {
 		tvVerwendungen.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<EdiEmpfaenger>() {
 			@Override
 			public void changed (ObservableValue<? extends EdiEmpfaenger> ov, EdiEmpfaenger oldValue, EdiEmpfaenger newValue) {
-				log("tvVerwendungen.select.changed" ,"newValue" + newValue);
+				logger.info("noch nicht impelmentiert: Absprung zu " + newValue.getEdiEintrag().getEdiNrStr());
 			}
 		});
 		logger.exit();
@@ -269,18 +258,18 @@ public class EdiPartnerController {
 	
 	@FXML
 	void speichern(ActionEvent event) {
-		checkForChangesWithMode(Checkmode.SAVE_DONT_ASK);
+		checkForChangesAndSave(Checkmode.SAVE_DONT_ASK);
 	}
 	
 	public boolean checkForChangesAndAskForSave() {
-		return checkForChangesWithMode(Checkmode.ASK_FOR_UPDATE);
+		return checkForChangesAndSave(Checkmode.ASK_FOR_UPDATE);
 	}
 
 	private static enum Checkmode { ONLY_CHECK, ASK_FOR_UPDATE, SAVE_DONT_ASK };
 	
-	private boolean checkForChangesWithMode(Checkmode checkmode) {
-		log("checkForChangesWithMode","aktPartner=" + (aktPartner==null ? "null" : aktPartner.getName()));
+	private boolean checkForChangesAndSave(Checkmode checkmode) {
 		if (aktPartner == null ) {
+			logger.info("aktPartner=NULL?");
 			return true;
 		}
 		String orgName = aktPartner.getName();
@@ -293,45 +282,58 @@ public class EdiPartnerController {
 			aktPartner.getKontaktPerson().containsAll(kontaktpersonList) &&
 			kontaktpersonList.containsAll(aktPartner.getKontaktPerson())    ) 
 		{
-			log("checkForChangesWithMode", "Name und Bezeichnung sind unverändert");
-		} else {	
-			if (checkmode == Checkmode.ONLY_CHECK) {
+			return true;  // no changes -> nothing to do
+		}
+		if (checkmode == Checkmode.ONLY_CHECK) {
+			return false;
+		}
+		if (checkmode == Checkmode.ASK_FOR_UPDATE) {
+			Action response = Dialogs.create()
+					.owner(primaryStage).title(primaryStage.getTitle())
+					.actions(Dialog.Actions.YES, Dialog.Actions.NO, Dialog.Actions.CANCEL)
+					.message("Sollen die Änderungen am Partner " + orgName + " gespeichert werden ?")
+					.showConfirm();
+			if (response == Dialog.Actions.CANCEL) {
 				return false;
 			}
-			if (checkmode == Checkmode.ASK_FOR_UPDATE) {
-				Action response = Dialogs.create()
-    				.owner(primaryStage).title(primaryStage.getTitle())
-    				.actions(Dialog.Actions.YES, Dialog.Actions.NO, Dialog.Actions.CANCEL)
-    				.message("Sollen die Änderungen am Partner " + orgName + " gespeichert werden ?")
-    				.showConfirm();
-	    		if (response == Dialog.Actions.CANCEL) {
-	    			return false;
-	    		}
-	    		if (response == Dialog.Actions.NO) {
-	    			aktPartner = null;
-	    			return true;
-	    		}
-			}	
-			String msg = checkPartnerName(newName);
-			if (msg != null) {
-				mainCtr.setErrorText(msg);
-				tfBezeichnung.requestFocus();
-				return false;
+			if (response == Dialog.Actions.NO) {
+				aktPartner = null;
+				return true;
 			}
-			log("checkForChangesWithMode","Änderung erkannt -> update");
+		}	
+		String msg = checkPartnerName(newName);
+		if (msg != null) {
+			mainCtr.setErrorText(msg);
+			tfBezeichnung.requestFocus();
+			return false;
+		}
+		logger.info("Update Partner " + newName);
+		try {
 			entityManager.getTransaction().begin();
 			aktPartner.setName(newName);
 			aktPartner.setBeschreibung(newBeschreibung);
-			aktPartner.getKontaktPerson().retainAll(kontaktpersonList);
+			boolean kontaktListChanged = aktPartner.getKontaktPerson().retainAll(kontaktpersonList);
 			for (KontaktPerson k : kontaktpersonList) {
 				if (aktPartner.getKontaktPerson().contains(k)== false) {
 					aktPartner.getKontaktPerson().add(k);
+					kontaktListChanged = true;
 				}
 			}
 			entityManager.getTransaction().commit();
-			readEdiListeforPartner(aktPartner);
+			if (kontaktListChanged) {
+				mainCtr.refreshKontaktReferences();
+			}
 			mainCtr.setInfoText("Der Partner \"" + aktPartner.getName() + "\" wurde gespeichert");
-		}
+			dataIsChanged.set(false);
+    	} catch (RuntimeException e) {
+    		logger.error("Message:"+ e.getMessage(),e);
+			Dialogs.create().owner(primaryStage)
+				.title(primaryStage.getTitle())
+				.masthead("FEHLER")
+				.message("Fehler beim Speichern der Partnerdaten:\n" + e.getMessage())
+				.showException(e);
+    	}
+		readEdiListeforPartner(aktPartner);
 		return true;
 	}
 	
@@ -375,7 +377,6 @@ public class EdiPartnerController {
 				"SELECT e FROM EdiEmpfaenger e WHERE e.komponente.ediSystem.ediPartner = :p", EdiEmpfaenger.class);
 		tqE.setParameter("p", newPartner);
 		for(EdiEmpfaenger e : tqE.getResultList() ) {
-			log("readEdiListeforKomponete", "Empfaenger:" + e.getKomponente().getFullname() + " add");
 			empfaengerList.add(e);
 			ediEintragsSet.add(e.getEdiEintrag());
 		}
@@ -384,27 +385,33 @@ public class EdiPartnerController {
 
     @FXML
     void actionAddKontaktPerson(ActionEvent event) {
-    	logger.entry();
     	Stage dialog = new Stage(StageStyle.UTILITY);
     	KontaktPersonAuswaehlenController controller = mainCtr.loadKontaktPersonAuswahl(dialog);
     	if (controller != null) {
     		dialog.showAndWait();
+    		String userInfo = "Die Kontakt-Auswahl wurde abgebrochen"; 
     		if (controller.getResponse() == Actions.OK) {
-    			kontaktpersonList.add(controller.getKontaktperson());
-    			dataIsChanged.set(true);
+    			KontaktPerson selectedKontakt = controller.getKontaktperson();
+    			if (kontaktpersonList.contains(selectedKontakt)) {
+    				userInfo = "Der ausgewählte Kontakt ist bereits eingetragen";
+    			} else {
+    				kontaktpersonList.add(selectedKontakt);
+    				dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
+    				userInfo = "Der ausgewählte Kontakt wurde ergänzt";
+    			}
     		}
+    		mainCtr.setInfoText(userInfo);
     	}
-    	logger.exit();
     }
 
     @FXML
     void actionRemoveKontaktPerson(ActionEvent event) {
-    	logger.entry();
     	KontaktPerson toBeRemoved = lvAnsprechpartner.getSelectionModel().getSelectedItem();
+    	logger.info("remove Kontakt " + toBeRemoved.getNachname());
     	kontaktpersonList.remove(toBeRemoved);
     	mainCtr.setInfoText("Die Kontaktperson \"" + toBeRemoved.getVorname() + " " + 
     					toBeRemoved.getNachname() + "\" wurde aus dieser Kontaktliste entfernt");
-		dataIsChanged.set(true);
+		dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
     }
 	
 	public final ObjectProperty<EdiPartner> ediPartnerProperty() {
@@ -419,13 +426,6 @@ public class EdiPartnerController {
 		this.ediPartner.set(ediPartner);
 	}
     
-	private static void log(String methode, String message) {
-		if (message == null || methode == null) {
-			String className = EdiPartnerController.class.getName().substring(16);
-			System.out.println(className + "." + methode + "(): " + message); 
-		}
-	}
-	
 	final static String fxmlFilename = "EdiPartner.fxml";
 	final static String fxmlErrortxt = "' was not injected: check FXML-file '" + fxmlFilename + "'.";
 	void checkFieldsFromView() {

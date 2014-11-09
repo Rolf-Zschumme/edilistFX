@@ -53,7 +53,6 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -87,8 +86,8 @@ import de.vbl.im.model.Konfiguration;
 import de.vbl.im.model.Repository;
 
 
-public class EdiEintragController {
-	private static final Logger logger = LogManager.getLogger(EdiEintragController.class.getName()); 
+public class SchnittstelleController {
+	private static final Logger logger = LogManager.getLogger(SchnittstelleController.class.getName()); 
 	private static final String EDI_PANE_PREFIX = "EDI ";
 	private static final Integer MAX_EMPFAENGER = 3;
 	private static final String DEFAULT_KONFIG_NAME = "Ohne XI/PO-Konfiguration";
@@ -96,21 +95,19 @@ public class EdiEintragController {
 
 	private final ObjectProperty<EdiEintrag> ediEintrag;
 
-	@FXML private AnchorPane ediEintragPane;
-    @FXML private VBox eintragVBox;
-
-    @FXML private TitledPane paneSzenario;
+	@FXML private TitledPane m_SST_Integration;
+	@FXML private AnchorPane m_SST_Details;
     @FXML private TabPane tabPaneEdiNr;
     @FXML private Tab tabAktEdiNr;
     
     @FXML private ComboBox<Konfiguration> cmbKonfiguration;
     @FXML private ComboBox<Integration> cmbIntegration;
-    @FXML private Button btnSpeichern;
-//  @FXML private Button btnNewSST;
-    @FXML private Button btnDeleteSST;
-    @FXML private Button btnNewScenario;
-    @FXML private Button btnNewConfiguration;
-    @FXML private Button btnNewDokuLink;
+    @FXML private Button m_SpeichernBtn;
+//  @FXML private Button m_NewSSTBtn;
+    @FXML private Button m_DeleteSSTbtn;
+    @FXML private Button m_NewIntegrationBtn;
+    @FXML private Button m_NewConfigurationBtn;
+    @FXML private Button m_NewDokuLinkBtn;
 
     @FXML private TableView<DokuLink> tvDokuLinks;
     @FXML private TableColumn<DokuLink, String> tColDokumentVorhaben;
@@ -201,7 +198,7 @@ public class EdiEintragController {
     EdiEintragPlus org = new EdiEintragPlus();
     
     
-	public EdiEintragController() {
+	public SchnittstelleController() {
     	this.ediEintrag = new SimpleObjectProperty<>(this, "ediEintrag", null);
 		readOnlyAccess.set(false);
 	}
@@ -209,9 +206,9 @@ public class EdiEintragController {
 	public static void setParent(IntegrationManagerController managerController) {
 		logger.entry();
 		logger.info("ManagerController:" + managerController);
-		EdiEintragController.managerController = managerController;
-		EdiEintragController.primaryStage = IntegrationManagerController.getStage();
-		EdiEintragController.entityManager = managerController.getEntityManager();
+		SchnittstelleController.managerController = managerController;
+		SchnittstelleController.primaryStage = IntegrationManagerController.getStage();
+		SchnittstelleController.entityManager = managerController.getEntityManager();
 		logger.info("EntityManager:" + entityManager);
 		applName = primaryStage.getTitle();
 		logger.exit();
@@ -283,14 +280,18 @@ public class EdiEintragController {
     
 	private void setupLocalBindings() {
 		
-		btnNewConfiguration.disableProperty().bind(cmbIntegration.getSelectionModel().selectedItemProperty().isNull());
+		m_NewConfigurationBtn.disableProperty().bind(cmbIntegration.getSelectionModel().selectedItemProperty().isNull());
 		
-		btnSpeichern.disableProperty().bind(Bindings.not(dataIsChanged));
-		btnDeleteSST.disableProperty().bind(this.ediEintrag.isNull());
+		m_SpeichernBtn.disableProperty().bind(Bindings.not(dataIsChanged));
+		m_DeleteSSTbtn.disableProperty().bind(this.ediEintrag.isNull());
+
+		m_SST_Details.disableProperty().bind(Bindings.isNull(ediEintrag));
+		m_SST_Integration.disableProperty().bind(Bindings.isNull(ediEintrag));
 		
 		setupIntegrationComboBox();
 		setupDokuLink();
 		setupKonfigurationComboBox();
+		
 		
 		tfBezeichnung.textProperty().addListener((observable, oldValue, newValue) -> {
 			String msg = "";
@@ -402,6 +403,7 @@ public class EdiEintragController {
 						setText(null);
 					} else {
 						setText(item.getName());
+						managerController.setInfoText("");
 					}
 				}
 			};
@@ -417,8 +419,10 @@ public class EdiEintragController {
 				return null; // No conversion fromString needed
 			}
 		});
+		
+		// checks to be done before changing the integration 
 		cmbIntegration.setOnAction((event) -> {
-			if (akt.EdiNr == org.EdiNr && 
+			if (akt.EdiNr == org.EdiNr &&				 
 				akt.integration == org.integration) {
 				if (verifyDokuLinkListIsUnchanged() == false) {
 					// DokuLinkListe has been changed -> this changes may be lost  
@@ -452,6 +456,7 @@ public class EdiEintragController {
 //			akt.integration = selIntegration;
 //			readCmbKonfigurationList(akt.integration);
 		});
+		
 		cmbIntegration.getSelectionModel().selectedItemProperty().addListener((ov, oldValue, newValue) -> {
 			logger.trace("selected Integration:" + (newValue == null ? "null" : newValue.getName()) + 
 					  				   " (old:" + (oldValue == null ? "null" : oldValue.getName()) + ")");
@@ -463,13 +468,14 @@ public class EdiEintragController {
 				if(akt.integration != null) {
 					dokuLinkList.addAll(akt.integration.getDokuLink());
 				}
+				managerController.setInfoText("");
 			}
 			readCmbKonfigurationList(akt.integration);
 		});
 	}
 	
     private void setupDokuLink() {
-		btnNewDokuLink.disableProperty().bind(cmbIntegration.getSelectionModel().selectedItemProperty().isNull());
+		m_NewDokuLinkBtn.disableProperty().bind(cmbIntegration.getSelectionModel().selectedItemProperty().isNull());
 		tvDokuLinks.setItems(dokuLinkList);
 		tColDokumentVorhaben.setCellValueFactory(cellData -> cellData.getValue().vorhabenProperty());
 		tColDokumentName.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
@@ -652,6 +658,7 @@ public class EdiEintragController {
 					tabPaneEdiNr.getTabs().addAll(0, tabMapBefore.values());
 				}
 			}
+			managerController.setInfoText("");
 		});
 		
 		// check if user want to change the current EDI entity
@@ -869,7 +876,8 @@ public class EdiEintragController {
     		return;
     	}
     	FXMLLoader loader = new FXMLLoader();
-    	String fullname = "subs/NeuerEdiEintrag.fxml";
+    	String fullname = "subs/NeuerEdiEintrag"
+    			+ ".fxml";
     	loader.setLocation(getClass().getResource(fullname));
     	if (loader.getLocation()==null) {
     		logger.error("Resource not found :" + fullname);
@@ -1199,7 +1207,7 @@ public class EdiEintragController {
 	}
 		
     @FXML
-    void newScenario(ActionEvent event) {
+    void actionNewIntegration(ActionEvent event) {
     	String aktName = "";
     	String masterhead = null;
 		while (true) {
@@ -1236,7 +1244,7 @@ public class EdiEintragController {
 				
 				readIntegrationList();
 				cmbIntegration.getSelectionModel().select(integration);
-				btnNewConfiguration.requestFocus();
+				m_NewConfigurationBtn.requestFocus();
 				
 				managerController.setInfoText("Die Integration \"" + aktName + "\"" + 
 					" wurde erfolgreich erstellt und hier ausgewählt");
@@ -1449,37 +1457,37 @@ public class EdiEintragController {
 	}
 
     private void checkFieldFromView() {
-        assert paneSzenario         != null : "fx:id=\"paneSzenario\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert btnSpeichern         != null : "fx:id=\"btnSpeichern\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert btnNewScenario       != null : "fx:id=\"btnNewScenario\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert cmbKonfiguration     != null : "fx:id=\"cmbKonfiguration\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert btnNewDokuLink       != null : "fx:id=\"btnNewDokuLink\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert tColDokumentName     != null : "fx:id=\"tColDokumentName\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert tColDokumentVorhaben != null : "fx:id=\"tColDokumentVorhaben\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert tColDokumentDatum    != null : "fx:id=\"tColDokumentDatum\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert tColDokumentQuelle   != null : "fx:id=\"tColDokumentQuelle\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert tColDokumentRevision != null : "fx:id=\"tColDokumentRevision\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert tColDokumentPfad     != null : "fx:id=\"tColDokumentPfad\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert m_SST_Integration    != null : "fx:id=\"m_SST_Integration\"    was not injected: check your FXML file 'Schnittstelle.fxml'.";
+        assert m_SST_Details    	!= null : "fx:id=\"m_SST_Details\"        was not injected: check your FXML file 'Schnittstelle.fxml'.";
+        assert m_SpeichernBtn       != null : "fx:id=\"m_SpeichernBtn\"       was not injected: check your FXML file 'Schnittstelle.fxml'.";
+        assert m_NewIntegrationBtn  != null : "fx:id=\"m_NewIntegrationBtn\"  was not injected: check your FXML file 'Schnittstelle.fxml'.";
+        assert cmbKonfiguration     != null : "fx:id=\"cmbKonfiguration\"     was not injected: check your FXML file 'Schnittstelle.fxml'.";
+        assert m_NewDokuLinkBtn     != null : "fx:id=\"m_NewDokuLinkBtn\"     was not injected: check your FXML file 'Schnittstelle.fxml'.";
+        assert tColDokumentName     != null : "fx:id=\"tColDokumentName\"     was not injected: check your FXML file 'Schnittstelle.fxml'.";
+        assert tColDokumentVorhaben != null : "fx:id=\"tColDokumentVorhaben\" was not injected: check your FXML file 'Schnittstelle.fxml'.";
+        assert tColDokumentDatum    != null : "fx:id=\"tColDokumentDatum\"    was not injected: check your FXML file 'Schnittstelle.fxml'.";
+        assert tColDokumentQuelle   != null : "fx:id=\"tColDokumentQuelle\"   was not injected: check your FXML file 'Schnittstelle.fxml'.";
+        assert tColDokumentRevision != null : "fx:id=\"tColDokumentRevision\" was not injected: check your FXML file 'Schnittstelle.fxml'.";
+        assert tColDokumentPfad     != null : "fx:id=\"tColDokumentPfad\"     was not injected: check your FXML file 'Schnittstelle.fxml'.";
 
-        assert taEdiBeschreibung != null : "fx:id=\"taEdiBeschreibung\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert eintragVBox != null : "fx:id=\"eintragVBox\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert ediEintrag != null : "fx:id=\"ediEintrag\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert cmbIntervall != null : "fx:id=\"cmbIntervall\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert btnEmpfaenger1 != null : "fx:id=\"btnEmpfaenger1\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert btnEmpfaenger2 != null : "fx:id=\"btnEmpfaenger2\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert btnEmpfaenger3 != null : "fx:id=\"btnEmpfaenger3\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert btnNewConfiguration != null : "fx:id=\"btnNewConfiguration\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert cmbIntegration != null : "fx:id=\"cmbIntegration\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert tfBezeichnung != null : "fx:id=\"tfBezeichnung\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert cmbBuOb1 != null : "fx:id=\"cmbBuOb1\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert cmbBuOb2 != null : "fx:id=\"cmbBuOb2\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert cmbBuOb3 != null : "fx:id=\"cmbBuOb3\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert btnSender != null : "fx:id=\"btnSender\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert mbtEmpfaenger2 != null : "fx:id=\"mbtEmpfaenger2\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert mbtEmpfaenger3 != null : "fx:id=\"mbtEmpfaenger3\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert ediLastChange != null : "fx:id=\"ediLastChange\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert dpProduktivSeit != null : "fx:id=\"dpProduktivSeit\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
-        assert dpProduktivBis != null : "fx:id=\"dpProduktivBis\" was not injected: check your FXML file 'EdiEintrag.fxml'.";
+        assert taEdiBeschreibung	 != null : "fx:id=\"taEdiBeschreibung\"      was not injected: check your FXML file 'Schnittstelle.fxml'.";
+        assert ediEintrag 			 != null : "fx:id=\"ediEintrag\" 		     was not injected: check your FXML file 'Schnittstelle.fxml'.";
+        assert cmbIntervall 	 	 != null : "fx:id=\"cmbIntervall\" 		     was not injected: check your FXML file 'Schnittstelle.fxml'.";
+        assert btnEmpfaenger1 		 != null : "fx:id=\"btnEmpfaenger1\"         was not injected: check your FXML file 'Schnittstelle.fxml'.";
+        assert btnEmpfaenger2		 != null : "fx:id=\"btnEmpfaenger2\"         was not injected: check your FXML file 'Schnittstelle.fxml'.";
+        assert btnEmpfaenger3		 != null : "fx:id=\"btnEmpfaenger3\"         was not injected: check your FXML file 'Schnittstelle.fxml'.";
+        assert m_NewConfigurationBtn != null : "fx:id=\"btnNewConfigurationBtn\" was not injected: check your FXML file 'Schnittstelle.fxml'.";
+        assert cmbIntegration		 != null : "fx:id=\"cmbIntegration\"         was not injected: check your FXML file 'Schnittstelle.fxml'.";
+        assert tfBezeichnung		 != null : "fx:id=\"tfBezeichnung\" 		 was not injected: check your FXML file 'Schnittstelle.fxml'.";
+        assert cmbBuOb1				 != null : "fx:id=\"cmbBuOb1\" 			     was not injected: check your FXML file 'Schnittstelle.fxml'.";
+        assert cmbBuOb2				 != null : "fx:id=\"cmbBuOb2\" 			     was not injected: check your FXML file 'Schnittstelle.fxml'.";
+        assert cmbBuOb3				 != null : "fx:id=\"cmbBuOb3\" 			     was not injected: check your FXML file 'Schnittstelle.fxml'.";
+        assert btnSender			 != null : "fx:id=\"btnSender\" 			 was not injected: check your FXML file 'Schnittstelle.fxml'.";
+        assert mbtEmpfaenger2		 != null : "fx:id=\"mbtEmpfaenger2\" 	     was not injected: check your FXML file 'Schnittstelle.fxml'.";
+        assert mbtEmpfaenger3		 != null : "fx:id=\"mbtEmpfaenger3\" 	     was not injected: check your FXML file 'Schnittstelle.fxml'.";
+        assert ediLastChange		 != null : "fx:id=\"ediLastChange\" 		 was not injected: check your FXML file 'Schnittstelle.fxml'.";
+        assert dpProduktivSeit		 != null : "fx:id=\"dpProduktivSeit\" 	     was not injected: check your FXML file 'Schnittstelle.fxml'.";
+        assert dpProduktivBis		 != null : "fx:id=\"dpProduktivBis\" 	     was not injected: check your FXML file 'Schnittstelle.fxml'.";
     }
 
     

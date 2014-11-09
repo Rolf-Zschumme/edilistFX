@@ -34,11 +34,21 @@
                                           <Label text="P-/E- Nummer:" GridPane.columnIndex="1" />
                                           <Label text="Mail-Adresse:" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                                           <Label text="Firma / Abteilung:" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                                          <TextField fx:id="tfNummer" disable="true" maxWidth="130.0" prefHeight="25.0" prefWidth="272.0" GridPane.columnIndex="2">
-                                             <GridPane.margin>
-                                                <Insets />
-                                             </GridPane.margin>
-                                          </TextField>
+                                          <HBox alignment="CENTER_LEFT" GridPane.columnIndex="2">
+                                             <children>
+                                                <TextField fx:id="tfNummer" disable="true" maxWidth="130.0" prefHeight="25.0" prefWidth="272.0" GridPane.columnIndex="2">
+                                                   <GridPane.margin>
+                                                      <Insets />
+                                                   </GridPane.margin>
+                                                </TextField>
+                                                <Label text="Art:">
+                                                   <padding>
+                                                      <Insets left="80.0" right="10.0" />
+                                                   </padding>
+                                                </Label>
+                                                <ChoiceBox fx:id="m_Art" prefWidth="108.0" />
+                                             </children>
+                                          </HBox>
                                           <TextField fx:id="tfNachname" GridPane.columnIndex="2" GridPane.rowIndex="1" />
                                           <TextField fx:id="tfVorname" GridPane.columnIndex="2" GridPane.rowIndex="2" />
                                           <TextField fx:id="tfAbteilung" GridPane.columnIndex="2" GridPane.rowIndex="3" />

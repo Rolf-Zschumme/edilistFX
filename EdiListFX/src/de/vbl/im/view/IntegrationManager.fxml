@@ -70,7 +70,7 @@
 												</VBox>
 											</children>
 										</AnchorPane>
-										<fx:include fx:id="ediEintrag" disable="true" source="EdiEintrag.fxml" />
+										<fx:include fx:id="schnittstelle" disable="true" source="Schnittstelle.fxml" />
 									</items>
 								</SplitPane>
 							</children>
@@ -197,14 +197,15 @@
 				  <content>
     				<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
 					<children>
-						<SplitPane dividerPositions="0.5259417199715707" prefHeight="716.0" prefWidth="1409.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+						<SplitPane dividerPositions="0.5728500355366027" prefHeight="716.0" prefWidth="1409.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 					  		<items>
 		    					<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
 									<children>
 										<TableView fx:id="tableKontaktAuswahl" prefHeight="714.0" prefWidth="737.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 		  									<columns>
-										    <TableColumn fx:id="tColKontaktUserId" prefWidth="86.0" text="User-ID" />
-										    <TableColumn fx:id="tColKontaktNachname" prefWidth="131.0" text="Nachname" /><TableColumn fx:id="tColKontaktVorname" prefWidth="79.0" text="Vorname" /><TableColumn fx:id="tColKontaktAbteilung" prefWidth="175.0" text="Firma / Abteilung" /><TableColumn fx:id="tColKontaktTelefon" prefWidth="92.0" text="Telefon" /><TableColumn fx:id="tColKontaktMailadresse" prefWidth="173.0" text="Mailadresse" />
+										    <TableColumn fx:id="tColKontaktUserId" prefWidth="86.0" text="P-/E-Nr." />
+										    <TableColumn fx:id="tColKontaktNachname" prefWidth="131.0" text="Nachname" /><TableColumn fx:id="tColKontaktVorname" prefWidth="90.0" text="Vorname" />
+                                          <TableColumn fx:id="tColKontaktArt" prefWidth="50.0" text="Art" /><TableColumn fx:id="tColKontaktAbteilung" prefWidth="164.0" text="Firma / Abteilung" /><TableColumn fx:id="tColKontaktTelefon" prefWidth="92.0" text="Telefon" /><TableColumn fx:id="tColKontaktMailadresse" prefWidth="180.0" text="Mailadresse" />
 										  </columns>
 										</TableView>
 									</children>

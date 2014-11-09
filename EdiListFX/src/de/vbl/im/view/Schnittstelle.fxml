@@ -6,27 +6,28 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane fx:id="ediEintrag" prefHeight="664.0" prefWidth="923.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.im.controller.EdiEintragController">
+<AnchorPane fx:id="m_SST_Overview" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="664.0" prefWidth="923.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.im.controller.SchnittstelleController">
 	<children>
-		<VBox fx:id="eintragVBox" maxHeight="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+		<VBox maxHeight="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 			<children>
 				<ToolBar>
 					<items>
-						<Button fx:id="btnSpeichern" disable="true" mnemonicParsing="false" onAction="#speichern" prefWidth="136.0" text="Änderungen speichern" /><Button fx:id="btnNewSST" mnemonicParsing="false" onAction="#actionNewSST" prefWidth="136.0" text="Neue Schnittstelle" /><Button fx:id="btnDeleteSST" disable="true" mnemonicParsing="false" onAction="#actionSSTloeschen" prefWidth="136.0" text="Löschen" />
+						<Button fx:id="m_SpeichernBtn" disable="true" mnemonicParsing="false" onAction="#speichern" prefWidth="136.0" text="Änderungen speichern" /><Button fx:id="m_NewSSTbtn" mnemonicParsing="false" onAction="#actionNewSST" prefWidth="136.0" text="Neue Schnittstelle" /><Button fx:id="m_DeleteSSTbtn" disable="true" mnemonicParsing="false" onAction="#actionSSTloeschen" prefWidth="136.0" text="SST - Löschen" />
 					</items>
 					<VBox.margin>
 						<Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
 					</VBox.margin>
 				</ToolBar>
-				<TitledPane fx:id="paneSzenario" animated="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Integrationsszenario">
+				<TitledPane fx:id="m_SST_Integration" animated="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Integrationsszenario">
 					<content>
 						<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
 							<children>
-								<GridPane hgap="8.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="251.0" vgap="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+								<GridPane hgap="8.0" layoutX="14.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="251.0" vgap="8.0" AnchorPane.bottomAnchor="19.200000000000017" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="5.199999999999818" AnchorPane.topAnchor="0.0">
 									<columnConstraints>
 										<ColumnConstraints hgrow="SOMETIMES" maxWidth="85.0" minWidth="10.0" />
-										<ColumnConstraints hgrow="SOMETIMES" minWidth="111.0" />
-										<ColumnConstraints hgrow="NEVER" maxWidth="246.0" minWidth="160.0" prefWidth="180.0" />
+										<ColumnConstraints hgrow="SOMETIMES" maxWidth="520.0" />
+										<ColumnConstraints hgrow="NEVER" maxWidth="90.0" minWidth="55.0" prefWidth="70.0" />
+                              <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="10.0" />
 									</columnConstraints>
 									<rowConstraints>
 <RowConstraints minHeight="0.0" prefHeight="5.0" vgrow="SOMETIMES" />
@@ -41,7 +42,7 @@
 										<Label alignment="CENTER_RIGHT" layoutX="9.600000381469727" layoutY="51.60000038146973" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Dokumente:" GridPane.rowIndex="2">
 										</Label>
 <VBox alignment="CENTER_RIGHT">
-<children><Button fx:id="btnNewDokuLink" alignment="CENTER_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#actionNewDokuLink" text="+">
+<children><Button fx:id="m_NewDokuLinkBtn" alignment="CENTER_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#actionNewDokuLink" text="+">
 <font>
 <Font name="System Bold" size="13.0" />
 </font></Button>
@@ -66,14 +67,14 @@
 										<ComboBox fx:id="cmbKonfiguration" layoutX="9.600000381469727" layoutY="85.60000038146973" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 										<Label alignment="CENTER_RIGHT" layoutX="9.600000381469727" layoutY="34.60000038146973" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Name:" AnchorPane.leftAnchor="14.0" GridPane.rowIndex="1">
 										</Label>
-										<TableView fx:id="tvDokuLinks" editable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onContextMenuRequested="#actionDocumentContextMenuRequested" prefHeight="120.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2">
+										<TableView fx:id="tvDokuLinks" editable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onContextMenuRequested="#actionDocumentContextMenuRequested" prefHeight="120.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="2">
 											<columns>
 												<TableColumn fx:id="tColDokumentVorhaben" maxWidth="80.0" text="Vorhaben" />
 												<TableColumn fx:id="tColDokumentName" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="500.0" text="Bezeichnung des Dokuments" />
 												<TableColumn fx:id="tColDokumentDatum" editable="false" maxWidth="100.0" minWidth="-1.0" prefWidth="100.0" resizable="false" text="Datum" />
 												<TableColumn fx:id="tColDokumentQuelle" editable="false" maxWidth="250.0" minWidth="20.0" prefWidth="120.0" resizable="false" text="Quelle" /><TableColumn fx:id="tColDokumentPfad" editable="false" maxWidth="1.7976931348623157E308" minWidth="50.0" prefWidth="300.0" text="Pfad" visible="false" /><TableColumn fx:id="tColDokumentRevision" editable="false" maxWidth="80.0" minWidth="-1.0" resizable="false" text="Revision" visible="false" />
 											</columns>
-										</TableView><Button fx:id="btnNewScenario" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#newScenario" text="Neues Szenrio anlegen..." GridPane.columnIndex="2" GridPane.rowIndex="1" /><Button fx:id="btnNewConfiguration" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#newKonfiguration" text="Neue Konfiguration anlegen..." GridPane.columnIndex="2" GridPane.rowIndex="3" />
+										</TableView><Button fx:id="m_NewIntegrationBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#actionNewIntegration" text="Neu..." GridPane.columnIndex="2" GridPane.rowIndex="1" /><Button fx:id="m_NewConfigurationBtn" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#newKonfiguration" text="Neu..." GridPane.columnIndex="2" GridPane.rowIndex="3" />
 									</children>
 <padding>
 <Insets left="5.0" right="8.0" />
@@ -83,11 +84,11 @@
 						</AnchorPane>
 					</content>
 				</TitledPane>
-            <AnchorPane maxHeight="330.0" maxWidth="1.7976931348623157E308">
+            <AnchorPane fx:id="m_SST_Details" maxHeight="330.0" maxWidth="1.7976931348623157E308">
                <children>
                   <TabPane fx:id="tabPaneEdiNr" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <tabs>
-                      <Tab fx:id="tabAktEdiNr" text="SST 000">
+                      <Tab fx:id="tabAktEdiNr" text="SST-Nr.">
                            <content>
             						<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="301.0">
                                  <children>
@@ -97,7 +98,7 @@
                                              <children>
                               										<GridPane hgap="8.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="298.0" vgap="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                               											<columnConstraints>
-                              												<ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" prefWidth="140.0" />
+                              												<ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" prefWidth="130.0" />
                               												<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" />
                               												<ColumnConstraints hgrow="NEVER" maxWidth="120.0" prefWidth="110.0" />
                               												<ColumnConstraints hgrow="NEVER" maxWidth="112.0" minWidth="-Infinity" prefWidth="112.0" />
@@ -155,11 +156,12 @@
                                              </children>
                                           </AnchorPane>
                               
-                                                            										<GridPane hgap="8.0" layoutY="225.0" maxWidth="1.7976931348623157E308" prefHeight="126.0" vgap="8.0">
+                                                            										<GridPane layoutY="225.0" maxWidth="1.7976931348623157E308" prefHeight="126.0" vgap="8.0">
                               											<columnConstraints>
                               												<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" percentWidth="35.0" prefWidth="200.0" />
-                              												<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" percentWidth="35.0" prefWidth="200.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="20.0" minWidth="10.0" prefWidth="20.0" />
                               												<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="120.0" />
+                              												<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" percentWidth="35.0" prefWidth="200.0" />
                               											</columnConstraints>
                               											<rowConstraints>
                               												<RowConstraints vgrow="SOMETIMES" />
@@ -169,21 +171,21 @@
                               											</rowConstraints>
                               											<children>
                               												<Label alignment="CENTER" layoutX="44.399993896484375" layoutY="-2.0999984741210938" maxWidth="1.7976931348623157E308" text="Sender" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                              												<Label alignment="CENTER" layoutX="73.99996948242188" layoutY="3.9999771118164062" maxWidth="1.7976931348623157E308" text="Empfänger" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.columnIndex="1" />
+                              												<Label alignment="CENTER" layoutX="73.99996948242188" layoutY="3.9999771118164062" maxWidth="1.7976931348623157E308" text="Empfänger" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.columnIndex="3" />
                               												<Label alignment="CENTER" layoutX="20.0" layoutY="10.0" maxWidth="1.7976931348623157E308" text="Geschäftsobjekt" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.columnIndex="2" />
                               												<Button fx:id="btnSender" alignment="CENTER" layoutX="3.4000015258789062" layoutY="9.399993896484375" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#senderButton" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" GridPane.rowIndex="1">
                               													<GridPane.margin>
                               														<Insets />
                               													</GridPane.margin>
                               												</Button>
-                              												<Button fx:id="btnEmpfaenger1" alignment="CENTER" layoutX="-24.0" layoutY="1.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#empfaengerButton1" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                              												<Button fx:id="btnEmpfaenger1" alignment="CENTER" layoutX="-24.0" layoutY="1.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#empfaengerButton1" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" GridPane.columnIndex="3" GridPane.rowIndex="1">
                               													<GridPane.margin>
-                              														<Insets />
+                              														<Insets left="5.0" />
                               													</GridPane.margin>
                               												</Button>
-                              												<Button fx:id="btnEmpfaenger2" alignment="CENTER" disable="true" layoutX="-46.600006103515625" layoutY="-1.600006103515625" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#empfaengerButton2" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                              												<Button fx:id="btnEmpfaenger2" alignment="CENTER" disable="true" layoutX="-46.600006103515625" layoutY="-1.600006103515625" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#empfaengerButton2" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" GridPane.columnIndex="3" GridPane.rowIndex="2">
                               													<GridPane.margin>
-                              														<Insets />
+                              														<Insets left="5.0" />
                               													</GridPane.margin>
 <contextMenu><ContextMenu>
   <items>
@@ -192,9 +194,9 @@
 </ContextMenu>
 </contextMenu>
                               												</Button>
-                              												<Button fx:id="btnEmpfaenger3" alignment="CENTER" disable="true" layoutX="-52.100006103515625" layoutY="14.899993896484375" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#empfaengerButton3" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                              												<Button fx:id="btnEmpfaenger3" alignment="CENTER" disable="true" layoutX="-52.100006103515625" layoutY="14.899993896484375" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#empfaengerButton3" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" GridPane.columnIndex="3" GridPane.rowIndex="3">
                               													<GridPane.margin>
-                              														<Insets />
+                              														<Insets left="5.0" />
                               													</GridPane.margin>
 <contextMenu><ContextMenu>
   <items>

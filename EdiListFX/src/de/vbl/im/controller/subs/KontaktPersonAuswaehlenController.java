@@ -51,6 +51,7 @@ public class KontaktPersonAuswaehlenController implements Initializable {
     @FXML private TableColumn<KontaktPerson, String> tColKontaktUserId;
     @FXML private TableColumn<KontaktPerson, String> tColKontaktNachname;
     @FXML private TableColumn<KontaktPerson, String> tColKontaktVorname;
+    @FXML private TableColumn<KontaktPerson, String> tColKontaktArt;
     @FXML private TableColumn<KontaktPerson, String> tColKontaktAbteilung;
     @FXML private TableColumn<KontaktPerson, String> tColKontaktTelefon;
     @FXML private TableColumn<KontaktPerson, String> tColKontaktMailadresse;
@@ -85,30 +86,31 @@ public class KontaktPersonAuswaehlenController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
-			assert tabPane != null : "fx:id=\"tabPane\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
-			assert tableKontaktAuswahl != null : "fx:id=\"tableKontaktAuswahl\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
-			assert tColKontaktUserId != null : "fx:id=\"tColKontaktUserId\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
-			assert tColKontaktNachname != null : "fx:id=\"tColKontaktNachname\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
-			assert tColKontaktVorname != null : "fx:id=\"tColKontaktVorname\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
-			assert tColKontaktAbteilung != null : "fx:id=\"tColKontaktAbteilung\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
-			assert tColKontaktTelefon != null : "fx:id=\"tColKontaktTelefon\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
-			assert tColKontaktMailadresse != null : "fx:id=\"tColKontaktMailadresse\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
+			assert tabPane					!= null : "fx:id=\"tabPane\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
+			assert tableKontaktAuswahl		!= null : "fx:id=\"tableKontaktAuswahl\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
+			assert tColKontaktUserId		!= null : "fx:id=\"tColKontaktUserId\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
+			assert tColKontaktNachname		!= null : "fx:id=\"tColKontaktNachname\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
+			assert tColKontaktVorname		!= null : "fx:id=\"tColKontaktVorname\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
+			assert tColKontaktArt 			!= null : "fx:id=\"tColKontaktArt\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
+			assert tColKontaktAbteilung 	!= null : "fx:id=\"tColKontaktAbteilung\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
+			assert tColKontaktTelefon 		!= null : "fx:id=\"tColKontaktTelefon\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
+			assert tColKontaktMailadresse 	!= null : "fx:id=\"tColKontaktMailadresse\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
 			
-			assert tabOutlookAuswahl != null : "fx:id=\"tabOutlookAuswahl\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
-			assert tfNummerOutlook != null : "fx:id=\"tfNummerOutlook\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
-			assert tfVornameOutlook != null : "fx:id=\"tfVornameOutlook\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
-			assert tfAbteilungOutlook != null : "fx:id=\"tfAbteilungOutlook\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
-			assert tfMailadresseOutlook != null : "fx:id=\"tfMailadresseOutlook\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
-			assert tfTelefonOutlook != null : "fx:id=\"tfTelefonOutlook\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
-			assert btnOK != null : "fx:id=\"btnOK\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
+			assert tabOutlookAuswahl 		!= null : "fx:id=\"tabOutlookAuswahl\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
+			assert tfNummerOutlook 			!= null : "fx:id=\"tfNummerOutlook\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
+			assert tfVornameOutlook			!= null : "fx:id=\"tfVornameOutlook\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
+			assert tfAbteilungOutlook		!= null : "fx:id=\"tfAbteilungOutlook\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
+			assert tfMailadresseOutlook		!= null : "fx:id=\"tfMailadresseOutlook\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
+			assert tfTelefonOutlook 		!= null : "fx:id=\"tfTelefonOutlook\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
+			assert btnOK 					!= null : "fx:id=\"btnOK\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
 			
-			assert tabNeueingabe != null : "fx:id=\"tabNeueingabe\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
-			assert tfNachname != null : "fx:id=\"tfNachname\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
-			assert tfVorname != null : "fx:id=\"tfVorname\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
-			assert tfAbteilung != null : "fx:id=\"tfAbteilung\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
-			assert tfMailadresse != null : "fx:id=\"tfMailadresse\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
-			assert tfTelefon != null : "fx:id=\"tfTelefon\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
-			assert tfNachnameOutlook != null : "fx:id=\"tfNachnameOutlook\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
+			assert tabNeueingabe			!= null : "fx:id=\"tabNeueingabe\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
+			assert tfNachname 				!= null : "fx:id=\"tfNachname\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
+			assert tfVorname				!= null : "fx:id=\"tfVorname\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
+			assert tfAbteilung				!= null : "fx:id=\"tfAbteilung\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
+			assert tfMailadresse			!= null : "fx:id=\"tfMailadresse\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
+			assert tfTelefon				!= null : "fx:id=\"tfTelefon\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
+			assert tfNachnameOutlook		!= null : "fx:id=\"tfNachnameOutlook\" was not injected: check your FXML file 'KontaktPersonAuswaehlen.fxml'.";
 		} catch (AssertionError e) {
 			logger.error(e.getMessage(), e);
 		}
@@ -118,6 +120,7 @@ public class KontaktPersonAuswaehlenController implements Initializable {
 		tColKontaktUserId.setCellValueFactory(cellData -> cellData.getValue().nummerProperty());
 		tColKontaktNachname.setCellValueFactory(cellData -> cellData.getValue().nachnameProperty());
 		tColKontaktVorname.setCellValueFactory(cellData -> cellData.getValue().vornameProperty());
+		tColKontaktArt.setCellValueFactory(cellData -> cellData.getValue().artProperty());
 		tColKontaktAbteilung.setCellValueFactory(cellData -> cellData.getValue().abteilungProperty());
 		tColKontaktTelefon.setCellValueFactory(cellData -> cellData.getValue().telefonProperty());
 		tColKontaktMailadresse.setCellValueFactory(cellData -> cellData.getValue().mailProperty());

@@ -16,6 +16,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -49,7 +50,8 @@ public class KontaktPersonController {
 	@FXML private ResourceBundle resources;
     @FXML private URL location;
 
-	@FXML private TextField tfNummer; 
+	@FXML private TextField tfNummer;
+	@FXML private ChoiceBox<String> m_Art;
 	@FXML private TextField tfNachname; 
 	@FXML private TextField tfVorname; 
     @FXML private TextField tfAbteilung; 
@@ -95,8 +97,9 @@ public class KontaktPersonController {
 				if (newPerson != null) {
 					aktKontaktPerson = newPerson;
 					logger.trace("newPerson.Name="+ newPerson.getNachname());
-					readEdiKomponentenListeforPerson(newPerson);
+					readEdiKomponentenListeforPerson();
 					tfNummer.setText(newPerson.getNummer());
+					m_Art.getSelectionModel().select(newPerson.getArtLong());
 					if (newPerson.getNachname() == null) newPerson.setNachname("");
 					tfNachname.setText(newPerson.getNachname());
 					if (newPerson.getVorname() == null) newPerson.setVorname("");
@@ -110,6 +113,11 @@ public class KontaktPersonController {
 				}
 				dataIsChanged.set(false);
 			}
+		});
+		
+		m_Art.getItems().addAll(KontaktPerson.valuesOfArt);
+		m_Art.valueProperty().addListener( (observable, oldValue, newValue) -> {
+			dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
 		});
 		
 		btnSpeichern.disableProperty().bind(Bindings.not(dataIsChanged));
@@ -237,6 +245,8 @@ public class KontaktPersonController {
 		if (aktKontaktPerson == null ) {
 			return true;
 		}
+		String orgArt       = aktKontaktPerson.getArtLong();
+		String newArt       = m_Art.getValue();
 		String orgNachname  = aktKontaktPerson.getNachname() == null ? "" : aktKontaktPerson.getNachname();
 		String newNachname  = tfNachname.getText()           == null ? "" : tfNachname.getText() ;
 		String orgVorname   = aktKontaktPerson.getVorname()  == null ? "" : aktKontaktPerson.getVorname();
@@ -248,7 +258,8 @@ public class KontaktPersonController {
 		String orgTelefon   = aktKontaktPerson.getTelefon()  == null ? "" : aktKontaktPerson.getTelefon();
 		String newTelefon   = tfTelefon.getText()            == null ? "" : tfTelefon.getText();
 		
-		if (orgNachname.equals(newNachname)   &&
+		if (orgArt.equals(newArt)             &&
+			orgNachname.equals(newNachname)   &&
 			orgVorname.equals(newVorname)     &&
 			orgAbteilung.equals(newAbteilung) &&
 			orgMail.equals(newMail)           &&
@@ -284,14 +295,27 @@ public class KontaktPersonController {
 					return false;
 				}
 			}
-			logger.info("Aenderung erkannt -> update");
-			entityManager.getTransaction().begin();
-			aktKontaktPerson.setNachname(newNachname);
-			aktKontaktPerson.setVorname(newVorname);
-			aktKontaktPerson.setAbteilung(newAbteilung);
-			entityManager.getTransaction().commit();
-			readEdiKomponentenListeforPerson(aktKontaktPerson);
-			mainCtr.setInfoText("Die Daten der Kontaktperson wurde gespeichert");
+			logger.info("Update KontaktPerson " + newNachname + ", " + newVorname);
+			try {
+				entityManager.getTransaction().begin();
+				aktKontaktPerson.setArt(newArt);
+				aktKontaktPerson.setNachname(newNachname);
+				aktKontaktPerson.setVorname(newVorname);
+				aktKontaktPerson.setAbteilung(newAbteilung);
+				aktKontaktPerson.setTelefon(newTelefon);
+				aktKontaktPerson.setMail(newMail);
+				entityManager.getTransaction().commit();
+				mainCtr.setInfoText("Die Daten der Kontaktperson '"+newNachname+"' wurde gespeichert");
+				dataIsChanged.set(false);
+	    	} catch (RuntimeException e) {
+	    		logger.error("Message:"+ e.getMessage(),e);
+				Dialogs.create().owner(primaryStage)
+					.title(primaryStage.getTitle())
+					.masthead("FEHLER")
+					.message("Fehler beim Speichern der Kontaktdaten:\n" + e.getMessage())
+					.showException(e);
+	    	}
+			readEdiKomponentenListeforPerson();
 		}
 		return true;
 	}
@@ -317,14 +341,14 @@ public class KontaktPersonController {
 		return null;
 	}
 
-	private void readEdiKomponentenListeforPerson( KontaktPerson selKontaktPerson) {
+	protected void readEdiKomponentenListeforPerson() {
 		ediKomponentenList.clear();
 		TypedQuery<EdiKomponente> tqK = entityManager.createQuery(
 				"SELECT k FROM EdiKomponente k", EdiKomponente.class);
 		List<EdiKomponente> ediList = tqK.getResultList();
 		for(EdiKomponente k : ediList ) {
 			if (k.getKontaktPerson().size() > 0 &&  
-				k.getKontaktPerson().contains(selKontaktPerson) ) {
+				k.getKontaktPerson().contains(aktKontaktPerson) ) {
 				ediKomponentenList.add(k);
 			}
 		}
@@ -333,7 +357,7 @@ public class KontaktPersonController {
 		List<EdiSystem> ediSystemList = tqS.getResultList();
 		for(EdiSystem s : ediSystemList ) {
 			if (s.getKontaktPerson().size() > 0 &&  
-				s.getKontaktPerson().contains(selKontaktPerson) ) {
+				s.getKontaktPerson().contains(aktKontaktPerson) ) {
 				EdiPartner tmpEdiPartner = new EdiPartner(s.getEdiPartner().getName());
 				EdiSystem tmpEdiSystem = new EdiSystem(s.getName(), tmpEdiPartner);
 				ediKomponentenList.add(new EdiKomponente("-", tmpEdiSystem));
@@ -344,13 +368,13 @@ public class KontaktPersonController {
 		List<EdiPartner> ediPartnerList = tqP.getResultList();
 		for(EdiPartner p : ediPartnerList ) {
 			if (p.getKontaktPerson().size() > 0 &&  
-				p.getKontaktPerson().contains(selKontaktPerson) ) {
+				p.getKontaktPerson().contains(aktKontaktPerson) ) {
 				EdiPartner tmpEdiPartner = new EdiPartner(p.getName());
 				EdiSystem tmpEdiSystem = new EdiSystem("-", tmpEdiPartner);
 				ediKomponentenList.add(new EdiKomponente("-", tmpEdiSystem));
 			}
 		}
-		logger.trace("fuer "+ selKontaktPerson.getNachname() + " " + 
+		logger.trace("fuer "+ aktKontaktPerson.getNachname() + " " + 
 			ediKomponentenList.size() + " Komponenten gefunden");
 	}
 

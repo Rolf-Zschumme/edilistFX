@@ -134,7 +134,7 @@ public class EdiKomponenteController implements Initializable  {
 				msg = checkKomponentenName(newValue);
 				dataIsChanged.set(true);
 			} else {	
-				dataIsChanged.set(!checkForChangesWithMode(Checkmode.ONLY_CHECK));
+				dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
 			}
 			mainCtr.setErrorText(msg);
 		}); 
@@ -143,7 +143,7 @@ public class EdiKomponenteController implements Initializable  {
 			if (newValue.equals(aktKomponente.getBeschreibung()) == false) {
 				dataIsChanged.set(true);
 			} else {	
-				dataIsChanged.set(!checkForChangesWithMode(Checkmode.ONLY_CHECK));
+				dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
 			}
 		});
 		
@@ -156,15 +156,7 @@ public class EdiKomponenteController implements Initializable  {
 					if (k == null || empty) {
 						setText(null);
 					} else {
-						String suffix = k.getAbteilungSafe();
-						if(suffix.equals("")  && k.getNummer() != null) {
-							suffix = k.getNummer();
-						}
-						if (suffix.equals("") ) {
-							setText(k.getVorname() + " " + k.getNachname());
-						} else {
-							setText(k.getVorname() + " " + k.getNachname() + " (" + suffix + ")");
-						}
+						setText(k.getArtVornameNachnameFirma());
 					}
 				}
 			};
@@ -186,9 +178,6 @@ public class EdiKomponenteController implements Initializable  {
 						setText(null); 
 					else {
 						setText(senderFullname);
-//						log("tcSender.updateItem", "aktkombo:" + aktKomponente.getFullname() + 
-//								" sender:" + sender);
-//						if (senderFullname.equals(aktKomponente.getFullname()))
 						if (senderFullname.equals(aktKomponente.getFullname()))
 							setFont(Font.font(null, FontWeight.BOLD, getFont().getSize()));
 						else
@@ -268,19 +257,18 @@ public class EdiKomponenteController implements Initializable  {
 	
 	@FXML
 	void speichern(ActionEvent event) {
-		checkForChangesWithMode(Checkmode.SAVE_DONT_ASK);
+		checkForChangesAndSave(Checkmode.SAVE_DONT_ASK);
 	}
 	
 	public boolean checkForChangesAndAskForSave() {
-		return checkForChangesWithMode(Checkmode.ASK_FOR_UPDATE);
+		return checkForChangesAndSave(Checkmode.ASK_FOR_UPDATE);
 	}
 
 	private static enum Checkmode { ONLY_CHECK, ASK_FOR_UPDATE, SAVE_DONT_ASK };
 	
-	private boolean checkForChangesWithMode(Checkmode checkmode) {
-		String mn = "checkForChangesWithMode-" + checkmode;
-		logger.debug(mn,"aktKompo=" + (aktKomponente==null ? "null" : aktKomponente.getFullname()));
+	private boolean checkForChangesAndSave(Checkmode checkmode) {
 		if (aktKomponente == null ) {
+			logger.info("aktKomponente=NULL?");
 			return true;
 		}
 		String orgName = aktKomponente.getName();
@@ -293,44 +281,58 @@ public class EdiKomponenteController implements Initializable  {
 			aktKomponente.getKontaktPerson().containsAll(kontaktpersonList) &&
 			kontaktpersonList.containsAll(aktKomponente.getKontaktPerson())
 		) {
-			logger.debug(mn, "Name, Bezeichnung und Kontakte unverändert");
-		} else {	
-			if (checkmode == Checkmode.ONLY_CHECK) {
-				return false;
-			}	
-			if (checkmode == Checkmode.ASK_FOR_UPDATE) {
-				Action response = Dialogs.create()
-    				.owner(primaryStage).title(primaryStage.getTitle())
-    				.actions(Dialog.Actions.YES, Dialog.Actions.NO, Dialog.Actions.CANCEL)
-    				.message("Sollen die Änderungen an der Komponente " + orgName + " gespeichert werden ?")
-    				.showConfirm();
-	    		if (response == Dialog.Actions.CANCEL) {
-	    			return false;
-	    		}
-	    		if (response == Dialog.Actions.NO) {
-	    			aktKomponente = null;
-	    			return true;
-	    		}
-			}	
-			String msg = checkKomponentenName(newName);
-			if (msg != null) {
-				mainCtr.setErrorText(msg);
-				tfBezeichnung.requestFocus();
+			return true;  // no changes -> nothing to do  
+		}
+		if (checkmode == Checkmode.ONLY_CHECK) {
+			return false;
+		}	
+		if (checkmode == Checkmode.ASK_FOR_UPDATE) {
+			Action response = Dialogs.create()
+					.owner(primaryStage).title(primaryStage.getTitle())
+					.actions(Dialog.Actions.YES, Dialog.Actions.NO, Dialog.Actions.CANCEL)
+					.message("Sollen die Änderungen an der Komponente " + orgName + " gespeichert werden ?")
+					.showConfirm();
+			if (response == Dialog.Actions.CANCEL) {
 				return false;
 			}
+			if (response == Dialog.Actions.NO) {
+				aktKomponente = null;
+				return true;
+			}
+		}	
+		String msg = checkKomponentenName(newName);
+		if (msg != null) {
+			mainCtr.setErrorText(msg);
+			tfBezeichnung.requestFocus();
+			return false;
+		}
+		logger.info("Update Komponente " + newName);
+		try {
 			entityManager.getTransaction().begin();
 			aktKomponente.setName(newName);
 			aktKomponente.setBeschreibung(newBeschreibung);
-			aktKomponente.getKontaktPerson().retainAll(kontaktpersonList);
+			boolean kontaktListChanged = aktKomponente.getKontaktPerson().retainAll(kontaktpersonList);
 			for (KontaktPerson k : kontaktpersonList) {
 				if (aktKomponente.getKontaktPerson().contains(k)== false) {
 					aktKomponente.getKontaktPerson().add(k);
+					kontaktListChanged = true;
 				}
 			}
 			entityManager.getTransaction().commit();
-			readEdiListeforKomponete(aktKomponente);
+			if (kontaktListChanged) {
+				mainCtr.refreshKontaktReferences();
+			}
 			mainCtr.setInfoText("Komponente " + newName + " wurde gespeichert");
-		}
+			dataIsChanged.set(false);
+    	} catch (RuntimeException e) {
+    		logger.error("Message:"+ e.getMessage(),e);
+			Dialogs.create().owner(primaryStage)
+				.title(primaryStage.getTitle())
+				.masthead("FEHLER")
+				.message("Fehler beim Speichern der Komponentendaten:\n" + e.getMessage())
+				.showException(e);
+    	}
+		readEdiListeforKomponete(aktKomponente);
 		return true;
 	}
 	
@@ -368,21 +370,12 @@ public class EdiKomponenteController implements Initializable  {
 			ediEintragsSet.add(e);
 			if (e.getEdiEmpfaenger().size() > 0) {
 				empfaengerList.addAll(e.getEdiEmpfaenger());
-//				for(EdiEmpfaenger ee : e.getEdiEmpfaenger() ) ediKomponenteList.add(ee); 
 			} else {
 				EdiEmpfaenger tmpE = new EdiEmpfaenger();
 				tmpE.setEdiEintrag(e);
 				empfaengerList.add(tmpE);
 			}
 		}
-//		log("readEdiListeforKomponete", "für "+ selKomponente.getName() + " " + 
-//			ediList.size() + " EDI-Einträge" + " mit insgesamt " + 
-//			empfaengerList.size() + " Empfänger gelesen (Refresh=" + cache+ ")");
-		
-		/* 2. lese alle Empfänger mit Empfänger = selektierte Komponente 
-		 *    -> zeige alle Empfänger  
-		 */
-		
 		TypedQuery<EdiEmpfaenger> tqE = entityManager.createQuery(
 				"SELECT e FROM EdiEmpfaenger e WHERE e.komponente = :k", EdiEmpfaenger.class);
 		tqE.setParameter("k", selKomponente);
@@ -401,62 +394,34 @@ public class EdiKomponenteController implements Initializable  {
 
     @FXML
     void actionAddKontaktperson(ActionEvent event) {
-    	logger.entry();
     	Stage dialog = new Stage(StageStyle.UTILITY);
     	KontaktPersonAuswaehlenController controller = mainCtr.loadKontaktPersonAuswahl(dialog);
     	if (controller != null) {
     		dialog.showAndWait();
+    		String userInfo = "Die Kontakt-Auswahl wurde abgebrochen"; 
     		if (controller.getResponse() == Actions.OK) {
-    			kontaktpersonList.add(controller.getKontaktperson());
-    			dataIsChanged.set(true);
+    			KontaktPerson selectedKontakt = controller.getKontaktperson();
+    			if (kontaktpersonList.contains(selectedKontakt)) {
+    				userInfo = "Der ausgewählte Kontakt ist bereits eingetragen";
+    			} else {
+    				kontaktpersonList.add(selectedKontakt);
+					dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
+    				userInfo = "Der ausgewählte Kontakt wurde ergänzt";
+    			}
     		}
+    		mainCtr.setInfoText(userInfo);
     	}
-    	logger.exit();
     }
 
     @FXML
     void actionRemoveKontaktperson(ActionEvent event) {
-    	logger.entry();
     	KontaktPerson toBeRemoved = lvAnsprechpartner.getSelectionModel().getSelectedItem();
+    	logger.info("remove Kontakt " + toBeRemoved.getNachname());
     	kontaktpersonList.remove(toBeRemoved);
     	mainCtr.setInfoText("Die Kontaktperson \"" + toBeRemoved.getVorname() + " " + 
     					toBeRemoved.getNachname() + "\" wurde aus dieser Kontaktliste entfernt");
-		dataIsChanged.set(true);
+		dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
     }
-    
-//    private KontaktPersonAuswaehlenController loadKontaktPersonAuswahl(Stage dialog) {
-//    	KontaktPersonAuswaehlenController controller = null;
-//    	FXMLLoader loader = load("subs/KontaktPersonAuswaehlen.fxml");
-//    	if (loader != null) {
-//    		controller = loader.getController();
-//    		controller.start(primaryStage, mainCtr, entityManager);
-//    		Parent root = loader.getRoot();
-//    		Scene scene = new Scene(root);
-//    		dialog.initModality(Modality.APPLICATION_MODAL);
-//    		dialog.initOwner(primaryStage);
-//    		dialog.setTitle(primaryStage.getTitle());
-//    		dialog.setScene(scene);
-//    	}
-//    	return controller;
-//	}
-    
-//    private FXMLLoader load(String ressourceName) {
-//    	FXMLLoader loader = new FXMLLoader();
-//    	loader.setLocation(getClass().getResource(ressourceName));
-//    	if (loader.getLocation()==null) {
-//    		String msg = "Resource \"" + ressourceName + "\" nicht gefunden";
-//    		mainCtr.setErrorText("FEHLER: " + msg);
-//    		logger.error(msg);
-//    	}
-//    	try {
-//    		loader.load();
-//    	} catch (IOException e) {
-//    		mainCtr.setErrorText("FEHLER: " + e.getMessage());
-//    		logger.error(e);
-////    		e.printStackTrace();
-//    	}
-//    	return loader;
-//    }
     
 	public final ObjectProperty<EdiKomponente> komponenteProperty() {
 		return edikomponente;

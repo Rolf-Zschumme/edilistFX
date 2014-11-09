@@ -7,11 +7,11 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane minHeight="389.0" minWidth="440.0" prefHeight="543.0" prefWidth="611.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.im.controller.subs.KontaktPersonAuswaehlenController">
+<BorderPane minHeight="389.0" minWidth="440.0" prefHeight="543.0" prefWidth="710.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.im.controller.subs.KontaktPersonAuswaehlenController">
    <top>
       <AnchorPane minHeight="60.0">
          <children>
-            <Label alignment="CENTER" prefHeight="60.0" prefWidth="952.0" text="Kontakt-Person auswählen, übernehmen oder neu eingeben" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" BorderPane.alignment="CENTER">
+            <Label alignment="CENTER" prefHeight="60.0" prefWidth="952.0" text="Kontakt-Person auswählen oder neu eingeben" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" BorderPane.alignment="CENTER">
                <font>
                   <Font name="System Bold" size="18.0" />
                </font>
@@ -34,12 +34,13 @@
                <content>
                   <TableView fx:id="tableKontaktAuswahl" prefHeight="419.0" prefWidth="496.0">
                     <columns>
-                      <TableColumn fx:id="tColKontaktUserId" prefWidth="75.0" text="Nummer" />
-                      <TableColumn fx:id="tColKontaktNachname" prefWidth="110.0" text="Nachname" />
-                        <TableColumn fx:id="tColKontaktVorname" prefWidth="75.0" text="Vorname" />
-                        <TableColumn fx:id="tColKontaktAbteilung" prefWidth="180.0" text="Firma / Abteilung" />
-                        <TableColumn fx:id="tColKontaktTelefon" prefWidth="75.0" text="Telefon" />
-                        <TableColumn fx:id="tColKontaktMailadresse" prefWidth="75.0" text="Mailadresse" />
+                      <TableColumn fx:id="tColKontaktUserId" prefWidth="72.0" text="P-/E-Nr." />
+                      <TableColumn fx:id="tColKontaktNachname" prefWidth="120.0" text="Nachname" />
+                        <TableColumn fx:id="tColKontaktVorname" prefWidth="100.0" text="Vorname" />
+                        <TableColumn fx:id="tColKontaktArt" prefWidth="35.0" text="Art" />
+                        <TableColumn fx:id="tColKontaktAbteilung" prefWidth="130.0" text="Firma / Abteilung" />
+                        <TableColumn fx:id="tColKontaktTelefon" prefWidth="95.0" text="Telefon" />
+                        <TableColumn fx:id="tColKontaktMailadresse" prefWidth="160.0" text="Mailadresse" />
                     </columns>
                   </TableView>
                </content>

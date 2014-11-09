@@ -18,7 +18,7 @@ import de.vbl.im.model.Konfiguration;
 import de.vbl.im.model.Repository;
 
 public class DataBaseInitMinimal {
-	private static final String PERSISTENCE_UNIT_NAME = "EdiListFX";
+	private static final String PERSISTENCE_UNIT_NAME = "IntegrationManager";
 	private static EntityManager em = null;
 
 	public static void main(String[] args) {

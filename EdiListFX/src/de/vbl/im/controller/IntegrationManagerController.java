@@ -34,10 +34,9 @@ import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.util.Callback;
 
-import javax.persistence.CacheStoreMode; 
+import javax.persistence.CacheStoreMode;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -51,7 +50,6 @@ import org.controlsfx.dialog.Dialogs;
 
 import de.vbl.im.controller.subs.DokumentAuswaehlenController;
 import de.vbl.im.controller.subs.KontaktPersonAuswaehlenController;
-import de.vbl.im.controller.subs.NeuerEdiEintragController;
 import de.vbl.im.model.EdiEintrag;
 import de.vbl.im.model.EdiEmpfaenger;
 import de.vbl.im.model.EdiKomponente;
@@ -126,6 +124,7 @@ public class IntegrationManagerController {
     @FXML private TableColumn<KontaktPerson, String> tColKontaktUserId;
     @FXML private TableColumn<KontaktPerson, String> tColKontaktNachname;
     @FXML private TableColumn<KontaktPerson, String> tColKontaktVorname;
+    @FXML private TableColumn<KontaktPerson, String> tColKontaktArt;
     @FXML private TableColumn<KontaktPerson, String> tColKontaktAbteilung;
     @FXML private TableColumn<KontaktPerson, String> tColKontaktTelefon;
     @FXML private TableColumn<KontaktPerson, String> tColKontaktMailadresse;
@@ -139,7 +138,7 @@ public class IntegrationManagerController {
 //  @FXML private Button btnDeleteGeschaeftsobjekt;
     @FXML private Button btnExportExcel;
 
-    @FXML private Pane ediEintrag;
+    @FXML private Pane schnittstelle;
     @FXML private Pane ediPartner;
     @FXML private Pane ediSystem;
     @FXML private Pane ediKomponente;
@@ -148,7 +147,7 @@ public class IntegrationManagerController {
     @FXML private Pane kontaktPerson;
     @FXML private Pane geschaeftsObjekt;
     
-    @FXML private EdiEintragController ediEintragController;
+    @FXML private SchnittstelleController schnittstelleController;
     @FXML private EdiPartnerController ediPartnerController;
     @FXML private EdiSystemController ediSystemController;
     @FXML private EdiKomponenteController ediKomponenteController;
@@ -169,7 +168,7 @@ public class IntegrationManagerController {
     	primaryStage = stage;
     	primaryStage.setTitle(APPL_NAME);
     	
-    	EdiEintragController.setParent(this);
+    	SchnittstelleController.setParent(this);
     	EdiPartnerController.setParent(this);
     	EdiSystemController.setParent(this);
     	EdiKomponenteController.setParent(this);
@@ -284,7 +283,7 @@ public class IntegrationManagerController {
     }
     
 	private void checkEdiEintrag(Event event) {
-    	if(ediEintragController.checkForChangesAndAskForSave() == false) {
+    	if(schnittstelleController.checkForChangesAndAskForSave() == false) {
     		event.consume();
     	}
     }
@@ -332,7 +331,7 @@ public class IntegrationManagerController {
 	}
 
 	private boolean checkAllOk() {
-    	return ediEintragController.checkForChangesAndAskForSave() || 
+    	return schnittstelleController.checkForChangesAndAskForSave() || 
     		   ediPartnerController.checkForChangesAndAskForSave() ||
     	       ediSystemController.checkForChangesAndAskForSave()  ||
     	       ediKomponenteController.checkForChangesAndAskForSave() ||
@@ -374,15 +373,10 @@ public class IntegrationManagerController {
     	tColAuswahlEdiNrIngration.setCellValueFactory(cellData -> 
     			cellData.getValue().intregrationName());
 
-//    	btnDeleteEdiEintrag.disableProperty().bind(
-//    			Bindings.isNull(tableEdiNrAuswahl.getSelectionModel().selectedItemProperty()));
-//    	ediEintrag.disableProperty().bind(
-//    			Bindings.isNull(tableEdiNrAuswahl.getSelectionModel().selectedItemProperty()));
-    	ediEintrag.setDisable(false);
-    	ediEintragController.ediEintragProperty().bind(
-    						    tableEdiNrAuswahl.getSelectionModel().selectedItemProperty());
+    	schnittstelle.setDisable(false);
 
-   	
+    	schnittstelleController.ediEintragProperty().bind(
+    						    tableEdiNrAuswahl.getSelectionModel().selectedItemProperty());
     	tableEdiNrAuswahl.setRowFactory(new Callback<TableView<EdiEintrag>, TableRow<EdiEintrag>>() {
 			@Override
 			public TableRow<EdiEintrag> call(TableView<EdiEintrag> table) {
@@ -455,6 +449,7 @@ public class IntegrationManagerController {
 		tColKontaktUserId.setCellValueFactory(cellData -> cellData.getValue().nummerProperty());
 		tColKontaktNachname.setCellValueFactory(cellData -> cellData.getValue().nachnameProperty());
 		tColKontaktVorname.setCellValueFactory(cellData -> cellData.getValue().vornameProperty());
+		tColKontaktArt.setCellValueFactory(cellData -> cellData.getValue().artProperty());
 		tColKontaktAbteilung.setCellValueFactory(cellData -> cellData.getValue().abteilungProperty());
 		tColKontaktTelefon.setCellValueFactory(cellData -> cellData.getValue().telefonProperty());
 		tColKontaktMailadresse.setCellValueFactory(cellData -> cellData.getValue().mailProperty());
@@ -820,6 +815,12 @@ public class IntegrationManagerController {
     	}
     }
     
+    public void refreshKontaktReferences() {
+    	if (kontaktPersonController.getKontaktPerson() != null) {
+    		kontaktPersonController.readEdiKomponentenListeforPerson();
+    	}
+    }
+    
     public void setupEntityManager() {
     	logger.info("Datenbankverbindung zu {} wird aufgebaut",PERSISTENCE_UNIT_NAME);
     	EntityManagerFactory factory = null;
@@ -833,6 +834,7 @@ public class IntegrationManagerController {
 				.showException(e);
     	}
     	
+
 //    	String db = (String) factory.getProperties().get("javax.persistence.jdbc.url");
 //    	System.out.println("DB: " + db);
     	
@@ -850,56 +852,55 @@ public class IntegrationManagerController {
     
     private void checkFieldsFromView() throws Exception {
     	logger.info("entered");
-        assert tabEdiNr != null : "fx:id=\"tabEdiNr\" was not injected: check your FXML file 'EdiMain.fxml'.";
+    	assert schnittstelle != null : "fx:id=\"schnittstelle\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
+    	assert tabEdiNr != null : "fx:id=\"tabEdiNr\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
 
-        assert tabPaneObjekte != null : "fx:id=\"tabPaneObjekte\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tabPartner != null : "fx:id=\"tabPartner\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tabSysteme != null : "fx:id=\"tabSysteme\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tabKomponenten != null : "fx:id=\"tabKomponenten\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tabIntegrationen != null : "fx:id=\"tabIntegrationen\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tabKonfigurationen != null : "fx:id=\"tabKonfigurationen\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tabKontaktPersonen != null : "fx:id=\"tabKontaktPersonen\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tabGeschaeftsobjekte != null : "fx:id=\"tabGeschaeftsobjekte\" was not injected: check your FXML file 'EdiMain.fxml'.";
+        assert tabPaneObjekte != null : "fx:id=\"tabPaneObjekte\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
+        assert tabPartner != null : "fx:id=\"tabPartner\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
+        assert tabSysteme != null : "fx:id=\"tabSysteme\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
+        assert tabKomponenten != null : "fx:id=\"tabKomponenten\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
+        assert tabIntegrationen != null : "fx:id=\"tabIntegrationen\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
+        assert tabKonfigurationen != null : "fx:id=\"tabKonfigurationen\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
+        assert tabKontaktPersonen != null : "fx:id=\"tabKontaktPersonen\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
+        assert tabGeschaeftsobjekte != null : "fx:id=\"tabGeschaeftsobjekte\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
 
-        assert btnDeleteEdiEintrag != null : "fx:id=\"btnDeleteEdiEintrag\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert btnNewEdiNr != null : "fx:id=\"btnNewEdiNr\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert txtInfoZeile != null : "fx:id=\"txtInfoZeile\" was not injected: check your FXML file 'EdiMain.fxml'.";
+        assert txtInfoZeile != null : "fx:id=\"txtInfoZeile\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
 
-        assert tableEdiNrAuswahl != null : "fx:id=\"tableEdiNrAuswahl\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tColSelKompoKomponten != null : "fx:id=\"tColSelKompoKomponten\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tColAuswahlEdiNr != null : "fx:id=\"tColAuswahlEdiNr\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tColSelSystemSystemName != null : "fx:id=\"tColSelSystemSystemName\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tColSelIntegrationName != null : "fx:id=\"tColSelIntegrationName\" was not injected: check your FXML file 'EdiMain.fxml'.";
+        assert tableEdiNrAuswahl 		!= null : "fx:id=\"tableEdiNrAuswahl\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
+        assert tColAuswahlEdiNr 		!= null : "fx:id=\"tColAuswahlEdiNr\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
+        assert tColSelKompoKomponten 	!= null : "fx:id=\"tColSelKompoKomponten\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
+        assert tColSelSystemSystemName 	!= null : "fx:id=\"tColSelSystemSystemName\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
+        assert tColSelIntegrationName 	!= null : "fx:id=\"tColSelIntegrationName\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
         
-        assert tablePartnerAuswahl != null : "fx:id=\"tablePartnerAuswahl\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tColAuswahlPartnerKomponenten != null : "fx:id=\"tColAuswahlPartnerKomponenten\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tColAuswahlPartnerName != null : "fx:id=\"tColAuswahlPartnerName\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tColAuswahlEdiNrSender != null : "fx:id=\"tColAuswahlEdiNrSender\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tColAuswahlEdiNrBezeichnung != null : "fx:id=\"tColAuswahlEdiNrBezeichnung\" was not injected: check your FXML file 'EdiMain.fxml'.";
+        assert tablePartnerAuswahl 				!= null : "fx:id=\"tablePartnerAuswahl\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
+        assert tColAuswahlPartnerKomponenten 	!= null : "fx:id=\"tColAuswahlPartnerKomponenten\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
+        assert tColAuswahlPartnerName 			!= null : "fx:id=\"tColAuswahlPartnerName\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
+        assert tColAuswahlEdiNrSender 			!= null : "fx:id=\"tColAuswahlEdiNrSender\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
+        assert tColAuswahlEdiNrBezeichnung 		!= null : "fx:id=\"tColAuswahlEdiNrBezeichnung\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
 
-        assert tableKomponentenAuswahl != null : "fx:id=\"tableKomponentenAuswahl\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tColSelKompoPartner != null : "fx:id=\"tColSelKompoPartner\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tColSelSystemPartnerName != null : "fx:id=\"tColSelSystemPartnerName\" was not injected: check your FXML file 'EdiMain.fxml'.";
+        assert tableKomponentenAuswahl 	!= null : "fx:id=\"tableKomponentenAuswahl\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
+        assert tColSelKompoPartner 		!= null : "fx:id=\"tColSelKompoPartner\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
+        assert tColSelKompoSysteme 		!= null : "fx:id=\"tColSelKompoSysteme\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
+        assert tColSelSystemPartnerName != null : "fx:id=\"tColSelSystemPartnerName\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
+        assert tColSelSystemKomponenten != null : "fx:id=\"tColSelSystemKomponenten\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
 
-        assert tColSelKompoSysteme != null : "fx:id=\"tColSelKompoSysteme\" was not injected: check your FXML file 'EdiMain.fxml'.";
-
-        assert tableSystemAuswahl != null : "fx:id=\"tableSystemAuswahl\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tColAuswahlPartnerSysteme != null : "fx:id=\"tColAuswahlPartnerSysteme\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tColSelSystemKomponenten != null : "fx:id=\"tColSelSystemKomponenten\" was not injected: check your FXML file 'EdiMain.fxml'.";
+        assert tableSystemAuswahl 			!= null : "fx:id=\"tableSystemAuswahl\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
+        assert tColAuswahlPartnerSysteme 	!= null : "fx:id=\"tColAuswahlPartnerSysteme\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
         
-        assert konfigurationController != null : "\"konfigurationController\" was not injected in EdiMain.fxml";
-        assert geschaeftsObjektController != null : "\"geschaeftsObjektController\" was not injected in EdiMain.fxml";
+        assert konfigurationController 		!= null : "\"konfigurationController\" was not injected in IntegrationManager.fxml";
+        assert geschaeftsObjektController 	!= null : "\"geschaeftsObjektController\" was not injected in IntegrationManager.fxml";
         
-        assert tableKontaktAuswahl != null : "\"tableKontaktAuswahl\" was not injected in EdiMain.fxml";
-        assert tColKontaktUserId != null : "\"tColKontaktUserId\" was not injected in EdiMain.fxml";
-        assert tColKontaktNachname != null : "\"tColKontaktNachname\" was not injected in EdiMain.fxml";
-        assert tColKontaktVorname != null : "\"tColKontaktVorname\" was not injected in EdiMain.fxml";
-        assert tColKontaktAbteilung != null : "\"tColKontaktAbteilung\" was not injected in EdiMain.fxml";
-        assert tColKontaktTelefon != null : "\"tColKontaktTelefon\" was not injected in EdiMain.fxml";
-        assert tColKontaktMailadresse != null : "\"tColKontaktMailadresse\" was not injected in EdiMain.fxml";
+        assert tableKontaktAuswahl 		!= null : "\"tableKontaktAuswahl\" was not injected in IntegrationManager.fxml";
+        assert tColKontaktUserId 		!= null : "\"tColKontaktUserId\" was not injected in IntegrationManager.fxml";
+        assert tColKontaktNachname 		!= null : "\"tColKontaktNachname\" was not injected in IntegrationManager.fxml";
+        assert tColKontaktVorname 		!= null : "\"tColKontaktVorname\" was not injected in IntegrationManager.fxml";
+        assert tColKontaktArt 			!= null : "\"tColKontaktArt\" was not injected in IntegrationManager.fxml";
+        assert tColKontaktAbteilung 	!= null : "\"tColKontaktAbteilung\" was not injected in IntegrationManager.fxml";
+        assert tColKontaktTelefon 		!= null : "\"tColKontaktTelefon\" was not injected in IntegrationManager.fxml";
+        assert tColKontaktMailadresse 	!= null : "\"tColKontaktMailadresse\" was not injected in IntegrationManager.fxml";
         
-        assert tableGeschaeftsobjektAuswahl != null : "fx:id=\"tableGeschaeftsobjektAuswahl\" was not injected: check your FXML file 'EdiMain.fxml'.";
-        assert tColAuswahlGeschaeftsobjektName != null : "fx:id=\"tColAuswahlGeschaeftsobjektName\" was not injected: check your FXML file 'EdiMain.fxml'.";
+        assert tableGeschaeftsobjektAuswahl != null : "fx:id=\"tableGeschaeftsobjektAuswahl\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
+        assert tColAuswahlGeschaeftsobjektName != null : "fx:id=\"tColAuswahlGeschaeftsobjektName\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
         logger.info("passed");
     }
 

@@ -8,7 +8,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import de.vbl.im.controller.EdiEintragController;
+import de.vbl.im.controller.SchnittstelleController;
 import de.vbl.im.controller.EdiKomponenteController;
 import de.vbl.im.controller.EdiPartnerController;
 import de.vbl.im.controller.EdiSystemController;
@@ -22,11 +22,12 @@ public class TestEdiSystem extends Application {
 		src = EdiKomponenteController.class.getName();
 		src = EdiPartnerController.class.getName();
 		src = EdiSystemController.class.getName();
-		src = EdiEintragController.class.getName();
+		src = SchnittstelleController.class.getName();
 		src = IntegrationManagerController.class.getName();
 		int lastPkt = src.lastIndexOf(".");
 		src = src.substring(lastPkt + 1).replace("Controller", "");
 		System.out.println(src);
+		
 		URL url = getClass().getResource("../view/" + src + ".fxml");
 		System.out.println("url:" + url);
 		FXMLLoader loader = new FXMLLoader(url);
