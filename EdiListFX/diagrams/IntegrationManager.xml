@@ -35,7 +35,7 @@
 	<entity>
 		<entity-name>de.vbl.im.model.KontaktPerson</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>203</entity-height>
+		<entity-height>223</entity-height>
 		<entity-X-Coordinate>216</entity-X-Coordinate>
 		<entity-Y-Coordinate>175</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
@@ -55,14 +55,25 @@
 	</entity>
 
 	<entity>
-		<entity-name>de.vbl.im.model.Intervall</entity-name>
+		<entity-name>de.vbl.im.model.DokuLink</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>58</entity-height>
+		<entity-height>261</entity-height>
 		<entity-X-Coordinate>573</entity-X-Coordinate>
-		<entity-Y-Coordinate>509</entity-Y-Coordinate>
+		<entity-Y-Coordinate>131</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>false</relation-collapsed>
-		<basic-collapsed>true</basic-collapsed>
+		<basic-collapsed>false</basic-collapsed>
+	</entity>
+
+	<entity>
+		<entity-name>de.vbl.im.model.Integration</entity-name>
+		<entity-width>120</entity-width>
+		<entity-height>141</entity-height>
+		<entity-X-Coordinate>388</entity-X-Coordinate>
+		<entity-Y-Coordinate>19</entity-Y-Coordinate>
+		<primary-collapsed>false</primary-collapsed>
+		<relation-collapsed>true</relation-collapsed>
+		<basic-collapsed>false</basic-collapsed>
 	</entity>
 
 	<entity>
@@ -88,25 +99,14 @@
 	</entity>
 
 	<entity>
-		<entity-name>de.vbl.im.model.Integration</entity-name>
+		<entity-name>de.vbl.im.model.Intervall</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>141</entity-height>
-		<entity-X-Coordinate>388</entity-X-Coordinate>
-		<entity-Y-Coordinate>19</entity-Y-Coordinate>
-		<primary-collapsed>false</primary-collapsed>
-		<relation-collapsed>true</relation-collapsed>
-		<basic-collapsed>false</basic-collapsed>
-	</entity>
-
-	<entity>
-		<entity-name>de.vbl.im.model.DokuLink</entity-name>
-		<entity-width>120</entity-width>
-		<entity-height>261</entity-height>
+		<entity-height>58</entity-height>
 		<entity-X-Coordinate>573</entity-X-Coordinate>
-		<entity-Y-Coordinate>131</entity-Y-Coordinate>
+		<entity-Y-Coordinate>509</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>false</relation-collapsed>
-		<basic-collapsed>false</basic-collapsed>
+		<basic-collapsed>true</basic-collapsed>
 	</entity>
 
 	<entity>
@@ -114,20 +114,9 @@
 		<entity-width>120</entity-width>
 		<entity-height>116</entity-height>
 		<entity-X-Coordinate>20</entity-X-Coordinate>
-		<entity-Y-Coordinate>617</entity-Y-Coordinate>
+		<entity-Y-Coordinate>603</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>true</relation-collapsed>
-		<basic-collapsed>false</basic-collapsed>
-	</entity>
-
-	<entity>
-		<entity-name>de.vbl.im.model.EdiEmpfaenger</entity-name>
-		<entity-width>120</entity-width>
-		<entity-height>123</entity-height>
-		<entity-X-Coordinate>216</entity-X-Coordinate>
-		<entity-Y-Coordinate>617</entity-Y-Coordinate>
-		<primary-collapsed>true</primary-collapsed>
-		<relation-collapsed>false</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
 	</entity>
 
@@ -137,6 +126,17 @@
 		<entity-height>221</entity-height>
 		<entity-X-Coordinate>20</entity-X-Coordinate>
 		<entity-Y-Coordinate>312</entity-Y-Coordinate>
+		<primary-collapsed>true</primary-collapsed>
+		<relation-collapsed>false</relation-collapsed>
+		<basic-collapsed>false</basic-collapsed>
+	</entity>
+
+	<entity>
+		<entity-name>de.vbl.im.model.EdiEmpfaenger</entity-name>
+		<entity-width>120</entity-width>
+		<entity-height>123</entity-height>
+		<entity-X-Coordinate>216</entity-X-Coordinate>
+		<entity-Y-Coordinate>597</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>false</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>

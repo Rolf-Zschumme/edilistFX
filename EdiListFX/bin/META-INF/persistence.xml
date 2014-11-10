@@ -22,11 +22,11 @@
 			<property name="javax.persistence.jdbc.url" value="jdbc:postgresql://servecm01:5432/xidv01"/>
 			<property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
 			<property name="eclipselink.ddl-generation.output-mode" value="both"/>
-			<property name="javax.persistence.schema-generation.create-database-schemas" value="false"/>
 			<property name="eclipselink.application-location" value="./ddl"/>
+			<property name="javax.persistence.schema-generation.create-database-schemas" value="true"/>
+			<property name="eclipselink.ddl-generation" value="create-tables"/>
 			<property name="javax.persistence.jdbc.user" value="lyan"/>
 			<property name="javax.persistence.jdbc.password" value="lyan"/>
-			<property name="eclipselink.ddl-generation" value="create-tables"/>
 		</properties>
 	</persistence-unit>
 </persistence>

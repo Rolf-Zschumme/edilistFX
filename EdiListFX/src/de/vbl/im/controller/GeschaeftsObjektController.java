@@ -141,8 +141,8 @@ public class GeschaeftsObjektController {
 		
 		tcEdiNr.setCellValueFactory(cellData -> Bindings.format(EdiEintrag.FORMAT_EDINR, 
 												cellData.getValue().getEdiEintrag().ediNrProperty()));
-		tcIntegration.setCellValueFactory(cell -> cell.getValue().getEdiEintrag().intregrationName());
-		tcKonfiguration.setCellValueFactory(cell -> cell.getValue().getEdiEintrag().konfigurationName());
+		tcIntegration.setCellValueFactory(cell -> cell.getValue().getEdiEintrag().intregrationNameProperty());
+		tcKonfiguration.setCellValueFactory(cell -> cell.getValue().getEdiEintrag().konfigurationNameProperty());
 		tcSender.setCellValueFactory(cellData -> cellData.getValue().getEdiEintrag().getEdiKomponente().fullnameProperty());
 		tcEmpfaenger.setCellValueFactory(cellData -> cellData.getValue().getKomponente().fullnameProperty());
 		tcDatumAb.setCellValueFactory(cellData -> cellData.getValue().getEdiEintrag().seitDatumProperty());

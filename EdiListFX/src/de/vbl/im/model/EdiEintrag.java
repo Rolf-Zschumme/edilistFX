@@ -17,6 +17,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 @Entity
 public class EdiEintrag { 
@@ -37,6 +38,7 @@ public class EdiEintrag {
 	private StringProperty senderName;
 	private StringProperty integrationName;
 	private StringProperty konfigurationName;
+	private StringProperty autoBezeichnung;
 	private Intervall intervall;
 
 	public EdiEintrag() {
@@ -49,6 +51,7 @@ public class EdiEintrag {
 		senderName = new SimpleStringProperty();
 		integrationName = new SimpleStringProperty("");
 		konfigurationName = new SimpleStringProperty("");
+		autoBezeichnung = new SimpleStringProperty("");
 	}	
 
 	// ------------------------------------------------------------------------
@@ -129,6 +132,7 @@ public class EdiEintrag {
 			this.konfigurationName.bind(param.nameProperty());
 			this.integrationName.unbind();
 			this.integrationName.bind(param.integrationNameProperty());
+			bindAutobezeichnung();
 		}	
 	}
 
@@ -144,7 +148,8 @@ public class EdiEintrag {
 		ediKomponente = kompo;
 		if (kompo != null) {
 			senderName.bind(kompo.fullnameProperty());
-		}	
+		}
+		bindAutobezeichnung();
 	}
 
 	@OneToMany(mappedBy = "ediEintrag", cascade = ALL)
@@ -192,35 +197,63 @@ public class EdiEintrag {
 		this.laeUser = laeUser;
 	}
 
-	public StringProperty konfigurationName () {
+	public StringProperty konfigurationNameProperty () {
 		return konfigurationName;
 	}
 	
-	public StringProperty intregrationName () {
+	public StringProperty intregrationNameProperty () {
 		return integrationName;
 	}
 
-    public String autoBezeichnung() {
-    	String intSzeName = "I??";
-    	String empf01Name = "E??";
-    	String geOb01Name = "G??";
-    	if (ediEmpfaenger.size() > 0) {
-    		EdiEmpfaenger e01 = ediEmpfaenger.iterator().next();
-    		if (e01.getKomponente() != null) {
-    			empf01Name = e01.getKomponente().getFullname();
-    		}
-    		if (e01.getGeschaeftsObjekt() != null) {
-    			geOb01Name = e01.getGeschaeftsObjekt().getName();
-    		}
-    	}
-    	if (konfiguration != null) {
-    		if (konfiguration.getIntegration() != null) {
-    			if (konfiguration.getIntegration().getName() != null)
-    				intSzeName = konfiguration.getIntegration().getName();
-    		}
-    	}	
-    	return intSzeName + "  [" + senderName.get() + "  >>  " + empf01Name + ": " + geOb01Name + "]";
+    public StringProperty autoBezeichnungProperty() {
+    	return autoBezeichnung;
     }
+    
+    @Transient
+    private void bindAutobezeichnung() {
+    	autoBezeichnung.unbind();
+    	autoBezeichnung.bind(integrationName.concat(" ").concat(ediEmpfaenger));
+    }
+    	
+    	
+    	
+//    	String integrationName = "<Integration>";
+//    	String senderName = "<Sender>";
+//    	String gObjektName = "<Geschäftsobjekt>";
+// //   	if (senderName)
+//    	if (konfiguration != null) {
+//    		if (konfiguration.getIntegration() != null) {
+//    			if (konfiguration.getIntegration().getName() != null)
+//    				integrationName = konfiguration.getIntegration().getName();
+//    		}
+//    	}	
+//    	
+//    	if (ediEmpfaenger.size() > 0) {
+//    		
+//    	}
+//    	return "";
+//  }
+//  public String autoBezeichnung() {
+//    	String intSzeName = "I??";
+//    	String empf01Name = "E??";
+//    	String geOb01Name = "G??";
+//    	if (ediEmpfaenger.size() > 0) {
+//    		EdiEmpfaenger e01 = ediEmpfaenger.iterator().next();
+//    		if (e01.getKomponente() != null) {
+//    			empf01Name = e01.getKomponente().getFullname();
+//    		}
+//    		if (e01.getGeschaeftsObjekt() != null) {
+//    			geOb01Name = e01.getGeschaeftsObjekt().getName();
+//    		}
+//    	}
+//    	if (konfiguration != null) {
+//    		if (konfiguration.getIntegration() != null) {
+//    			if (konfiguration.getIntegration().getName() != null)
+//    				intSzeName = konfiguration.getIntegration().getName();
+//    		}
+//    	}	
+//    	return intSzeName + "  [" + senderName.get() + "  >>  " + empf01Name + ": " + geOb01Name + "]";
+//    }
 
 	@ManyToOne
 	public Intervall getIntervall() {

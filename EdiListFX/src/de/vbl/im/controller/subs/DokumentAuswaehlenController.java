@@ -15,6 +15,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -28,6 +30,7 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
@@ -195,6 +198,18 @@ public class DokumentAuswaehlenController implements Initializable {
 				}
 			};
 		});
+		
+		tableDokuLinkAuswahl.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				if (event.getClickCount()>1) {
+					DokuLink selDoku = tableDokuLinkAuswahl.getSelectionModel().getSelectedItem();
+					if (selDoku != null && checkSelectionAndExit(selDoku)) {
+						close(event);
+					}
+				}
+			}
+		});
 
     	listIsNotSelected.bind(Bindings.isNull(tableDokuLinkAuswahl.getSelectionModel().selectedItemProperty()));
     	
@@ -266,12 +281,19 @@ public class DokumentAuswaehlenController implements Initializable {
     	if (applName == null && managerController == null && primaryStage == null ) {
     		// just for suppressing "unused" warning;
     	}
-		selDokuLink = tableDokuLinkAuswahl.getSelectionModel().selectedItemProperty().get();
+		if (checkSelectionAndExit(
+				tableDokuLinkAuswahl.getSelectionModel().selectedItemProperty().get() )) {
+			close(event);
+		}
+    }
+
+	private boolean checkSelectionAndExit(DokuLink dokuLink) {
+		boolean ret = false;
 		Action response = Dialog.Actions.YES;
-		if (selDokuLink.getPfad().startsWith("/02_xSpez_abgenommen") == false) {
+		if (dokuLink.getPfad().startsWith("/02_xSpez_abgenommen") == false) {
 			response = Dialogs.create().owner(primaryStage)
 					.title("Hinweis")
-					.message("Das gewählte Dokument\n\n" + selDokuLink.getName() + 
+					.message("Das gewählte Dokument\n\n" + dokuLink.getName() + 
 						 "\n ist nicht in \"02_xSpez_abgenommen\" gespeichert." +
 						 "\n\nDas bedeutet es gilt nicht als abgenommen !")
 					.actions(Dialog.Actions.YES, Dialog.Actions.NO)
@@ -279,9 +301,11 @@ public class DokumentAuswaehlenController implements Initializable {
 		}
 		if (response == Dialog.Actions.YES) {
 			retAction = Actions.OK;
-			close(event);
+			this.selDokuLink = dokuLink;
+			ret = true;
 		}
-    }
+		return ret;
+	}
 
 	@FXML
     private void escapePressed(ActionEvent event) {
@@ -289,7 +313,7 @@ public class DokumentAuswaehlenController implements Initializable {
     	close(event);
     }
     
-    private void close(ActionEvent event) {
+    private void close(Event event) {
     	Node source = (Node) event.getSource();
     	Stage stage = (Stage) source.getScene().getWindow();
     	stage.close();

@@ -88,7 +88,7 @@ import de.vbl.im.model.Repository;
 
 public class SchnittstelleController {
 	private static final Logger logger = LogManager.getLogger(SchnittstelleController.class.getName()); 
-	private static final String EDI_PANE_PREFIX = "EDI ";
+	private static final String SST_PANE_PREFIX = "SST ";
 	private static final Integer MAX_EMPFAENGER = 3;
 	private static final String DEFAULT_KONFIG_NAME = "Ohne XI/PO-Konfiguration";
 	private static final String SICHERHEITSABFRAGE = "Sicherheitsabfrage";
@@ -103,12 +103,13 @@ public class SchnittstelleController {
     @FXML private ComboBox<Konfiguration> cmbKonfiguration;
     @FXML private ComboBox<Integration> cmbIntegration;
     @FXML private Button m_SpeichernBtn;
-//  @FXML private Button m_NewSSTBtn;
+//  @FXML private Button m_NewSSTBtn;  // not used because always enabled  
     @FXML private Button m_DeleteSSTbtn;
     @FXML private Button m_NewIntegrationBtn;
     @FXML private Button m_NewConfigurationBtn;
     @FXML private Button m_NewDokuLinkBtn;
-
+    @FXML private Button m_RemoveDokuLinkBtn;
+    
     @FXML private TableView<DokuLink> tvDokuLinks;
     @FXML private TableColumn<DokuLink, String> tColDokumentVorhaben;
     @FXML private TableColumn<DokuLink, String> tColDokumentName;
@@ -227,11 +228,11 @@ public class SchnittstelleController {
     			btnEmpfaenger2.setText("");
     			btnEmpfaenger3.setText("");
     			ediLastChange.setText("");
-    			tabAktEdiNr.setText(EDI_PANE_PREFIX + "000");
+    			tabAktEdiNr.setText(SST_PANE_PREFIX + "000");
     			btnSender.textProperty().unbind();
     		}
     		if (newEintrag == null) {
-    			managerController.setInfoText("Edi-Nummer wurde reserviert");
+    			managerController.setInfoText("Neue Schnittstelle kann bearebitet werden");
     			cmbIntegration.setValue(null);
     			akt.seitDatum = null;
     			akt.bisDatum = null;
@@ -242,7 +243,7 @@ public class SchnittstelleController {
     			akt.setData(newEintrag);
     			cmbIntegration.getSelectionModel().select(akt.integration);
     			cmbKonfiguration.getSelectionModel().select(akt.konfiguration);
-    			tabAktEdiNr.setText(EDI_PANE_PREFIX +  newEintrag.getEdiNrStr());
+    			tabAktEdiNr.setText(SST_PANE_PREFIX +  newEintrag.getEdiNrStr());
     			tfBezeichnung.setText(akt.bezeichnung);
     			taEdiBeschreibung.setText(akt.beschreibung);
     			cmbIntervall.getSelectionModel().select(akt.intervallName);
@@ -285,8 +286,8 @@ public class SchnittstelleController {
 		m_SpeichernBtn.disableProperty().bind(Bindings.not(dataIsChanged));
 		m_DeleteSSTbtn.disableProperty().bind(this.ediEintrag.isNull());
 
-		m_SST_Details.disableProperty().bind(Bindings.isNull(ediEintrag));
 		m_SST_Integration.disableProperty().bind(Bindings.isNull(ediEintrag));
+		m_SST_Details.disableProperty().bind(Bindings.isNull(ediEintrag));
 		
 		setupIntegrationComboBox();
 		setupDokuLink();
@@ -296,6 +297,9 @@ public class SchnittstelleController {
 		tfBezeichnung.textProperty().addListener((observable, oldValue, newValue) -> {
 			String msg = "";
 			if (newValue != null) {
+				if ("".equals(newValue)) {
+//					akt.bezeichnung = akt
+				}
 				akt.bezeichnung = newValue;
 				setChangeFlag(!akt.bezeichnung.equals(org.bezeichnung));
 			}	
@@ -447,7 +451,6 @@ public class SchnittstelleController {
 						}
 
 					}
-						
 				}
 			}
 //			Integration selIntegration = cmbIntegration.getSelectionModel().getSelectedItem();
@@ -471,11 +474,18 @@ public class SchnittstelleController {
 				managerController.setInfoText("");
 			}
 			readCmbKonfigurationList(akt.integration);
+			checkBezeichnungUpdate();
 		});
 	}
 	
-    private void setupDokuLink() {
+    private void checkBezeichnungUpdate() {
+    	
+		// TODO Auto-generated method stub
+	}
+
+	private void setupDokuLink() {
 		m_NewDokuLinkBtn.disableProperty().bind(cmbIntegration.getSelectionModel().selectedItemProperty().isNull());
+		m_RemoveDokuLinkBtn.disableProperty().bind(tvDokuLinks.getSelectionModel().selectedItemProperty().isNull());	
 		tvDokuLinks.setItems(dokuLinkList);
 		tColDokumentVorhaben.setCellValueFactory(cellData -> cellData.getValue().vorhabenProperty());
 		tColDokumentName.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
@@ -510,18 +520,17 @@ public class SchnittstelleController {
 				final TableRow<DokuLink> row = new TableRow<DokuLink>();
 				final ContextMenu contextMenu = new ContextMenu();
 				
-				final MenuItem openMenuItem = new MenuItem("Dokument (extern) öffnen");
+				final MenuItem openMenuItem = new MenuItem("Öffnen...");
 				openMenuItem.setOnAction( event -> { 
 					dokumentExternAnzeigen(row.getItem()); 	
 				});
-				final MenuItem validateMenuItem = new MenuItem("Aktialität des Eintrages prüfen");
+				final MenuItem validateMenuItem = new MenuItem("Prüfen der Aktualität...");
 				validateMenuItem.setOnAction(event -> { 
 					managerController.setInfoText("Diese Option ist noch nicht realisiert");
 				});
-				final MenuItem removeMenuItem = new MenuItem("Referenz auf Dokument löschen");
+				final MenuItem removeMenuItem = new MenuItem("Löschen");
 				removeMenuItem.setOnAction( event -> {
-					table.getItems().remove(row.getItem());
-	    			setChangeFlag(org.integration == null || org.integration.getDokuLink() == null);
+					removeDokuLinkfromList(row.getItem());
 				});
 				contextMenu.getItems().addAll(openMenuItem, validateMenuItem, removeMenuItem);
 				
@@ -585,13 +594,46 @@ public class SchnittstelleController {
     	DokumentAuswaehlenController controller = managerController.loadDokumentAuswahl(dialog);
     	if (controller != null) {
     		dialog.showAndWait();
+    		String userInfo = "Dokumentenauswahl wurde abgebrochen";
     		if (controller.getResponse() == Actions.OK) {
     			DokuLink dokuLink = controller.getSelectedDokuLink();
-    			dokuLinkList.add(dokuLink);
+    			String dokName = dokuLink.getName();
+    			userInfo = "Der Verweis auf das Dokument '" + dokName + "' ";
+    			if (dokuLinkListContains(dokuLink) == true) {
+    				userInfo += "ist bereits vorhanden";
+    			} else {
+    				dokuLinkList.add(dokuLink);
+    				userInfo += "wurde eingetragen";
+    			}
     			setChangeFlag(org.integration == null || org.integration.getDokuLink() == null);
     		}
+        	managerController.setInfoText(userInfo);
     	}
     }
+    private boolean dokuLinkListContains(DokuLink newDokuLink) {
+    	String newName = newDokuLink.getName();
+    	String newPfad = newDokuLink.getPfad();
+    	for (DokuLink dokuLink : dokuLinkList) {
+    		if (dokuLink.getName().equals(newName) && dokuLink.getPfad().equals(newPfad)) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+
+
+	@FXML 
+    void actionRemoveDokuLink() {
+    	removeDokuLinkfromList(tvDokuLinks.getSelectionModel().selectedItemProperty().get());
+    }
+    
+    private void removeDokuLinkfromList (DokuLink tobeRemoved) {
+    	String dokname = tobeRemoved.getName();
+    	tvDokuLinks.getItems().remove(tobeRemoved);
+    	setChangeFlag(org.integration == null || org.integration.getDokuLink() == null);
+    	managerController.setInfoText("Der Verweis auf das Dokument '" + dokname + "' wurde entfernt");
+    }
+    
     
 	private void setupKonfigurationComboBox() {
 		
@@ -645,7 +687,7 @@ public class SchnittstelleController {
 					EdiEintrag e = i.next();
 					int iEdiNr = e.getEdiNr();
 					if (iEdiNr != akt.EdiNr ) {
-						Tab extraTab = new Tab(EDI_PANE_PREFIX + e.getEdiNrStr());
+						Tab extraTab = new Tab(SST_PANE_PREFIX + e.getEdiNrStr());
 						extraTab.setUserData(e);
 						if (iEdiNr  < akt.EdiNr ) tabMapBefore.put(iEdiNr, extraTab);
 						if (iEdiNr  > akt.EdiNr ) tabMapAfter.put(iEdiNr, extraTab);
@@ -661,14 +703,14 @@ public class SchnittstelleController {
 			managerController.setInfoText("");
 		});
 		
-		// check if user want to change the current EDI entity
+		// check if user want to change the current entity
 		tabPaneEdiNr.addEventFilter(MouseEvent.MOUSE_PRESSED, event ->  {
 			Node node = (Node) event.getTarget();
 			if (node instanceof Text) {
 				Parent parent = node.getParent();
 				if (parent instanceof Label) {
 					Label label = (Label) parent;
-					// compare label-text with all EDI panel-text 
+					// compare label-text with all SST panel-text 
 					EdiEintrag e = null;
 					for(Tab t : tabPaneEdiNr.getTabs()) {
 						if (t.getText() == label.getText()) {
@@ -972,7 +1014,7 @@ public class SchnittstelleController {
 		if (checkmode == Checkmode.ASK_FOR_UPDATE) {
 			Action response = Dialogs.create().owner(primaryStage)
 							.title(applName).masthead(SICHERHEITSABFRAGE)
-							.message("Soll die Änderungen am EDI-Eintrag " + ediEintrag.get().getEdiNrStr() + 
+							.message("Soll die Änderungen an der Schnittstelle " + ediEintrag.get().getEdiNrStr() + 
 									" \"" + ediEintrag.get().getBezeichnung() + "\" gespeichert werden?")
 							.showConfirm();
 			if (response == Dialog.Actions.CANCEL) {
@@ -1117,8 +1159,8 @@ public class SchnittstelleController {
 			akt.setData(aktEdi);
 			org.setData(aktEdi);
 			
-			managerController.setInfoText("Der EDI-Eintrag wurde gespeichert");
-			
+			managerController.setInfoText("Die Schnittstelle " + aktEdi.getEdiNrStr() +
+										  " wurde gespeichert");
 		} catch (RuntimeException e) {
 			Dialogs.create().owner(primaryStage)
 			.title(applName).masthead("Datenbankfehler")
@@ -1214,10 +1256,10 @@ public class SchnittstelleController {
 			Optional<String> newName = Dialogs.create()
 				.owner(primaryStage).title(applName)
 				.masthead(masterhead)
-				.message("Wie soll das neue Integrations-Szenario heißen?")
+				.message("Wie soll das neue Integrationsszenario heißen?")
 				.showTextInput(aktName);
 			if ( !newName.isPresent() ) {
-				managerController.setInfoText("Integrations-Szenario-Neuanlage wurde vom Benutzer abgebrochen");
+				managerController.setInfoText("Die Neuanlage wurde abgebrochen");
 				break;
 			}
 			aktName = newName.get().trim();
@@ -1463,6 +1505,7 @@ public class SchnittstelleController {
         assert m_NewIntegrationBtn  != null : "fx:id=\"m_NewIntegrationBtn\"  was not injected: check your FXML file 'Schnittstelle.fxml'.";
         assert cmbKonfiguration     != null : "fx:id=\"cmbKonfiguration\"     was not injected: check your FXML file 'Schnittstelle.fxml'.";
         assert m_NewDokuLinkBtn     != null : "fx:id=\"m_NewDokuLinkBtn\"     was not injected: check your FXML file 'Schnittstelle.fxml'.";
+        assert m_RemoveDokuLinkBtn  != null : "fx:id=\"m_RemoveDokuLinkBtn\"  was not injected: check your FXML file 'Schnittstelle.fxml'.";
         assert tColDokumentName     != null : "fx:id=\"tColDokumentName\"     was not injected: check your FXML file 'Schnittstelle.fxml'.";
         assert tColDokumentVorhaben != null : "fx:id=\"tColDokumentVorhaben\" was not injected: check your FXML file 'Schnittstelle.fxml'.";
         assert tColDokumentDatum    != null : "fx:id=\"tColDokumentDatum\"    was not injected: check your FXML file 'Schnittstelle.fxml'.";

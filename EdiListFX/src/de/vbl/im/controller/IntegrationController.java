@@ -134,7 +134,7 @@ public class IntegrationController {
 												cellData.getValue().getEdiEintrag().ediNrProperty()));
 
 
-		tcKonfiguration.setCellValueFactory(cellData -> cellData.getValue().getEdiEintrag().konfigurationName());
+		tcKonfiguration.setCellValueFactory(cellData -> cellData.getValue().getEdiEintrag().konfigurationNameProperty());
 		
 		tcSender.setCellValueFactory(cellData -> cellData.getValue().getEdiEintrag().getEdiKomponente().fullnameProperty());
 		

@@ -23,7 +23,7 @@ import javax.persistence.Transient;
 
 public class KontaktPerson implements Serializable {
 	
-	private long id;
+	private long id; 
 	private StringProperty nummer;
 	private StringProperty nachname;
 	private StringProperty vorname;
@@ -90,8 +90,8 @@ public class KontaktPerson implements Serializable {
 	public StringProperty artProperty() {
 		return art;
 	}
-	@Deprecated
-	@Column(length = 1, columnDefinition = "F=Fachlich T=Technisch oder ' '")
+	@Deprecated 
+	@Column(length = 1)
 	public String getArt() {
 		return art.get();
 	}

@@ -371,7 +371,7 @@ public class IntegrationManagerController {
     	tColAuswahlEdiNrBezeichnung.setCellValueFactory(cellData -> 
     			cellData.getValue().bezeichnungProperty());
     	tColAuswahlEdiNrIngration.setCellValueFactory(cellData -> 
-    			cellData.getValue().intregrationName());
+    			cellData.getValue().intregrationNameProperty());
 
     	schnittstelle.setDisable(false);
 
