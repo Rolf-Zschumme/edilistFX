@@ -266,6 +266,7 @@ public class SchnittstelleController {
 		});
     }	
     
+    
     private void setLastChangeField(TextField tf, String dateTime, String laeUser) {
     	if (dateTime == null) {
     		tf.setText("");
@@ -297,9 +298,6 @@ public class SchnittstelleController {
 		tfBezeichnung.textProperty().addListener((observable, oldValue, newValue) -> {
 			String msg = "";
 			if (newValue != null) {
-				if ("".equals(newValue)) {
-//					akt.bezeichnung = akt
-				}
 				akt.bezeichnung = newValue;
 				setChangeFlag(!akt.bezeichnung.equals(org.bezeichnung));
 			}	
@@ -1136,7 +1134,12 @@ public class SchnittstelleController {
 //				aktEdi.setBezeichnung(tmpEdiBezeichnung);
 //				tfBezeichnung.textProperty().set(aktEdi.autoBezeichnung());
 //			}
-//			new: normal manuell input			
+//			new: normal manuell input
+//			temp: set bezeichnung if emppty			
+			if (akt.bezeichnung.isEmpty() || akt.bezeichnung.equals("(EDI-Nummer Reserviert)")) {
+				tfBezeichnung.textProperty().set(EdiEintrag.autobezeichnung(
+						akt.konfiguration, akt.sender,akt.geschaeftsObjekt[0]));
+			}
 			aktEdi.setBezeichnung(akt.bezeichnung);
 			
 			LocalDate aktSeitDatum = dpProduktivSeit.getValue();

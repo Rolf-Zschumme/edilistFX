@@ -24,9 +24,9 @@
 			<property name="eclipselink.ddl-generation.output-mode" value="both"/>
 			<property name="eclipselink.application-location" value="./ddl"/>
 			<property name="javax.persistence.schema-generation.create-database-schemas" value="true"/>
-			<property name="eclipselink.ddl-generation" value="create-tables"/>
 			<property name="javax.persistence.jdbc.user" value="lyan"/>
 			<property name="javax.persistence.jdbc.password" value="lyan"/>
+			<property name="eclipselink.ddl-generation" value="create-tables"/>
 		</properties>
 	</persistence-unit>
 </persistence>

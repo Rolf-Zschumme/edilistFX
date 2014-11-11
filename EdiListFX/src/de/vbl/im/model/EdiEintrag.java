@@ -38,7 +38,6 @@ public class EdiEintrag {
 	private StringProperty senderName;
 	private StringProperty integrationName;
 	private StringProperty konfigurationName;
-	private StringProperty autoBezeichnung;
 	private Intervall intervall;
 
 	public EdiEintrag() {
@@ -51,7 +50,6 @@ public class EdiEintrag {
 		senderName = new SimpleStringProperty();
 		integrationName = new SimpleStringProperty("");
 		konfigurationName = new SimpleStringProperty("");
-		autoBezeichnung = new SimpleStringProperty("");
 	}	
 
 	// ------------------------------------------------------------------------
@@ -132,7 +130,6 @@ public class EdiEintrag {
 			this.konfigurationName.bind(param.nameProperty());
 			this.integrationName.unbind();
 			this.integrationName.bind(param.integrationNameProperty());
-			bindAutobezeichnung();
 		}	
 	}
 
@@ -149,7 +146,6 @@ public class EdiEintrag {
 		if (kompo != null) {
 			senderName.bind(kompo.fullnameProperty());
 		}
-		bindAutobezeichnung();
 	}
 
 	@OneToMany(mappedBy = "ediEintrag", cascade = ALL)
@@ -205,17 +201,29 @@ public class EdiEintrag {
 		return integrationName;
 	}
 
-    public StringProperty autoBezeichnungProperty() {
-    	return autoBezeichnung;
-    }
-    
+	// Return : <Integration> - <Sender> - <Geschäftsobjekt> 
     @Transient
-    private void bindAutobezeichnung() {
-    	autoBezeichnung.unbind();
-    	autoBezeichnung.bind(integrationName.concat(" ").concat(ediEmpfaenger));
+    public static String autobezeichnung(Konfiguration konfiguration,
+//    									Integration integration,
+    							  EdiKomponente sender,
+    							  GeschaeftsObjekt gObjekt) {
+    	String integrationName = "<Integration>";
+    	String senderName = "<Sender>";
+    	String gObjektName = "<Geschäftsobjekt>";
+    	if (konfiguration != null) {
+    		if (konfiguration.getIntegration() != null) {
+    			if (konfiguration.getIntegration().getName() != null)
+    				integrationName = konfiguration.getIntegration().getName();
+    		}
+    	}	
+    	if (sender != null) {
+    		senderName = sender.getFullname();
+    	}
+    	if (gObjekt != null) {
+    		gObjektName = gObjekt.getName();
+    	}
+    	return integrationName + TrennStr() + senderName + TrennStr() + gObjektName;
     }
-    	
-    	
     	
 //    	String integrationName = "<Integration>";
 //    	String senderName = "<Sender>";
@@ -254,6 +262,16 @@ public class EdiEintrag {
 //    	}	
 //    	return intSzeName + "  [" + senderName.get() + "  >>  " + empf01Name + ": " + geOb01Name + "]";
 //    }
+    
+	private static String TrennStr() {
+		return "  |  ";
+	}
+//	private String ASCIItoStr(int a) {
+//		byte[] b = { (byte) a };
+//		String ret = new String(b);
+//		return " " + ret + " ";
+//	}
+
 
 	@ManyToOne
 	public Intervall getIntervall() {

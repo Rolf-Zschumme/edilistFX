@@ -92,10 +92,11 @@ public class EdiSystem {
 //		return partnerName + ASCIItoStr(42) + name.get();   // 151
 //		return fullname.get();
 //	}
-	private String ASCIItoStr(int a) {
-		byte[] b = { (byte) a };
-		String ret = new String(b);
-		return " " + ret + " ";
+	
+	private String trennung() {
+//		return " - ";  // Bindestrich
+		return " – ";  // halbgeviertstrich Alt+0150
+//		return " — ";  // geviertstrich		Alt+0151
 	}
 
 	@ManyToOne
@@ -110,7 +111,7 @@ public class EdiSystem {
 			ediPartner.getEdiSystem().remove(this);
 		}
 		ediPartner = param;
-		fullname.bind(Bindings.concat(ediPartner.nameProperty(), ASCIItoStr(42), this.name));
+		fullname.bind(Bindings.concat(ediPartner.nameProperty(), trennung(), this.name));
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --

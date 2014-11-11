@@ -584,8 +584,8 @@ public class IntegrationManagerController {
     void btnUeber(ActionEvent event) {
 		Dialogs.create()
 			.owner(primaryStage).title(APPL_NAME)
-			.masthead("VBL-Tool zur Verwaltung der Datentransfers")
-			.message("\nProgramm-Version 1.0.0 - 04.11.2014\n" +
+			.masthead("VBL-Tool zur Verwaltung der Integrationsszenarios")
+			.message("\nProgramm-Version 1.1.0 - 11.11.2014\n" +
 					 "\nDatenbank-Name: " + dbName +
 			   	     "\nJava-Runtime-Verion: " + System.getProperty("java.version"))
 			.showInformation();
@@ -827,7 +827,9 @@ public class IntegrationManagerController {
     	try {
     		factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
     	} catch (RuntimeException e) {
-    		logger.error("Message:"+ e.getMessage(),e);
+    		String msg = "Fehler beim Öffnen der Datenbank (" + PERSISTENCE_UNIT_NAME + ")";
+    		System.out.println(msg);
+    		logger.error(msg + "\nMessage:"+ e.getMessage(),e);
 			Dialogs.create().owner(primaryStage).title(APPL_NAME)
 				.masthead("FEHLER")
 				.message("Fehler beim Aufbau der Datenbankverbindung:\n" + e.getMessage())
@@ -837,7 +839,6 @@ public class IntegrationManagerController {
 
 //    	String db = (String) factory.getProperties().get("javax.persistence.jdbc.url");
 //    	System.out.println("DB: " + db);
-    	
     	entityManager = factory.createEntityManager();
     	entityManager.setProperty("javax.persistence.cache.storeMode", CacheStoreMode.REFRESH);
     	// Explanation for CacheStoreMode:

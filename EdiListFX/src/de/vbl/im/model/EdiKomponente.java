@@ -86,13 +86,17 @@ public class EdiKomponente {
 			fullname.unbind();
 		}
 		this.ediSystem = param;
-		fullname.bind(Bindings.concat(ediSystem.fullnameProperty(), ASCIItoStr(42),name));
+		fullname.bind(Bindings.concat(ediSystem.fullnameProperty(), trennung(),name));
 	}
-	private String ASCIItoStr(int a) {
-		byte[] b = { (byte) a };
-		String ret = new String(b);
-		return " " + ret + " ";
+	private String trennung() {
+		return " – ";  // halbgeviertstrich Alt+0150
+//		return " — ";
 	}
+//	private String ASCIItoStr(int a) {
+//		byte[] b = { (byte) a };
+//		String ret = new String(b);
+//		return " " + ret + " ";
+//	}
 
 	// *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   * 
 	public StringProperty fullnameProperty() {

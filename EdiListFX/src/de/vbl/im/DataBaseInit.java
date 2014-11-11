@@ -18,7 +18,7 @@ import de.vbl.im.model.Konfiguration;
 import de.vbl.im.model.Repository;
 
 public class DataBaseInit {
-	private static final String PERSISTENCE_UNIT_NAME = "EdiListFX";
+	private static final String PERSISTENCE_UNIT_NAME = "IntegrationManager";
 	private static EntityManager em = null;
 
 	public static void main(String[] args) {
@@ -130,45 +130,46 @@ public class DataBaseInit {
 		}
 	}
 
+	static EdiKomponente k[] = new EdiKomponente[999];
+	
 	private static void generateRealObjekts() {
 		EdiPartner partner = null;
 		EdiSystem system = null;
 
 		// 1. neuer Partner mit seinen Systemen und Komponenten anlegen  
-
 		partner = new EdiPartner("VBL");
 		em.persist(partner);
 			em.persist(system = newSystem(partner,"SAP CRM"));
-					em.persist(newKomponente(system,"ANW"));
-					em.persist(newKomponente(system,"ZGP"));
-					em.persist(newKomponente(system,"Zulage"));
-					em.persist(newKomponente(system,"VA"));
+					em.persist(k[111] = newKomponente(system,"ANW"));
+					em.persist(k[112] = newKomponente(system,"ZGP"));
+					em.persist(k[113] = newKomponente(system,"Zulage"));
+					em.persist(k[114] = newKomponente(system,"VA"));
 			em.persist(system = newSystem(partner,"SAP ERP"));
-					em.persist(newKomponente(system,"Leistung"));
-					em.persist(newKomponente(system,"HR"));
-					em.persist(newKomponente(system,"FSCD"));
-					em.persist(newKomponente(system,"FI/FS-CD/HR"));
-					em.persist(newKomponente(system,"IMMO"));
-					em.persist(newKomponente(system,"TR"));
+					em.persist(k[121] = newKomponente(system,"Leistung"));
+					em.persist(k[122] = newKomponente(system,"HR"));
+					em.persist(k[123] = newKomponente(system,"FSCD"));
+					em.persist(k[124] = newKomponente(system,"FI/FS-CD/HR"));
+					em.persist(k[125] = newKomponente(system,"IMMO"));
+					em.persist(k[126] = newKomponente(system,"TR"));
 			em.persist(system = newSystem(partner,"Host(IBM)"));
-					em.persist(newKomponente(system,"IS-VL"));
-					em.persist(newKomponente(system,"FV"));
-					em.persist(newKomponente(system,"UEV"));
+					em.persist(k[131] = newKomponente(system,"IS-VL"));
+					em.persist(k[132] = newKomponente(system,"FV"));
+					em.persist(k[133] = newKomponente(system,"UEV"));
 			em.persist(system = newSystem(partner,"APC"));
-					em.persist(newKomponente(system,"DÜVA"));
+					em.persist(k[141] = newKomponente(system,"DÜVA"));
 			em.persist(system = newSystem(partner,"Dateiablage"));
-					em.persist(newKomponente(system,"FB-AGS"));
+					em.persist(k[151] = newKomponente(system,"FB-AGS"));
 
 		// 2. neuer Partner mit seinen Systemen und Komponenten anlegen
 					
 		partner = new EdiPartner("Beteiligte");
 		em.persist(partner);
 			em.persist(system = newSystem(partner,"Internet"));
-					em.persist(newKomponente(system,"ftp-Client"));
+					em.persist(k[211] = newKomponente(system,"ftp-Client"));
 			em.persist(system = newSystem(partner,"DOI/Testa-Netz"));
-					em.persist(newKomponente(system,"ftp-Client"));
+					em.persist(k[221] = newKomponente(system,"ftp-Client"));
 			em.persist(system = newSystem(partner,"Mail-Netz"));
-					em.persist(newKomponente(system,"Mail-Client"));
+					em.persist(k[221] = newKomponente(system,"Mail-Client"));
 			
 		// 3. neuer Partner mit seinen Systemen und Komponenten anlegen  
 					
@@ -264,20 +265,50 @@ public class DataBaseInit {
 		em.persist(newKonfiguration(integration, "IS_ZUL_ZUSY_KOEX"));
 	}
 	
+//	private static void generateSSTs() {
+//		EdiEintrag sst = new EdiEintrag();
+//		sst.setEdiKomponente(getKompo("CS_ANW_MLD__Meldungseingang"));
+//		
+//		sst.setEdiEmpfaenger(generateEmpfänger(k[211],g[1]));
+//	}
+//	
+//	private static Collection<EdiEmpfaenger> generateEmpfänger(EdiKomponente ediKomponente,
+//												   GeschaeftsObjekt geschaeftsObjekt) {
+//		Collection<EdiEmpfaenger> empfList = new ArrayList<EdiEmpfaenger>();
+//		EdiEmpfaenger e = new EdiEmpfaenger();
+//		empfList.add(new EdiEmpfaenger())
+//		return null;
+//	}
+
+
+//	private static EdiKomponente getKompo(String string) {
+//    	TypedQuery<EdiKomponente> tq = em.createQuery(
+//			"SELECT k FROM EdiKomponente k WHERE LOWER(k.name) = LOWER(:n)", EdiKomponente.class);
+//		List<EdiKomponente> aktuList = tq.getResultList();
+//		tq.setParameter("n", string);
+//		if (aktuList.size()!=1) {
+//			System.out.println("Komponente " + string + " nicht gefunden");
+//			return null;
+//		}
+//		return aktuList.get(0);
+//	}
+
+	static GeschaeftsObjekt g[] = new GeschaeftsObjekt[20];
+	
 	private static void generateGeschaeftobjekte() {
 		int anzGO = 0;
-		em.persist(new GeschaeftsObjekt("ZGP-Stammdaten"));   		++anzGO;
-		em.persist(new GeschaeftsObjekt("ZGP-Beziehungen"));		++anzGO;
-		em.persist(new GeschaeftsObjekt("Zahlungsanweisung"));		++anzGO;
-		em.persist(new GeschaeftsObjekt("ZA-Protokolle"));			++anzGO;
-		em.persist(new GeschaeftsObjekt("ANW-Meldungen"));			++anzGO;
-		em.persist(new GeschaeftsObjekt("ANW-Meldungsdokumente"));	++anzGO;
-		em.persist(new GeschaeftsObjekt("ZfA-Meldungen"));			++anzGO;
-		em.persist(new GeschaeftsObjekt("MM-Bestellanfrage"));		++anzGO;
-		em.persist(new GeschaeftsObjekt("MM-Bestellung"));			++anzGO;
-		em.persist(new GeschaeftsObjekt("MM-Bestelländerung"));		++anzGO;
-		em.persist(new GeschaeftsObjekt("MM-Materialstammdaten"));	++anzGO;
-		em.persist(new GeschaeftsObjekt("MM-Einkaufsinfosätze"));	++anzGO;
+		em.persist(g[1]  = new GeschaeftsObjekt("ZGP-Stammdaten"));   		++anzGO;
+		em.persist(g[2]  = new GeschaeftsObjekt("ZGP-Beziehungen"));		++anzGO;
+		em.persist(g[3]  = new GeschaeftsObjekt("Zahlungsanweisung"));		++anzGO;
+		em.persist(g[4]  = new GeschaeftsObjekt("ZA-Protokolle"));			++anzGO;
+		em.persist(g[5]  = new GeschaeftsObjekt("ANW-Meldungen"));			++anzGO;
+		em.persist(g[6]  = new GeschaeftsObjekt("ANW-Meldungsdokumente"));	++anzGO;
+		em.persist(g[7]  = new GeschaeftsObjekt("ZfA-Meldungen"));			++anzGO;
+		em.persist(g[8]  = new GeschaeftsObjekt("MM-Bestellanfrage"));		++anzGO;
+		em.persist(g[9]  = new GeschaeftsObjekt("MM-Bestellung"));			++anzGO;
+		em.persist(g[10] = new GeschaeftsObjekt("MM-Bestelländerung"));		++anzGO;
+		em.persist(g[11] = new GeschaeftsObjekt("MM-Materialstammdaten"));	++anzGO;
+		em.persist(g[12] = new GeschaeftsObjekt("MM-Einkaufsinfosätze"));	++anzGO;
 		System.out.println(anzGO + " Geschaeftobjekte() angelegt");
 	}
 	
