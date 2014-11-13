@@ -30,9 +30,9 @@
 						<TextField fx:id="tfBezeichnung" layoutX="89.0" layoutY="11.0" prefHeight="25.0" prefWidth="200.0" AnchorPane.leftAnchor="100.0" AnchorPane.topAnchor="5.0" />
 						<Label layoutX="324.0" layoutY="15.0" text="Beschreibung:" AnchorPane.leftAnchor="320.0" AnchorPane.topAnchor="5.0" />
 						<TextArea fx:id="taBeschreibung" layoutX="411.0" layoutY="7.0" maxHeight="1.7976931348623157E308" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="400.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
-                                    <Button fx:id="btnRemoveKontaktPerson" disable="true" mnemonicParsing="false" onAction="#actionRemoveKontaktPerson" prefWidth="80.0" text="entfernen" AnchorPane.leftAnchor="12.0" AnchorPane.topAnchor="105.0" />
-                                    <Button mnemonicParsing="false" onAction="#actionAddKontaktPerson" prefWidth="80.0" text="hinzufügen" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="65.0" />
-                                    <Label alignment="CENTER" disable="true" text="Kontaktperson:" AnchorPane.leftAnchor="12.0" AnchorPane.topAnchor="40.0" />
+                                    <Button fx:id="btnRemoveAnsprechpartner" disable="true" mnemonicParsing="false" onAction="#actionRemoveAnsprechpartner" prefWidth="80.0" text="entfernen" AnchorPane.leftAnchor="12.0" AnchorPane.topAnchor="105.0" />
+                                    <Button mnemonicParsing="false" onAction="#actionAddAnsprechpartner" prefWidth="80.0" text="hinzufügen" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="65.0" />
+                                    <Label alignment="CENTER" disable="true" text="Ansprechpartner:" AnchorPane.leftAnchor="12.0" AnchorPane.topAnchor="40.0" />
                                     <ListView fx:id="lvAnsprechpartner" prefWidth="200.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="100.0" AnchorPane.topAnchor="40.0" />
 					</children>
 				</AnchorPane>
@@ -46,7 +46,7 @@
                      <content>
                               <TableView fx:id="tvVerwendungen" minHeight="0.0" minWidth="0.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
                                  <columns>
-                                    <TableColumn fx:id="tcEdiNr" editable="false" maxWidth="55.0" minWidth="44.0" prefWidth="55.0" text="SST-Nr." />
+                                    <TableColumn fx:id="tcEdiNr" editable="false" maxWidth="55.0" minWidth="44.0" prefWidth="55.0" text=" I-Nr." />
                                     <TableColumn fx:id="tcSender" editable="false" maxWidth="500.0" minWidth="150.0" prefWidth="255.0" text="Sender" />
                                     <TableColumn fx:id="tcEmpfaenger" editable="false" maxWidth="500.0" minWidth="150.0" prefWidth="250.0" text="Empfänger" />
                                     <TableColumn fx:id="tcGeschaeftsobjekt" editable="false" maxWidth="400.0" minWidth="100.0" prefWidth="200.0" text="Geschäftsobjekt" />

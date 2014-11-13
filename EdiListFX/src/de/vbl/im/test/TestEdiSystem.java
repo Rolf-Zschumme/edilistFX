@@ -8,11 +8,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import de.vbl.im.controller.SchnittstelleController;
+import de.vbl.im.controller.IntegrationController;
 import de.vbl.im.controller.EdiKomponenteController;
 import de.vbl.im.controller.EdiPartnerController;
 import de.vbl.im.controller.EdiSystemController;
-import de.vbl.im.controller.IntegrationManagerController;
+import de.vbl.im.controller.IMController;
 
 public class TestEdiSystem extends Application {
 
@@ -22,8 +22,8 @@ public class TestEdiSystem extends Application {
 		src = EdiKomponenteController.class.getName();
 		src = EdiPartnerController.class.getName();
 		src = EdiSystemController.class.getName();
-		src = SchnittstelleController.class.getName();
-		src = IntegrationManagerController.class.getName();
+		src = IntegrationController.class.getName();
+		src = IMController.class.getName();
 		int lastPkt = src.lastIndexOf(".");
 		src = src.substring(lastPkt + 1).replace("Controller", "");
 		System.out.println(src);

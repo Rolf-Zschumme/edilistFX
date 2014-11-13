@@ -18,7 +18,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.Transient;
 import javax.persistence.Temporal;
 
 import static javax.persistence.TemporalType.TIMESTAMP;
@@ -51,6 +50,7 @@ public class DokuLink implements Serializable {
 		datumProp = new SimpleObjectProperty<LocalDateTime>();
 	}
 	
+	// ------------------------------------------------------------------------
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
 	public long getId() {
@@ -62,6 +62,7 @@ public class DokuLink implements Serializable {
 	}
 
 	// ------------------------------------------------------------------------
+	// @Transient
 	public StringProperty nameProperty() {
 		return name;
 	}
@@ -75,6 +76,7 @@ public class DokuLink implements Serializable {
 	}
 
 	// ------------------------------------------------------------------------
+	// @Transient
 	public StringProperty pfadProperty() {
 		return pfad;
 	}
@@ -101,7 +103,7 @@ public class DokuLink implements Serializable {
 	}
 
 	// ------------------------------------------------------------------------
-	@Transient
+	// @Transient
 	public ObjectProperty<LocalDateTime> datumProperty() {
 		return datumProp;
 	}
@@ -114,17 +116,13 @@ public class DokuLink implements Serializable {
 	public void setDatum(Date param) {
 		if (param != null) {
 			LocalDateTime ld = LocalDateTime.ofInstant(param.toInstant(), ZoneId.systemDefault());
-//			if (datumProp == null) {
-//				datumProp = new SimpleObjectProperty<LocalDateTime>(ld);
-//			} else {
-			    datumProp.set(ld);
-//			}
+		    datumProp.set(ld);
 		}
 		datum = param;
 	}
 
 	// ------------------------------------------------------------------------
-	@Transient
+	// @Transient
 	public LongProperty revisionProperty() {
 		return revision;
 	}
@@ -136,6 +134,7 @@ public class DokuLink implements Serializable {
 		revision.set(param);
 	}
 
+	// ------------------------------------------------------------------------
 	@ManyToOne
 	public Repository getRepository() {
 	    return repository;
@@ -145,6 +144,7 @@ public class DokuLink implements Serializable {
 	    this.repository = param;
 	}
 
+	// ------------------------------------------------------------------------
 	public DokuStatus getStatus() {
 		return status;
 	}

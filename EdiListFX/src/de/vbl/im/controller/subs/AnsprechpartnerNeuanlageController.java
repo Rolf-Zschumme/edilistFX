@@ -23,18 +23,18 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.controlsfx.dialog.Dialog.Actions;
 
-import de.vbl.im.controller.IntegrationManagerController;
-import de.vbl.im.model.KontaktPerson;
+import de.vbl.im.controller.IMController;
+import de.vbl.im.model.Ansprechpartner;
 
-public class KontaktPersonNeuanlageController implements Initializable {
-	private static final Logger logger = LogManager.getLogger(KontaktPersonNeuanlageController.class.getName());
+public class AnsprechpartnerNeuanlageController implements Initializable {
+	private static final Logger logger = LogManager.getLogger(AnsprechpartnerNeuanlageController.class.getName());
 
 	private static Stage primaryStage = null;
     private static String applName = null;
-	private static IntegrationManagerController managerController;
+	private static IMController managerController;
     private static EntityManager entityManager = null;
 	/**
-	 * injection from 'KontaktPersonNeuanlage.fxml'
+	 * injection from 'AnsprechpartnerNeuanlage.fxml'
 	 */
 	@FXML private TextField tfNachname; 
 	@FXML private TextField tfNummer; 
@@ -46,7 +46,7 @@ public class KontaktPersonNeuanlageController implements Initializable {
     @FXML private Button    btnOK; 
 
     private Actions retAction = Actions.CLOSE;
-    private KontaktPerson kontaktperson = new KontaktPerson();
+    private Ansprechpartner ansprechpartner = new Ansprechpartner();
     private BooleanProperty nachnameFilled = new SimpleBooleanProperty(false);
     
     @Override
@@ -54,48 +54,48 @@ public class KontaktPersonNeuanlageController implements Initializable {
     	logger.info("init");
     	
         try {
-			assert tfNachname != null : "fx:id=\"tfNachname\" was not injected: check your FXML file 'KontaktPersonNeuanlage.fxml'.";
-			assert tfNummer != null : "fx:id=\"tfNummer\" was not injected: check your FXML file 'KontaktPersonNeuanlage.fxml'.";
-			assert tfVorname != null : "fx:id=\"tfVorname\" was not injected: check your FXML file 'KontaktPersonNeuanlage.fxml'.";
-			assert tfAbteilung != null : "fx:id=\"tfAbteilung\" was not injected: check your FXML file 'KontaktPersonNeuanlage.fxml'.";
-			assert tfMailadresse != null : "fx:id=\"tfMailadresse\" was not injected: check your FXML file 'KontaktPersonNeuanlage.fxml'.";
-			assert tfTelefon != null : "fx:id=\"tfTelefon\" was not injected: check your FXML file 'KontaktPersonNeuanlage.fxml'.";
-			assert btnOK != null : "fx:id=\"btnOK\" was not injected: check your FXML file 'KontaktPersonNeuanlage.fxml'.";
+			assert tfNachname != null : "fx:id=\"tfNachname\" was not injected: check your FXML file 'AnsprechpartnerNeuanlage.fxml'.";
+			assert tfNummer != null : "fx:id=\"tfNummer\" was not injected: check your FXML file 'AnsprechpartnerNeuanlage.fxml'.";
+			assert tfVorname != null : "fx:id=\"tfVorname\" was not injected: check your FXML file 'AnsprechpartnerNeuanlage.fxml'.";
+			assert tfAbteilung != null : "fx:id=\"tfAbteilung\" was not injected: check your FXML file 'AnsprechpartnerNeuanlage.fxml'.";
+			assert tfMailadresse != null : "fx:id=\"tfMailadresse\" was not injected: check your FXML file 'AnsprechpartnerNeuanlage.fxml'.";
+			assert tfTelefon != null : "fx:id=\"tfTelefon\" was not injected: check your FXML file 'AnsprechpartnerNeuanlage.fxml'.";
+			assert btnOK != null : "fx:id=\"btnOK\" was not injected: check your FXML file 'AnsprechpartnerNeuanlage.fxml'.";
 		} catch (AssertionError e) {
 			logger.error(e.getMessage(), e);
 		}
     	
-    	kontaktperson.setVorname("");
+    	ansprechpartner.setVorname("");
     	
     	tfNachname.textProperty().addListener((ov, oldValue, newValue) ->  {
-    		kontaktperson.setNachname(newValue.trim());
+    		ansprechpartner.setNachname(newValue.trim());
     		nachnameFilled.set(newValue.trim().length() > 0);
     	}); 
     	
     	tfVorname.textProperty().addListener((ov, oldValue, newValue) -> {
-    		kontaktperson.setVorname(newValue.trim());
+    		ansprechpartner.setVorname(newValue.trim());
     	});
     	
     	tfAbteilung.textProperty().addListener((ov, oldValue, newValue) -> {
-    		kontaktperson.setAbteilung(newValue.trim());
+    		ansprechpartner.setAbteilung(newValue.trim());
     	});
     	
     	tfTelefon.textProperty().addListener((ov, oldValue, newValue) -> {
-    		kontaktperson.setTelefon(newValue.trim());
+    		ansprechpartner.setTelefon(newValue.trim());
     	});
     	
     	tfMailadresse.textProperty().addListener((ov, oldValue, newValue) -> {
-    		kontaktperson.setMail(newValue.trim());
+    		ansprechpartner.setMail(newValue.trim());
     	});
     	
     	btnOK.disableProperty().bind(Bindings.not(nachnameFilled));
     }
 
-    public void start(Stage primaryStage, IntegrationManagerController managerController, EntityManager entityManager) {
+    public void start(Stage primaryStage, IMController managerController, EntityManager entityManager) {
 
-    	KontaktPersonNeuanlageController.primaryStage = primaryStage;
-    	KontaktPersonNeuanlageController.entityManager = entityManager;
-    	KontaktPersonNeuanlageController.managerController = managerController;
+    	AnsprechpartnerNeuanlageController.primaryStage = primaryStage;
+    	AnsprechpartnerNeuanlageController.entityManager = entityManager;
+    	AnsprechpartnerNeuanlageController.managerController = managerController;
 		applName = primaryStage.getTitle();
 	}
 
@@ -103,8 +103,8 @@ public class KontaktPersonNeuanlageController implements Initializable {
 		return retAction;
 	}
 
-	public KontaktPerson getKontaktperson() {
-		return kontaktperson;
+	public Ansprechpartner getAnsprechpartner() {
+		return ansprechpartner;
 	}
     
     @FXML
@@ -131,28 +131,28 @@ public class KontaktPersonNeuanlageController implements Initializable {
     }
     
     private boolean saveInput() {
-    	String ret = checkKontakt(kontaktperson);
+    	String ret = checkKontakt(ansprechpartner);
     	if (ret != null) {
     		lbHinweis.textProperty().set(ret);
     		return false;
     	}
 		entityManager.getTransaction().begin();
-		entityManager.persist(kontaktperson);
+		entityManager.persist(ansprechpartner);
 		entityManager.getTransaction().commit();
 		
-		logger.info("Neuer Kontakt (" + kontaktperson.getId() + ") erfolgreich angelegt");
+		logger.info("Neuer Kontakt (" + ansprechpartner.getId() + ") erfolgreich angelegt");
     	return true;
     }
 
-	private String checkKontakt(KontaktPerson kp) {
+	private String checkKontakt(Ansprechpartner kp) {
 		if ("".equals(kp.getNachname())) {
 			return "Ein Nachname ist erforderlich";
 		}
-		TypedQuery<KontaktPerson> tq = entityManager.createQuery(
-				"SELECT k FROM KontaktPerson k WHERE LOWER(k.nachname) = LOWER(:n)",KontaktPerson.class);
+		TypedQuery<Ansprechpartner> tq = entityManager.createQuery(
+				"SELECT k FROM Ansprechpartner k WHERE LOWER(k.nachname) = LOWER(:n)",Ansprechpartner.class);
 		tq.setParameter("n", kp.getNachname());
-		List<KontaktPerson> kontaktPersonList = tq.getResultList();
-		for (KontaktPerson k : kontaktPersonList) {
+		List<Ansprechpartner> ansprechpartnerList = tq.getResultList();
+		for (Ansprechpartner k : ansprechpartnerList) {
 			String vorname = k.vornameProperty().getValueSafe(); 
 			String abteilung = k.getAbteilungSafe();
 			if (kp.getVorname().equalsIgnoreCase(vorname) && 

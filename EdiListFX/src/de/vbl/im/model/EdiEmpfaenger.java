@@ -22,7 +22,7 @@ public class EdiEmpfaenger {
 	private StringProperty geschaeftsObjektName;
 	private long id;
 	private EdiKomponente ediKomponente;
-	private EdiEintrag ediEintrag;
+	private Integration integration;
 	private GeschaeftsObjekt geschaeftsObjekt;
 
 	public EdiEmpfaenger() {
@@ -50,12 +50,12 @@ public class EdiEmpfaenger {
 	}
 
 	@ManyToOne
-	public EdiEintrag getEdiEintrag() {
-	    return ediEintrag;
+	public Integration getIntegration() {
+	    return integration;
 	}
 
-	public void setEdiEintrag(EdiEintrag param) {
-	    this.ediEintrag = param;
+	public void setIntegration(Integration param) {
+	    this.integration = param;
 	}
 	
 	public StringProperty geschaeftsObjektNameProperty () {
@@ -80,11 +80,11 @@ public class EdiEmpfaenger {
 	
 	// ------------------------------------------------------------------------
 	public IntegerProperty getEdiNrProperty() {
-		return ediEintrag.ediNrProperty();
+		return integration.ediNrProperty();
 	}
 	
 	public StringProperty senderNameProperty() {
-		return ediEintrag.senderNameProperty();
+		return integration.senderNameProperty();
 	}
 
 	public StringProperty empfaengerNameProperty() {

@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane prefHeight="795.0" prefWidth="1409.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.im.controller.IntegrationManagerController">
+<BorderPane prefHeight="795.0" prefWidth="1409.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.im.controller.IMController">
 	<top>
 		<VBox>
 			<children>
@@ -47,7 +47,7 @@
 	<center>
 		<TabPane fx:id="tabPaneObjekte" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
 			<tabs>
-				<Tab fx:id="tabEdiNr" closable="false" text="Schnittstellen">
+				<Tab fx:id="tabEdiNr" closable="false" text="Integrationen">
 					<content>
 						<AnchorPane minHeight="0.0" minWidth="0.0">
 							<children>
@@ -61,23 +61,23 @@
 														<TableView fx:id="tableEdiNrAuswahl" onContextMenuRequested="#actionEdiNrContextMenuRequested" prefHeight="702.0" tableMenuButtonVisible="true" VBox.vgrow="ALWAYS">
 															<columns>
 																<TableColumn fx:id="tColAuswahlEdiNr" editable="false" maxWidth="120.0" minWidth="0.0" prefWidth="35.0" text="Nr." />
-																<TableColumn fx:id="tColAuswahlEdiNrIngration" prefWidth="150.0" text="Integration" />
+																<TableColumn fx:id="tColAuswahlEdiNrIszenario" prefWidth="150.0" text="Integrationsszenario" />
 																<TableColumn fx:id="tColAuswahlEdiNrSender" prefWidth="160.0" text="Sender" />
-																<TableColumn fx:id="tColAuswahlEdiNrBezeichnung" editable="false" maxWidth="1.7976931348623157E308" minWidth="200.0" prefWidth="-1.0" text="Schnittstellenbezeichnung" />
+																<TableColumn fx:id="tColAuswahlEdiNrBezeichnung" editable="false" maxWidth="1.7976931348623157E308" minWidth="200.0" prefWidth="-1.0" text="Bezeichnung" />
 															</columns>
 														</TableView>
 													</children>
 												</VBox>
 											</children>
 										</AnchorPane>
-										<fx:include fx:id="schnittstelle" disable="true" source="Schnittstelle.fxml" />
+										<fx:include fx:id="integration" disable="true" source="Integration.fxml" />
 									</items>
 								</SplitPane>
 							</children>
 						</AnchorPane>
 					</content>
 				</Tab>
-				<Tab fx:id="tabIntegrationen" closable="false" text="Integrationen">
+				<Tab fx:id="tabIszenarien" closable="false" text="Integrationsszenarios">
 					<content>
 						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
@@ -85,15 +85,15 @@
                           <items>
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                                  <children>
-                                    <TableView fx:id="tableIntegrationAuswahl" prefHeight="714.0" prefWidth="416.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <TableView fx:id="tableIszenarioAuswahl" prefHeight="714.0" prefWidth="416.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                       <columns>
-                                        <TableColumn fx:id="tColSelIntegrationName" prefWidth="426.0" text="Integrations-Name" />
+                                        <TableColumn fx:id="tColSelIszenarioName" prefWidth="426.0" text="Integrationsszenario" />
                                         <TableColumn fx:id="tColSelIntegrationKonfigurationAnzahl" prefWidth="147.0" text="Anzahl Konfigurationen" visible="false" />
                                       </columns>
                                     </TableView>
                                  </children>
                               </AnchorPane>
-                            <fx:include fx:id="integration" disable="true" source="Integration.fxml" />
+                            <fx:include fx:id="iszenario" disable="true" source="Iszenario.fxml" />
                           </items>
                         </SplitPane>
                      </children></AnchorPane>
@@ -110,7 +110,7 @@
                                     <TableView fx:id="tableKonfigurationAuswahl" prefHeight="714.0" prefWidth="416.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                       <columns>
                                         <TableColumn fx:id="tColSelKonfigurationName" prefWidth="314.0" text="Konfigurations-Name" />
-                                        <TableColumn fx:id="tColSelKonfigIntegrationName" prefWidth="259.0" text="gehört zu Integration" />
+                                        <TableColumn fx:id="tColSelKonfigIszenarioName" prefWidth="259.0" text="Integrationsszenario" />
                                       </columns>
                                     </TableView>
                                  </children>
@@ -193,7 +193,7 @@
 						</AnchorPane>
 					</content>
 				</Tab>
-				<Tab fx:id="tabKontaktPersonen" closable="false" text="Kontakt-Personen">
+				<Tab fx:id="tabAnsprechpartner" closable="false" text="Ansprechpartner">
 				  <content>
     				<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
 					<children>
@@ -210,7 +210,7 @@
 										</TableView>
 									</children>
 								</AnchorPane>
-	                           <fx:include fx:id="kontaktPerson" disable="true" source="KontaktPerson.fxml" />
+	                           <fx:include fx:id="ansprechpartner" disable="true" source="Ansprechpartner.fxml" />
 							 </items>
 						</SplitPane>
 					</children>

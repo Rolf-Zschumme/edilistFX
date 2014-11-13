@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane minHeight="389.0" minWidth="440.0" prefHeight="389.0" prefWidth="496.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.im.controller.subs.KontaktPersonNeuanlageController">
+<BorderPane minHeight="389.0" minWidth="440.0" prefHeight="389.0" prefWidth="496.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.im.controller.subs.AnsprechpartnerNeuanlageController">
    <center>
       <AnchorPane>
          <children>
@@ -52,7 +52,7 @@
    <top>
       <AnchorPane minHeight="60.0">
          <children>
-            <Label alignment="CENTER" prefHeight="17.0" prefWidth="400.0" text="Kontakt-Person neu anlegen" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" BorderPane.alignment="CENTER">
+            <Label alignment="CENTER" prefHeight="17.0" prefWidth="400.0" text="Ansprechpartner neu anlegen" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" BorderPane.alignment="CENTER">
                <font>
                   <Font name="System Bold" size="18.0" />
                </font>

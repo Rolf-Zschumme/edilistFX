@@ -3,8 +3,6 @@
 /bin
 
 # Eclipse
-.classpath
-.project
 .settings/
 .build/
 
@@ -12,4 +10,4 @@
 screenshot*.png
 
 /build/
-/EdiListFX.log
+/*.log

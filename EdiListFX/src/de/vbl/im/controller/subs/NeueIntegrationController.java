@@ -15,16 +15,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.controlsfx.dialog.Dialog;
 
-import de.vbl.im.model.EdiEintrag;
+import de.vbl.im.model.Integration;
 
-public class NeuerEdiEintragController {
-	private static final Logger logger = LogManager.getLogger(NeuerEdiEintragController.class.getName()); 
+public class NeueIntegrationController {
+	private static final Logger logger = LogManager.getLogger(NeueIntegrationController.class.getName()); 
     @FXML private TextField tfEdiNr;
     @FXML private Label fehlertext;
     
 	private EntityManager entityManager;
 	private Dialog.Actions response = Dialog.Actions.CANCEL;
-	private EdiEintrag ediEintrag;
+	private Integration integration;
 
 	public void setEntityManager(EntityManager entityManager) {
 		logger.info("entered");
@@ -34,13 +34,13 @@ public class NeuerEdiEintragController {
 	public Dialog.Actions getResponse() {
 		return response; 
 	}
-	public EdiEintrag getNewEdiEintrag () {
-		return ediEintrag;
+	public Integration getNewIntegration () {
+		return integration;
 	}
 
 	public void start() {
 		logger.info("entered");
-		ediEintrag.setEdiNr(getHighestEdiNr()+1);
+		integration.setEdiNr(getHighestEdiNr()+1);
 	}
 	
 	/* ------------------------------------------------------------------------
@@ -51,17 +51,17 @@ public class NeuerEdiEintragController {
     void initialize() {
 		logger.info("entered");
     	checkFieldFromView();
-    	ediEintrag = new EdiEintrag();        
+    	integration = new Integration();        
         setupBindings();
     }
     
     private void setupBindings() {
-    	tfEdiNr.textProperty().bindBidirectional(ediEintrag.ediNrProperty(),new NumberStringConverter());
+    	tfEdiNr.textProperty().bindBidirectional(integration.ediNrProperty(),new NumberStringConverter());
 	}
     	
     @FXML
     void okPressed(ActionEvent event) {
-    	int ediNr = ediEintrag.getEdiNr();
+    	int ediNr = integration.getEdiNr();
     	if (ediNr < 1) {
     		fehlertext.setText("Ein Zahl größer Null eingeben");
     	}
@@ -70,8 +70,8 @@ public class NeuerEdiEintragController {
     	}
     	else {
     		entityManager.getTransaction().begin();
-    		ediEintrag.setBezeichnung("(EDI-Nummer Reserviert)");
-    		entityManager.persist(ediEintrag);
+    		integration.setBezeichnung("(I-Nummer Reserviert)");
+    		entityManager.persist(integration);
     		entityManager.getTransaction().commit();
     		response = Dialog.Actions.OK;
     		unbind();
@@ -82,12 +82,12 @@ public class NeuerEdiEintragController {
     @FXML
     void escapePressed(ActionEvent event) {
 		unbind();
-    	ediEintrag = null;
+    	integration = null;
     	close(event);
     }
     
     private void unbind() {
-    	tfEdiNr.textProperty().unbindBidirectional(ediEintrag.ediNrProperty());
+    	tfEdiNr.textProperty().unbindBidirectional(integration.ediNrProperty());
     }
     
     private void close(ActionEvent event) {
@@ -100,7 +100,7 @@ public class NeuerEdiEintragController {
 	 * 
 	 * ****************************************************************************/
     private boolean isEdiNrUsed(int nr) {
-    	Query query = entityManager.createQuery("SELECT e.ediNr FROM EdiEintrag e");
+    	Query query = entityManager.createQuery("SELECT e.ediNr FROM Integration e");
     	for (Object zeile  : query.getResultList()) {
     		Object obj = (Object) zeile;
     		int aktnr = (Integer) obj;
@@ -112,7 +112,7 @@ public class NeuerEdiEintragController {
     
     private Integer getHighestEdiNr() {
 		logger.info("entered");
-    	Query query = entityManager.createQuery("SELECT e.ediNr FROM EdiEintrag e ORDER BY e.ediNr");
+    	Query query = entityManager.createQuery("SELECT e.ediNr FROM Integration e ORDER BY e.ediNr");
     	Integer max = 0;
     	for (Object zeile  : query.getResultList()) {
     		Object obj = (Object) zeile;
@@ -123,7 +123,7 @@ public class NeuerEdiEintragController {
     
     private void checkFieldFromView() {
 		logger.info("entered");
-        assert tfEdiNr != null : "fx:id=\"tfEdiNr\" was not injected: check your FXML file 'NeuerEdiEintrag.fxml'.";
-        assert fehlertext != null : "fx:id=\"fehlertext\" was not injected: check your FXML file 'NeuerEdiEintrag.fxml'.";
+        assert tfEdiNr != null : "fx:id=\"tfEdiNr\" was not injected: check your FXML file 'NeueIntegration.fxml'.";
+        assert fehlertext != null : "fx:id=\"fehlertext\" was not injected: check your FXML file 'NeueIntegration.fxml'.";
 	}
 }

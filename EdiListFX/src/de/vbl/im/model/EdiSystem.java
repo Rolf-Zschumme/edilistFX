@@ -22,6 +22,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
+import de.vbl.im.tools.IMconstant;
+import javax.persistence.JoinTable;
+
 @Entity
 public class EdiSystem {
 	private long id;
@@ -29,7 +32,7 @@ public class EdiSystem {
 	private EdiPartner ediPartner;
 	private String beschreibung;
 	private ObservableList<EdiKomponente> ediKomponente;
-	private Set<KontaktPerson> kontaktPerson;
+	private Set<Ansprechpartner> ansprechpartner;
 	
 	private StringProperty fullname;
 	private IntegerProperty anzKomponenten;
@@ -93,12 +96,6 @@ public class EdiSystem {
 //		return fullname.get();
 //	}
 	
-	private String trennung() {
-//		return " - ";  // Bindestrich
-		return " – ";  // halbgeviertstrich Alt+0150
-//		return " — ";  // geviertstrich		Alt+0151
-	}
-
 	@ManyToOne
 	@JoinColumn(referencedColumnName = "id")
 	public EdiPartner getEdiPartner() {
@@ -111,7 +108,7 @@ public class EdiSystem {
 			ediPartner.getEdiSystem().remove(this);
 		}
 		ediPartner = param;
-		fullname.bind(Bindings.concat(ediPartner.nameProperty(), trennung(), this.name));
+		fullname.bind(Bindings.concat(ediPartner.nameProperty(), IMconstant.KOMPO_TRENNUNG, this.name));
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
@@ -158,11 +155,12 @@ public class EdiSystem {
 	
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
 	@ManyToMany
-	public Set<KontaktPerson> getKontaktPerson() {
-	    return kontaktPerson;
+	@JoinTable
+	public Set<Ansprechpartner> getAnsprechpartner() {
+	    return ansprechpartner;
 	}
 
-	public void setKontaktPerson(Set<KontaktPerson> param) {
-	    this.kontaktPerson = param;
+	public void setAnsprechpartner(Set<Ansprechpartner> param) {
+	    this.ansprechpartner = param;
 	}
 }

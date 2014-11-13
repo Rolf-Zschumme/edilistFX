@@ -40,20 +40,20 @@ import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialog.Actions;
 import org.controlsfx.dialog.Dialogs;
 
-import de.vbl.im.controller.subs.KontaktPersonAuswaehlenController;
-import de.vbl.im.model.EdiEintrag;
+import de.vbl.im.controller.subs.AnsprechpartnerAuswaehlenController;
+import de.vbl.im.model.Integration;
 import de.vbl.im.model.EdiEmpfaenger;
 import de.vbl.im.model.EdiKomponente;
-import de.vbl.im.model.KontaktPerson;
+import de.vbl.im.model.Ansprechpartner;
 
 public class EdiKomponenteController implements Initializable  {
 	private static final Logger logger = LogManager.getLogger(EdiKomponenteController.class.getName());
 	private static Stage primaryStage = null;
-	private static IntegrationManagerController mainCtr;
+	private static IMController mainCtr;
 	private static EntityManager entityManager;
 	private final ObjectProperty<EdiKomponente> edikomponente;
-	private final ObservableSet<EdiEintrag> ediEintragsSet;      // all assigned EDI-Entities
-	private final ObservableList<KontaktPerson> kontaktpersonList; 
+	private final ObservableSet<Integration> integrationSet;      // all assigned integrations
+	private final ObservableList<Ansprechpartner> ansprechpartnerList; 
 	private EdiKomponente aktKomponente = null;
 	
     private BooleanProperty dataIsChanged = new SimpleBooleanProperty(false);
@@ -62,7 +62,7 @@ public class EdiKomponenteController implements Initializable  {
     @FXML private URL location;
     @FXML private TextField tfBezeichnung;
     @FXML private TextArea taBeschreibung;
-    @FXML private ListView<KontaktPerson> lvAnsprechpartner;
+    @FXML private ListView<Ansprechpartner> lvAnsprechpartner;
     @FXML private TableView<EdiEmpfaenger> tvVerwendungen;
     @FXML private TableColumn<EdiEmpfaenger, String> tcEmpfaenger;
     @FXML private TableColumn<EdiEmpfaenger, String> tcEdiNr;
@@ -73,18 +73,18 @@ public class EdiKomponenteController implements Initializable  {
     
     @FXML private Button btnSpeichern;
     @FXML private Button btnLoeschen;
-    @FXML private Button btnRemoveKontaktperson;
+    @FXML private Button btnRemoveAnsprechpartner;
     
     public EdiKomponenteController() {
     	edikomponente = new SimpleObjectProperty<>(this, "edikomponente", null);
-    	ediEintragsSet = FXCollections.observableSet();
-    	kontaktpersonList = FXCollections.observableArrayList();
+    	integrationSet = FXCollections.observableSet();
+    	ansprechpartnerList = FXCollections.observableArrayList();
     }
 
-	public static void setParent(IntegrationManagerController managerController) {
+	public static void setParent(IMController managerController) {
 		logger.entry();
 		EdiKomponenteController.mainCtr = managerController;
-		EdiKomponenteController.primaryStage = IntegrationManagerController.getStage();
+		EdiKomponenteController.primaryStage = IMController.getStage();
 		EdiKomponenteController.entityManager = managerController.getEntityManager();
 		logger.exit();
 	}
@@ -106,8 +106,8 @@ public class EdiKomponenteController implements Initializable  {
 						tfBezeichnung.setText("");
 						taBeschreibung.setText("");
 					}
-					kontaktpersonList.clear();
-					ediEintragsSet.clear();
+					ansprechpartnerList.clear();
+					integrationSet.clear();
 				}
 				if (newKomponente != null) {
 					aktKomponente = newKomponente;
@@ -117,15 +117,15 @@ public class EdiKomponenteController implements Initializable  {
 						newKomponente.setBeschreibung("");
 					}
 					taBeschreibung.setText(newKomponente.getBeschreibung());
-					kontaktpersonList.addAll(newKomponente.getKontaktPerson());
-					btnRemoveKontaktperson.disableProperty().bind(lvAnsprechpartner.getSelectionModel().selectedItemProperty().isNull());
+					ansprechpartnerList.addAll(newKomponente.getAnsprechpartner());
+					btnRemoveAnsprechpartner.disableProperty().bind(lvAnsprechpartner.getSelectionModel().selectedItemProperty().isNull());
 				}
 				dataIsChanged.set(false);
 			}
 		});
 		
 		btnSpeichern.disableProperty().bind(Bindings.not(dataIsChanged));
-		btnLoeschen.disableProperty().bind(Bindings.not(Bindings.greaterThanOrEqual(0, Bindings.size(ediEintragsSet))));
+		btnLoeschen.disableProperty().bind(Bindings.not(Bindings.greaterThanOrEqual(0, Bindings.size(integrationSet))));
 		
 
 		tfBezeichnung.textProperty().addListener((observable, oldValue, newValue)  -> {
@@ -147,16 +147,16 @@ public class EdiKomponenteController implements Initializable  {
 			}
 		});
 		
-		lvAnsprechpartner.setItems(kontaktpersonList);
+		lvAnsprechpartner.setItems(ansprechpartnerList);
 		lvAnsprechpartner.setCellFactory( (list) -> {
-			return new ListCell<KontaktPerson>() {
+			return new ListCell<Ansprechpartner>() {
 				@Override
-				protected void updateItem(KontaktPerson k, boolean empty) {
+				protected void updateItem(Ansprechpartner k, boolean empty) {
 					super.updateItem(k, empty);
 					if (k == null || empty) {
 						setText(null);
 					} else {
-						setText(k.getArtVornameNachnameFirma());
+						setText(k.getArtNameFirma());
 					}
 				}
 			};
@@ -164,10 +164,10 @@ public class EdiKomponenteController implements Initializable  {
 		
 //	    Setup for Sub-Panel    
 		
-		tcEdiNr.setCellValueFactory(cellData -> Bindings.format(EdiEintrag.FORMAT_EDINR, 
-												cellData.getValue().getEdiEintrag().ediNrProperty()));
+		tcEdiNr.setCellValueFactory(cellData -> Bindings.format(Integration.FORMAT_EDINR, 
+												cellData.getValue().getIntegration().ediNrProperty()));
 
-		tcSender.setCellValueFactory(cellData -> cellData.getValue().getEdiEintrag().getEdiKomponente().fullnameProperty());
+		tcSender.setCellValueFactory(cellData -> cellData.getValue().getIntegration().getEdiKomponente().fullnameProperty());
 		
 		tcSender.setCellFactory(column -> {
 			return new TableCell<EdiEmpfaenger, String>() {
@@ -209,10 +209,10 @@ public class EdiKomponenteController implements Initializable  {
 			};
 		});
 		tcGeschaeftsobjekt.setCellValueFactory(cellData -> cellData.getValue().geschaeftsObjektNameProperty());
-		tcDatumAb.setCellValueFactory(cellData -> cellData.getValue().getEdiEintrag().seitDatumProperty());
-		tcDatumBis.setCellValueFactory(cellData -> cellData.getValue().getEdiEintrag().bisDatumProperty());
+		tcDatumAb.setCellValueFactory(cellData -> cellData.getValue().getIntegration().seitDatumProperty());
+		tcDatumBis.setCellValueFactory(cellData -> cellData.getValue().getIntegration().bisDatumProperty());
 		
-		// todo: zum Absprung bei Select eines Edi-Eintrages in der Sub-Tabelle
+		// todo: zum Absprung bei Select einer anderen Integration in der Sub-Tabelle
 		tvVerwendungen.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<EdiEmpfaenger>() {
 			@Override
 			public void changed (ObservableValue<? extends EdiEmpfaenger> ov, EdiEmpfaenger oldValue, EdiEmpfaenger newValue) {
@@ -223,7 +223,7 @@ public class EdiKomponenteController implements Initializable  {
 
 	@FXML
 	void loeschen(ActionEvent event) {
-		if (ediEintragsSet.size() > 0) {
+		if (integrationSet.size() > 0) {
 			mainCtr.setErrorText("Fehler beim löschen der Komponente " + aktKomponente.getFullname() +" wird verwendet");
 			return;
 		}	
@@ -278,8 +278,8 @@ public class EdiKomponenteController implements Initializable  {
 
 		if (orgName.equals(newName) &&
 			orgBeschreibung.equals(newBeschreibung) && 
-			aktKomponente.getKontaktPerson().containsAll(kontaktpersonList) &&
-			kontaktpersonList.containsAll(aktKomponente.getKontaktPerson())
+			aktKomponente.getAnsprechpartner().containsAll(ansprechpartnerList) &&
+			ansprechpartnerList.containsAll(aktKomponente.getAnsprechpartner())
 		) {
 			return true;  // no changes -> nothing to do  
 		}
@@ -311,10 +311,10 @@ public class EdiKomponenteController implements Initializable  {
 			entityManager.getTransaction().begin();
 			aktKomponente.setName(newName);
 			aktKomponente.setBeschreibung(newBeschreibung);
-			boolean kontaktListChanged = aktKomponente.getKontaktPerson().retainAll(kontaktpersonList);
-			for (KontaktPerson k : kontaktpersonList) {
-				if (aktKomponente.getKontaktPerson().contains(k)== false) {
-					aktKomponente.getKontaktPerson().add(k);
+			boolean kontaktListChanged = aktKomponente.getAnsprechpartner().retainAll(ansprechpartnerList);
+			for (Ansprechpartner k : ansprechpartnerList) {
+				if (aktKomponente.getAnsprechpartner().contains(k)== false) {
+					aktKomponente.getAnsprechpartner().add(k);
 					kontaktListChanged = true;
 				}
 			}
@@ -358,21 +358,21 @@ public class EdiKomponenteController implements Initializable  {
 	private void readEdiListeforKomponete( EdiKomponente selKomponente) {
 		tvVerwendungen.getItems().clear();
 		ObservableList<EdiEmpfaenger> empfaengerList = FXCollections.observableArrayList();
-		ediEintragsSet.clear(); 
+		integrationSet.clear(); 
 		/* 1. lese alle EdiEinträge mit Sender = selekierter Komponente 
 		 * 		-> zeige jeweils alle zugehörigen Empfänger, falls kein Empfänger vorhanden dummy erzeugen
 		*/
-		TypedQuery<EdiEintrag> tqS = entityManager.createQuery(
-				"SELECT e FROM EdiEintrag e WHERE e.ediKomponente = :k", EdiEintrag.class);
+		TypedQuery<Integration> tqS = entityManager.createQuery(
+				"SELECT e FROM Integration e WHERE e.ediKomponente = :k", Integration.class);
 		tqS.setParameter("k", selKomponente);
-		List<EdiEintrag> ediList = tqS.getResultList();
-		for(EdiEintrag e : ediList ) {
-			ediEintragsSet.add(e);
+		List<Integration> ediList = tqS.getResultList();
+		for(Integration e : ediList ) {
+			integrationSet.add(e);
 			if (e.getEdiEmpfaenger().size() > 0) {
 				empfaengerList.addAll(e.getEdiEmpfaenger());
 			} else {
 				EdiEmpfaenger tmpE = new EdiEmpfaenger();
-				tmpE.setEdiEintrag(e);
+				tmpE.setIntegration(e);
 				empfaengerList.add(tmpE);
 			}
 		}
@@ -383,28 +383,26 @@ public class EdiKomponenteController implements Initializable  {
 		for(EdiEmpfaenger e : tqE.getResultList() ) {
 			logger.debug("readEdiListeforKomponete", "Empfaenger:" + e.getKomponente().getFullname() + " add");
 			empfaengerList.add(e);
-			ediEintragsSet.add(e.getEdiEintrag());
+			integrationSet.add(e.getIntegration());
 		}
-//		log("readEdiListeforKomponete", "für " + selKomponente.getName() + " " + 
-//			tqE.getResultList().size() + " EDI-Empfänger gelesen (Refresh=" + cache+ ")");
 		
 		tvVerwendungen.setItems(empfaengerList);
-//		log("readEdiListeforKomponente","size="+ ediEintragsSet.size());
+//		log("readEdiListeforKomponente","size="+ integrationSet.size());
 	}
 
     @FXML
-    void actionAddKontaktperson(ActionEvent event) {
+    void actionAddAnsprechpartner(ActionEvent event) {
     	Stage dialog = new Stage(StageStyle.UTILITY);
-    	KontaktPersonAuswaehlenController controller = mainCtr.loadKontaktPersonAuswahl(dialog);
+    	AnsprechpartnerAuswaehlenController controller = mainCtr.loadAnsprechpartnerAuswahl(dialog);
     	if (controller != null) {
     		dialog.showAndWait();
     		String userInfo = "Die Kontakt-Auswahl wurde abgebrochen"; 
     		if (controller.getResponse() == Actions.OK) {
-    			KontaktPerson selectedKontakt = controller.getKontaktperson();
-    			if (kontaktpersonList.contains(selectedKontakt)) {
+    			Ansprechpartner selectedKontakt = controller.getAnsprechpartner();
+    			if (ansprechpartnerList.contains(selectedKontakt)) {
     				userInfo = "Der ausgewählte Kontakt ist bereits eingetragen";
     			} else {
-    				kontaktpersonList.add(selectedKontakt);
+    				ansprechpartnerList.add(selectedKontakt);
 					dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
     				userInfo = "Der ausgewählte Kontakt wurde ergänzt";
     			}
@@ -414,12 +412,12 @@ public class EdiKomponenteController implements Initializable  {
     }
 
     @FXML
-    void actionRemoveKontaktperson(ActionEvent event) {
-    	KontaktPerson toBeRemoved = lvAnsprechpartner.getSelectionModel().getSelectedItem();
+    void actionRemoveAnsprechpartner(ActionEvent event) {
+    	Ansprechpartner toBeRemoved = lvAnsprechpartner.getSelectionModel().getSelectedItem();
     	logger.info("remove Kontakt " + toBeRemoved.getNachname());
-    	kontaktpersonList.remove(toBeRemoved);
-    	mainCtr.setInfoText("Die Kontaktperson \"" + toBeRemoved.getVorname() + " " + 
-    					toBeRemoved.getNachname() + "\" wurde aus dieser Kontaktliste entfernt");
+    	ansprechpartnerList.remove(toBeRemoved);
+    	mainCtr.setInfoText("Der Ansprechpartner \"" + toBeRemoved.getVorname() + " " + 
+    					toBeRemoved.getNachname() + "\" wurde aus dieser Liste entfernt");
 		dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
     }
     
@@ -446,7 +444,7 @@ public class EdiKomponenteController implements Initializable  {
         assert tvVerwendungen != null : "fx:id=\"tvVerwendungen\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
         assert btnLoeschen != null : "fx:id=\"btnLoeschen\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
         assert btnSpeichern != null : "fx:id=\"btnSpeichern\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
-        assert btnRemoveKontaktperson != null : "fx:id=\"btnRemoveKontaktPerson\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
+        assert btnRemoveAnsprechpartner != null : "fx:id=\"btnRemoveAnsprechpartner\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
 	}
 
 }

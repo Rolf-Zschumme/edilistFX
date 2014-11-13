@@ -17,13 +17,13 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
 
-import de.vbl.im.model.EdiEintrag;
+import de.vbl.im.model.Integration;
 import de.vbl.im.model.EdiEmpfaenger;
 import de.vbl.im.model.EdiKomponente;
 import de.vbl.im.model.EdiPartner;
 import de.vbl.im.model.EdiSystem;
 import de.vbl.im.model.GeschaeftsObjekt;
-import de.vbl.im.model.Integration;
+import de.vbl.im.model.Iszenario;
 import de.vbl.im.model.Konfiguration;
 
 public class ExportToExcel {
@@ -31,10 +31,10 @@ public class ExportToExcel {
 	private static final String SYSTEM_SHEET = "Systeme";
 	private static final String KOMPONENTEN_SHEET = "Komponenten";
 	private static final String G_OBJEKT_SHEET = "Geschäftsobjekte";
-	private static final String INTEGRATION_SHEET = "Integrationen";
+	private static final String ISZENARIO_SHEET = "Integrationsszenarios";
 	private static final String KONFIGURATION_SHEET = "Konfigurationen";
-	private static final String EDI_SHEET = "EDI-Eintrag";
-	private static final String EDI_SHEET_MIT_EMPFAENGER = "EDI-Eintrag mit Empfängern";
+	private static final String INT_SHEET = "Integrationen";
+	private static final String EMPFAENGER_SHEET = "Integrationen mit Empfängern";
 
 	private EntityManager em;
 	
@@ -49,7 +49,7 @@ public class ExportToExcel {
 	public int write(File file) throws IOException {
 	
 		Map<Long, String> komponentenZeilenNr   = new HashMap<Long, String>();
-		Map<Long, String> integrationZeilenNr   = new HashMap<Long, String>();
+		Map<Long, String> iszenarioZeilenNr   = new HashMap<Long, String>();
 		Map<Long, String> konfigurationZeilenNr = new HashMap<Long, String>();
 		Map<Long, String> geschaeftsObZeilenNr  = new HashMap<Long, String>();
 		
@@ -86,6 +86,8 @@ public class ExportToExcel {
 		createCell(row, ++s, styleHeader, "Partner");
 		createCell(row, ++s, styleHeader, "Beschreibung");
     	
+		String TRZ = IMconstant.KOMPO_TRENNUNG;
+		
     	Sheet k_Sheet = wb.createSheet(KOMPONENTEN_SHEET);
 		++anz_zeilen;
     	row = k_Sheet.createRow(0);
@@ -95,7 +97,7 @@ public class ExportToExcel {
 		createCell(row, ++s, styleHeader, "Komponente");
 		createCell(row, ++s, styleHeader, "System");
 		createCell(row, ++s, styleHeader, "Partner");
-		createCell(row, ++s, styleHeader, "Partner --- System --- Komponente");
+		createCell(row, ++s, styleHeader, "Partner" + TRZ + "System" + TRZ + "Komponente");
 		createCell(row, ++s, styleHeader, "Beschreibung");
 		
     	TypedQuery<EdiPartner> partnerQuery = em.createQuery(
@@ -129,8 +131,9 @@ public class ExportToExcel {
             		createCell(row, ++s, styleNormal, komponente.getName());
             		createCeFo(row, ++s, styleNormal , SYSTEM_SHEET + "!B" + s_zStr);
             		createCeFo(row, ++s, styleNormal , PARTNER_SHEET + "!B" + p_zStr);
-            		createCeFo(row, ++s, styleNormal , "E" + k_zStr + " & \" --- \" & D" + k_zStr +
-            														  " & \" --- \" & C" + k_zStr);
+            		createCeFo(row, ++s, styleNormal , "E" + k_zStr + " & \"" + TRZ + "\" & D" + k_zStr +
+            														  " & \"" + TRZ + "\" & C" + k_zStr);
+//																	  " & \" --- \" & C" + k_zStr);
             		createCell(row, ++s, styleNormal, komponente.getBeschreibung());
             		komponentenZeilenNr.put(komponente.getId(), k_zStr);
         		}
@@ -169,11 +172,11 @@ public class ExportToExcel {
     	for (s=0; s<2; ++s) g_Sheet.autoSizeColumn(s);
 
     	
-    	Sheet i_Sheet = wb.createSheet(INTEGRATION_SHEET);
+    	Sheet i_Sheet = wb.createSheet(ISZENARIO_SHEET);
     	row = i_Sheet.createRow(0);
 		row.setHeightInPoints(20);
 		createCell(row, s=0, styleHeader, "lfd-Nr.");
-		createCell(row, ++s, styleHeader, "Integration");
+		createCell(row, ++s, styleHeader, "Iszenario");
 		++anz_zeilen;
 		
     	Sheet c_Sheet = wb.createSheet(KONFIGURATION_SHEET);
@@ -181,15 +184,15 @@ public class ExportToExcel {
 		row.setHeightInPoints(20);
 		createCell(row, s=0, styleHeader, "lfd-Nr.");
 		createCell(row, ++s, styleHeader, "Konfiguration");
-		createCell(row, ++s, styleHeader, "Integration");
+		createCell(row, ++s, styleHeader, "Iszenario");
 		++anz_zeilen;
 
-    	Sheet e_Sheet = wb.createSheet(EDI_SHEET);
+    	Sheet e_Sheet = wb.createSheet(INT_SHEET);
     	row = e_Sheet.createRow(0);
 		row.setHeightInPoints(20);
 		createCell(row, s=0, styleHeader, "lfd-Nr.");
-		createCell(row, ++s, styleHeader, "EDI-Nr.");
-		createCell(row, ++s, styleHeader, "Integration");
+		createCell(row, ++s, styleHeader, "I-Nr.");
+		createCell(row, ++s, styleHeader, "Iszenario");
 		createCell(row, ++s, styleHeader, "Konfiguration");
 		createCell(row, ++s, styleHeader, "Bezeichnung");
 		createCell(row, ++s, styleHeader, "Sender");
@@ -198,44 +201,44 @@ public class ExportToExcel {
 		createCell(row, ++s, styleHeader, "bis Datum");
 		++anz_zeilen;
 		
-    	TypedQuery<Integration> integrationQuery = em.createQuery(
-    			"SELECT i FROM Integration i ORDER BY i.name",Integration.class);
+    	TypedQuery<Iszenario> iszenarioQuery = em.createQuery(
+    			"SELECT i FROM Iszenario i ORDER BY i.name",Iszenario.class);
     	int i_znr = 0;
     	int c_znr = 0;
     	int e_znr = 0;
-    	for (Integration integration : integrationQuery.getResultList()) {
+    	for (Iszenario iszenario : iszenarioQuery.getResultList()) {
     		row =  i_Sheet.createRow(++i_znr);
     		++anz_zeilen;
     		createCell(row, s=0, styleNormal, i_znr); 
-    		createCell(row, ++s, styleNormal, integration.getName());
+    		createCell(row, ++s, styleNormal, iszenario.getName());
     		String i_zStr = Integer.toString(i_znr+1);
     		
-    		for (Konfiguration configuration : integration.getKonfiguration()) {
+    		for (Konfiguration configuration : iszenario.getKonfiguration()) {
         		row =  c_Sheet.createRow(++c_znr);
         		++anz_zeilen;
         		createCell(row, s=0, styleNormal, c_znr); 
         		createCell(row, ++s, styleNormal, configuration.getName());				
-        		createCeFo(row, ++s, styleNormal , INTEGRATION_SHEET + "!B" + i_zStr);  
+        		createCeFo(row, ++s, styleNormal , ISZENARIO_SHEET + "!B" + i_zStr);  
         		String c_zStr = Integer.toString(c_znr+1);
         		
-        		for(EdiEintrag ediEintrag : configuration.getEdiEintrag()) {
+        		for(Integration integration : configuration.getIntegration()) {
         			row = e_Sheet.createRow(++e_znr);
             		++anz_zeilen;
             		createCell(row, s=0, styleNormal, e_znr); 
-            		createCell(row, ++s, styleNormal, ediEintrag.getEdiNr());				
-            		createCeFo(row, ++s, styleNormal, INTEGRATION_SHEET + "!B" + i_zStr);				
+            		createCell(row, ++s, styleNormal, integration.getEdiNr());				
+            		createCeFo(row, ++s, styleNormal, ISZENARIO_SHEET + "!B" + i_zStr);				
             		createCeFo(row, ++s, styleNormal, KONFIGURATION_SHEET + "!B" + c_zStr);				
-            		createCell(row, ++s, styleNormal, ediEintrag.getBezeichnung());				
+            		createCell(row, ++s, styleNormal, integration.getBezeichnung());				
             		createCeFo(row, ++s, styleNormal, KOMPONENTEN_SHEET + "!F" + 
-            				komponentenZeilenNr.get(ediEintrag.getEdiKomponente().getId()));
-            		String intervall = ediEintrag.getIntervall() == null ? "" : ediEintrag.getIntervall().getName();
+            				komponentenZeilenNr.get(integration.getEdiKomponente().getId()));
+            		String intervall = integration.getIntervall() == null ? "" : integration.getIntervall().getName();
             		createCell(row, ++s, styleNormal, intervall);
-            		createCell(row, ++s, styleNormal, ediEintrag.getSeitDatum());
-            		createCell(row, ++s, styleNormal, ediEintrag.getBisDatum());
+            		createCell(row, ++s, styleNormal, integration.getSeitDatum());
+            		createCell(row, ++s, styleNormal, integration.getBisDatum());
         		}
         		konfigurationZeilenNr.put(configuration.getId(), c_zStr);
     		}
-    		integrationZeilenNr.put(integration.getId(), i_zStr);
+    		iszenarioZeilenNr.put(iszenario.getId(), i_zStr);
     	}
     	for (s=0; s<=2; ++s) i_Sheet.autoSizeColumn(s);
     	for (s=0; s<=3; ++s) c_Sheet.autoSizeColumn(s);
@@ -248,12 +251,12 @@ public class ExportToExcel {
     	e_Sheet.setColumnWidth(3, c_MaxLen);
     	e_Sheet.setColumnWidth(5, p_MaxLen + s_MaxLen + k_MaxLen);
     	
-    	Sheet ee_Sheet = wb.createSheet(EDI_SHEET_MIT_EMPFAENGER);
+    	Sheet ee_Sheet = wb.createSheet(EMPFAENGER_SHEET);
     	row = ee_Sheet.createRow(0);
 		row.setHeightInPoints(20);
 		createCell(row, s=0, styleHeader, "lfd-Nr.");
-		createCell(row, ++s, styleHeader, "EDI-Nr.");
-		createCell(row, ++s, styleHeader, "Integration");
+		createCell(row, ++s, styleHeader, "I-Nr.");
+		createCell(row, ++s, styleHeader, "Iszenario");
 		createCell(row, ++s, styleHeader, "Konfiguration");
 		createCell(row, ++s, styleHeader, "Bezeichnung");
 		createCell(row, ++s, styleHeader, "Sender");
@@ -263,27 +266,31 @@ public class ExportToExcel {
 		createCell(row, ++s, styleHeader, "Empfänger");
 		++anz_zeilen;
 		
-    	TypedQuery<EdiEintrag> ediEintragQuery = em.createQuery(
-    			"SELECT e FROM EdiEintrag e ORDER BY e.ediNr", EdiEintrag.class);
+    	TypedQuery<Integration> integrationQuery = em.createQuery(
+    			"SELECT e FROM Integration e ORDER BY e.ediNr", Integration.class);
     	e_znr = 0;
-    	for(EdiEintrag ediEintrag : ediEintragQuery.getResultList()) {
+    	for(Integration integration : integrationQuery.getResultList()) {
 			
-			for(EdiEmpfaenger ediEmpfaenger : ediEintrag.getEdiEmpfaenger()) {
+			for(EdiEmpfaenger ediEmpfaenger : integration.getEdiEmpfaenger()) {
+				if (integration.getEdiKomponente().getId() <= 0) {
+					System.out.println("Integration ohne Sender " + integration.getEdiNrStr());
+					continue; 
+				}
 				row = ee_Sheet.createRow(++e_znr);
 				++anz_zeilen;
 				createCell(row, s=0, styleNormal, e_znr); 
-				createCell(row, ++s, styleNormal, ediEintrag.getEdiNr());			
-				createCeFo(row, ++s, styleNormal, INTEGRATION_SHEET + "!B" + 
-						integrationZeilenNr.get(ediEintrag.getKonfiguration().getIntegration().getId()));				
+				createCell(row, ++s, styleNormal, integration.getEdiNr());			
+				createCeFo(row, ++s, styleNormal, ISZENARIO_SHEET + "!B" + 
+						iszenarioZeilenNr.get(integration.getKonfiguration().getIszenario().getId()));				
 				createCeFo(row, ++s, styleNormal, KONFIGURATION_SHEET + "!B" +
-						konfigurationZeilenNr.get(ediEintrag.getKonfiguration().getId()));				
-				createCell(row, ++s, styleNormal, ediEintrag.getBezeichnung());				
+						konfigurationZeilenNr.get(integration.getKonfiguration().getId()));				
+				createCell(row, ++s, styleNormal, integration.getBezeichnung());				
 				createCeFo(row, ++s, styleNormal, KOMPONENTEN_SHEET + "!F" + 
-						komponentenZeilenNr.get(ediEintrag.getEdiKomponente().getId()));
-				String intervall = ediEintrag.getIntervall() == null ? "" : ediEintrag.getIntervall().getName();
+						komponentenZeilenNr.get(integration.getEdiKomponente().getId()));
+				String intervall = integration.getIntervall() == null ? "" : integration.getIntervall().getName();
 				createCell(row, ++s, styleNormal, intervall);
-				createCell(row, ++s, styleNormal, ediEintrag.getSeitDatum());
-				createCell(row, ++s, styleNormal, ediEintrag.getBisDatum());
+				createCell(row, ++s, styleNormal, integration.getSeitDatum());
+				createCell(row, ++s, styleNormal, integration.getBisDatum());
 				createCeFo(row, ++s, styleNormal, KOMPONENTEN_SHEET + "!F" +
 						komponentenZeilenNr.get(ediEmpfaenger.getKomponente().getId()));;
 				createCeFo(row, ++s, styleNormal, G_OBJEKT_SHEET + "!B" +

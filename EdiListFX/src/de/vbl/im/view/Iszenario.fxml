@@ -4,14 +4,14 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="geschaeftsObjekt" prefHeight="600.0" prefWidth="935.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.im.controller.GeschaeftsObjektController">
+<AnchorPane fx:id="iszenario" prefHeight="600.0" prefWidth="935.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.im.controller.IszenarioController">
 	<children>
 		<SplitPane dividerPositions="0.0635, 0.5" focusTraversable="true" orientation="VERTICAL" prefHeight="600.0" prefWidth="840.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 			<items>
 				<ToolBar prefWidth="200.0">
   					<items>
     					<Button fx:id="btnSpeichern" mnemonicParsing="false" onAction="#speichern" text="Änderungen speichern" />
-    					<Button fx:id="btnLoeschen" mnemonicParsing="false" onAction="#loeschen" text=" löschen" />
+    					<Button fx:id="btnLoeschen" mnemonicParsing="false" onAction="#loeschen" text="IS löschen" />
 	  				</items>
 				</ToolBar>
 				<AnchorPane minHeight="0.0" minWidth="0.0">
@@ -36,16 +36,15 @@
 				</AnchorPane>
 				<AnchorPane minHeight="0.0" minWidth="0.0">
 					<children>
-						<TitledPane animated="false" layoutX="38.0" layoutY="-11.0" prefHeight="146.0" prefWidth="298.0" text="Verwendungen" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+						<TitledPane animated="false" layoutX="38.0" layoutY="-11.0" prefHeight="146.0" prefWidth="298.0" text="Verwendungsnachweis" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 							<content>
 								<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
 									<children>
 										<TableView fx:id="tvVerwendungen" prefHeight="120.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
 											<columns>
-												<TableColumn fx:id="tcEdiNr" maxWidth="100.0" minWidth="44.0" prefWidth="100.0" text="I-Nr." />
-<TableColumn fx:id="tcIszenario" maxWidth="500.0" prefWidth="-1.0" text="Integrationsszenario" /><TableColumn fx:id="tcKonfiguration" maxWidth="500.0" prefWidth="-1.0" text="Konfiguration" visible="false" />
-												<TableColumn fx:id="tcSender" maxWidth="500.0" minWidth="150.0" prefWidth="-1.0" text="Sender" />
-												<TableColumn fx:id="tcEmpfaenger" maxWidth="500.0" minWidth="150.0" prefWidth="-1.0" text="Empfänger" />
+												<TableColumn fx:id="tcEdiNr" maxWidth="100.0" minWidth="44.0" prefWidth="100.0" text="I-Nr." /><TableColumn fx:id="tcKonfiguration" maxWidth="1000.0" prefWidth="-1.0" text="Konfiguration" />
+												<TableColumn fx:id="tcSender" maxWidth="500.0" minWidth="150.0" prefWidth="250.0" text="Edi-Sender" />
+												<TableColumn fx:id="tcEmpfaenger" maxWidth="500.0" minWidth="150.0" prefWidth="250.0" text="Edi-Empfänger" /><TableColumn fx:id="tcGeschaeftsobjekt" maxWidth="400.0" minWidth="100.0" prefWidth="200.0" text="Geschäftsobjekt" />
 												<TableColumn fx:id="tcDatumAb" maxWidth="75.0" minWidth="75.0" prefWidth="75.0" text="Ab-Datum" visible="false" />
 												<TableColumn fx:id="tcDatumBis" maxWidth="85.0" minWidth="85.0" prefWidth="85.0" text="Bis-Datum" visible="false" />
 											</columns>

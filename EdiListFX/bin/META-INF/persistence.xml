@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
 	<persistence-unit name="IntegrationManager" transaction-type="RESOURCE_LOCAL">
+		<class>de.vbl.im.model.Ansprechpartner</class>
 		<class>de.vbl.im.model.DokuLink</class>
-		<class>de.vbl.im.model.EdiEintrag</class>
 		<class>de.vbl.im.model.EdiEmpfaenger</class>
 		<class>de.vbl.im.model.EdiKomponente</class>
 		<class>de.vbl.im.model.EdiPartner</class>
 		<class>de.vbl.im.model.EdiSystem</class>
 		<class>de.vbl.im.model.GeschaeftsObjekt</class>
 		<class>de.vbl.im.model.Integration</class>
+		<class>de.vbl.im.model.Intervall</class>
+		<class>de.vbl.im.model.Iszenario</class>
 		<class>de.vbl.im.model.Konfiguration</class>
-		<class>de.vbl.im.model.KontaktPerson</class>
 		<class>de.vbl.im.model.Repository</class>
 		<class>de.vbl.im.model.Vorhaben</class>
-		<class>de.vbl.im.model.Intervall</class>
 		<properties>
 			<property name="eclipselink.logging.level" value="WARNING"/>  
 			<property name="eclipselink.jdbc.batch-writing" value="None"/>
@@ -26,7 +26,6 @@
 			<property name="javax.persistence.schema-generation.create-database-schemas" value="true"/>
 			<property name="javax.persistence.jdbc.user" value="lyan"/>
 			<property name="javax.persistence.jdbc.password" value="lyan"/>
-			<property name="eclipselink.ddl-generation" value="create-tables"/>
 		</properties>
 	</persistence-unit>
 </persistence>

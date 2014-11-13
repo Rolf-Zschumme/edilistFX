@@ -455,8 +455,8 @@ public class KomponentenAuswahlController {
 	}
 
     private void unbind() {
-//    	tfEdiNr.textProperty().unbindBidirectional(ediEintrag.ediNrProperty());
-//    	tfKurzbez.textProperty().unbindBidirectional(ediEintrag.kurzBezProperty());
+//    	tfEdiNr.textProperty().unbindBidirectional(integration.ediNrProperty());
+//    	tfKurzbez.textProperty().unbindBidirectional(integration.kurzBezProperty());
     }
     
     private void close(ActionEvent event) {

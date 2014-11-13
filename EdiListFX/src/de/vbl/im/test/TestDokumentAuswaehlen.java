@@ -4,7 +4,7 @@ import javax.persistence.EntityManager;
 
 import org.controlsfx.dialog.Dialog.Actions;
 
-import de.vbl.im.controller.IntegrationManagerController;
+import de.vbl.im.controller.IMController;
 import de.vbl.im.controller.subs.DokumentAuswaehlenController;
 import de.vbl.im.model.DokuLink;
 import javafx.application.Application;
@@ -18,13 +18,13 @@ public class TestDokumentAuswaehlen extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-		IntegrationManagerController mainCtr = new IntegrationManagerController();
+		IMController mainCtr = new IMController();
 		mainCtr.setupEntityManager();
 		EntityManager em = mainCtr.getEntityManager();
 		mainCtr.setPrimaryStage(primaryStage);
 		Scene scene = new Scene(new Pane());
 		primaryStage.setScene(scene);
-		primaryStage.setTitle("Test:KontaktPersonAuswaehlen");
+		primaryStage.setTitle("Test:AnsprechpartnerAuswaehlen");
 		
     	Stage dialog = new Stage(StageStyle.UTILITY);
     	DokumentAuswaehlenController controller = mainCtr.loadDokumentAuswahl(dialog);

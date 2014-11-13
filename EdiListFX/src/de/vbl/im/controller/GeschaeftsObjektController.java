@@ -34,7 +34,7 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
 
-import de.vbl.im.model.EdiEintrag;
+import de.vbl.im.model.Integration;
 import de.vbl.im.model.EdiEmpfaenger;
 import de.vbl.im.model.EdiPartner;
 import de.vbl.im.model.GeschaeftsObjekt;
@@ -42,11 +42,11 @@ import de.vbl.im.model.GeschaeftsObjekt;
 public class GeschaeftsObjektController {
 	private static final Logger logger = LogManager.getLogger(GeschaeftsObjektController.class.getName());
 	private static Stage primaryStage = null;
-	private static IntegrationManagerController mainCtr;
+	private static IMController mainCtr;
 	private static EntityManager entityManager;
 	
 	private final ObjectProperty<GeschaeftsObjekt> geschaeftsObjekt;
-	private final ObservableSet<EdiEintrag> ediEintragsSet;      // all assigned EDI-Entities
+	private final ObservableSet<Integration> integrationSet;      // all assigned integrations
 	private final IntegerProperty ediSystemAnzahl; 
 	private GeschaeftsObjekt aktGeschaeftsObjekt = null;
 	
@@ -58,7 +58,7 @@ public class GeschaeftsObjektController {
     @FXML private TextArea taBeschreibung;
     @FXML private TableView<EdiEmpfaenger> tvVerwendungen;
     @FXML private TableColumn<EdiEmpfaenger, String> tcEdiNr;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcIntegration;
+    @FXML private TableColumn<EdiEmpfaenger, String> tcIszenario;
     @FXML private TableColumn<EdiEmpfaenger, String> tcKonfiguration;
     @FXML private TableColumn<EdiEmpfaenger, String> tcEmpfaenger;
     @FXML private TableColumn<EdiEmpfaenger, String> tcSender;
@@ -71,14 +71,14 @@ public class GeschaeftsObjektController {
     
     public GeschaeftsObjektController() {
     	this.geschaeftsObjekt = new SimpleObjectProperty<>(this, "geschaeftsObjekt", null);
-    	this.ediEintragsSet = FXCollections.observableSet();
+    	this.integrationSet = FXCollections.observableSet();
     	this.ediSystemAnzahl = new SimpleIntegerProperty(0);
     }
 
-	public static void setParent(IntegrationManagerController managerController) {
+	public static void setParent(IMController managerController) {
 		logger.entry(primaryStage);
 		GeschaeftsObjektController.mainCtr = managerController;
-		GeschaeftsObjektController.primaryStage = IntegrationManagerController.getStage();
+		GeschaeftsObjektController.primaryStage = IMController.getStage();
 		GeschaeftsObjektController.entityManager = managerController.getEntityManager();
 		logger.exit();
 	}
@@ -96,7 +96,7 @@ public class GeschaeftsObjektController {
 					((oldGeschaeftsObjekt==null) ? "null" : oldGeschaeftsObjekt.getName() + " -> " 
 				  + ((newGeschaeftsObjekt==null) ? "null" : newGeschaeftsObjekt.getName() )));
 				if (oldGeschaeftsObjekt != null && newGeschaeftsObjekt == null) {
-					ediEintragsSet.clear();
+					integrationSet.clear();
 					tfBezeichnung.setText("");
 					taBeschreibung.setText("");
 					ediSystemAnzahl.unbind();
@@ -116,7 +116,7 @@ public class GeschaeftsObjektController {
 		
 		btnSpeichern.disableProperty().bind(Bindings.not(dataIsChanged));
 		btnLoeschen.disableProperty().bind(Bindings.lessThan(0, ediSystemAnzahl));
-//		btnLoeschen.disableProperty().bind(Bindings.not(Bindings.greaterThanOrEqual(0, Bindings.size(ediEintragsSet))));
+//		btnLoeschen.disableProperty().bind(Bindings.not(Bindings.greaterThanOrEqual(0, Bindings.size(integrationSet))));
 
 		tfBezeichnung.textProperty().addListener((observable, oldValue, newValue)  -> {
 			String msg = "";
@@ -139,16 +139,16 @@ public class GeschaeftsObjektController {
 		
 //	    Setup for Sub-Panel    
 		
-		tcEdiNr.setCellValueFactory(cellData -> Bindings.format(EdiEintrag.FORMAT_EDINR, 
-												cellData.getValue().getEdiEintrag().ediNrProperty()));
-		tcIntegration.setCellValueFactory(cell -> cell.getValue().getEdiEintrag().intregrationNameProperty());
-		tcKonfiguration.setCellValueFactory(cell -> cell.getValue().getEdiEintrag().konfigurationNameProperty());
-		tcSender.setCellValueFactory(cellData -> cellData.getValue().getEdiEintrag().getEdiKomponente().fullnameProperty());
+		tcEdiNr.setCellValueFactory(cellData -> Bindings.format(Integration.FORMAT_EDINR, 
+												cellData.getValue().getIntegration().ediNrProperty()));
+		tcIszenario.setCellValueFactory(cell -> cell.getValue().getIntegration().iszenarioNameProperty());
+		tcKonfiguration.setCellValueFactory(cell -> cell.getValue().getIntegration().konfigurationNameProperty());
+		tcSender.setCellValueFactory(cellData -> cellData.getValue().getIntegration().getEdiKomponente().fullnameProperty());
 		tcEmpfaenger.setCellValueFactory(cellData -> cellData.getValue().getKomponente().fullnameProperty());
-		tcDatumAb.setCellValueFactory(cellData -> cellData.getValue().getEdiEintrag().seitDatumProperty());
-		tcDatumBis.setCellValueFactory(cellData -> cellData.getValue().getEdiEintrag().bisDatumProperty());
+		tcDatumAb.setCellValueFactory(cellData -> cellData.getValue().getIntegration().seitDatumProperty());
+		tcDatumBis.setCellValueFactory(cellData -> cellData.getValue().getIntegration().bisDatumProperty());
 		
-		// TODO: zum Absprung bei Select eines Edi-Eintrages in der Sub-Tabelle
+		// TODO: zum Absprung bei Select einer anderen Integration in der Sub-Tabelle
 		tvVerwendungen.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<EdiEmpfaenger>() {
 			@Override
 			public void changed (ObservableValue<? extends EdiEmpfaenger> ov, EdiEmpfaenger oldValue, EdiEmpfaenger newValue) {
@@ -160,7 +160,7 @@ public class GeschaeftsObjektController {
 
 	@FXML
 	void loeschen(ActionEvent event) {
-		if (ediEintragsSet.size() > 0) {
+		if (integrationSet.size() > 0) {
 			String msg = "Fehler beim Löschen des Geschäftsobjektes \"" + 
 						  aktGeschaeftsObjekt.getName() + "\" da dieses verwendet wird";
 			mainCtr.setErrorText(msg);
@@ -276,7 +276,7 @@ public class GeschaeftsObjektController {
 	private void readEdiListeforGeschaeftsObjekt( GeschaeftsObjekt geschaeftsObjekt) {
 		tvVerwendungen.getItems().clear();
 		ObservableList<EdiEmpfaenger> empfaengerList = FXCollections.observableArrayList();
-		ediEintragsSet.clear(); 
+		integrationSet.clear(); 
 		/* read all EdiEmpfaenger with given GeschaeftsObjekt 
 		 */
 		TypedQuery<EdiEmpfaenger> tqE = entityManager.createQuery(
@@ -286,10 +286,10 @@ public class GeschaeftsObjektController {
 		for(EdiEmpfaenger e : tqE.getResultList() ) {
 			log("readEdiListeforKomponete", "add Empfaenger mit " + e.getGeschaeftsObjekt().getName());
 			empfaengerList.add(e);
-			ediEintragsSet.add(e.getEdiEintrag());
+			integrationSet.add(e.getIntegration());
 		}
 		tvVerwendungen.setItems(empfaengerList);
-		log("readEdiListeforKomponente","size="+ ediEintragsSet.size());
+		log("readEdiListeforKomponente","size="+ integrationSet.size());
 	}
 
 	public final ObjectProperty<GeschaeftsObjekt> geschaeftsObjektProperty() {
@@ -317,6 +317,9 @@ public class GeschaeftsObjektController {
     	assert tcEdiNr != null : "fx:id=\"tcEdiNr\" was not injected: check your FXML file 'GeschaeftsObjekt.fxml'.";
     	assert tcSender != null : "fx:id=\"tcSender\" was not injected: check your FXML file 'GeschaeftsObjekt.fxml'.";
         assert tcEmpfaenger != null : "fx:id=\"tcEmpfaenger\" was not injected: check your FXML file 'GeschaeftsObjekt.fxml'.";
+        assert tcIszenario != null : "fx:id=\"tcIszenario\" was not injected: check your FXML file 'GeschaeftsObjekt.fxml'.";
+        assert tcKonfiguration != null : "fx:id=\"tcKonfiguration\" was not injected: check your FXML file 'GeschaeftsObjekt.fxml'.";
+        assert tcDatumAb != null : "fx:id=\"tcDatumAb\" was not injected: check your FXML file 'GeschaeftsObjekt.fxml'.";
         assert tcDatumBis != null : "fx:id=\"tcDatumBis\" was not injected: check your FXML file 'GeschaeftsObjekt.fxml'.";
         assert tvVerwendungen != null : "fx:id=\"tvVerwendungen\" was not injected: check your FXML file 'GeschaeftsObjekt.fxml'.";
         assert btnLoeschen != null : "fx:id=\"btnLoeschen\" was not injected: check your FXML file 'GeschaeftsObjekt.fxml'.";

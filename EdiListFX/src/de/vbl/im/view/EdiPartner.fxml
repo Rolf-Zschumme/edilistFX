@@ -22,7 +22,12 @@
 									<children>
 										<TextField fx:id="tfBezeichnung" layoutX="86.0" layoutY="11.0" prefHeight="25.0" prefWidth="200.0" AnchorPane.leftAnchor="100.0" AnchorPane.topAnchor="5.0" />
 										<Label layoutX="8.0" layoutY="15.0" prefWidth="81.0" text="Bezeichnung:" AnchorPane.leftAnchor="12.0" AnchorPane.topAnchor="5.0" />
-										<Label layoutX="319.0" layoutY="15.0" text="Beschreibung:" AnchorPane.leftAnchor="320.0" AnchorPane.topAnchor="5.0" /><ListView fx:id="lvAnsprechpartner" prefWidth="200.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="100.0" AnchorPane.topAnchor="40.0" /><TextArea fx:id="taBeschreibung" layoutX="89.0" layoutY="58.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="400.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" /><Label alignment="CENTER" disable="true" layoutX="6.0" layoutY="64.0" text="Kontaktperson:" AnchorPane.leftAnchor="12.0" AnchorPane.topAnchor="40.0" /><Button layoutX="14.0" layoutY="74.0" mnemonicParsing="false" onAction="#actionAddKontaktPerson" prefWidth="80.0" text="hinzufügen" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="65.0" /><Button fx:id="btnRemoveKontaktPerson" disable="true" layoutX="14.0" layoutY="108.0" mnemonicParsing="false" onAction="#actionRemoveKontaktPerson" prefWidth="80.0" text="entfernen" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="105.0" />
+										<Label layoutX="319.0" layoutY="15.0" text="Beschreibung:" AnchorPane.leftAnchor="320.0" AnchorPane.topAnchor="5.0" />
+										<ListView fx:id="lvAnsprechpartner" prefWidth="200.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="100.0" AnchorPane.topAnchor="40.0" />
+										<TextArea fx:id="taBeschreibung" layoutX="89.0" layoutY="58.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="400.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
+										<Label alignment="CENTER" disable="true" layoutX="6.0" layoutY="64.0" text="Ansprechpartner:" AnchorPane.leftAnchor="12.0" AnchorPane.topAnchor="40.0" />
+										<Button layoutX="14.0" layoutY="74.0" mnemonicParsing="false" onAction="#actionAddAnsprechpartner" prefWidth="80.0" text="hinzufügen" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="65.0" />
+										<Button fx:id="btnRemoveAnsprechpartner" disable="true" layoutX="14.0" layoutY="108.0" mnemonicParsing="false" onAction="#actionRemoveAnsprechpartner" prefWidth="80.0" text="entfernen" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="105.0" />
 									</children>
 								</AnchorPane>
 							</content>
@@ -37,7 +42,7 @@
 									<children>
 										<TableView fx:id="tvVerwendungen" prefHeight="120.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
 											<columns>
-												<TableColumn fx:id="tcEdiNr" maxWidth="59.000001549720764" minWidth="44.0" prefWidth="59.000001549720764" text="SST-Nr." />
+												<TableColumn fx:id="tcEdiNr" maxWidth="59.000001549720764" minWidth="44.0" prefWidth="59.000001549720764" text=" I-Nr." />
 												<TableColumn fx:id="tcSender" maxWidth="500.0" minWidth="150.0" prefWidth="235.0" text="Sender" />
 												<TableColumn fx:id="tcEmpfaenger" maxWidth="500.0" minWidth="150.0" prefWidth="250.0" text="Empfänger" /><TableColumn fx:id="tcGeschaeftsobjekt" maxWidth="400.0" minWidth="100.0" prefWidth="200.0" text="Geschäftsobjekt" />
 												<TableColumn fx:id="tcDatumAb" maxWidth="75.0" minWidth="75.0" prefWidth="75.0" text="Ab-Datum" />

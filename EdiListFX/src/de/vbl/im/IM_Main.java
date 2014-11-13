@@ -12,13 +12,13 @@ import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.vbl.im.controller.IntegrationManagerController;
+import de.vbl.im.controller.IMController;
 
 
-public class IntegrationManagerMain extends Application {
+public class IM_Main extends Application {
 	
-	private static final Logger logger = LogManager.getLogger(IntegrationManagerMain.class.getName());
-	IntegrationManagerController controller;
+	private static final Logger logger = LogManager.getLogger(IM_Main.class.getName());
+	IMController controller;
 	
 	public static void main(String[] args) {
 		Date date = java.util.Calendar.getInstance().getTime();
@@ -28,7 +28,7 @@ public class IntegrationManagerMain extends Application {
 		try {
 			launch(args);
 		} catch (Exception e) {
-			logger.error("Fehler in der Anwendung IntegrationManagerMain",e);
+			logger.error("Fehler: " + e.getMessage());
 		}
 	}
 	
@@ -44,7 +44,7 @@ public class IntegrationManagerMain extends Application {
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch (Exception e) {
-			logger.error("Fehler in IntegrationManagerMain.start()");
+			logger.error("Fehler in IM_Main.start()");
 			e.printStackTrace();
 		}
 	}
@@ -55,7 +55,7 @@ public class IntegrationManagerMain extends Application {
 	}
 
 	public Parent loadAndStartController() {
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("view/IntegrationManager.fxml"));
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("view/IM.fxml"));
 		Parent root = null;
 
 		try {

@@ -2,30 +2,29 @@ package de.vbl.im.test;
 
 import org.controlsfx.dialog.Dialog.Actions;
 
-import de.vbl.im.controller.IntegrationManagerController;
-import de.vbl.im.controller.subs.KontaktPersonAuswaehlenController;
+import de.vbl.im.controller.IMController;
+import de.vbl.im.controller.subs.AnsprechpartnerAuswaehlenController;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-public class TestKontaktPersonAuswaehlen extends Application {
+public class TestAnsprechpartnerAuswaehlen extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-		IntegrationManagerController mainCtr = new IntegrationManagerController();
+		IMController mainCtr = new IMController();
 		mainCtr.setupEntityManager();
 		mainCtr.setPrimaryStage(primaryStage);
-		primaryStage.setTitle("Test:KontaktPersonAuswaehlen");
+		primaryStage.setTitle("Test: Ansprechpartner-Auswaehlen");
 		
     	Stage dialog = new Stage(StageStyle.UTILITY);
-    	KontaktPersonAuswaehlenController controller = mainCtr.loadKontaktPersonAuswahl(dialog);
+    	AnsprechpartnerAuswaehlenController controller = mainCtr.loadAnsprechpartnerAuswahl(dialog);
     	if (controller != null) {
     		dialog.showAndWait();
     		if (controller.getResponse() == Actions.OK) {
     			System.out.println("ok");
     		}
     	}
-		
 	}
 
 	public static void main(String[] args) {

@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.text.*?>
-<?import javafx.scene.control.*?>
 <?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.text.*?>
 
-<BorderPane minHeight="389.0" minWidth="440.0" prefHeight="543.0" prefWidth="710.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.im.controller.subs.KontaktPersonAuswaehlenController">
+<BorderPane minHeight="389.0" minWidth="440.0" prefHeight="543.0" prefWidth="710.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.im.controller.subs.AnsprechpartnerAuswaehlenController">
    <top>
       <AnchorPane minHeight="60.0">
          <children>
-            <Label alignment="CENTER" prefHeight="60.0" prefWidth="952.0" text="Kontakt-Person auswählen oder neu eingeben" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" BorderPane.alignment="CENTER">
+            <Label alignment="CENTER" prefHeight="60.0" prefWidth="952.0" text="Ansprechpartner auswählen oder neu eingeben" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" BorderPane.alignment="CENTER">
                <font>
                   <Font name="System Bold" size="18.0" />
                </font>
@@ -30,7 +29,7 @@
    <center>
       <TabPane fx:id="tabPane" BorderPane.alignment="CENTER">
          <tabs>
-            <Tab fx:id="tabKontaktPersonenListe" closable="false" text="vorhandene Kontakt-Personen auswählen  ">
+            <Tab fx:id="tabAnsprechpartnerListe" closable="false" text="vorhandenen Ansprechpartner auswählen  ">
                <content>
                   <TableView fx:id="tableKontaktAuswahl" prefHeight="419.0" prefWidth="496.0">
                     <columns>
@@ -69,13 +68,17 @@
                         <Label text="P-/E- Nummer:" GridPane.columnIndex="1" />
                         <Label text="Mail-Adresse:" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                         <Label text="Firma / Abteilung:" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                        <HBox maxHeight="-Infinity" prefHeight="15.0" prefWidth="366.0" GridPane.columnIndex="2">
+                        <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" prefHeight="15.0" prefWidth="366.0" GridPane.columnIndex="2">
                            <children>
                               <TextField fx:id="tfNummerOutlook" maxWidth="130.0" GridPane.columnIndex="2">
                                  <GridPane.margin>
                                     <Insets />
                                  </GridPane.margin>
-                              </TextField>
+                              </TextField><Label text="Art:">
+<padding>
+<Insets left="80.0" right="10.0" />
+</padding>
+</Label><ChoiceBox fx:id="m_OutlookArt" prefWidth="108.0" GridPane.columnIndex="2" />
                            </children>
                         </HBox>
                         <TextField fx:id="tfNachnameOutlook" disable="true" GridPane.columnIndex="2" GridPane.rowIndex="1" />
@@ -96,7 +99,7 @@
                   </GridPane>
                </content>
             </Tab>
-            <Tab fx:id="tabNeueingabe" closable="false" text="Neuanlage (z.B externe Person)  ">
+            <Tab fx:id="tabNeuanlage" closable="false" text="Neuanlage (z.B externe Person)  ">
                <content>
                   <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
@@ -117,7 +120,21 @@
                            <font>
                               <Font name="System Bold" size="14.0" />
                            </font>
-                        </Label>
+                        </Label><HBox alignment="CENTER_LEFT" maxHeight="-Infinity" prefHeight="15.0" prefWidth="366.0" GridPane.columnIndex="2">
+<children>
+<TextField focusTraversable="false" maxWidth="130.0" visible="false" GridPane.columnIndex="2">
+<GridPane.margin>
+<Insets />
+</GridPane.margin>
+</TextField>
+<Label text="Art:">
+<padding>
+<Insets left="80.0" right="10.0" />
+</padding>
+</Label>
+<ChoiceBox fx:id="m_NeuanlageArt" prefWidth="108.0" GridPane.columnIndex="2" />
+</children>
+</HBox>
                      </children>
                      <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="422.0" minWidth="10.0" prefWidth="34.0" />

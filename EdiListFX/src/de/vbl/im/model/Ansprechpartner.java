@@ -1,7 +1,5 @@
 package de.vbl.im.model;
 
-import static javax.persistence.GenerationType.TABLE;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,14 +12,14 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Transient;
+import static javax.persistence.GenerationType.IDENTITY;
 
 /**
- * Entity implementation class for Entity: KontaktPerson
+ * Entity implementation class for Entity: Ansprechpartner
  *
  */
 @Entity 
-
-public class KontaktPerson implements Serializable {
+public class Ansprechpartner implements Serializable {
 	
 	private long id; 
 	private StringProperty nummer;
@@ -33,7 +31,7 @@ public class KontaktPerson implements Serializable {
 	private StringProperty mail;
 	private static final long serialVersionUID = 1L;
 
-	public KontaktPerson() {
+	public Ansprechpartner() {
 		super();
 		nummer    = new SimpleStringProperty();
 		nachname  = new SimpleStringProperty();
@@ -45,7 +43,7 @@ public class KontaktPerson implements Serializable {
 	}
 	
 	@Id    
-	@GeneratedValue(strategy = TABLE)
+	@GeneratedValue(strategy = IDENTITY)
 	public long getId() {
 		return this.id;
 	}
@@ -102,12 +100,14 @@ public class KontaktPerson implements Serializable {
 		this.art.set (abteilung==null || abteilung.length() == 0 ? " ": abteilung.substring(0, 1));
 	}
 
-	public static Collection<String> valuesOfArt = Arrays.asList(" ","Fachlich","Technisch"); 
-
+	public static Collection<String> valuesOfArt = Arrays.asList(" ","Fachlich","Technisch");
 	public String getArtLong() {
-		char art = this.getArtSafe().charAt(0); 
-		for (String value : valuesOfArt) {
-			if (value.charAt(0) == art) return value; 
+		String ret = this.getArtSafe();
+		if (ret.length() > 0) {
+			char art = ret.charAt(0); 
+			for (String value : valuesOfArt) {
+				if (value.charAt(0) == art) return value; 
+			}
 		}
 		return "???";
 	}
@@ -155,9 +155,9 @@ public class KontaktPerson implements Serializable {
 	 * "   Gerlinde Oberfeld" 
 	 * ----------------------------------------------------------------------*/
 	@Transient
-	public String getArtVornameNachnameFirma() {
+	public String getArtNameFirma() {
 		String prefix = art.getValueSafe();
-		if (prefix.equals(" ")) {
+		if (prefix.trim().equals("")) {
 			prefix = "   "; 
 		} else {
 			prefix += ": ";

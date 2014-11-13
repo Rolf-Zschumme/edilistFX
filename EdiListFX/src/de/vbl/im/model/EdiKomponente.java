@@ -12,7 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import de.vbl.im.model.KontaktPerson;
+import de.vbl.im.model.Ansprechpartner;
 
 import java.util.Collection;
 
@@ -24,7 +24,7 @@ public class EdiKomponente {
 	private StringProperty name;
 	private String beschreibung;
 	private EdiSystem ediSystem;
-	private Collection<KontaktPerson> kontaktPerson;
+	private Collection<Ansprechpartner> ansprechpartner;
 	
 	private StringProperty fullname;  // transient
 
@@ -109,11 +109,11 @@ public class EdiKomponente {
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
 	@ManyToMany
-	public Collection<KontaktPerson> getKontaktPerson() {
-	    return kontaktPerson;
+	public Collection<Ansprechpartner> getAnsprechpartner() {
+	    return ansprechpartner;
 	}
 
-	public void setKontaktPerson(Collection<KontaktPerson> param) {
-	    this.kontaktPerson = param;
+	public void setAnsprechpartner(Collection<Ansprechpartner> param) {
+	    this.ansprechpartner = param;
 	}
 }

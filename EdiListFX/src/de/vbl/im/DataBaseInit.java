@@ -8,12 +8,12 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
-import de.vbl.im.model.EdiEintrag;
+import de.vbl.im.model.Integration;
 import de.vbl.im.model.EdiKomponente;
 import de.vbl.im.model.EdiPartner;
 import de.vbl.im.model.EdiSystem;
 import de.vbl.im.model.GeschaeftsObjekt;
-import de.vbl.im.model.Integration;
+import de.vbl.im.model.Iszenario;
 import de.vbl.im.model.Konfiguration;
 import de.vbl.im.model.Repository;
 
@@ -28,10 +28,10 @@ public class DataBaseInit {
 		EntityTransaction ta = null;
 
 		// read the existing entries and write to console
- 		Query q = em.createQuery("select a from Integration a");
+ 		Query q = em.createQuery("select a from Iszenario a");
 		@SuppressWarnings("unchecked")
-		List<Integration> anbindungsList = q.getResultList();
-		for (Integration anbindung : anbindungsList) {
+		List<Iszenario> anbindungsList = q.getResultList();
+		for (Iszenario anbindung : anbindungsList) {
 		   System.out.println(anbindung);
 		}
 		System.out.println("Anzahl Anbindungen: " + anbindungsList.size());
@@ -46,7 +46,7 @@ public class DataBaseInit {
 					case 1: 	generateTestObjekts();
 					case 2:		generateRealObjekts();
 					case 3: 	generateGeschaeftobjekte();
-					case 4: 	generateSzenarios();
+					case 4: 	generateISzenarios();
 					case 5:     generateRepository();
 				}
 			}
@@ -65,10 +65,10 @@ public class DataBaseInit {
 		}
 		finally {
 			
-			q = em.createQuery("SELECT e FROM EdiEintrag e ORDER BY e.ediNr");
+			q = em.createQuery("SELECT e FROM Integration e ORDER BY e.ediNr");
 			@SuppressWarnings("unchecked")
-			List<EdiEintrag> ediList = q.getResultList();
-			for (EdiEintrag el : ediList) {
+			List<Integration> ediList = q.getResultList();
+			for (Integration el : ediList) {
 			   System.out.println(el);
 			}
 			System.out.println("Size: " + ediList.size());
@@ -227,60 +227,44 @@ public class DataBaseInit {
 		
 	}
 	
-	// Integrationen und Konfigurationen
+	// Integrationsszenarios und Konfigurationen
 	
-	private static void generateSzenarios() {
-		Integration integration = null;
+	private static void generateISzenarios() {
+		Iszenario iszenario = null;
 
-		integration = newIntegration("ANW Meldungsverarbeitung");
-		em.persist(integration);
-		em.persist(newKonfiguration(integration, "CS_ANW_MLD__Meldungseingang"));
-		em.persist(newKonfiguration(integration, "CS_ANW_MLD__Meldungsausgang"));
+		iszenario = newISzenario("ANW Meldungsverarbeitung");
+		em.persist(iszenario);
+		em.persist(newKonfiguration(iszenario, "CS_ANW_MLD__Meldungseingang"));
+		em.persist(newKonfiguration(iszenario, "CS_ANW_MLD__Meldungsausgang"));
 
-		integration = newIntegration("LST Zahlungenaufträge");
-		em.persist(integration);
-		em.persist(newKonfiguration(integration, "CS_LSTG_Mitteilung_Leistungstraeger__DPAG_Rentenservice"));
-		em.persist(newKonfiguration(integration, "CS_LSTG_Zahlungsanweisung__DPAG_Rentenservice"));
+		iszenario = newISzenario("LST Zahlungenaufträge");
+		em.persist(iszenario);
+		em.persist(newKonfiguration(iszenario, "CS_LSTG_Mitteilung_Leistungstraeger__DPAG_Rentenservice"));
+		em.persist(newKonfiguration(iszenario, "CS_LSTG_Zahlungsanweisung__DPAG_Rentenservice"));
 		
-		integration = newIntegration("CRM Beschäftspartner-Replikation");
-		em.persist(integration);
-		em.persist(newKonfiguration(integration, "CS_ZGP_Replikation__CRM__to__ERP"));
-		em.persist(newKonfiguration(integration, "CS_ZGP_Replikation__ERP__to__CRM"));
+		iszenario = newISzenario("CRM Beschäftspartner-Replikation");
+		em.persist(iszenario);
+		em.persist(newKonfiguration(iszenario, "CS_ZGP_Replikation__CRM__to__ERP"));
+		em.persist(newKonfiguration(iszenario, "CS_ZGP_Replikation__ERP__to__CRM"));
 		
-		integration = newIntegration("FV-Anbindung");
-		em.persist(integration);
-		em.persist(newKonfiguration(integration, "CS_ISIV_Koexistenz"));
+		iszenario = newISzenario("FV-Anbindung");
+		em.persist(iszenario);
+		em.persist(newKonfiguration(iszenario, "CS_ISIV_Koexistenz"));
 
-		integration = newIntegration("Materialbeschaffung (MM)");
-		em.persist(integration);
-		em.persist(newKonfiguration(integration, "CS_e-Procurement_Integration_Lieferanten"));
+		iszenario = newISzenario("Materialbeschaffung (MM)");
+		em.persist(iszenario);
+		em.persist(newKonfiguration(iszenario, "CS_e-Procurement_Integration_Lieferanten"));
 		
 		em.persist(newKonfiguration(null, "CS_e-Gov_Portal_Integration"));
 		em.persist(newKonfiguration(null, "CS_FS-CD_eAvis_Beitragseingang__RZ_Arbeitgeber"));
 		em.persist(newKonfiguration(null, "CS_RC_SAS_BNP__Filetransfer"));
 		
-		integration = newIntegration("Zulage-System");
-		em.persist(integration);
-		em.persist(newKonfiguration(integration, "IS_ZUL_ZUSY_SAP"));
-		em.persist(newKonfiguration(integration, "IS_ZUL_ZUSY_KOEX"));
+		iszenario = newISzenario("Zulage-System");
+		em.persist(iszenario);
+		em.persist(newKonfiguration(iszenario, "IS_ZUL_ZUSY_SAP"));
+		em.persist(newKonfiguration(iszenario, "IS_ZUL_ZUSY_KOEX"));
 	}
 	
-//	private static void generateSSTs() {
-//		EdiEintrag sst = new EdiEintrag();
-//		sst.setEdiKomponente(getKompo("CS_ANW_MLD__Meldungseingang"));
-//		
-//		sst.setEdiEmpfaenger(generateEmpfänger(k[211],g[1]));
-//	}
-//	
-//	private static Collection<EdiEmpfaenger> generateEmpfänger(EdiKomponente ediKomponente,
-//												   GeschaeftsObjekt geschaeftsObjekt) {
-//		Collection<EdiEmpfaenger> empfList = new ArrayList<EdiEmpfaenger>();
-//		EdiEmpfaenger e = new EdiEmpfaenger();
-//		empfList.add(new EdiEmpfaenger())
-//		return null;
-//	}
-
-
 //	private static EdiKomponente getKompo(String string) {
 //    	TypedQuery<EdiKomponente> tq = em.createQuery(
 //			"SELECT k FROM EdiKomponente k WHERE LOWER(k.name) = LOWER(:n)", EdiKomponente.class);
@@ -312,23 +296,23 @@ public class DataBaseInit {
 		System.out.println(anzGO + " Geschaeftobjekte() angelegt");
 	}
 	
-	private static Integration newIntegration (String integrationName) {
-		Integration integration = new Integration();
-		integration.setName(integrationName);
-		return integration;
+	private static Iszenario newISzenario (String isznearioName) {
+		Iszenario iszenario = new Iszenario();
+		iszenario.setName(isznearioName);
+		return iszenario;
 	}
 
-	private static Konfiguration newKonfiguration( Integration integration,	String konfigName) 
+	private static Konfiguration newKonfiguration( Iszenario iszenario,	String konfigName) 
 	{
 		System.out.print("Edi_Konfiguration anlegen ");
-		if (integration != null) {
-			System.out.print("für \"" + integration.getName() + "\" ");
+		if (iszenario != null) {
+			System.out.print("für \"" + iszenario.getName() + "\" ");
 		}
 		System.out.println("mit Name \"" + konfigName + "\"");
 		
 		Konfiguration konfiguration = new Konfiguration();
 		konfiguration.setName(konfigName);
-		konfiguration.setIntegration(integration);
+		konfiguration.setIszenario(iszenario);
 		return konfiguration;
 	}
 	

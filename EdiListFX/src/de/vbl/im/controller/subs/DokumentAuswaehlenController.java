@@ -45,7 +45,7 @@ import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
 import org.controlsfx.dialog.Dialog.Actions;
 
-import de.vbl.im.controller.IntegrationManagerController;
+import de.vbl.im.controller.IMController;
 import de.vbl.im.model.DokuLink;
 import de.vbl.im.model.Repository;
 
@@ -54,7 +54,7 @@ public class DokumentAuswaehlenController implements Initializable {
 
 	private static Stage primaryStage = null;
     private static String applName = null;
-	private static IntegrationManagerController managerController;
+	private static IMController managerController;
     private static EntityManager entityManager = null;
     
     private ObservableList<Repository> reposiList = FXCollections.observableArrayList();
@@ -218,7 +218,7 @@ public class DokumentAuswaehlenController implements Initializable {
     	
     }
 
-    public void start(Stage primaryStage, IntegrationManagerController managerController, EntityManager entityManager) {
+    public void start(Stage primaryStage, IMController managerController, EntityManager entityManager) {
 
     	DokumentAuswaehlenController.primaryStage = primaryStage;
     	DokumentAuswaehlenController.entityManager = entityManager;

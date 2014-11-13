@@ -2,6 +2,7 @@ package de.vbl.im.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
@@ -48,21 +48,22 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
 
+import sun.util.logging.resources.logging;
 import de.vbl.im.controller.subs.DokumentAuswaehlenController;
-import de.vbl.im.controller.subs.KontaktPersonAuswaehlenController;
-import de.vbl.im.model.EdiEintrag;
+import de.vbl.im.controller.subs.AnsprechpartnerAuswaehlenController;
+import de.vbl.im.model.Integration;
 import de.vbl.im.model.EdiEmpfaenger;
 import de.vbl.im.model.EdiKomponente;
 import de.vbl.im.model.EdiPartner;
 import de.vbl.im.model.EdiSystem;
 import de.vbl.im.model.GeschaeftsObjekt;
-import de.vbl.im.model.Integration;
+import de.vbl.im.model.Iszenario;
 import de.vbl.im.model.Konfiguration;
-import de.vbl.im.model.KontaktPerson;
+import de.vbl.im.model.Ansprechpartner;
 import de.vbl.im.tools.ExportToExcel;
 
-public class IntegrationManagerController {
-	private static final Logger logger = LogManager.getLogger(IntegrationManagerController.class.getName()); 
+public class IMController {
+	private static final Logger logger = LogManager.getLogger(IMController.class.getName()); 
 	private static final String APPL_NAME = "Integration Manager";
 	private static final String PERSISTENCE_UNIT_NAME = "IntegrationManager";
 	private static final String SICHERHEITSABFRAGE = "Sicherheitsabfrage";
@@ -71,25 +72,24 @@ public class IntegrationManagerController {
 	private static int maxEdiNr;
 	private static Stage primaryStage;
     private EntityManager entityManager;
-    private ObservableList<EdiEintrag> ediEintraegeList = FXCollections.observableArrayList();
+    private ObservableList<Integration> ediEintraegeList = FXCollections.observableArrayList();
     private ObservableList<EdiPartner> ediPartnerList = FXCollections.observableArrayList();    
     private ObservableList<EdiSystem> ediSystemList = FXCollections.observableArrayList();
     private ObservableList<EdiKomponente> ediKomponentenList = FXCollections.observableArrayList();
-    private ObservableList<Integration> integrationList = FXCollections.observableArrayList();
+    private ObservableList<Iszenario> iszenarioList = FXCollections.observableArrayList();
     private ObservableList<Konfiguration> konfigurationList = FXCollections.observableArrayList();
-    private ObservableList<KontaktPerson> kontaktPersonList = FXCollections.observableArrayList();
+    private ObservableList<Ansprechpartner> ansprechpartnerList = FXCollections.observableArrayList();
     private ObservableList<GeschaeftsObjekt> geschaeftsobjektList = FXCollections.observableArrayList();    
-
 	
     @FXML private TextField txtInfoZeile;
     @FXML private TabPane tabPaneObjekte;
     
     @FXML private Tab tabEdiNr;
-    @FXML private TableView<EdiEintrag> tableEdiNrAuswahl;
-    @FXML private TableColumn<EdiEintrag, String> tColAuswahlEdiNr;
-    @FXML private TableColumn<EdiEintrag, String> tColAuswahlEdiNrSender;
-    @FXML private TableColumn<EdiEintrag, String> tColAuswahlEdiNrIngration;
-    @FXML private TableColumn<EdiEintrag, String> tColAuswahlEdiNrBezeichnung;
+    @FXML private TableView<Integration> tableEdiNrAuswahl;
+    @FXML private TableColumn<Integration, String> tColAuswahlEdiNr;
+    @FXML private TableColumn<Integration, String> tColAuswahlEdiNrSender;
+    @FXML private TableColumn<Integration, String> tColAuswahlEdiNrIszenario;
+    @FXML private TableColumn<Integration, String> tColAuswahlEdiNrBezeichnung;
 
     @FXML private Tab tabPartner;
     @FXML private TableView<EdiPartner> tablePartnerAuswahl;
@@ -109,51 +109,45 @@ public class IntegrationManagerController {
     @FXML private TableColumn<EdiKomponente, String> tColSelKompoSysteme;
     @FXML private TableColumn<EdiKomponente, String> tColSelKompoPartner;
     
-    @FXML private Tab tabIntegrationen;
-    @FXML private TableView<Integration> tableIntegrationAuswahl;
-    @FXML private TableColumn<Integration, String> tColSelIntegrationName;
-    @FXML private TableColumn<Integration, String> tColSelIntegrationKonfigurationAnzahl;
+    @FXML private Tab tabIszenarien;
+    @FXML private TableView<Iszenario> tableIszenarioAuswahl;
+    @FXML private TableColumn<Iszenario, String> tColSelIszenarioName;
     
     @FXML private Tab tabKonfigurationen;
     @FXML private TableView<Konfiguration> tableKonfigurationAuswahl;
     @FXML private TableColumn<Konfiguration, String> tColSelKonfigurationName;
-    @FXML private TableColumn<Konfiguration, String> tColSelKonfigIntegrationName;
+    @FXML private TableColumn<Konfiguration, String> tColSelKonfigIszenarioName;
     
-    @FXML private Tab tabKontaktPersonen;
-    @FXML private TableView<KontaktPerson> tableKontaktAuswahl;
-    @FXML private TableColumn<KontaktPerson, String> tColKontaktUserId;
-    @FXML private TableColumn<KontaktPerson, String> tColKontaktNachname;
-    @FXML private TableColumn<KontaktPerson, String> tColKontaktVorname;
-    @FXML private TableColumn<KontaktPerson, String> tColKontaktArt;
-    @FXML private TableColumn<KontaktPerson, String> tColKontaktAbteilung;
-    @FXML private TableColumn<KontaktPerson, String> tColKontaktTelefon;
-    @FXML private TableColumn<KontaktPerson, String> tColKontaktMailadresse;
+    @FXML private Tab tabAnsprechpartner;
+    @FXML private TableView<Ansprechpartner> tableKontaktAuswahl;
+    @FXML private TableColumn<Ansprechpartner, String> tColKontaktUserId;
+    @FXML private TableColumn<Ansprechpartner, String> tColKontaktNachname;
+    @FXML private TableColumn<Ansprechpartner, String> tColKontaktVorname;
+    @FXML private TableColumn<Ansprechpartner, String> tColKontaktArt;
+    @FXML private TableColumn<Ansprechpartner, String> tColKontaktAbteilung;
+    @FXML private TableColumn<Ansprechpartner, String> tColKontaktTelefon;
+    @FXML private TableColumn<Ansprechpartner, String> tColKontaktMailadresse;
     
     @FXML private Tab tabGeschaeftsobjekte;
     @FXML private TableView<GeschaeftsObjekt> tableGeschaeftsobjektAuswahl;
     @FXML private TableColumn<GeschaeftsObjekt, String> tColAuswahlGeschaeftsobjektName;
     
-    @FXML private Button btnNewEdiNr;
-    @FXML private Button btnDeleteEdiEintrag;
-//  @FXML private Button btnDeleteGeschaeftsobjekt;
-    @FXML private Button btnExportExcel;
-
-    @FXML private Pane schnittstelle;
+    @FXML private Pane integration;
     @FXML private Pane ediPartner;
     @FXML private Pane ediSystem;
     @FXML private Pane ediKomponente;
-    @FXML private Pane integration;
+    @FXML private Pane iszenario;
     @FXML private Pane konfiguration;
-    @FXML private Pane kontaktPerson;
+    @FXML private Pane ansprechpartner;
     @FXML private Pane geschaeftsObjekt;
     
-    @FXML private SchnittstelleController schnittstelleController;
+    @FXML private IntegrationController integrationController;
     @FXML private EdiPartnerController ediPartnerController;
     @FXML private EdiSystemController ediSystemController;
     @FXML private EdiKomponenteController ediKomponenteController;
-    @FXML private IntegrationController integrationController;
+    @FXML private IszenarioController iszenarioController;
     @FXML private KonfigurationController konfigurationController;
-    @FXML private KontaktPersonController kontaktPersonController;
+    @FXML private AnsprechpartnerController ansprechpartnerController;
     @FXML private GeschaeftsObjektController geschaeftsObjektController;   
     
     @FXML
@@ -168,13 +162,13 @@ public class IntegrationManagerController {
     	primaryStage = stage;
     	primaryStage.setTitle(APPL_NAME);
     	
-    	SchnittstelleController.setParent(this);
+    	IntegrationController.setParent(this);
     	EdiPartnerController.setParent(this);
     	EdiSystemController.setParent(this);
     	EdiKomponenteController.setParent(this);
-    	IntegrationController.setParent(this);
+    	IszenarioController.setParent(this);
     	KonfigurationController.setParent(this);
-    	KontaktPersonController.setParent(this);
+    	AnsprechpartnerController.setParent(this);
     	GeschaeftsObjektController.setParent(this);
         
     	// Check for data changes on close request from MainWindow
@@ -186,7 +180,7 @@ public class IntegrationManagerController {
     }
     
 	public void setPrimaryStage(Stage primaryStage) {
-		IntegrationManagerController.primaryStage = primaryStage;
+		IMController.primaryStage = primaryStage;
 	}
 	
     static public Stage getStage() {
@@ -208,14 +202,15 @@ public class IntegrationManagerController {
     }
     
     private void setupBindings() {
-    	loadEdiEintragListData();
-    	setupEdiEintragPane();
+    	logger.info("entered");;
+    	loadIntegrationListData();
+    	setupIntegrationPane();
     	setupEdiPartnerPane();
     	setupEdiSystemPane();
     	setupKomponentenPane();
-    	setupIntegrationPane();
+    	setupIszenarioPane();
     	setupKonfigurationPane();
-    	setupKontaktPersonPane();
+    	setupAnsprechpartnerPane();
     	setupGeschaeftsobjektPane();
 
         tabPaneObjekte.getSelectionModel().selectedItemProperty().addListener(
@@ -228,7 +223,7 @@ public class IntegrationManagerController {
 						primaryStage.getScene().setCursor(Cursor.WAIT);
 						
 						if (akttab.equals(tabEdiNr)) {
-							loadEdiEintragListData();
+							loadIntegrationListData();
 						}
 						else if (akttab.equals(tabPartner)) {
 							loadPartnerListData();
@@ -239,14 +234,14 @@ public class IntegrationManagerController {
 						else if(akttab.equals(tabKomponenten)) {
 							loadKomponentenListData();
 						}
-						else if(akttab.equals(tabIntegrationen)) {
-							loadIntegrationListData();
+						else if(akttab.equals(tabIszenarien)) {
+							loadIszenarioListData();
 						}
 						else if(akttab.equals(tabKonfigurationen)) {
 							loadKonfigurationListData();
 						}
-						else if(akttab.equals(tabKontaktPersonen)) {
-							loadKontaktPersonListData();
+						else if(akttab.equals(tabAnsprechpartner)) {
+							loadAnsprechpartnerListData();
 						}
 						else if(akttab.equals(tabGeschaeftsobjekte)) {
 							loadGeschaeftobjektListData();
@@ -256,8 +251,8 @@ public class IntegrationManagerController {
 
 				}
         );
-        tableEdiNrAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkEdiEintrag(e));
-        tableEdiNrAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkEdiEintrag(e));
+        tableEdiNrAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkIntegration(e));
+        tableEdiNrAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkIntegration(e));
 
         tablePartnerAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkPartner(e));
         tablePartnerAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkPartner(e));
@@ -268,22 +263,22 @@ public class IntegrationManagerController {
         tableKomponentenAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkKomponente(e));
 		tableKomponentenAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkKomponente(e));
 		
-		tableIntegrationAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkIntegration(e));
-		tableIntegrationAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkIntegration(e));
+		tableIszenarioAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkIszenario(e));
+		tableIszenarioAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkIszenario(e));
 		
 		tableKonfigurationAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkKonfiguration(e));
 		tableKonfigurationAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkKonfiguration(e));
 		
-		tableKontaktAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkKontaktPerson(e));
-		tableKontaktAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkKontaktPerson(e));
+		tableKontaktAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkAnsprechpartner(e));
+		tableKontaktAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkAnsprechpartner(e));
 		
 		tableGeschaeftsobjektAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkGeschaeftsObjekt(e));
 		tableGeschaeftsobjektAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkGeschaeftsObjekt(e));
 		
     }
     
-	private void checkEdiEintrag(Event event) {
-    	if(schnittstelleController.checkForChangesAndAskForSave() == false) {
+	private void checkIntegration(Event event) {
+    	if(integrationController.checkForChangesAndAskForSave() == false) {
     		event.consume();
     	}
     }
@@ -306,8 +301,8 @@ public class IntegrationManagerController {
 		}
 	}
 	
-	private void checkIntegration(Event event) {
-		if (integrationController.checkForChangesAndAskForSave() == false) {
+	private void checkIszenario(Event event) {
+		if (iszenarioController.checkForChangesAndAskForSave() == false) {
 			event.consume();
 		}
 	}
@@ -324,20 +319,20 @@ public class IntegrationManagerController {
 		}
 	}
 
-	private void checkKontaktPerson(Event event) {
-		if (kontaktPersonController.checkForChangesAndAskForSave() == false) {
+	private void checkAnsprechpartner(Event event) {
+		if (ansprechpartnerController.checkForChangesAndAskForSave() == false) {
 			event.consume();
 		}
 	}
 
 	private boolean checkAllOk() {
-    	return schnittstelleController.checkForChangesAndAskForSave() || 
+    	return integrationController.checkForChangesAndAskForSave() || 
     		   ediPartnerController.checkForChangesAndAskForSave() ||
     	       ediSystemController.checkForChangesAndAskForSave()  ||
     	       ediKomponenteController.checkForChangesAndAskForSave() ||
-    		   integrationController.checkForChangesAndAskForSave()   ||
+    		   iszenarioController.checkForChangesAndAskForSave()   ||
     		   konfigurationController.checkForChangesAndAskForSave() ||
-    		   kontaktPersonController.checkForChangesAndAskForSave() ||
+    		   ansprechpartnerController.checkForChangesAndAskForSave() ||
     		   geschaeftsObjektController.checkForChangesAndAskForSave(); 
 	}
 	
@@ -356,37 +351,38 @@ public class IntegrationManagerController {
 	}
 	
 	/* ************************************************************************
-	 * set a new selected EdiEintrag from other controllers
+	 * set a new selected Integration from other controllers
 	 * ***********************************************************************/
-	protected void setSelectedEdiEintrag (EdiEintrag e) {
+	protected void setSelectedIntegration (Integration e) {
 		tableEdiNrAuswahl.getSelectionModel().select(e);
 	}
     
-	private void setupEdiEintragPane() {
+	private void setupIntegrationPane() {
+		logger.info("entered");
     	tableEdiNrAuswahl.setItems(ediEintraegeList);
-    	tColAuswahlEdiNr.setCellValueFactory(cellData -> Bindings.format(EdiEintrag.FORMAT_EDINR, 
+    	tColAuswahlEdiNr.setCellValueFactory(cellData -> Bindings.format(Integration.FORMAT_EDINR, 
     			cellData.getValue().ediNrProperty()));
     	tColAuswahlEdiNrSender.setCellValueFactory(cellData -> 
     			cellData.getValue().senderNameProperty());
     	tColAuswahlEdiNrBezeichnung.setCellValueFactory(cellData -> 
     			cellData.getValue().bezeichnungProperty());
-    	tColAuswahlEdiNrIngration.setCellValueFactory(cellData -> 
-    			cellData.getValue().intregrationNameProperty());
+    	tColAuswahlEdiNrIszenario.setCellValueFactory(cellData -> 
+    			cellData.getValue().iszenarioNameProperty());
 
-    	schnittstelle.setDisable(false);
+    	integration.setDisable(false);
 
-    	schnittstelleController.ediEintragProperty().bind(
+    	integrationController.integrationProperty().bind(
     						    tableEdiNrAuswahl.getSelectionModel().selectedItemProperty());
-    	tableEdiNrAuswahl.setRowFactory(new Callback<TableView<EdiEintrag>, TableRow<EdiEintrag>>() {
+    	tableEdiNrAuswahl.setRowFactory(new Callback<TableView<Integration>, TableRow<Integration>>() {
 			@Override
-			public TableRow<EdiEintrag> call(TableView<EdiEintrag> table) {
-				final TableRow<EdiEintrag> row = new TableRow<EdiEintrag>();
+			public TableRow<Integration> call(TableView<Integration> table) {
+				final TableRow<Integration> row = new TableRow<Integration>();
 				final ContextMenu contextMenu = new ContextMenu();
 				final MenuItem removeMenuItem = new MenuItem("Löschen");
 				removeMenuItem.setOnAction(new EventHandler<ActionEvent>() {
 					@Override
 					public void handle(ActionEvent event) {
-						ediEintragLoeschen();
+						integrationLoeschen();
 //						table.getItems().remove(row.getItem());
 					}
 				});
@@ -398,6 +394,7 @@ public class IntegrationManagerController {
     }
 	
 	private void setupEdiPartnerPane() {
+		logger.info("entered");
 		tablePartnerAuswahl.setItems(ediPartnerList);
 		tColAuswahlPartnerName.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
 		tColAuswahlPartnerSysteme.setCellValueFactory(cellData -> Bindings.format("%7d", cellData.getValue().anzSystemeProperty()));
@@ -408,6 +405,7 @@ public class IntegrationManagerController {
 	}
 	
 	private void setupEdiSystemPane() {
+		logger.info("entered");
 		tableSystemAuswahl.setItems(ediSystemList);
 		tColSelSystemSystemName.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
 		tColSelSystemPartnerName.setCellValueFactory(cellData -> cellData.getValue().getEdiPartner().nameProperty());
@@ -418,6 +416,7 @@ public class IntegrationManagerController {
 	}
 	
 	private void setupKomponentenPane() {
+		logger.info("entered");
 		tableKomponentenAuswahl.setItems(ediKomponentenList);
     	tColSelKompoKomponten.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
     	tColSelKompoSysteme.setCellValueFactory(cellData -> cellData.getValue().getEdiSystem().nameProperty());
@@ -427,25 +426,28 @@ public class IntegrationManagerController {
     	ediKomponente.disableProperty().bind(Bindings.isNull(tableKomponentenAuswahl.getSelectionModel().selectedItemProperty()));
 	}
 
-	private void setupIntegrationPane() {
-		tableIntegrationAuswahl.setItems(integrationList);
-		tColSelIntegrationName.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
+	private void setupIszenarioPane() {
+		logger.info("entered");
+		tableIszenarioAuswahl.setItems(iszenarioList);
+		tColSelIszenarioName.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
 		
-		integrationController.integrationProperty().bind(tableIntegrationAuswahl.getSelectionModel().selectedItemProperty());
-		integration.disableProperty().bind(Bindings.isNull(tableIntegrationAuswahl.getSelectionModel().selectedItemProperty()));
+		iszenarioController.iszenarioProperty().bind(tableIszenarioAuswahl.getSelectionModel().selectedItemProperty());
+		iszenario.disableProperty().bind(Bindings.isNull(tableIszenarioAuswahl.getSelectionModel().selectedItemProperty()));
 	}
 
 	private void setupKonfigurationPane() {
+		logger.info("entered");
 		tableKonfigurationAuswahl.setItems(konfigurationList);
 		tColSelKonfigurationName.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
-		tColSelKonfigIntegrationName.setCellValueFactory(cd -> cd.getValue().integrationNameProperty());
+		tColSelKonfigIszenarioName.setCellValueFactory(cd -> cd.getValue().iSzenarioNameProperty());
 		
 		konfigurationController.konfigurationProperty().bind(tableKonfigurationAuswahl.getSelectionModel().selectedItemProperty());
 		konfiguration.disableProperty().bind(Bindings.isNull(tableKonfigurationAuswahl.getSelectionModel().selectedItemProperty()));
 	}
 
-	private void setupKontaktPersonPane() {
-		tableKontaktAuswahl.setItems(kontaktPersonList);
+	private void setupAnsprechpartnerPane() {
+		logger.info("entered");
+		tableKontaktAuswahl.setItems(ansprechpartnerList);
 		tColKontaktUserId.setCellValueFactory(cellData -> cellData.getValue().nummerProperty());
 		tColKontaktNachname.setCellValueFactory(cellData -> cellData.getValue().nachnameProperty());
 		tColKontaktVorname.setCellValueFactory(cellData -> cellData.getValue().vornameProperty());
@@ -454,11 +456,12 @@ public class IntegrationManagerController {
 		tColKontaktTelefon.setCellValueFactory(cellData -> cellData.getValue().telefonProperty());
 		tColKontaktMailadresse.setCellValueFactory(cellData -> cellData.getValue().mailProperty());
 		
-		kontaktPersonController.kontaktPersonProperty().bind(tableKontaktAuswahl.getSelectionModel().selectedItemProperty());
-		kontaktPerson.disableProperty().bind(Bindings.isNull(tableKontaktAuswahl.getSelectionModel().selectedItemProperty()));
+		ansprechpartnerController.ansprechpartnerProperty().bind(tableKontaktAuswahl.getSelectionModel().selectedItemProperty());
+		ansprechpartner.disableProperty().bind(Bindings.isNull(tableKontaktAuswahl.getSelectionModel().selectedItemProperty()));
 	}
 	
     private void setupGeschaeftsobjektPane() {
+		logger.info("entered");
     	tableGeschaeftsobjektAuswahl.setItems(geschaeftsobjektList);
     	tColAuswahlGeschaeftsobjektName.setCellValueFactory(cell -> cell.getValue().nameProperty());
     	
@@ -466,14 +469,14 @@ public class IntegrationManagerController {
     	geschaeftsObjekt.disableProperty().bind(Bindings.isNull(tableGeschaeftsobjektAuswahl.getSelectionModel().selectedItemProperty()));
     }
     
-	protected void loadEdiEintragListData() {
-    	TypedQuery<EdiEintrag> tq = entityManager.createQuery(
-				"SELECT e FROM EdiEintrag e ORDER BY e.ediNr", EdiEintrag.class);
-		List<EdiEintrag> aktuList = tq.getResultList();
+	protected void loadIntegrationListData() {
+    	TypedQuery<Integration> tq = entityManager.createQuery(
+				"SELECT e FROM Integration e ORDER BY e.ediNr", Integration.class);
+		List<Integration> aktuList = tq.getResultList();
 
 		ediEintraegeList.retainAll(aktuList);
 		maxEdiNr = 0;
-		for(EdiEintrag e : aktuList ) {
+		for(Integration e : aktuList ) {
 			if (ediEintraegeList.contains(e) == false) {
 				ediEintraegeList.add(aktuList.indexOf(e), e);
 			}
@@ -530,15 +533,15 @@ public class IntegrationManagerController {
 		}
 	}
 
-	protected void loadIntegrationListData() {
-		TypedQuery<Integration> tq = entityManager.createQuery(
-				"SELECT i FROM Integration i ORDER BY i.name", Integration.class);
-		List<Integration> aktuList = tq.getResultList();
+	protected void loadIszenarioListData() {
+		TypedQuery<Iszenario> tq = entityManager.createQuery(
+				"SELECT i FROM Iszenario i ORDER BY i.name", Iszenario.class);
+		List<Iszenario> aktuList = tq.getResultList();
 		
-		integrationList.retainAll(aktuList); // remove delete entities
-		for (Integration i : aktuList) {	 // and insert new entities
-			if (integrationList.contains(i) == false) {
-				integrationList.add(aktuList.indexOf(i),i);
+		iszenarioList.retainAll(aktuList); // remove delete entities
+		for (Iszenario i : aktuList) {	 // and insert new entities
+			if (iszenarioList.contains(i) == false) {
+				iszenarioList.add(aktuList.indexOf(i),i);
 			}
 		}
 	}
@@ -556,14 +559,14 @@ public class IntegrationManagerController {
 		}
 	}
 
-	protected void loadKontaktPersonListData() {
-		TypedQuery<KontaktPerson> tq = entityManager.createQuery(
-				"SELECT k FROM KontaktPerson k ORDER BY k.nachname", KontaktPerson.class);
-		List<KontaktPerson> aktulist = tq.getResultList();
-		kontaktPersonList.retainAll(aktulist);
-		for (KontaktPerson k : aktulist) {
-			if (kontaktPersonList.contains(k) == false ) {
-				kontaktPersonList.add(aktulist.indexOf(k), k);
+	protected void loadAnsprechpartnerListData() {
+		TypedQuery<Ansprechpartner> tq = entityManager.createQuery(
+				"SELECT k FROM Ansprechpartner k ORDER BY k.nachname", Ansprechpartner.class);
+		List<Ansprechpartner> aktulist = tq.getResultList();
+		ansprechpartnerList.retainAll(aktulist);
+		for (Ansprechpartner k : aktulist) {
+			if (ansprechpartnerList.contains(k) == false ) {
+				ansprechpartnerList.add(aktulist.indexOf(k), k);
 			}
 		}
 	}
@@ -630,7 +633,7 @@ public class IntegrationManagerController {
 //    void newEdiNr(ActionEvent event) {
 //    
 //    	FXMLLoader loader = new FXMLLoader();
-//    	String fullname = "subs/NeuerEdiEintrag.fxml";
+//    	String fullname = "subs/NeueIntegration.fxml";
 //    	loader.setLocation(getClass().getResource(fullname));
 //    	if (loader.getLocation()==null) {
 //    		logger.error("Resource not found :" + fullname);
@@ -652,7 +655,7 @@ public class IntegrationManagerController {
 //    	dialog.initOwner(primaryStage);
 //    	dialog.setTitle(primaryStage.getTitle());
 //    	
-//    	NeuerEdiEintragController dialogController = loader.getController();
+//    	NeueIntegrationController dialogController = loader.getController();
 //    	dialogController.setEntityManager(entityManager);
 //    	dialogController.start();
 //    	
@@ -662,7 +665,7 @@ public class IntegrationManagerController {
 //    	dialog.showAndWait();
 //
 //    	if (dialogController.getResponse() == Dialog.Actions.OK) {
-//    		EdiEintrag newEE = dialogController.getNewEdiEintrag();
+//    		Integration newEE = dialogController.getNewIntegration();
 //			ediEintraegeList.add(newEE);
 //			if (newEE.getEdiNr() > maxEdiNr) 
 //				maxEdiNr = newEE.getEdiNr();
@@ -670,17 +673,12 @@ public class IntegrationManagerController {
 //    	}
 //    }    
 
-    @FXML
-    void actionSSTloeschen(ActionEvent event) {
-    	logger.info("löschen");
-    	// TODO
-    }
     @FXML    
-    void handleEdiEintragLoeschen(ActionEvent event) {
-    	ediEintragLoeschen();
+    void handleIntegrationLoeschen(ActionEvent event) {
+    	integrationLoeschen();
     }
-    private void ediEintragLoeschen() {
-    	EdiEintrag selectedlistElement = tableEdiNrAuswahl.getSelectionModel().getSelectedItem();
+    private void integrationLoeschen() {
+    	Integration selectedlistElement = tableEdiNrAuswahl.getSelectionModel().getSelectedItem();
     	if (selectedlistElement != null) {
     		String ediNr = Integer.toString(selectedlistElement.ediNrProperty().get());
     		Action response = Dialog.Actions.OK;
@@ -689,27 +687,27 @@ public class IntegrationManagerController {
 					.owner(primaryStage).title(APPL_NAME)
 					.actions(Dialog.Actions.OK, Dialog.Actions.CANCEL)
 					.masthead(SICHERHEITSABFRAGE)
-					.message("EDI-Eintrag mit der Nr. " + ediNr + " wirklich löschen?")
+					.message("Integration mit der Nr. " + ediNr + " wirklich löschen?")
 					.showConfirm();
     		}
     		if (response == Dialog.Actions.OK) {
-    			EdiEintrag ediEintrag = entityManager.find(EdiEintrag.class, selectedlistElement.getId());
-    			if (ediEintrag==null) {
-    				logger.error("deleteEdiEintrag", "FEHLER: EDI-Eintrag " + ediNr + " ist nicht (mehr) gespeichert");
+    			Integration integration = entityManager.find(Integration.class, selectedlistElement.getId());
+    			if (integration==null) {
+    				logger.error("FEHLER: Integration " + ediNr + " ist nicht (mehr) gespeichert");
     			}
     			else {
 	        		entityManager.getTransaction().begin();
-	        		Iterator<EdiEmpfaenger> empf = ediEintrag.getEdiEmpfaenger().iterator();
+	        		Iterator<EdiEmpfaenger> empf = integration.getEdiEmpfaenger().iterator();
 	        		while (empf.hasNext()) {
 	        			entityManager.remove(empf.next());
 	        			empf.remove();
 	        		}
-	        		if (ediEintrag.getKonfiguration() != null) {
-	        			ediEintrag.getKonfiguration().getEdiEintrag().remove(ediEintrag);
+	        		if (integration.getKonfiguration() != null) {
+	        			integration.getKonfiguration().getIntegration().remove(integration);
 	        		}
-	        		entityManager.remove(ediEintrag);
+	        		entityManager.remove(integration);
 	        		entityManager.getTransaction().commit();
-	        		setInfoText("Edi-Eintrag mit der Nr. " + ediNr + " erfolgreich gelöscht");
+	        		setInfoText("Integration mit der Nr. " + ediNr + " erfolgreich gelöscht");
     			}	
     			ediEintraegeList.remove(selectedlistElement);
     			tableEdiNrAuswahl.getSelectionModel().clearSelection();
@@ -721,9 +719,9 @@ public class IntegrationManagerController {
      * Loads von Sub-Controller
      * --------------------------------------------------------------------- */
     
-    public KontaktPersonAuswaehlenController loadKontaktPersonAuswahl(Stage dialog) {
-    	KontaktPersonAuswaehlenController controller = null;
-    	FXMLLoader loader = load("subs/KontaktPersonAuswaehlen.fxml");
+    public AnsprechpartnerAuswaehlenController loadAnsprechpartnerAuswahl(Stage dialog) {
+    	AnsprechpartnerAuswaehlenController controller = null;
+    	FXMLLoader loader = load("subs/AnsprechpartnerAuswaehlen.fxml");
     	if (loader != null) {
     		controller = loader.getController();
     		controller.start(primaryStage, this, entityManager);
@@ -775,10 +773,11 @@ public class IntegrationManagerController {
     }
     
     static String initialExportFilePath = System.getProperty("user.home");
-    static String initialExportFileName = "EDI-List-Excel-Export.xlsx";
+    static String initialExportFileName = "IM-List-Export.xlsx";
 
     @FXML
     void btnExportExcel (ActionEvent event) {
+    	LocalDate heute =  LocalDate.now();
     	FileChooser fileChooser = new FileChooser();
     	fileChooser.setTitle("Name und Ablageort der Export-Datei eingeben");
     	fileChooser.setInitialFileName(initialExportFileName);
@@ -797,6 +796,7 @@ public class IntegrationManagerController {
 			Cursor aktCursor = primaryStage.getScene().getCursor();
 			primaryStage.getScene().setCursor(Cursor.WAIT);
     		ExportToExcel export = new ExportToExcel(entityManager);
+    		
     		try {
     			int lines = export.write(file);
     			primaryStage.getScene().setCursor(aktCursor);
@@ -816,8 +816,8 @@ public class IntegrationManagerController {
     }
     
     public void refreshKontaktReferences() {
-    	if (kontaktPersonController.getKontaktPerson() != null) {
-    		kontaktPersonController.readEdiKomponentenListeforPerson();
+    	if (ansprechpartnerController.getAnsprechpartner() != null) {
+    		ansprechpartnerController.readEdiKomponentenListeforPerson();
     	}
     }
     
@@ -853,55 +853,57 @@ public class IntegrationManagerController {
     
     private void checkFieldsFromView() throws Exception {
     	logger.info("entered");
-    	assert schnittstelle != null : "fx:id=\"schnittstelle\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
-    	assert tabEdiNr != null : "fx:id=\"tabEdiNr\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
+    	assert integration 				!= null : "fx:id=\"integration\" was not injected: check your FXML file 'IM.fxml'.";
+    	assert tabEdiNr					!= null : "fx:id=\"tabEdiNr\" was not injected: check your FXML file 'IM.fxml'.";
 
-        assert tabPaneObjekte != null : "fx:id=\"tabPaneObjekte\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
-        assert tabPartner != null : "fx:id=\"tabPartner\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
-        assert tabSysteme != null : "fx:id=\"tabSysteme\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
-        assert tabKomponenten != null : "fx:id=\"tabKomponenten\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
-        assert tabIntegrationen != null : "fx:id=\"tabIntegrationen\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
-        assert tabKonfigurationen != null : "fx:id=\"tabKonfigurationen\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
-        assert tabKontaktPersonen != null : "fx:id=\"tabKontaktPersonen\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
-        assert tabGeschaeftsobjekte != null : "fx:id=\"tabGeschaeftsobjekte\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
+        assert tabPaneObjekte 			!= null : "fx:id=\"tabPaneObjekte\" was not injected: check your FXML file 'IM.fxml'.";
+        assert tabPartner 				!= null : "fx:id=\"tabPartner\" was not injected: check your FXML file 'IM.fxml'.";
+        assert tabSysteme				!= null : "fx:id=\"tabSysteme\" was not injected: check your FXML file 'IM.fxml'.";
+        assert tabKomponenten			!= null : "fx:id=\"tabKomponenten\" was not injected: check your FXML file 'IM.fxml'.";
+        assert tabIszenarien			!= null : "fx:id=\"tabIszenarien\" was not injected: check your FXML file 'IM.fxml'.";
+        assert tabKonfigurationen		!= null : "fx:id=\"tabKonfigurationen\" was not injected: check your FXML file 'IM.fxml'.";
+        assert tabAnsprechpartner		!= null : "fx:id=\"tabAnsprechpartner\" was not injected: check your FXML file 'IM.fxml'.";
+        assert tabGeschaeftsobjekte		!= null : "fx:id=\"tabGeschaeftsobjekte\" was not injected: check your FXML file 'IM.fxml'.";
 
-        assert txtInfoZeile != null : "fx:id=\"txtInfoZeile\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
+        assert txtInfoZeile				!= null : "fx:id=\"txtInfoZeile\" was not injected: check your FXML file 'IM.fxml'.";
 
-        assert tableEdiNrAuswahl 		!= null : "fx:id=\"tableEdiNrAuswahl\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
-        assert tColAuswahlEdiNr 		!= null : "fx:id=\"tColAuswahlEdiNr\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
-        assert tColSelKompoKomponten 	!= null : "fx:id=\"tColSelKompoKomponten\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
-        assert tColSelSystemSystemName 	!= null : "fx:id=\"tColSelSystemSystemName\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
-        assert tColSelIntegrationName 	!= null : "fx:id=\"tColSelIntegrationName\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
+        assert tableEdiNrAuswahl 			!= null : "fx:id=\"tableEdiNrAuswahl\" was not injected: check your FXML file 'IM.fxml'.";
+        assert tColAuswahlEdiNr 			!= null : "fx:id=\"tColAuswahlEdiNr\" was not injected: check your FXML file 'IM.fxml'.";
+        assert tColAuswahlEdiNrIszenario	!= null : "fx:id=\"tColAuswahlEdiNrIszenario\" was not injected: check your FXML file 'IM.fxml'.";
+        assert tColSelKompoKomponten 		!= null : "fx:id=\"tColSelKompoKomponten\" was not injected: check your FXML file 'IM.fxml'.";
+        assert tColSelSystemSystemName 		!= null : "fx:id=\"tColSelSystemSystemName\" was not injected: check your FXML file 'IM.fxml'.";
         
-        assert tablePartnerAuswahl 				!= null : "fx:id=\"tablePartnerAuswahl\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
-        assert tColAuswahlPartnerKomponenten 	!= null : "fx:id=\"tColAuswahlPartnerKomponenten\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
-        assert tColAuswahlPartnerName 			!= null : "fx:id=\"tColAuswahlPartnerName\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
-        assert tColAuswahlEdiNrSender 			!= null : "fx:id=\"tColAuswahlEdiNrSender\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
-        assert tColAuswahlEdiNrBezeichnung 		!= null : "fx:id=\"tColAuswahlEdiNrBezeichnung\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
+        assert tColSelIszenarioName 		!= null : "fx:id=\"tColSelIszenarioName\" was not injected: check your FXML file 'IM.fxml'.";
+        
+        assert tablePartnerAuswahl 			!= null : "fx:id=\"tablePartnerAuswahl\" was not injected: check your FXML file 'IM.fxml'.";
+        assert tColAuswahlPartnerKomponenten != null : "fx:id=\"tColAuswahlPartnerKomponenten\" was not injected: check your FXML file 'IM.fxml'.";
+        assert tColAuswahlPartnerName 		!= null : "fx:id=\"tColAuswahlPartnerName\" was not injected: check your FXML file 'IM.fxml'.";
+        assert tColAuswahlEdiNrSender 		!= null : "fx:id=\"tColAuswahlEdiNrSender\" was not injected: check your FXML file 'IM.fxml'.";
+        assert tColAuswahlEdiNrBezeichnung 	!= null : "fx:id=\"tColAuswahlEdiNrBezeichnung\" was not injected: check your FXML file 'IM.fxml'.";
 
-        assert tableKomponentenAuswahl 	!= null : "fx:id=\"tableKomponentenAuswahl\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
-        assert tColSelKompoPartner 		!= null : "fx:id=\"tColSelKompoPartner\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
-        assert tColSelKompoSysteme 		!= null : "fx:id=\"tColSelKompoSysteme\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
-        assert tColSelSystemPartnerName != null : "fx:id=\"tColSelSystemPartnerName\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
-        assert tColSelSystemKomponenten != null : "fx:id=\"tColSelSystemKomponenten\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
+        assert tableKomponentenAuswahl 		!= null : "fx:id=\"tableKomponentenAuswahl\" was not injected: check your FXML file 'IM.fxml'.";
+        assert tColSelKompoPartner 			!= null : "fx:id=\"tColSelKompoPartner\" was not injected: check your FXML file 'IM.fxml'.";
+        assert tColSelKompoSysteme 			!= null : "fx:id=\"tColSelKompoSysteme\" was not injected: check your FXML file 'IM.fxml'.";
+        assert tColSelSystemPartnerName 	!= null : "fx:id=\"tColSelSystemPartnerName\" was not injected: check your FXML file 'IM.fxml'.";
+        assert tColSelSystemKomponenten 	!= null : "fx:id=\"tColSelSystemKomponenten\" was not injected: check your FXML file 'IM.fxml'.";
 
-        assert tableSystemAuswahl 			!= null : "fx:id=\"tableSystemAuswahl\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
-        assert tColAuswahlPartnerSysteme 	!= null : "fx:id=\"tColAuswahlPartnerSysteme\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
+        assert tableSystemAuswahl 			!= null : "fx:id=\"tableSystemAuswahl\" was not injected: check your FXML file 'IM.fxml'.";
+        assert tColAuswahlPartnerSysteme 	!= null : "fx:id=\"tColAuswahlPartnerSysteme\" was not injected: check your FXML file 'IM.fxml'.";
         
-        assert konfigurationController 		!= null : "\"konfigurationController\" was not injected in IntegrationManager.fxml";
-        assert geschaeftsObjektController 	!= null : "\"geschaeftsObjektController\" was not injected in IntegrationManager.fxml";
+        assert konfigurationController 		!= null : "\"konfigurationController\" was not injected in IM.fxml";
+        assert geschaeftsObjektController 	!= null : "\"geschaeftsObjektController\" was not injected in IM.fxml";
         
-        assert tableKontaktAuswahl 		!= null : "\"tableKontaktAuswahl\" was not injected in IntegrationManager.fxml";
-        assert tColKontaktUserId 		!= null : "\"tColKontaktUserId\" was not injected in IntegrationManager.fxml";
-        assert tColKontaktNachname 		!= null : "\"tColKontaktNachname\" was not injected in IntegrationManager.fxml";
-        assert tColKontaktVorname 		!= null : "\"tColKontaktVorname\" was not injected in IntegrationManager.fxml";
-        assert tColKontaktArt 			!= null : "\"tColKontaktArt\" was not injected in IntegrationManager.fxml";
-        assert tColKontaktAbteilung 	!= null : "\"tColKontaktAbteilung\" was not injected in IntegrationManager.fxml";
-        assert tColKontaktTelefon 		!= null : "\"tColKontaktTelefon\" was not injected in IntegrationManager.fxml";
-        assert tColKontaktMailadresse 	!= null : "\"tColKontaktMailadresse\" was not injected in IntegrationManager.fxml";
+        assert tableKontaktAuswahl 			!= null : "\"tableKontaktAuswahl\" was not injected in IM.fxml";
+        assert tColKontaktUserId 			!= null : "\"tColKontaktUserId\" was not injected in IM.fxml";
+        assert tColKontaktNachname 			!= null : "\"tColKontaktNachname\" was not injected in IM.fxml";
+        assert tColKontaktVorname 			!= null : "\"tColKontaktVorname\" was not injected in IM.fxml";
+        assert tColKontaktArt 				!= null : "\"tColKontaktArt\" was not injected in IM.fxml";
+        assert tColKontaktAbteilung 		!= null : "\"tColKontaktAbteilung\" was not injected in IM.fxml";
+        assert tColKontaktTelefon 			!= null : "\"tColKontaktTelefon\" was not injected in IM.fxml";
+        assert tColKontaktMailadresse 		!= null : "\"tColKontaktMailadresse\" was not injected in IM.fxml";
         
-        assert tableGeschaeftsobjektAuswahl != null : "fx:id=\"tableGeschaeftsobjektAuswahl\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
-        assert tColAuswahlGeschaeftsobjektName != null : "fx:id=\"tColAuswahlGeschaeftsobjektName\" was not injected: check your FXML file 'IntegrationManager.fxml'.";
+        assert tableGeschaeftsobjektAuswahl 	!= null : "fx:id=\"tableGeschaeftsobjektAuswahl\" was not injected: check your FXML file 'IM.fxml'.";
+        assert tColAuswahlGeschaeftsobjektName 	!= null : "fx:id=\"tColAuswahlGeschaeftsobjektName\" was not injected: check your FXML file 'IM.fxml'.";
         logger.info("passed");
     }
 

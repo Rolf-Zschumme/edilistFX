@@ -32,7 +32,7 @@ public class EdiPartner {
 	private String beschreibung;
 //	private Collection<EdiSystem> ediSystem;
 	private ObservableList<EdiSystem> ediSystem;
-	private Collection<KontaktPerson> kontaktPerson;
+	private Collection<Ansprechpartner> ansprechpartner;
 	
 
 	private IntegerProperty anzSysteme;
@@ -134,12 +134,12 @@ public class EdiPartner {
 	}
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
 	@ManyToMany
-	public Collection<KontaktPerson> getKontaktPerson() {
-	    return kontaktPerson;
+	public Collection<Ansprechpartner> getAnsprechpartner() {
+	    return ansprechpartner;
 	}
 
-	public void setKontaktPerson(Collection<KontaktPerson> param) {
-	    this.kontaktPerson = param;
+	public void setAnsprechpartner(Collection<Ansprechpartner> param) {
+	    this.ansprechpartner = param;
 	}
 	
 }
