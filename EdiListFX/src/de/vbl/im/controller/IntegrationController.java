@@ -949,9 +949,9 @@ public class IntegrationController {
     	dialog.showAndWait();
     	
     	if (dialogController.getResponse() == Dialog.Actions.OK) {
-    		Integration newEE = dialogController.getNewIntegration();
+    		Integration newI = dialogController.getNewIntegration();
     		managerController.loadIntegrationListData();
-    		managerController.setSelectedIntegration(newEE);
+    		managerController.setSelectedIntegration(newI);
     	}
     }    
 
@@ -1133,7 +1133,7 @@ public class IntegrationController {
 //			}
 //			new: normal manuell input
 //			temp: set bezeichnung if emppty			
-			if (akt.bezeichnung.isEmpty() || akt.bezeichnung.equals("(EDI-Nummer Reserviert)")) {
+			if (akt.bezeichnung.isEmpty() || akt.bezeichnung.equals("(I-Nummer Reserviert)")) {
 				tfBezeichnung.textProperty().set(Integration.autobezeichnung(
 						akt.konfiguration, akt.sender,akt.geschaeftsObjekt[0]));
 			}
@@ -1164,7 +1164,7 @@ public class IntegrationController {
 		} catch (RuntimeException e) {
 			Dialogs.create().owner(primaryStage)
 			.title(applName).masthead("Datenbankfehler")
-			.message("Fehler beim Speichern des EDI-Eintrages")
+			.message("Fehler beim Speichern der Integration")
 			.showException(e);
 		}	
 		dataIsChanged.set(false);

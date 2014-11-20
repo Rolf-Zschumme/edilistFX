@@ -14,7 +14,7 @@ import de.vbl.im.controller.EdiPartnerController;
 import de.vbl.im.controller.EdiSystemController;
 import de.vbl.im.controller.IMController;
 
-public class TestEdiSystem extends Application {
+public class TestController extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {

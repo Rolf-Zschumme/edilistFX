@@ -43,8 +43,8 @@
 										<TableView fx:id="tvVerwendungen" prefHeight="120.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
 											<columns>
 												<TableColumn fx:id="tcEdiNr" maxWidth="100.0" minWidth="44.0" prefWidth="100.0" text="I-Nr." /><TableColumn fx:id="tcKonfiguration" maxWidth="1000.0" prefWidth="-1.0" text="Konfiguration" />
-												<TableColumn fx:id="tcSender" maxWidth="500.0" minWidth="150.0" prefWidth="250.0" text="Edi-Sender" />
-												<TableColumn fx:id="tcEmpfaenger" maxWidth="500.0" minWidth="150.0" prefWidth="250.0" text="Edi-Empfänger" /><TableColumn fx:id="tcGeschaeftsobjekt" maxWidth="400.0" minWidth="100.0" prefWidth="200.0" text="Geschäftsobjekt" />
+												<TableColumn fx:id="tcSender" maxWidth="500.0" minWidth="150.0" prefWidth="250.0" text="Sender" />
+												<TableColumn fx:id="tcEmpfaenger" maxWidth="500.0" minWidth="150.0" prefWidth="250.0" text="Empfänger" /><TableColumn fx:id="tcGeschaeftsobjekt" maxWidth="400.0" minWidth="100.0" prefWidth="200.0" text="Geschäftsobjekt" />
 												<TableColumn fx:id="tcDatumAb" maxWidth="75.0" minWidth="75.0" prefWidth="75.0" text="Ab-Datum" visible="false" />
 												<TableColumn fx:id="tcDatumBis" maxWidth="85.0" minWidth="85.0" prefWidth="85.0" text="Bis-Datum" visible="false" />
 											</columns>

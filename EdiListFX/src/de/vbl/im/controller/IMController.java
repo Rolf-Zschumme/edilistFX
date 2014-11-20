@@ -48,7 +48,6 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
 
-import sun.util.logging.resources.logging;
 import de.vbl.im.controller.subs.DokumentAuswaehlenController;
 import de.vbl.im.controller.subs.AnsprechpartnerAuswaehlenController;
 import de.vbl.im.model.Integration;
@@ -470,15 +469,19 @@ public class IMController {
     }
     
 	protected void loadIntegrationListData() {
-    	TypedQuery<Integration> tq = entityManager.createQuery(
-				"SELECT e FROM Integration e ORDER BY e.ediNr", Integration.class);
-		List<Integration> aktuList = tq.getResultList();
-
-		ediEintraegeList.retainAll(aktuList);
+		TypedQuery<Integration> tq = null;
+		try {
+			tq = entityManager.createQuery(
+					"SELECT e FROM Integration e ORDER BY e.ediNr", Integration.class);
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+		}
+		List<Integration> resultList = tq.getResultList();
+		ediEintraegeList.retainAll(resultList);
 		maxEdiNr = 0;
-		for(Integration e : aktuList ) {
+		for(Integration e : resultList) {
 			if (ediEintraegeList.contains(e) == false) {
-				ediEintraegeList.add(aktuList.indexOf(e), e);
+				ediEintraegeList.add(resultList.indexOf(e), e);
 			}
 	    	if (e.getEdiNr() > maxEdiNr) maxEdiNr = e.getEdiNr();
 		}
@@ -773,11 +776,10 @@ public class IMController {
     }
     
     static String initialExportFilePath = System.getProperty("user.home");
-    static String initialExportFileName = "IM-List-Export.xlsx";
+    static String initialExportFileName = "IM-List-Export-" + LocalDate.now() + ".xlsx";
 
     @FXML
     void btnExportExcel (ActionEvent event) {
-    	LocalDate heute =  LocalDate.now();
     	FileChooser fileChooser = new FileChooser();
     	fileChooser.setTitle("Name und Ablageort der Export-Datei eingeben");
     	fileChooser.setInitialFileName(initialExportFileName);

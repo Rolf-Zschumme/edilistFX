@@ -42,7 +42,7 @@ public class IszenarioController {
 	private static IMController mainCtr;
 	private static EntityManager entityManager;
 	private final ObjectProperty<Iszenario> iszenario;
-	private final ObservableSet<Integration> integrationSet;      // all assigned EDI-Entities
+	private final ObservableSet<Integration> integrationSet;      // all integration for this IS
 	private Iszenario aktIszenario = null;
 
 	
@@ -171,7 +171,7 @@ public class IszenarioController {
 		tcDatumAb.setCellValueFactory(cellData -> cellData.getValue().getIntegration().seitDatumProperty());
 		tcDatumBis.setCellValueFactory(cellData -> cellData.getValue().getIntegration().bisDatumProperty());
 		
-		// todo: zum Absprung bei Select eines Edi-Eintrages in der Sub-Tabelle
+		// TODO: for direct jump to another integration from this table
 		tvVerwendungen.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<EdiEmpfaenger>() {
 			@Override
 			public void changed (ObservableValue<? extends EdiEmpfaenger> ov, EdiEmpfaenger oldValue, EdiEmpfaenger newValue) {

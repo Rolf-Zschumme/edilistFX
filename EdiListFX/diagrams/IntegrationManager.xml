@@ -1,1 +1,144 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><entities/>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><entities>
+	<entity>
+		<entity-name>de.vbl.im.model.Iszenario</entity-name>
+		<entity-width>120</entity-width>
+		<entity-height>116</entity-height>
+		<entity-X-Coordinate>391</entity-X-Coordinate>
+		<entity-Y-Coordinate>30</entity-Y-Coordinate>
+		<primary-collapsed>true</primary-collapsed>
+		<relation-collapsed>true</relation-collapsed>
+		<basic-collapsed>false</basic-collapsed>
+	</entity>
+
+	<entity>
+		<entity-name>de.vbl.im.model.Vorhaben</entity-name>
+		<entity-width>120</entity-width>
+		<entity-height>58</entity-height>
+		<entity-X-Coordinate>219</entity-X-Coordinate>
+		<entity-Y-Coordinate>10</entity-Y-Coordinate>
+		<primary-collapsed>true</primary-collapsed>
+		<relation-collapsed>true</relation-collapsed>
+		<basic-collapsed>true</basic-collapsed>
+	</entity>
+
+	<entity>
+		<entity-name>de.vbl.im.model.EdiPartner</entity-name>
+		<entity-width>120</entity-width>
+		<entity-height>156</entity-height>
+		<entity-X-Coordinate>23</entity-X-Coordinate>
+		<entity-Y-Coordinate>10</entity-Y-Coordinate>
+		<primary-collapsed>true</primary-collapsed>
+		<relation-collapsed>true</relation-collapsed>
+		<basic-collapsed>false</basic-collapsed>
+	</entity>
+
+	<entity>
+		<entity-name>de.vbl.im.model.Konfiguration</entity-name>
+		<entity-width>120</entity-width>
+		<entity-height>136</entity-height>
+		<entity-X-Coordinate>391</entity-X-Coordinate>
+		<entity-Y-Coordinate>206</entity-Y-Coordinate>
+		<primary-collapsed>true</primary-collapsed>
+		<relation-collapsed>true</relation-collapsed>
+		<basic-collapsed>false</basic-collapsed>
+	</entity>
+
+	<entity>
+		<entity-name>de.vbl.im.model.DokuLink</entity-name>
+		<entity-width>120</entity-width>
+		<entity-height>236</entity-height>
+		<entity-X-Coordinate>581</entity-X-Coordinate>
+		<entity-Y-Coordinate>85</entity-Y-Coordinate>
+		<primary-collapsed>true</primary-collapsed>
+		<relation-collapsed>true</relation-collapsed>
+		<basic-collapsed>false</basic-collapsed>
+	</entity>
+
+	<entity>
+		<entity-name>de.vbl.im.model.Repository</entity-name>
+		<entity-width>120</entity-width>
+		<entity-height>58</entity-height>
+		<entity-X-Coordinate>581</entity-X-Coordinate>
+		<entity-Y-Coordinate>387</entity-Y-Coordinate>
+		<primary-collapsed>true</primary-collapsed>
+		<relation-collapsed>false</relation-collapsed>
+		<basic-collapsed>true</basic-collapsed>
+	</entity>
+
+	<entity>
+		<entity-name>de.vbl.im.model.EdiKomponente</entity-name>
+		<entity-width>120</entity-width>
+		<entity-height>116</entity-height>
+		<entity-X-Coordinate>219</entity-X-Coordinate>
+		<entity-Y-Coordinate>358</entity-Y-Coordinate>
+		<primary-collapsed>true</primary-collapsed>
+		<relation-collapsed>true</relation-collapsed>
+		<basic-collapsed>false</basic-collapsed>
+	</entity>
+
+	<entity>
+		<entity-name>de.vbl.im.model.Integration</entity-name>
+		<entity-width>120</entity-width>
+		<entity-height>236</entity-height>
+		<entity-X-Coordinate>391</entity-X-Coordinate>
+		<entity-Y-Coordinate>402</entity-Y-Coordinate>
+		<primary-collapsed>true</primary-collapsed>
+		<relation-collapsed>true</relation-collapsed>
+		<basic-collapsed>false</basic-collapsed>
+	</entity>
+
+	<entity>
+		<entity-name>de.vbl.im.model.Intervall</entity-name>
+		<entity-width>120</entity-width>
+		<entity-height>58</entity-height>
+		<entity-X-Coordinate>581</entity-X-Coordinate>
+		<entity-Y-Coordinate>491</entity-Y-Coordinate>
+		<primary-collapsed>true</primary-collapsed>
+		<relation-collapsed>false</relation-collapsed>
+		<basic-collapsed>true</basic-collapsed>
+	</entity>
+
+	<entity>
+		<entity-name>de.vbl.im.model.Ansprechpartner</entity-name>
+		<entity-width>120</entity-width>
+		<entity-height>261</entity-height>
+		<entity-X-Coordinate>219</entity-X-Coordinate>
+		<entity-Y-Coordinate>91</entity-Y-Coordinate>
+		<primary-collapsed>true</primary-collapsed>
+		<relation-collapsed>false</relation-collapsed>
+		<basic-collapsed>false</basic-collapsed>
+	</entity>
+
+	<entity>
+		<entity-name>de.vbl.im.model.GeschaeftsObjekt</entity-name>
+		<entity-width>120</entity-width>
+		<entity-height>116</entity-height>
+		<entity-X-Coordinate>23</entity-X-Coordinate>
+		<entity-Y-Coordinate>519</entity-Y-Coordinate>
+		<primary-collapsed>true</primary-collapsed>
+		<relation-collapsed>true</relation-collapsed>
+		<basic-collapsed>false</basic-collapsed>
+	</entity>
+
+	<entity>
+		<entity-name>de.vbl.im.model.EdiSystem</entity-name>
+		<entity-width>120</entity-width>
+		<entity-height>221</entity-height>
+		<entity-X-Coordinate>23</entity-X-Coordinate>
+		<entity-Y-Coordinate>228</entity-Y-Coordinate>
+		<primary-collapsed>true</primary-collapsed>
+		<relation-collapsed>false</relation-collapsed>
+		<basic-collapsed>false</basic-collapsed>
+	</entity>
+
+	<entity>
+		<entity-name>de.vbl.im.model.EdiEmpfaenger</entity-name>
+		<entity-width>120</entity-width>
+		<entity-height>123</entity-height>
+		<entity-X-Coordinate>219</entity-X-Coordinate>
+		<entity-Y-Coordinate>513</entity-Y-Coordinate>
+		<primary-collapsed>true</primary-collapsed>
+		<relation-collapsed>false</relation-collapsed>
+		<basic-collapsed>false</basic-collapsed>
+	</entity>
+</entities>

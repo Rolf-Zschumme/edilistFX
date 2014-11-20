@@ -65,7 +65,7 @@ public class DataBaseInit {
 		}
 		finally {
 			
-			q = em.createQuery("SELECT e FROM Integration e ORDER BY e.ediNr");
+			q = em.createQuery("SELECT e FROM Integration e ORDER BY e.iNr");
 			@SuppressWarnings("unchecked")
 			List<Integration> ediList = q.getResultList();
 			for (Integration el : ediList) {
