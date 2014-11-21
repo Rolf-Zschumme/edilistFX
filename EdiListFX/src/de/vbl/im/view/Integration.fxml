@@ -20,7 +20,7 @@
 						<Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
 					</VBox.margin>
 				</ToolBar>
-				<TitledPane fx:id="m_IszenarioPane" animated="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Integrationsszenario">
+				<TitledPane fx:id="m_InSzenarioPane" animated="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Integrationsszenario">
 					<content>
 						<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
 							<children>
@@ -63,7 +63,7 @@
 <Insets top="30.0" />
 </GridPane.margin>
 </VBox>
-										<ComboBox fx:id="cmbIszenario" layoutX="9.600000381469727" layoutY="9.600000381469727" maxWidth="1.7976931348623157E308" AnchorPane.leftAnchor="90.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+										<ComboBox fx:id="cmbInSzenario" layoutX="9.600000381469727" layoutY="9.600000381469727" maxWidth="1.7976931348623157E308" AnchorPane.leftAnchor="90.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 										<Label alignment="CENTER_RIGHT" layoutX="9.600000381469727" layoutY="68.60000038146973" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Konfiguration:" GridPane.rowIndex="3">
 										</Label>
 										<ComboBox fx:id="cmbKonfiguration" layoutX="9.600000381469727" layoutY="85.60000038146973" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="3" />
@@ -76,7 +76,7 @@
 												<TableColumn fx:id="tColDokumentDatum" editable="false" maxWidth="100.0" minWidth="-1.0" prefWidth="100.0" resizable="false" text="Datum" />
 												<TableColumn fx:id="tColDokumentQuelle" editable="false" maxWidth="250.0" minWidth="20.0" prefWidth="120.0" resizable="false" text="Quelle" /><TableColumn fx:id="tColDokumentPfad" editable="false" maxWidth="1.7976931348623157E308" minWidth="50.0" prefWidth="300.0" text="Pfad" visible="false" /><TableColumn fx:id="tColDokumentRevision" editable="false" maxWidth="80.0" minWidth="-1.0" resizable="false" text="Revision" visible="false" />
 											</columns>
-										</TableView><Button fx:id="m_NewIszenarioBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#actionNewIszenario" text="Neu..." GridPane.columnIndex="2" GridPane.rowIndex="1" /><Button fx:id="m_NewConfigurationBtn" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#newKonfiguration" text="Neu..." GridPane.columnIndex="2" GridPane.rowIndex="3" />
+										</TableView><Button fx:id="m_NewInSzenarioBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#actionNewInSzenario" text="Neu..." GridPane.columnIndex="2" GridPane.rowIndex="1" /><Button fx:id="m_NewConfigurationBtn" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#newKonfiguration" text="Neu..." GridPane.columnIndex="2" GridPane.rowIndex="3" />
 									</children>
 <padding>
 <Insets left="5.0" right="8.0" />
@@ -88,9 +88,9 @@
 				</TitledPane>
             <AnchorPane fx:id="m_IntegrationPane" maxHeight="330.0" maxWidth="1.7976931348623157E308">
                <children>
-                  <TabPane fx:id="tabPaneEdiNr" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <TabPane fx:id="tabPaneInNr" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <tabs>
-                      <Tab fx:id="tabAktEdiNr" text="I-Nr. 000-00">
+                      <Tab fx:id="tabAktInNr" text="I-Nr. 000-00">
                            <content>
             						<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="301.0">
                                  <children>
@@ -114,7 +114,7 @@
                               												<RowConstraints maxHeight="10.0" minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
                               											</rowConstraints>
                               											<children>
-                              												<TextField fx:id="ediLastChange" editable="false" focusTraversable="false" layoutX="698.0" layoutY="29.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                              												<TextField fx:id="tfLastChange" editable="false" focusTraversable="false" layoutX="698.0" layoutY="29.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="3" GridPane.rowIndex="1">
                               													<GridPane.margin>
                               														<Insets />
                               													</GridPane.margin>
@@ -133,7 +133,7 @@
                               														<Insets />
                               													</GridPane.margin>
                               												</Label>
-                              												<TextArea fx:id="taEdiBeschreibung" maxWidth="1.7976931348623157E308" prefHeight="182.0" prefWidth="610.0" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.rowSpan="3">
+                              												<TextArea fx:id="taBeschreibung" maxWidth="1.7976931348623157E308" prefHeight="182.0" prefWidth="610.0" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.rowSpan="3">
                               													<GridPane.margin>
                               														<Insets />
                               													</GridPane.margin>

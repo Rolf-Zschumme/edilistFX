@@ -33,17 +33,17 @@ import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
 
 import de.vbl.im.model.Integration;
-import de.vbl.im.model.EdiEmpfaenger;
-import de.vbl.im.model.Iszenario;
+import de.vbl.im.model.InEmpfaenger;
+import de.vbl.im.model.InSzenario;
 
-public class IszenarioController {
-	private static final Logger logger = LogManager.getLogger(IszenarioController.class.getName()); 
+public class InSzenarioController {
+	private static final Logger logger = LogManager.getLogger(InSzenarioController.class.getName()); 
 	private static Stage primaryStage = null;
 	private static IMController mainCtr;
 	private static EntityManager entityManager;
-	private final ObjectProperty<Iszenario> iszenario;
+	private final ObjectProperty<InSzenario> inSzenario;
 	private final ObservableSet<Integration> integrationSet;      // all integration for this IS
-	private Iszenario aktIszenario = null;
+	private InSzenario aktInSzenario = null;
 
 	
     private BooleanProperty dataIsChanged = new SimpleBooleanProperty(false);
@@ -52,28 +52,28 @@ public class IszenarioController {
     @FXML private URL location;
     @FXML private TextField tfBezeichnung;
     @FXML private TextArea taBeschreibung;
-    @FXML private TableView<EdiEmpfaenger> tvVerwendungen;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcEdiNr;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcKonfiguration;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcEmpfaenger;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcSender;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcGeschaeftsobjekt;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcDatumAb;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcDatumBis;
+    @FXML private TableView<InEmpfaenger> tvVerwendungen;
+    @FXML private TableColumn<InEmpfaenger, String> tcInNr;
+    @FXML private TableColumn<InEmpfaenger, String> tcKonfiguration;
+    @FXML private TableColumn<InEmpfaenger, String> tcEmpfaenger;
+    @FXML private TableColumn<InEmpfaenger, String> tcSender;
+    @FXML private TableColumn<InEmpfaenger, String> tcGeschaeftsobjekt;
+    @FXML private TableColumn<InEmpfaenger, String> tcDatumAb;
+    @FXML private TableColumn<InEmpfaenger, String> tcDatumBis;
     
     @FXML private Button btnSpeichern;
     @FXML private Button btnLoeschen;
     
-    public IszenarioController() {
-    	this.iszenario = new SimpleObjectProperty<>(this, "iszenario", null);
+    public InSzenarioController() {
+    	this.inSzenario = new SimpleObjectProperty<>(this, "inSzenario", null);
     	this.integrationSet = FXCollections.observableSet();
     }
 
 	public static void setParent(IMController managerController) {
 		logger.entry();
-		IszenarioController.mainCtr = managerController;
-		IszenarioController.primaryStage = IMController.getStage();
-		IszenarioController.entityManager = managerController.getEntityManager();
+		InSzenarioController.mainCtr = managerController;
+		InSzenarioController.primaryStage = IMController.getStage();
+		InSzenarioController.entityManager = managerController.getEntityManager();
 		logger.exit();
 	}
 
@@ -81,26 +81,26 @@ public class IszenarioController {
 	public void initialize() {
 		checkFieldsFromView();
 		
-		iszenario.addListener(new ChangeListener<Iszenario>() {
+		inSzenario.addListener(new ChangeListener<InSzenario>() {
 			@Override
-			public void changed(ObservableValue<? extends Iszenario> ov,
-					Iszenario oldIszenario, Iszenario newIszenario) {
-				log("ChangeListener<EdiKomponente>",
-					((oldIszenario==null) ? "null" : oldIszenario.getName() + " -> " 
-				  + ((newIszenario==null) ? "null" : newIszenario.getName() )));
-				if (oldIszenario != null && newIszenario == null) {
+			public void changed(ObservableValue<? extends InSzenario> ov,
+					InSzenario oldInSzenario, InSzenario newInSzenario) {
+				log("ChangeListener<InKomponente>",
+					((oldInSzenario==null) ? "null" : oldInSzenario.getName() + " -> " 
+				  + ((newInSzenario==null) ? "null" : newInSzenario.getName() )));
+				if (oldInSzenario != null && newInSzenario == null) {
 					integrationSet.clear();
 					tfBezeichnung.setText("");
 					taBeschreibung.setText("");
 				}
-				if (newIszenario != null) {
-					aktIszenario = newIszenario;
-					readEdiListeforIszenario(newIszenario);
-					tfBezeichnung.setText(newIszenario.getName());
-					if (newIszenario.getBeschreibung() == null) {
-						newIszenario.setBeschreibung("");
+				if (newInSzenario != null) {
+					aktInSzenario = newInSzenario;
+					readTablesForInSzenario(newInSzenario);
+					tfBezeichnung.setText(newInSzenario.getName());
+					if (newInSzenario.getBeschreibung() == null) {
+						newInSzenario.setBeschreibung("");
 					}
-					taBeschreibung.setText(newIszenario.getBeschreibung());
+					taBeschreibung.setText(newInSzenario.getBeschreibung());
 				}
 				dataIsChanged.set(false);
 			}
@@ -111,8 +111,8 @@ public class IszenarioController {
 
 		tfBezeichnung.textProperty().addListener((observable, oldValue, newValue)  -> {
 			String msg = "";
-			if (aktIszenario.getName().equals(newValue) == false) {
-				msg = checkIszenarioName(newValue);
+			if (aktInSzenario.getName().equals(newValue) == false) {
+				msg = checkInSzenarioName(newValue);
 				dataIsChanged.set(true);
 			} else {	
 				dataIsChanged.set(!checkForChangesWithMode(Checkmode.ONLY_CHECK));
@@ -121,7 +121,7 @@ public class IszenarioController {
 		}); 
 
 		taBeschreibung.textProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue.equals(aktIszenario.getBeschreibung()) == false) {
+			if (newValue.equals(aktInSzenario.getBeschreibung()) == false) {
 				dataIsChanged.set(true);
 			} else {	
 				dataIsChanged.set(!checkForChangesWithMode(Checkmode.ONLY_CHECK));
@@ -130,16 +130,16 @@ public class IszenarioController {
 		
 //	    Setup for Sub-Panel    
 		
-		tcEdiNr.setCellValueFactory(cellData -> Bindings.format(Integration.FORMAT_EDINR, 
-												cellData.getValue().getIntegration().ediNrProperty()));
+		tcInNr.setCellValueFactory(cellData -> Bindings.format(Integration.FORMAT_INNR, 
+												cellData.getValue().getIntegration().inNrProperty()));
 
 
 		tcKonfiguration.setCellValueFactory(cellData -> cellData.getValue().getIntegration().konfigurationNameProperty());
 		
-		tcSender.setCellValueFactory(cellData -> cellData.getValue().getIntegration().getEdiKomponente().fullnameProperty());
+		tcSender.setCellValueFactory(cellData -> cellData.getValue().getIntegration().getInKomponente().fullnameProperty());
 		
 //		tcSender.setCellFactory(column -> {
-//			return new TableCell<EdiEmpfaenger, String>() {
+//			return new TableCell<InEmpfaenger, String>() {
 //				@Override
 //				protected void updateItem (String senderFullname, boolean empty) {
 //					super.updateItem(senderFullname, empty);
@@ -155,7 +155,7 @@ public class IszenarioController {
 		tcEmpfaenger.setCellValueFactory(cellData -> cellData.getValue().getKomponente().fullnameProperty());
 
 //		tcEmpfaenger.setCellFactory(column -> {
-//			return new TableCell<EdiEmpfaenger, String>() {
+//			return new TableCell<InEmpfaenger, String>() {
 //				@Override
 //				protected void updateItem (String empfaengerFullname, boolean empty) {
 //					super.updateItem(empfaengerFullname, empty);
@@ -172,9 +172,9 @@ public class IszenarioController {
 		tcDatumBis.setCellValueFactory(cellData -> cellData.getValue().getIntegration().bisDatumProperty());
 		
 		// TODO: for direct jump to another integration from this table
-		tvVerwendungen.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<EdiEmpfaenger>() {
+		tvVerwendungen.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<InEmpfaenger>() {
 			@Override
-			public void changed (ObservableValue<? extends EdiEmpfaenger> ov, EdiEmpfaenger oldValue, EdiEmpfaenger newValue) {
+			public void changed (ObservableValue<? extends InEmpfaenger> ov, InEmpfaenger oldValue, InEmpfaenger newValue) {
 				log("tvVerwendungen.select.changed" ,"newValue" + newValue);
 			}
 		});
@@ -183,32 +183,32 @@ public class IszenarioController {
 	@FXML
 	void loeschen(ActionEvent event) {
 		if (integrationSet.size() > 0) {
-			mainCtr.setErrorText("Fehler beim Löschen der Iszenario " + aktIszenario.getName() +" wird verwendet");
+			mainCtr.setErrorText("Fehler beim Löschen der InSzenario " + aktInSzenario.getName() +" wird verwendet");
 			return;
 		}	
-		String iszenarioName1 = "Iszenario \"" + aktIszenario.getName() + "\"";
-		String iszenarioName2 = iszenarioName1;
-		if (aktIszenario.getName().equals(tfBezeichnung.getText()) == false) {
-			iszenarioName2 = iszenarioName1 + " / \"" + tfBezeichnung.getText() + "\"";
+		String inSzenarioName1 = "InSzenario \"" + aktInSzenario.getName() + "\"";
+		String inSzenarioName2 = inSzenarioName1;
+		if (aktInSzenario.getName().equals(tfBezeichnung.getText()) == false) {
+			inSzenarioName2 = inSzenarioName1 + " / \"" + tfBezeichnung.getText() + "\"";
 		}
 		Action response = Dialogs.create()
 				.owner(primaryStage).title(primaryStage.getTitle())
-				.message(iszenarioName2 + " wirklich löschen ?")
+				.message(inSzenarioName2 + " wirklich löschen ?")
 				.showConfirm();
 		if (response == Dialog.Actions.YES) {
 			try {
 				entityManager.getTransaction().begin();
-				entityManager.remove(aktIszenario);
+				entityManager.remove(aktInSzenario);
 				entityManager.getTransaction().commit();
-				aktIszenario = null;
-				mainCtr.loadIszenarioListData();
-				mainCtr.setInfoText("Die Iszenario \"" + iszenarioName1 +
+				aktInSzenario = null;
+				mainCtr.loadInSzenarioListData();
+				mainCtr.setInfoText("Die InSzenario \"" + inSzenarioName1 +
 									 "\" wurde erfolgreich gelöscht !");
 			} catch (RuntimeException er) {
 				Dialogs.create()
 					.owner(primaryStage).title(primaryStage.getTitle())
 					.masthead("Datenbankfehler")
-				    .message("Fehler beim Löschen der Komponente " + iszenarioName1)
+				    .message("Fehler beim Löschen der Komponente " + inSzenarioName1)
 				    .showException(er);
 			}
 		}
@@ -227,13 +227,13 @@ public class IszenarioController {
 	
 	private boolean checkForChangesWithMode(Checkmode checkmode) {
 		String l = "checkForChangesWithMode-" + checkmode;
-		log(l,"aktInte=" + (aktIszenario==null ? "null" : aktIszenario.getName()));
-		if (aktIszenario == null ) {
+		log(l,"aktInte=" + (aktInSzenario==null ? "null" : aktInSzenario.getName()));
+		if (aktInSzenario == null ) {
 			return true;
 		}
-		String orgName = aktIszenario.getName();
+		String orgName = aktInSzenario.getName();
 		String newName = tfBezeichnung.getText();
-		String orgBeschreibung = aktIszenario.getBeschreibung()==null ? "" : aktIszenario.getBeschreibung();
+		String orgBeschreibung = aktInSzenario.getBeschreibung()==null ? "" : aktInSzenario.getBeschreibung();
 		String newBeschreibung = taBeschreibung.getText()==null ? "" : taBeschreibung.getText();
 		if (orgName.equals(newName) &&
 			orgBeschreibung.equals(newBeschreibung) ) {
@@ -246,17 +246,17 @@ public class IszenarioController {
 				Action response = Dialogs.create()
     				.owner(primaryStage).title(primaryStage.getTitle())
     				.actions(Dialog.Actions.YES, Dialog.Actions.NO, Dialog.Actions.CANCEL)
-    				.message("Sollen die Änderungen der Iszenario " + orgName + " gespeichert werden ?")
+    				.message("Sollen die Änderungen der InSzenario " + orgName + " gespeichert werden ?")
     				.showConfirm();
 	    		if (response == Dialog.Actions.CANCEL) {
 	    			return false;
 	    		}
 	    		if (response == Dialog.Actions.NO) {
-	    			aktIszenario = null;
+	    			aktInSzenario = null;
 	    			return true;
 	    		}
 			}
-			String msg = checkIszenarioName(newName);
+			String msg = checkInSzenarioName(newName);
 			if (msg != null) {
 				mainCtr.setErrorText(msg);
 				tfBezeichnung.requestFocus();
@@ -264,25 +264,25 @@ public class IszenarioController {
 			}
 			log(l,"Änderung erkannt -> update");
 			entityManager.getTransaction().begin();
-			aktIszenario.setName(newName);
-			aktIszenario.setBeschreibung(newBeschreibung);
+			aktInSzenario.setName(newName);
+			aktInSzenario.setBeschreibung(newBeschreibung);
 			entityManager.getTransaction().commit();
-			readEdiListeforIszenario(aktIszenario);
-			mainCtr.setInfoText("Iszenario " + orgName + " wurde gespeichert");
+			readTablesForInSzenario(aktInSzenario);
+			mainCtr.setInfoText("InSzenario " + orgName + " wurde gespeichert");
 		}
 		return true;
 	}
 	
-	private String checkIszenarioName(String newName) {
+	private String checkInSzenarioName(String newName) {
 		if ("".equals(newName)) {
 			return "Eine Bezeichnung ist erforderlich";
 		}
-		TypedQuery<Iszenario> tq = entityManager.createQuery(
-				"SELECT i FROM Iszenario i WHERE LOWER(i.name) = LOWER(:n)",Iszenario.class);
+		TypedQuery<InSzenario> tq = entityManager.createQuery(
+				"SELECT i FROM InSzenario i WHERE LOWER(i.name) = LOWER(:n)",InSzenario.class);
 		tq.setParameter("n", newName);
-		List<Iszenario> iszenarioList = tq.getResultList();
-		for (Iszenario i : iszenarioList ) {
-			if (i.getId() != aktIszenario.getId() )  {
+		List<InSzenario> inSzenarioList = tq.getResultList();
+		for (InSzenario i : inSzenarioList ) {
+			if (i.getId() != aktInSzenario.getId() )  {
 				if (i.getName().equalsIgnoreCase(newName)) {
 					return "Ein anderes Integrationsszenario heißt bereits so!";
 				}
@@ -291,62 +291,61 @@ public class IszenarioController {
 		return null;
 	}
 
-	private void readEdiListeforIszenario( Iszenario selIszenario) {
+	private void readTablesForInSzenario( InSzenario selInSzenario) {
 		tvVerwendungen.getItems().clear();
-		ObservableList<EdiEmpfaenger> empfaengerList = FXCollections.observableArrayList();
+		ObservableList<InEmpfaenger> empfaengerList = FXCollections.observableArrayList();
 		integrationSet.clear(); 
-		/* 1. lese alle EdiEinträge mit Sender = selekierter Komponente 
+		/* 1. lese alle Einträge mit Sender = selekierter Komponente 
 		 * 		-> zeige jeweils alle zugehörigen Empfänger, falls kein Empfänger vorhanden dummy erzeugen
 		*/
 		TypedQuery<Integration> tqS = entityManager.createQuery(
-				"SELECT e FROM Integration e WHERE e.konfiguration.iszenario = :i", Integration.class);
-		tqS.setParameter("i", selIszenario);
-		List<Integration> ediList = tqS.getResultList();
-		for(Integration e : ediList ) {
+				"SELECT e FROM Integration e WHERE e.konfiguration.inSzenario = :i", Integration.class);
+		tqS.setParameter("i", selInSzenario);
+		List<Integration> resultList = tqS.getResultList();
+		for(Integration e : resultList ) {
 			integrationSet.add(e);
-			if (e.getEdiEmpfaenger().size() > 0) {
-				empfaengerList.addAll(e.getEdiEmpfaenger());
-//				for(EdiEmpfaenger ee : e.getEdiEmpfaenger() ) ediKomponenteList.add(ee); 
+			if (e.getInEmpfaenger().size() > 0) {
+				empfaengerList.addAll(e.getInEmpfaenger());
+//				for(InEmpfaenger ee : e.getInEmpfaenger() ) inKomponenteList.add(ee); 
 			} else {
-				EdiEmpfaenger tmpE = new EdiEmpfaenger();
+				InEmpfaenger tmpE = new InEmpfaenger();
 				tmpE.setIntegration(e);
 				empfaengerList.add(tmpE);
 			}
 		}
 		tvVerwendungen.setItems(empfaengerList);
-//		log("readEdiListeforKomponente","size="+ integrationSet.size());
 	}
 
-	public final ObjectProperty<Iszenario> iszenarioProperty() {
-		return iszenario;
+	public final ObjectProperty<InSzenario> inSzenarioProperty() {
+		return inSzenario;
 	}
 	
-	public final Iszenario getIszenario() {
-		return iszenario.get() ;
+	public final InSzenario getInSzenario() {
+		return inSzenario.get() ;
 	}
 	
-	public final void setIszenario(Iszenario iszenario) {
-		this.iszenario.set(iszenario);
+	public final void setInSzenario(InSzenario inSzenario) {
+		this.inSzenario.set(inSzenario);
 	}
     
 	private static void log(String methode, String message) {
 		if (message != null || methode != null) {
-			String className = IszenarioController.class.getName().substring(16);
+			String className = InSzenarioController.class.getName().substring(16);
 			System.out.println(className + "." + methode + "(): " + message); 
 		}
 	}
 
 	void checkFieldsFromView() {
-    	assert tfBezeichnung != null : "fx:id=\"tfBezeichnung\" was not injected: check your FXML file 'Iszenario.fxml'.";
-    	assert taBeschreibung != null : "fx:id=\"taBeschreibung\" was not injected: check your FXML file 'Iszenario.fxml'.";
-    	assert tcEdiNr != null : "fx:id=\"tcEdiNr\" was not injected: check your FXML file 'Iszenario.fxml'.";
-    	assert tcKonfiguration != null : "fx:id=\"tcKonfiguration\" was not injected: check your FXML file 'Iszenario.fxml'.";
-    	assert tcSender != null : "fx:id=\"tcSender\" was not injected: check your FXML file 'Iszenario.fxml'.";
-        assert tcEmpfaenger != null : "fx:id=\"tcEmpfaenger\" was not injected: check your FXML file 'Iszenario.fxml'.";
-        assert tcDatumBis != null : "fx:id=\"tcDatumBis\" was not injected: check your FXML file 'Iszenario.fxml'.";
-        assert tvVerwendungen != null : "fx:id=\"tvVerwendungen\" was not injected: check your FXML file 'Iszenario.fxml'.";
-        assert btnLoeschen != null : "fx:id=\"btnLoeschen\" was not injected: check your FXML file 'Iszenario.fxml'.";
-        assert btnSpeichern != null : "fx:id=\"btnSpeichern\" was not injected: check your FXML file 'Iszenario.fxml'.";
+    	assert tfBezeichnung != null : "fx:id=\"tfBezeichnung\" was not injected: check your FXML file 'InSzenario.fxml'.";
+    	assert taBeschreibung != null : "fx:id=\"taBeschreibung\" was not injected: check your FXML file 'InSzenario.fxml'.";
+    	assert tcInNr != null : "fx:id=\"tcInNr\" was not injected: check your FXML file 'InSzenario.fxml'.";
+    	assert tcKonfiguration != null : "fx:id=\"tcKonfiguration\" was not injected: check your FXML file 'InSzenario.fxml'.";
+    	assert tcSender != null : "fx:id=\"tcSender\" was not injected: check your FXML file 'InSzenario.fxml'.";
+        assert tcEmpfaenger != null : "fx:id=\"tcEmpfaenger\" was not injected: check your FXML file 'InSzenario.fxml'.";
+        assert tcDatumBis != null : "fx:id=\"tcDatumBis\" was not injected: check your FXML file 'InSzenario.fxml'.";
+        assert tvVerwendungen != null : "fx:id=\"tvVerwendungen\" was not injected: check your FXML file 'InSzenario.fxml'.";
+        assert btnLoeschen != null : "fx:id=\"btnLoeschen\" was not injected: check your FXML file 'InSzenario.fxml'.";
+        assert btnSpeichern != null : "fx:id=\"btnSpeichern\" was not injected: check your FXML file 'InSzenario.fxml'.";
     }
     
 }

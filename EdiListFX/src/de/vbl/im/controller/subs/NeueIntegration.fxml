@@ -27,7 +27,7 @@
 		    <RowConstraints maxHeight="99.0" minHeight="10.0" prefHeight="80.0" vgrow="SOMETIMES" />
 		    <RowConstraints maxHeight="189.0" minHeight="10.0" prefHeight="74.0" vgrow="SOMETIMES" />
 		  </rowConstraints>
-		<children><TextField fx:id="tfEdiNr" focusTraversable="false" maxWidth="-Infinity" prefHeight="25.0" prefWidth="100.0" GridPane.columnIndex="2" GridPane.rowIndex="1" /><Label alignment="CENTER" maxWidth="1.7976931348623157E308" prefHeight="17.0" prefWidth="135.0" text="Nummer :" GridPane.columnIndex="1" GridPane.rowIndex="1" /><Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Neue Integration anlegen" GridPane.columnIndex="1" GridPane.columnSpan="2">
+		<children><TextField fx:id="tfInNr" focusTraversable="false" maxWidth="-Infinity" prefHeight="25.0" prefWidth="100.0" GridPane.columnIndex="2" GridPane.rowIndex="1" /><Label alignment="CENTER" maxWidth="1.7976931348623157E308" prefHeight="17.0" prefWidth="135.0" text="Nummer :" GridPane.columnIndex="1" GridPane.rowIndex="1" /><Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Neue Integration anlegen" GridPane.columnIndex="1" GridPane.columnSpan="2">
 		<font>
 		<Font size="18.0" />
 		</font></Label>

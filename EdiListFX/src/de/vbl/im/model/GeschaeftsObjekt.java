@@ -39,12 +39,12 @@ public class GeschaeftsObjekt implements Serializable {
 	private long id;
 	private StringProperty name;
 	private String beschreibung;
-	private ObservableList<EdiEmpfaenger> ediEmpfaenger;
+	private ObservableList<InEmpfaenger> inEmpfaenger;
 	private IntegerProperty anzVerwendungen;
 	
 	public GeschaeftsObjekt() {
 		name = new SimpleStringProperty();
-		ediEmpfaenger = FXCollections.observableArrayList();
+		inEmpfaenger = FXCollections.observableArrayList();
 		anzVerwendungen = new SimpleIntegerProperty();
 	}   
 	public GeschaeftsObjekt(String name) {
@@ -85,14 +85,14 @@ public class GeschaeftsObjekt implements Serializable {
 	}
 	
 	@OneToMany(mappedBy = "geschaeftsObjekt")
-	public Collection<EdiEmpfaenger> getEdiEmpfaenger() {
-	    return ediEmpfaenger;
+	public Collection<InEmpfaenger> getInEmpfaenger() {
+	    return inEmpfaenger;
 	}
-	public void setEdiEmpfaenger(Collection<EdiEmpfaenger> param) {
+	public void setInEmpfaenger(Collection<InEmpfaenger> param) {
 		anzVerwendungen.unbind();
-		ediEmpfaenger = FXCollections.observableArrayList(param);
+		inEmpfaenger = FXCollections.observableArrayList(param);
 		logger.trace("name:" + this.getName() + " (" + this.id + ") " + param.size());
-		anzVerwendungen.bind(Bindings.size(ediEmpfaenger));
+		anzVerwendungen.bind(Bindings.size(inEmpfaenger));
 	}
 	
 	public IntegerProperty anzVerwendungenProperty () {

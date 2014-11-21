@@ -13,9 +13,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
-import de.vbl.im.model.Iszenario;
+import de.vbl.im.model.InSzenario;
 import javax.persistence.ManyToOne;
-import javax.persistence.JoinColumn;
 
 /**
  * Entity implementation class for Entity: Szenario
@@ -28,12 +27,12 @@ public class Konfiguration {
 	private StringProperty name;
 	private String beschreibung;
 	@Transient
-	private StringProperty iSzenarioName;
+	private StringProperty inSzenarioName;
 	private Set<Integration> integration;
-	private Iszenario iszenario;
+	private InSzenario inSzenario;
 	public Konfiguration() {
 		name = new SimpleStringProperty();
-		iSzenarioName = new SimpleStringProperty("");
+		inSzenarioName = new SimpleStringProperty("");
 	}
 	
 	public Konfiguration(String name) {
@@ -86,8 +85,8 @@ public class Konfiguration {
 		this.beschreibung = param;
 	}
 
-	public StringProperty iSzenarioNameProperty () {
-		return iSzenarioName;
+	public StringProperty inSzenarioNameProperty () {
+		return inSzenarioName;
 	}
 
 	@OneToMany(mappedBy = "konfiguration")
@@ -100,13 +99,18 @@ public class Konfiguration {
 	}
 
 	@ManyToOne
-	@JoinColumn(name = "iszenario_id", referencedColumnName = "ID")
-	public Iszenario getIszenario() {
-	    return iszenario;
+	public InSzenario getInSzenario() {
+	    return inSzenario;
 	}
 
-	public void setIszenario(Iszenario param) {
-	    this.iszenario = param;
+	public void setInSzenario(InSzenario param) {
+		if (inSzenario != null) {
+			inSzenarioName.unbind();
+		}
+	    inSzenario = param;
+		if (inSzenario != null) {
+			inSzenarioName.bind(inSzenario.nameProperty());
+		}
 	}
 
 }

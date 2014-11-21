@@ -22,29 +22,29 @@ import javax.persistence.Transient;
 
 
 /**
- * Entity implementation class for Entity: EdiPartner
+ * Entity implementation class for Entity: InPartner
  * 
  */
 @Entity
-public class EdiPartner {
+public class InPartner {
 	private long id;
 	private StringProperty name;
 	private String beschreibung;
-//	private Collection<EdiSystem> ediSystem;
-	private ObservableList<EdiSystem> ediSystem;
+//	private Collection<InSystem> inSystem;
+	private ObservableList<InSystem> inSystem;
 	private Collection<Ansprechpartner> ansprechpartner;
 	
 
 	private IntegerProperty anzSysteme;
 	private IntegerProperty anzKomponenten;
 
-	public EdiPartner() {
+	public InPartner() {
 		name = new SimpleStringProperty();
 		anzSysteme = new SimpleIntegerProperty();
 		anzKomponenten = new SimpleIntegerProperty();
 	}
 
-	public EdiPartner(String name) {
+	public InPartner(String name) {
 		this();
 		setName(name);
 	}
@@ -75,31 +75,31 @@ public class EdiPartner {
 	}
 
 //	// ------------------------------------------------------------------------
-//	@OneToMany(mappedBy = "ediPartner")
-//	public Collection<EdiSystem> getEdiSystem() {
-//		return ediSystem;
+//	@OneToMany(mappedBy = "inPartner")
+//	public Collection<InSystem> getInSystem() {
+//		return inSystem;
 //	}
 //
-//	public void setEdiSystem(Collection<EdiSystem> param) {
-//		this.ediSystem = param;
+//	public void setInSystem(Collection<InSystem> param) {
+//		this.inSystem = param;
 //	}
 	
 	
-	@OneToMany(mappedBy = "ediPartner")
-	public Collection<EdiSystem> getEdiSystem() {
-		return ediSystem;
+	@OneToMany(mappedBy = "inPartner")
+	public Collection<InSystem> getInSystem() {
+		return inSystem;
 	}
 
-	public void setEdiSystem(Collection<EdiSystem> systems) {
-		if (ediSystem != null) {
+	public void setInSystem(Collection<InSystem> systems) {
+		if (inSystem != null) {
 			anzSysteme.unbind();
 			anzKomponenten.unbind();
 		}
-		this.ediSystem = FXCollections.observableArrayList(systems);
-		anzSysteme.bind(Bindings.size(ediSystem));
+		this.inSystem = FXCollections.observableArrayList(systems);
+		anzSysteme.bind(Bindings.size(inSystem));
 		
 //		ObservableIntegerArray array = FXCollections.observableIntegerArray(); 
-//		for ( EdiSystem s : getEdiSystem() ) {
+//		for ( InSystem s : getInSystem() ) {
 // 			IntegerProperty tmp = new SimpleIntegerProperty();
 //			tmp.bind(anzKomponenten);
 //			anzKomponenten.bind(Bindings.add(tmp, s.anzKomponentenProperty()));
@@ -125,8 +125,8 @@ public class EdiPartner {
 	@Transient
 	public IntegerProperty anzKomponentenProperty() {
 		int anzK = 0;
-		for ( EdiSystem s : getEdiSystem() ) {
-//			anzK += s.getEdiKomponente().size();
+		for ( InSystem s : getInSystem() ) {
+//			anzK += s.getInKomponente().size();
 			anzK += s.anzKomponentenProperty().get();
 		}
 		anzKomponenten.set(anzK);

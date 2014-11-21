@@ -43,21 +43,21 @@ import org.controlsfx.dialog.Dialog.Actions;
 
 import de.vbl.im.controller.subs.AnsprechpartnerAuswaehlenController;
 import de.vbl.im.model.Integration;
-import de.vbl.im.model.EdiEmpfaenger;
-import de.vbl.im.model.EdiPartner;
+import de.vbl.im.model.InEmpfaenger;
+import de.vbl.im.model.InPartner;
 import de.vbl.im.model.Ansprechpartner;
 
-public class EdiPartnerController {
-	private static final Logger logger = LogManager.getLogger(EdiPartnerController.class.getName());
+public class InPartnerController {
+	private static final Logger logger = LogManager.getLogger(InPartnerController.class.getName());
 	private static Stage primaryStage = null;
 	private static IMController mainCtr;
 	private static EntityManager entityManager;
-	private final ObjectProperty<EdiPartner> ediPartner;
+	private final ObjectProperty<InPartner> inPartner;
 	private final ObservableSet<Integration> integrationSet;      // all assigned integrations
 	private final ObservableList<Ansprechpartner> ansprechpartnerList; 
-	private final IntegerProperty ediSystemAnzahl; 
+	private final IntegerProperty inSystemAnzahl; 
 	
-	private EdiPartner aktPartner = null;
+	private InPartner aktPartner = null;
 	
     private BooleanProperty dataIsChanged = new SimpleBooleanProperty(false);
 	
@@ -66,30 +66,30 @@ public class EdiPartnerController {
     @FXML private TextField tfBezeichnung;
     @FXML private TextArea taBeschreibung;
     @FXML private ListView<Ansprechpartner> lvAnsprechpartner;
-    @FXML private TableView<EdiEmpfaenger> tvVerwendungen;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcEmpfaenger;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcEdiNr;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcSender;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcGeschaeftsobjekt;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcDatumAb;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcDatumBis;
+    @FXML private TableView<InEmpfaenger> tvVerwendungen;
+    @FXML private TableColumn<InEmpfaenger, String> tcEmpfaenger;
+    @FXML private TableColumn<InEmpfaenger, String> tcInNr;
+    @FXML private TableColumn<InEmpfaenger, String> tcSender;
+    @FXML private TableColumn<InEmpfaenger, String> tcGeschaeftsobjekt;
+    @FXML private TableColumn<InEmpfaenger, String> tcDatumAb;
+    @FXML private TableColumn<InEmpfaenger, String> tcDatumBis;
     
     @FXML private Button btnSpeichern;
     @FXML private Button btnLoeschen;
     @FXML private Button btnRemoveAnsprechpartner;
     
-    public EdiPartnerController() {
-    	this.ediPartner = new SimpleObjectProperty<>(this, "ediPartner", null);
+    public InPartnerController() {
+    	this.inPartner = new SimpleObjectProperty<>(this, "inPartner", null);
     	this.integrationSet = FXCollections.observableSet();
-    	this.ediSystemAnzahl = new SimpleIntegerProperty(0);
+    	this.inSystemAnzahl = new SimpleIntegerProperty(0);
     	this.ansprechpartnerList = FXCollections.observableArrayList();
     }
 
 	public static void setParent(IMController managerController) {
 		logger.entry(primaryStage);
-		EdiPartnerController.mainCtr = managerController;
-		EdiPartnerController.primaryStage = IMController.getStage();
-		EdiPartnerController.entityManager = managerController.getEntityManager();
+		InPartnerController.mainCtr = managerController;
+		InPartnerController.primaryStage = IMController.getStage();
+		InPartnerController.entityManager = managerController.getEntityManager();
 		logger.exit();
 	}
 
@@ -98,28 +98,28 @@ public class EdiPartnerController {
 		logger.entry();
 		checkFieldsFromView();
 		
-		ediPartner.addListener(new ChangeListener<EdiPartner>() {
+		inPartner.addListener(new ChangeListener<InPartner>() {
 			@Override
-			public void changed(ObservableValue<? extends EdiPartner> ov,
-					EdiPartner oldPartner, EdiPartner newPartner) {
+			public void changed(ObservableValue<? extends InPartner> ov,
+					InPartner oldPartner, InPartner newPartner) {
 				if (oldPartner != null) {
 					if (newPartner == null) {
 						tfBezeichnung.setText("");
 						taBeschreibung.setText("");
 					}
-					ediSystemAnzahl.unbind();
+					inSystemAnzahl.unbind();
 					ansprechpartnerList.clear();
 					integrationSet.clear();
 				}
 				if (newPartner != null) {
 					aktPartner = newPartner;
-					readEdiListeforPartner(newPartner);
+					readTablesforPartner(newPartner);
 					tfBezeichnung.setText(newPartner.getName());
 					if (newPartner.getBeschreibung() == null) {
 						newPartner.setBeschreibung("");
 					}
 					taBeschreibung.setText(newPartner.getBeschreibung());
-					ediSystemAnzahl.bind(aktPartner.anzSystemeProperty());
+					inSystemAnzahl.bind(aktPartner.anzSystemeProperty());
 					ansprechpartnerList.addAll(newPartner.getAnsprechpartner());
 					btnRemoveAnsprechpartner.disableProperty().bind(lvAnsprechpartner.getSelectionModel().selectedItemProperty().isNull());
 				}
@@ -128,7 +128,7 @@ public class EdiPartnerController {
 		});
 		
 		btnSpeichern.disableProperty().bind(Bindings.not(dataIsChanged));
-		btnLoeschen.disableProperty().bind(Bindings.lessThan(0, ediSystemAnzahl));
+		btnLoeschen.disableProperty().bind(Bindings.lessThan(0, inSystemAnzahl));
 //		btnLoeschen.disableProperty().bind(Bindings.not(Bindings.greaterThanOrEqual(0, Bindings.size(integrationSet))));
 
 		tfBezeichnung.textProperty().addListener((observable, oldValue, newValue)  -> {
@@ -167,13 +167,13 @@ public class EdiPartnerController {
 		
 //	    Setup for Sub-Panel    
 		
-		tcEdiNr.setCellValueFactory(cellData -> Bindings.format(Integration.FORMAT_EDINR, 
-												cellData.getValue().getIntegration().ediNrProperty()));
+		tcInNr.setCellValueFactory(cellData -> Bindings.format(Integration.FORMAT_INNR, 
+												cellData.getValue().getIntegration().inNrProperty()));
 
-		tcSender.setCellValueFactory(cellData -> cellData.getValue().getIntegration().getEdiKomponente().fullnameProperty());
+		tcSender.setCellValueFactory(cellData -> cellData.getValue().getIntegration().getInKomponente().fullnameProperty());
 		
 		tcSender.setCellFactory(column -> {
-			return new TableCell<EdiEmpfaenger, String>() {
+			return new TableCell<InEmpfaenger, String>() {
 				@Override
 				protected void updateItem (String senderName, boolean empty) {
 					super.updateItem(senderName, empty);
@@ -191,7 +191,7 @@ public class EdiPartnerController {
 		tcEmpfaenger.setCellValueFactory(cellData -> cellData.getValue().getKomponente().fullnameProperty());
 
 		tcEmpfaenger.setCellFactory(column -> {
-			return new TableCell<EdiEmpfaenger, String>() {
+			return new TableCell<InEmpfaenger, String>() {
 				@Override
 				protected void updateItem (String empfaengerName, boolean empty) {
 					super.updateItem(empfaengerName, empty);
@@ -210,10 +210,10 @@ public class EdiPartnerController {
 		tcDatumBis.setCellValueFactory(cellData -> cellData.getValue().getIntegration().bisDatumProperty());
 		
 		// todo: zum Absprung bei Select einer anderen Integration in der Sub-Tabelle
-		tvVerwendungen.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<EdiEmpfaenger>() {
+		tvVerwendungen.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<InEmpfaenger>() {
 			@Override
-			public void changed (ObservableValue<? extends EdiEmpfaenger> ov, EdiEmpfaenger oldValue, EdiEmpfaenger newValue) {
-				logger.info("noch nicht impelmentiert: Absprung zu " + newValue.getIntegration().getEdiNrStr());
+			public void changed (ObservableValue<? extends InEmpfaenger> ov, InEmpfaenger oldValue, InEmpfaenger newValue) {
+				logger.info("noch nicht impelmentiert: Absprung zu " + newValue.getIntegration().getInNrStr());
 			}
 		});
 		logger.exit();
@@ -333,7 +333,7 @@ public class EdiPartnerController {
 				.message("Fehler beim Speichern der Partnerdaten:\n" + e.getMessage())
 				.showException(e);
     	}
-		readEdiListeforPartner(aktPartner);
+		readTablesforPartner(aktPartner);
 		return true;
 	}
 	
@@ -341,11 +341,11 @@ public class EdiPartnerController {
 		if ("".equals(newName)) {
 			return "Eine Bezeichnung ist erforderlich";
 		}
-		TypedQuery<EdiPartner> tq = entityManager.createQuery(
-				"SELECT p FROM EdiPartner p WHERE LOWER(p.name) = LOWER(:n)",EdiPartner.class);
+		TypedQuery<InPartner> tq = entityManager.createQuery(
+				"SELECT p FROM InPartner p WHERE LOWER(p.name) = LOWER(:n)",InPartner.class);
 		tq.setParameter("n", newName);
-		List<EdiPartner> partnerList = tq.getResultList();
-		for (EdiPartner p : partnerList ) {
+		List<InPartner> partnerList = tq.getResultList();
+		for (InPartner p : partnerList ) {
 			if (p.getId() != aktPartner.getId()) {
 				if (p.getName().equalsIgnoreCase(newName)) {
 					return "Ein anderer Partner heiﬂt bereits so!";
@@ -355,28 +355,28 @@ public class EdiPartnerController {
 		return null;
 	}
 
-	private void readEdiListeforPartner( EdiPartner newPartner) {
+	private void readTablesforPartner( InPartner newPartner) {
 		tvVerwendungen.getItems().clear();
-		ObservableList<EdiEmpfaenger> empfaengerList = FXCollections.observableArrayList();
+		ObservableList<InEmpfaenger> empfaengerList = FXCollections.observableArrayList();
 		integrationSet.clear(); 
 		TypedQuery<Integration> tqS = entityManager.createQuery(
-				"SELECT e FROM Integration e WHERE e.ediKomponente.ediSystem.ediPartner = :p", Integration.class);
+				"SELECT e FROM Integration e WHERE e.inKomponente.inSystem.inPartner = :p", Integration.class);
 		tqS.setParameter("p", newPartner);
-		List<Integration> ediList = tqS.getResultList();
-		for(Integration e : ediList ) {
+		List<Integration> resultList = tqS.getResultList();
+		for(Integration e : resultList ) {
 			integrationSet.add(e);
-			if (e.getEdiEmpfaenger().size() > 0) {
-				empfaengerList.addAll(e.getEdiEmpfaenger());
+			if (e.getInEmpfaenger().size() > 0) {
+				empfaengerList.addAll(e.getInEmpfaenger());
 			} else {
-				EdiEmpfaenger tmpE = new EdiEmpfaenger();
+				InEmpfaenger tmpE = new InEmpfaenger();
 				tmpE.setIntegration(e);
 				empfaengerList.add(tmpE);
 			}
 		}
-		TypedQuery<EdiEmpfaenger> tqE = entityManager.createQuery(
-				"SELECT e FROM EdiEmpfaenger e WHERE e.komponente.ediSystem.ediPartner = :p", EdiEmpfaenger.class);
+		TypedQuery<InEmpfaenger> tqE = entityManager.createQuery(
+				"SELECT e FROM InEmpfaenger e WHERE e.komponente.inSystem.inPartner = :p", InEmpfaenger.class);
 		tqE.setParameter("p", newPartner);
-		for(EdiEmpfaenger e : tqE.getResultList() ) {
+		for(InEmpfaenger e : tqE.getResultList() ) {
 			empfaengerList.add(e);
 			integrationSet.add(e.getIntegration());
 		}
@@ -414,24 +414,24 @@ public class EdiPartnerController {
 		dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
     }
 	
-	public final ObjectProperty<EdiPartner> ediPartnerProperty() {
-		return ediPartner;
+	public final ObjectProperty<InPartner> inPartnerProperty() {
+		return inPartner;
 	}
 	
-	public final EdiPartner getEdiPartner() {
-		return ediPartner.get() ;
+	public final InPartner getInPartner() {
+		return inPartner.get() ;
 	}
 	
-	public final void setEdiPartner(EdiPartner ediPartner) {
-		this.ediPartner.set(ediPartner);
+	public final void setInPartner(InPartner inPartner) {
+		this.inPartner.set(inPartner);
 	}
     
-	final static String fxmlFilename = "EdiPartner.fxml";
+	final static String fxmlFilename = "InPartner.fxml";
 	final static String fxmlErrortxt = "' was not injected: check FXML-file '" + fxmlFilename + "'.";
 	void checkFieldsFromView() {
     	assert tfBezeichnung 			!= null : "fx:id='tfBezeichnung"   			+ fxmlErrortxt;
     	assert taBeschreibung			!= null : "fx:id='taBeschreibung"  			+ fxmlErrortxt;
-    	assert tcEdiNr					!= null : "fx:id='tcEdiNr"  				+ fxmlErrortxt;
+    	assert tcInNr					!= null : "fx:id='tcInNr"  				+ fxmlErrortxt;
     	assert tcSender					!= null : "fx:id='tcSender"  				+ fxmlErrortxt;
         assert tcEmpfaenger				!= null : "fx:id='tcEmpfaenger"  			+ fxmlErrortxt;
         assert tcGeschaeftsobjekt		!= null : "fx:id='tcGeschaeftsobjekt"  		+ fxmlErrortxt;

@@ -5,7 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="ediSystem" maxHeight="1.7976931348623157E308" prefHeight="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.im.controller.EdiSystemController">
+<AnchorPane fx:id="inSystem" maxHeight="1.7976931348623157E308" prefHeight="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.im.controller.InSystemController">
 	<children>
 <VBox maxHeight="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 <children>
@@ -46,7 +46,7 @@
                      <content>
                               <TableView fx:id="tvVerwendungen" minHeight="0.0" minWidth="0.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
                                  <columns>
-                                    <TableColumn fx:id="tcEdiNr" editable="false" maxWidth="55.0" minWidth="44.0" prefWidth="55.0" text=" I-Nr." />
+                                    <TableColumn fx:id="tcInNr" editable="false" maxWidth="55.0" minWidth="44.0" prefWidth="55.0" text=" I-Nr." />
                                     <TableColumn fx:id="tcSender" editable="false" maxWidth="500.0" minWidth="150.0" prefWidth="255.0" text="Sender" />
                                     <TableColumn fx:id="tcEmpfaenger" editable="false" maxWidth="500.0" minWidth="150.0" prefWidth="250.0" text="Empfänger" />
                                     <TableColumn fx:id="tcGeschaeftsobjekt" editable="false" maxWidth="400.0" minWidth="100.0" prefWidth="200.0" text="Geschäftsobjekt" />

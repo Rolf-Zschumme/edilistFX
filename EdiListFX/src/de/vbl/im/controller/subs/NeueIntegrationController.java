@@ -19,7 +19,7 @@ import de.vbl.im.model.Integration;
 
 public class NeueIntegrationController {
 	private static final Logger logger = LogManager.getLogger(NeueIntegrationController.class.getName()); 
-    @FXML private TextField tfEdiNr;
+    @FXML private TextField tfInNr;
     @FXML private Label fehlertext;
     
 	private EntityManager entityManager;
@@ -40,7 +40,7 @@ public class NeueIntegrationController {
 
 	public void start() {
 		logger.info("entered");
-		integration.setEdiNr(getHighestEdiNr()+1);
+		integration.setInNr(getHighestInNr()+1);
 	}
 	
 	/* ------------------------------------------------------------------------
@@ -56,17 +56,17 @@ public class NeueIntegrationController {
     }
     
     private void setupBindings() {
-    	tfEdiNr.textProperty().bindBidirectional(integration.ediNrProperty(),new NumberStringConverter());
+    	tfInNr.textProperty().bindBidirectional(integration.inNrProperty(),new NumberStringConverter());
 	}
     	
     @FXML
     void okPressed(ActionEvent event) {
-    	int ediNr = integration.getEdiNr();
-    	if (ediNr < 1) {
+    	int inNr = integration.getInNr();
+    	if (inNr < 1) {
     		fehlertext.setText("Ein Zahl größer Null eingeben");
     	}
-    	else if (isEdiNrUsed(ediNr)) {
-    		fehlertext.setText("Die Nummer " + ediNr + " ist bereits vergeben - bitte ändern");
+    	else if (isInNrUsed(inNr)) {
+    		fehlertext.setText("Die Nummer " + inNr + " ist bereits vergeben - bitte ändern");
     	}
     	else {
     		entityManager.getTransaction().begin();
@@ -87,7 +87,7 @@ public class NeueIntegrationController {
     }
     
     private void unbind() {
-    	tfEdiNr.textProperty().unbindBidirectional(integration.ediNrProperty());
+    	tfInNr.textProperty().unbindBidirectional(integration.inNrProperty());
     }
     
     private void close(ActionEvent event) {
@@ -99,8 +99,8 @@ public class NeueIntegrationController {
 	/* *****************************************************************************
 	 * 
 	 * ****************************************************************************/
-    private boolean isEdiNrUsed(int nr) {
-    	Query query = entityManager.createQuery("SELECT e.ediNr FROM Integration e");
+    private boolean isInNrUsed(int nr) {
+    	Query query = entityManager.createQuery("SELECT e.inNr FROM Integration e");
     	for (Object zeile  : query.getResultList()) {
     		Object obj = (Object) zeile;
     		int aktnr = (Integer) obj;
@@ -110,9 +110,9 @@ public class NeueIntegrationController {
     	return false;
     }
     
-    private Integer getHighestEdiNr() {
+    private Integer getHighestInNr() {
 		logger.info("entered");
-    	Query query = entityManager.createQuery("SELECT e.ediNr FROM Integration e ORDER BY e.ediNr");
+    	Query query = entityManager.createQuery("SELECT e.inNr FROM Integration e ORDER BY e.inNr");
     	Integer max = 0;
     	for (Object zeile  : query.getResultList()) {
     		Object obj = (Object) zeile;
@@ -123,7 +123,7 @@ public class NeueIntegrationController {
     
     private void checkFieldFromView() {
 		logger.info("entered");
-        assert tfEdiNr != null : "fx:id=\"tfEdiNr\" was not injected: check your FXML file 'NeueIntegration.fxml'.";
+        assert tfInNr != null : "fx:id=\"tfInNr\" was not injected: check your FXML file 'NeueIntegration.fxml'.";
         assert fehlertext != null : "fx:id=\"fehlertext\" was not injected: check your FXML file 'NeueIntegration.fxml'.";
 	}
 }

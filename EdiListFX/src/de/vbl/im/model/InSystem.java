@@ -16,7 +16,6 @@ import javafx.collections.ObservableList;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -26,29 +25,29 @@ import de.vbl.im.tools.IMconstant;
 import javax.persistence.JoinTable;
 
 @Entity
-public class EdiSystem {
+public class InSystem {
 	private long id;
 	private StringProperty name;
-	private EdiPartner ediPartner;
+	private InPartner inPartner;
 	private String beschreibung;
-	private ObservableList<EdiKomponente> ediKomponente;
+	private ObservableList<InKomponente> inKomponente;
 	private Set<Ansprechpartner> ansprechpartner;
 	
 	private StringProperty fullname;
 	private IntegerProperty anzKomponenten;
 
-	public EdiSystem() {
+	public InSystem() {
 		name = new SimpleStringProperty();
 		fullname = new SimpleStringProperty();
 		anzKomponenten = new SimpleIntegerProperty();
 	}
 
-	public EdiSystem(String name, EdiPartner ediPartner) {
+	public InSystem(String name, InPartner inPartner) {
 		this();
 		this.name.setValue(name);
-		this.setEdiPartner(ediPartner);
-		if (ediPartner.getEdiSystem() != null) {
-			ediPartner.getEdiSystem().add(this);
+		this.setinPartner(inPartner);
+		if (inPartner.getInSystem() != null) {
+			inPartner.getInSystem().add(this);
 		}
 	}
 
@@ -91,38 +90,37 @@ public class EdiSystem {
 	}
 
 //	public String getFullname() {
-//		String partnerName = ediPartner == null ? "-?-" : ediPartner.getName();
+//		String partnerName = inPartner == null ? "-?-" : inPartner.getName();
 //		return partnerName + ASCIItoStr(42) + name.get();   // 151
 //		return fullname.get();
 //	}
 	
 	@ManyToOne
-	@JoinColumn(referencedColumnName = "id")
-	public EdiPartner getEdiPartner() {
-		return ediPartner;
+	public InPartner getinPartner() {
+		return inPartner;
 	}
 
-	public void setEdiPartner(EdiPartner param) {
-		if (ediPartner != null) {
+	public void setinPartner(InPartner param) {
+		if (inPartner != null) {
 			fullname.unbind();
-			ediPartner.getEdiSystem().remove(this);
+			inPartner.getInSystem().remove(this);
 		}
-		ediPartner = param;
-		fullname.bind(Bindings.concat(ediPartner.nameProperty(), IMconstant.KOMPO_TRENNUNG, this.name));
+		inPartner = param;
+		fullname.bind(Bindings.concat(inPartner.nameProperty(), IMconstant.KOMPO_TRENNUNG, this.name));
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
-	@OneToMany(mappedBy = "ediSystem")
-	public Collection<EdiKomponente> getEdiKomponente() {
-		return ediKomponente;
+	@OneToMany(mappedBy = "inSystem")
+	public Collection<InKomponente> getInKomponente() {
+		return inKomponente;
 	}
 
-	public void setEdiKomponente(Collection<EdiKomponente> komponenten) {
-		if (ediKomponente != null) {
+	public void setInKomponente(Collection<InKomponente> komponenten) {
+		if (inKomponente != null) {
 			anzKomponenten.unbind();
 		}
-		ediKomponente = FXCollections.observableArrayList(komponenten);
-		anzKomponenten.bind(Bindings.size(ediKomponente));
+		inKomponente = FXCollections.observableArrayList(komponenten);
+		anzKomponenten.bind(Bindings.size(inKomponente));
 
 //		anzKomponenten.addListener(new ChangeListener<Number>() {
 //			@Override
@@ -141,7 +139,7 @@ public class EdiSystem {
 
 //	@Transient
 //	public String getPartnerName() {
-//		return ediPartner.getName();
+//		return inPartner.getName();
 //	}
 //
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --

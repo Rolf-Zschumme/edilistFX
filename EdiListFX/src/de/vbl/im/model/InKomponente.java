@@ -9,7 +9,6 @@ import javafx.beans.property.StringProperty;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import de.vbl.im.model.Ansprechpartner;
@@ -19,26 +18,26 @@ import java.util.Collection;
 import javax.persistence.ManyToMany;
 
 @Entity
-public class EdiKomponente {
+public class InKomponente {
 	private long id;
 	private StringProperty name;
 	private String beschreibung;
-	private EdiSystem ediSystem;
+	private InSystem inSystem;
 	private Collection<Ansprechpartner> ansprechpartner;
 	
 	private StringProperty fullname;  // transient
 
-	public EdiKomponente() {
+	public InKomponente() {
 		name = new SimpleStringProperty();
 		fullname = new SimpleStringProperty();
 	}
 
-	public EdiKomponente(String name, EdiSystem system) {
+	public InKomponente(String name, InSystem system) {
 		this();
 		setName(name);
-		setEdiSystem(system);
-		if (system.getEdiKomponente() != null)
-			system.getEdiKomponente().add(this);
+		setInSystem(system);
+		if (system.getInKomponente() != null)
+			system.getInKomponente().add(this);
 	}
 
 	// ------------------------------------------------------------------------
@@ -76,17 +75,16 @@ public class EdiKomponente {
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
 	@ManyToOne
-	@JoinColumn(name = "ediSystem_id", referencedColumnName = "id")
-	public EdiSystem getEdiSystem() {
-		return ediSystem;
+	public InSystem getInSystem() {
+		return inSystem;
 	}
 
-	public void setEdiSystem(EdiSystem param) {
-		if (ediSystem != null) {
+	public void setInSystem(InSystem param) {
+		if (inSystem != null) {
 			fullname.unbind();
 		}
-		this.ediSystem = param;
-		fullname.bind(Bindings.concat(ediSystem.fullnameProperty(), trennung(),name));
+		this.inSystem = param;
+		fullname.bind(Bindings.concat(inSystem.fullnameProperty(), trennung(),name));
 	}
 	private String trennung() {
 		return " – ";  // halbgeviertstrich Alt+0150

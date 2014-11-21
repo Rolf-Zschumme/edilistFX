@@ -17,15 +17,15 @@ import javax.persistence.ManyToOne;
  */
 @Entity 
 
-public class EdiEmpfaenger {
+public class InEmpfaenger {
 
 	private StringProperty geschaeftsObjektName;
 	private long id;
-	private EdiKomponente ediKomponente;
+	private InKomponente inKomponente;
 	private Integration integration;
 	private GeschaeftsObjekt geschaeftsObjekt;
 
-	public EdiEmpfaenger() {
+	public InEmpfaenger() {
 		geschaeftsObjektName = new SimpleStringProperty();
 	}
 
@@ -41,12 +41,12 @@ public class EdiEmpfaenger {
 
 	// ------------------------------------------------------------------------
 	@ManyToOne
-	public EdiKomponente getKomponente() {
-	    return ediKomponente;
+	public InKomponente getKomponente() {
+	    return inKomponente;
 	}
 
-	public void setKomponente(EdiKomponente kompo) {
-	    this.ediKomponente = kompo;
+	public void setKomponente(InKomponente kompo) {
+	    this.inKomponente = kompo;
 	}
 
 	@ManyToOne
@@ -69,18 +69,18 @@ public class EdiEmpfaenger {
 	
 	public void setGeschaeftsObjekt(GeschaeftsObjekt newGeOb) {
 		if (geschaeftsObjekt != null) {
-			geschaeftsObjekt.getEdiEmpfaenger().remove(this);
+			geschaeftsObjekt.getInEmpfaenger().remove(this);
 		}
 	    geschaeftsObjekt = newGeOb;
-	    if (geschaeftsObjekt.getId() > 0 && !geschaeftsObjekt.getEdiEmpfaenger().contains(this)) {
-	    	geschaeftsObjekt.getEdiEmpfaenger().add(this);
+	    if (geschaeftsObjekt.getId() > 0 && !geschaeftsObjekt.getInEmpfaenger().contains(this)) {
+	    	geschaeftsObjekt.getInEmpfaenger().add(this);
 	    }
     	geschaeftsObjektName.set(newGeOb.getName());
 	}
 	
 	// ------------------------------------------------------------------------
-	public IntegerProperty getEdiNrProperty() {
-		return integration.ediNrProperty();
+	public IntegerProperty getInNrProperty() {
+		return integration.inNrProperty();
 	}
 	
 	public StringProperty senderNameProperty() {
@@ -88,11 +88,11 @@ public class EdiEmpfaenger {
 	}
 
 	public StringProperty empfaengerNameProperty() {
-		return ediKomponente.fullnameProperty();
+		return inKomponente.fullnameProperty();
 	}
 	
 	// ------------------------------------------------------------------------
-	public boolean equaels (EdiEmpfaenger empf) {
+	public boolean equaels (InEmpfaenger empf) {
 		if ( this.getId() == empf.getId()) {
 			Long eKompId = empf.getKomponente() == null ? -1 : empf.getKomponente().getId();
 			Long tKompId = this.getKomponente() == null ? -1 : this.getKomponente().getId();

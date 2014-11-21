@@ -9,11 +9,11 @@ import javax.persistence.Persistence;
 import javax.persistence.Query;
 
 import de.vbl.im.model.Integration;
-import de.vbl.im.model.EdiKomponente;
-import de.vbl.im.model.EdiPartner;
-import de.vbl.im.model.EdiSystem;
+import de.vbl.im.model.InKomponente;
+import de.vbl.im.model.InPartner;
+import de.vbl.im.model.InSystem;
 import de.vbl.im.model.GeschaeftsObjekt;
-import de.vbl.im.model.Iszenario;
+import de.vbl.im.model.InSzenario;
 import de.vbl.im.model.Konfiguration;
 import de.vbl.im.model.Repository;
 
@@ -28,10 +28,10 @@ public class DataBaseInit {
 		EntityTransaction ta = null;
 
 		// read the existing entries and write to console
- 		Query q = em.createQuery("select a from Iszenario a");
+ 		Query q = em.createQuery("select a from InSzenario a");
 		@SuppressWarnings("unchecked")
-		List<Iszenario> anbindungsList = q.getResultList();
-		for (Iszenario anbindung : anbindungsList) {
+		List<InSzenario> anbindungsList = q.getResultList();
+		for (InSzenario anbindung : anbindungsList) {
 		   System.out.println(anbindung);
 		}
 		System.out.println("Anzahl Anbindungen: " + anbindungsList.size());
@@ -46,7 +46,7 @@ public class DataBaseInit {
 					case 1: 	generateTestObjekts();
 					case 2:		generateRealObjekts();
 					case 3: 	generateGeschaeftobjekte();
-					case 4: 	generateISzenarios();
+					case 4: 	generateInSzenarios();
 					case 5:     generateRepository();
 				}
 			}
@@ -65,13 +65,13 @@ public class DataBaseInit {
 		}
 		finally {
 			
-			q = em.createQuery("SELECT e FROM Integration e ORDER BY e.iNr");
+			q = em.createQuery("SELECT e FROM Integration e ORDER BY e.inNr");
 			@SuppressWarnings("unchecked")
-			List<Integration> ediList = q.getResultList();
-			for (Integration el : ediList) {
+			List<Integration> resultList = q.getResultList();
+			for (Integration el : resultList) {
 			   System.out.println(el);
 			}
-			System.out.println("Size: " + ediList.size());
+			System.out.println("Size: " + resultList.size());
 			System.out.println("DatabaseInit beendet");
 			em.close();
 		}	
@@ -116,10 +116,10 @@ public class DataBaseInit {
 		int zKnr = 0;
 		for (int p=1; p<=50; ++p) {
 			String pNr = toString(p,2);
-			EdiPartner partner = new EdiPartner("Test-P"+ pNr);
+			InPartner partner = new InPartner("Test-P"+ pNr);
 			em.persist(partner);
 			for (int s=1; s<=20; ++s) {
-				EdiSystem system = null;
+				InSystem system = null;
 				String sNr = toString(++zSnr,3) + "-" + toString(s,2);
 				em.persist(system = newSystem(partner,"Test-S"+ sNr + "vP" + pNr));
 				for (int k=1; k<=10; ++k) {
@@ -130,14 +130,14 @@ public class DataBaseInit {
 		}
 	}
 
-	static EdiKomponente k[] = new EdiKomponente[999];
+	static InKomponente k[] = new InKomponente[999];
 	
 	private static void generateRealObjekts() {
-		EdiPartner partner = null;
-		EdiSystem system = null;
+		InPartner partner = null;
+		InSystem system = null;
 
 		// 1. neuer Partner mit seinen Systemen und Komponenten anlegen  
-		partner = new EdiPartner("VBL");
+		partner = new InPartner("VBL");
 		em.persist(partner);
 			em.persist(system = newSystem(partner,"SAP CRM"));
 					em.persist(k[111] = newKomponente(system,"ANW"));
@@ -162,7 +162,7 @@ public class DataBaseInit {
 
 		// 2. neuer Partner mit seinen Systemen und Komponenten anlegen
 					
-		partner = new EdiPartner("Beteiligte");
+		partner = new InPartner("Beteiligte");
 		em.persist(partner);
 			em.persist(system = newSystem(partner,"Internet"));
 					em.persist(k[211] = newKomponente(system,"ftp-Client"));
@@ -173,21 +173,21 @@ public class DataBaseInit {
 			
 		// 3. neuer Partner mit seinen Systemen und Komponenten anlegen  
 					
-		partner = new EdiPartner("Finanzamt");
+		partner = new InPartner("Finanzamt");
 		em.persist(partner);
 			em.persist(system = newSystem(partner,"ZfA-Server"));
 					em.persist(newKomponente(system,"MQ: MAV"));
 			
 		// 4. neuer Partner mit seinen Systemen und Komponenten anlegen  
 					
-		partner = new EdiPartner("Siteforum");
+		partner = new InPartner("Siteforum");
 		em.persist(partner);
 			em.persist(system = newSystem(partner,"VBL-Portal"));
 					em.persist(newKomponente(system,"FV"));
 					
 		// 5. neuer Partner mit seinen Systemen und Komponenten anlegen  
 					
-		partner = new EdiPartner("ZfA");
+		partner = new InPartner("ZfA");
 		em.persist(partner);
 			em.persist(system = newSystem(partner,"ZfA-Server"));
 					em.persist(newKomponente(system,"MQ: Zulage"));
@@ -195,7 +195,7 @@ public class DataBaseInit {
 					
 		// 6. neuer Partner mit seinen Systemen und Komponenten anlegen  
 					
-		partner = new EdiPartner("Postrentendienst");
+		partner = new InPartner("Postrentendienst");
 		em.persist(partner);
 			em.persist(system = newSystem(partner,"Post-Server"));
 					em.persist(newKomponente(system,"ftps-Servis"));
@@ -204,24 +204,24 @@ public class DataBaseInit {
 					
 		// 7. neuer Partner mit seinen Systemen und Komponenten anlegen  
 					
-		partner = new EdiPartner("Hausverwaltungen");
+		partner = new InPartner("Hausverwaltungen");
 		em.persist(partner);
 			em.persist(system = newSystem(partner,"Internet"));
 					em.persist(newKomponente(system,"ftp-Client"));
 
 		// 8. neuer Partner mit seinen Systemen und Komponenten anlegen  
 		
-		partner = new EdiPartner("Bloomberg");
+		partner = new InPartner("Bloomberg");
 		em.persist(partner);
 					
 		// 9. neuer Partner mit seinen Systemen und Komponenten anlegen  
 		
-		partner = new EdiPartner("EMA-Provider");
+		partner = new InPartner("EMA-Provider");
 		em.persist(partner);
 								
 		// 10. neuer Partner mit seinen Systemen und Komponenten anlegen  
 		
-		partner = new EdiPartner("Bafin");
+		partner = new InPartner("Bafin");
 		em.persist(partner);
 
 		
@@ -229,46 +229,46 @@ public class DataBaseInit {
 	
 	// Integrationsszenarios und Konfigurationen
 	
-	private static void generateISzenarios() {
-		Iszenario iszenario = null;
+	private static void generateInSzenarios() {
+		InSzenario inSzenario = null;
 
-		iszenario = newISzenario("ANW Meldungsverarbeitung");
-		em.persist(iszenario);
-		em.persist(newKonfiguration(iszenario, "CS_ANW_MLD__Meldungseingang"));
-		em.persist(newKonfiguration(iszenario, "CS_ANW_MLD__Meldungsausgang"));
+		inSzenario = newInSzenario("ANW Meldungsverarbeitung");
+		em.persist(inSzenario);
+		em.persist(newKonfiguration(inSzenario, "CS_ANW_MLD__Meldungseingang"));
+		em.persist(newKonfiguration(inSzenario, "CS_ANW_MLD__Meldungsausgang"));
 
-		iszenario = newISzenario("LST Zahlungenaufträge");
-		em.persist(iszenario);
-		em.persist(newKonfiguration(iszenario, "CS_LSTG_Mitteilung_Leistungstraeger__DPAG_Rentenservice"));
-		em.persist(newKonfiguration(iszenario, "CS_LSTG_Zahlungsanweisung__DPAG_Rentenservice"));
+		inSzenario = newInSzenario("LST Zahlungenaufträge");
+		em.persist(inSzenario);
+		em.persist(newKonfiguration(inSzenario, "CS_LSTG_Mitteilung_Leistungstraeger__DPAG_Rentenservice"));
+		em.persist(newKonfiguration(inSzenario, "CS_LSTG_Zahlungsanweisung__DPAG_Rentenservice"));
 		
-		iszenario = newISzenario("CRM Beschäftspartner-Replikation");
-		em.persist(iszenario);
-		em.persist(newKonfiguration(iszenario, "CS_ZGP_Replikation__CRM__to__ERP"));
-		em.persist(newKonfiguration(iszenario, "CS_ZGP_Replikation__ERP__to__CRM"));
+		inSzenario = newInSzenario("CRM Beschäftspartner-Replikation");
+		em.persist(inSzenario);
+		em.persist(newKonfiguration(inSzenario, "CS_ZGP_Replikation__CRM__to__ERP"));
+		em.persist(newKonfiguration(inSzenario, "CS_ZGP_Replikation__ERP__to__CRM"));
 		
-		iszenario = newISzenario("FV-Anbindung");
-		em.persist(iszenario);
-		em.persist(newKonfiguration(iszenario, "CS_ISIV_Koexistenz"));
+		inSzenario = newInSzenario("FV-Anbindung");
+		em.persist(inSzenario);
+		em.persist(newKonfiguration(inSzenario, "CS_ISIV_Koexistenz"));
 
-		iszenario = newISzenario("Materialbeschaffung (MM)");
-		em.persist(iszenario);
-		em.persist(newKonfiguration(iszenario, "CS_e-Procurement_Integration_Lieferanten"));
+		inSzenario = newInSzenario("Materialbeschaffung (MM)");
+		em.persist(inSzenario);
+		em.persist(newKonfiguration(inSzenario, "CS_e-Procurement_Integration_Lieferanten"));
 		
 		em.persist(newKonfiguration(null, "CS_e-Gov_Portal_Integration"));
 		em.persist(newKonfiguration(null, "CS_FS-CD_eAvis_Beitragseingang__RZ_Arbeitgeber"));
 		em.persist(newKonfiguration(null, "CS_RC_SAS_BNP__Filetransfer"));
 		
-		iszenario = newISzenario("Zulage-System");
-		em.persist(iszenario);
-		em.persist(newKonfiguration(iszenario, "IS_ZUL_ZUSY_SAP"));
-		em.persist(newKonfiguration(iszenario, "IS_ZUL_ZUSY_KOEX"));
+		inSzenario = newInSzenario("Zulage-System");
+		em.persist(inSzenario);
+		em.persist(newKonfiguration(inSzenario, "IS_ZUL_ZUSY_SAP"));
+		em.persist(newKonfiguration(inSzenario, "IS_ZUL_ZUSY_KOEX"));
 	}
 	
-//	private static EdiKomponente getKompo(String string) {
-//    	TypedQuery<EdiKomponente> tq = em.createQuery(
-//			"SELECT k FROM EdiKomponente k WHERE LOWER(k.name) = LOWER(:n)", EdiKomponente.class);
-//		List<EdiKomponente> aktuList = tq.getResultList();
+//	private static InKomponente getKompo(String string) {
+//    	TypedQuery<InKomponente> tq = em.createQuery(
+//			"SELECT k FROM InKomponente k WHERE LOWER(k.name) = LOWER(:n)", InKomponente.class);
+//		List<InKomponente> aktuList = tq.getResultList();
 //		tq.setParameter("n", string);
 //		if (aktuList.size()!=1) {
 //			System.out.println("Komponente " + string + " nicht gefunden");
@@ -296,40 +296,40 @@ public class DataBaseInit {
 		System.out.println(anzGO + " Geschaeftobjekte() angelegt");
 	}
 	
-	private static Iszenario newISzenario (String isznearioName) {
-		Iszenario iszenario = new Iszenario();
-		iszenario.setName(isznearioName);
-		return iszenario;
+	private static InSzenario newInSzenario (String isznearioName) {
+		InSzenario inSzenario = new InSzenario();
+		inSzenario.setName(isznearioName);
+		return inSzenario;
 	}
 
-	private static Konfiguration newKonfiguration( Iszenario iszenario,	String konfigName) 
+	private static Konfiguration newKonfiguration( InSzenario inSzenario,	String konfigName) 
 	{
-		System.out.print("Edi_Konfiguration anlegen ");
-		if (iszenario != null) {
-			System.out.print("für \"" + iszenario.getName() + "\" ");
+		System.out.print("Konfiguration anlegen ");
+		if (inSzenario != null) {
+			System.out.print("für \"" + inSzenario.getName() + "\" ");
 		}
 		System.out.println("mit Name \"" + konfigName + "\"");
 		
 		Konfiguration konfiguration = new Konfiguration();
 		konfiguration.setName(konfigName);
-		konfiguration.setIszenario(iszenario);
+		konfiguration.setInSzenario(inSzenario);
 		return konfiguration;
 	}
 	
-	private static EdiSystem newSystem(EdiPartner partner, String name) 
+	private static InSystem newSystem(InPartner partner, String name) 
 	{
-		EdiSystem system = new EdiSystem();
+		InSystem system = new InSystem();
 		system.setName(name);
-		system.setEdiPartner(partner);
+		system.setinPartner(partner);
 		return system;
 	}
 
-	private static EdiKomponente newKomponente(	EdiSystem system, 
+	private static InKomponente newKomponente(	InSystem system, 
 												String name		) 
 	{
-		System.out.println("Edi_Komponente anlegen für \"" + system.getName() +
+		System.out.println("Komponente anlegen für \"" + system.getName() +
 												"\" mit Name \"" + name + "\"");
-		EdiKomponente k = new EdiKomponente(name,system);
+		InKomponente k = new InKomponente(name,system);
 		return k;
 	}
 	

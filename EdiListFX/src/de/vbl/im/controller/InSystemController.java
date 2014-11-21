@@ -40,19 +40,19 @@ import org.controlsfx.dialog.Dialog.Actions;
 
 import de.vbl.im.controller.subs.AnsprechpartnerAuswaehlenController;
 import de.vbl.im.model.Integration;
-import de.vbl.im.model.EdiEmpfaenger;
-import de.vbl.im.model.EdiSystem;
+import de.vbl.im.model.InEmpfaenger;
+import de.vbl.im.model.InSystem;
 import de.vbl.im.model.Ansprechpartner;
 
-public class EdiSystemController {
-	private static final Logger logger = LogManager.getLogger(EdiSystemController.class.getName());
+public class InSystemController {
+	private static final Logger logger = LogManager.getLogger(InSystemController.class.getName());
 	private static Stage primaryStage = null;
 	private static IMController mainCtr;
 	private static EntityManager entityManager;
-	private final ObjectProperty<EdiSystem> ediSystem;
-	private final ObservableList<EdiEmpfaenger> ediKomponentenList = FXCollections.observableArrayList();
+	private final ObjectProperty<InSystem> inSystem;
+	private final ObservableList<InEmpfaenger> inKomponentenList = FXCollections.observableArrayList();
 	private final ObservableList<Ansprechpartner> ansprechpartnerList; 
-	private EdiSystem aktSystem = null;
+	private InSystem aktSystem = null;
 	private static String aktFullName;
 	
 	private BooleanProperty dataIsChanged = new SimpleBooleanProperty(false);
@@ -62,28 +62,28 @@ public class EdiSystemController {
     @FXML private TextField tfBezeichnung;
     @FXML private TextArea taBeschreibung;
     @FXML private ListView<Ansprechpartner> lvAnsprechpartner;
-    @FXML private TableView<EdiEmpfaenger> tvVerwendungen;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcEmpfaenger;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcEdiNr;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcSender;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcGeschaeftsobjekt;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcDatumAb;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcDatumBis;
+    @FXML private TableView<InEmpfaenger> tvVerwendungen;
+    @FXML private TableColumn<InEmpfaenger, String> tcEmpfaenger;
+    @FXML private TableColumn<InEmpfaenger, String> tcInNr;
+    @FXML private TableColumn<InEmpfaenger, String> tcSender;
+    @FXML private TableColumn<InEmpfaenger, String> tcGeschaeftsobjekt;
+    @FXML private TableColumn<InEmpfaenger, String> tcDatumAb;
+    @FXML private TableColumn<InEmpfaenger, String> tcDatumBis;
     
     @FXML private Button btnSpeichern;
     @FXML private Button btnLoeschen;
     @FXML private Button btnRemoveAnsprechpartner;
     
-    public EdiSystemController() {
-    	this.ediSystem = new SimpleObjectProperty<>(this, "ediSystem", null);
+    public InSystemController() {
+    	this.inSystem = new SimpleObjectProperty<>(this, "inSystem", null);
     	this.ansprechpartnerList = FXCollections.observableArrayList();
     }
 
 	public static void setParent(IMController managerController) {
 		logger.entry();
-		EdiSystemController.mainCtr = managerController;
-		EdiSystemController.primaryStage = IMController.getStage();
-		EdiSystemController.entityManager = managerController.getEntityManager();
+		InSystemController.mainCtr = managerController;
+		InSystemController.primaryStage = IMController.getStage();
+		InSystemController.entityManager = managerController.getEntityManager();
 		logger.exit();
 	}
 
@@ -91,15 +91,15 @@ public class EdiSystemController {
 	public void initialize() {
 		checkFieldsFromView();
 		
-		ediSystem.addListener(new ChangeListener<EdiSystem>() {
+		inSystem.addListener(new ChangeListener<InSystem>() {
 			@Override
-			public void changed(ObservableValue<? extends EdiSystem> ov,
-					EdiSystem oldSystem, EdiSystem newSystem) {
+			public void changed(ObservableValue<? extends InSystem> ov,
+					InSystem oldSystem, InSystem newSystem) {
 				logger.info(((oldSystem==null) ? "null" : oldSystem.getFullname()) + " -> " 
 						  + ((newSystem==null) ? "null" : newSystem.getFullname()) );
 				btnLoeschen.disableProperty().unbind();
 				if (oldSystem != null) {
-					ediKomponentenList.clear();
+					inKomponentenList.clear();
 					ansprechpartnerList.clear();
 				}
 				tfBezeichnung.setText("");
@@ -108,7 +108,7 @@ public class EdiSystemController {
 					aktSystem = newSystem;
 					logger.info("newSystem.Name="+ newSystem.getName());
 					aktFullName = aktSystem.getFullname();
-					readEdiListeforSystem(newSystem);
+					readTablesForSystem(newSystem);
 					tfBezeichnung.setText(newSystem.getName());
 					if (newSystem.getBeschreibung() == null) {
 						newSystem.setBeschreibung("");
@@ -164,13 +164,13 @@ public class EdiSystemController {
 		
 //	    Setup for Sub-Panel    
 		
-		tvVerwendungen.setItems(ediKomponentenList);
-		tcEdiNr.setCellValueFactory(cellData -> 
-					Bindings.format(Integration.FORMAT_EDINR, cellData.getValue().getEdiNrProperty()));
+		tvVerwendungen.setItems(inKomponentenList);
+		tcInNr.setCellValueFactory(cellData -> 
+					Bindings.format(Integration.FORMAT_INNR, cellData.getValue().getInNrProperty()));
 		
 		tcSender.setCellValueFactory(cellData -> cellData.getValue().senderNameProperty());
 		tcSender.setCellFactory(column -> {
-			return new TableCell<EdiEmpfaenger, String>() {
+			return new TableCell<InEmpfaenger, String>() {
 				@Override
 				protected void updateItem (String sender, boolean empty) {
 					super.updateItem(sender, empty);
@@ -187,7 +187,7 @@ public class EdiSystemController {
 		
 		tcEmpfaenger.setCellValueFactory(cellData -> cellData.getValue().empfaengerNameProperty());
 		tcEmpfaenger.setCellFactory(column -> {
-			return new TableCell<EdiEmpfaenger, String>() {
+			return new TableCell<InEmpfaenger, String>() {
 				@Override
 				protected void updateItem (String empf, boolean empty) {
 					super.updateItem(empf, empty);
@@ -208,7 +208,7 @@ public class EdiSystemController {
 
 	@FXML
 	void loeschen(ActionEvent event) {
-		if (ediKomponentenList.size() > 0) {
+		if (inKomponentenList.size() > 0) {
 			mainCtr.setErrorText("Fehler: Komponente wird verwendet");
 			return;
 		}	
@@ -220,11 +220,11 @@ public class EdiSystemController {
 		Action response = Dialogs.create()
 				.owner(primaryStage).title(primaryStage.getTitle())
 				.message(neuName + " des Partners " + " \"" + 
-				aktSystem.getEdiPartner().getName() + "\" wirklich löschen ?")
+				aktSystem.getinPartner().getName() + "\" wirklich löschen ?")
 				.showConfirm();
 		if (response == Dialog.Actions.YES) {
 			try {
-				aktSystem.getEdiPartner().getEdiSystem().remove(aktSystem);
+				aktSystem.getinPartner().getInSystem().remove(aktSystem);
 				entityManager.getTransaction().begin();
 				entityManager.remove(aktSystem);
 				entityManager.getTransaction().commit();
@@ -318,7 +318,7 @@ public class EdiSystemController {
 				.message("Fehler beim Speichern der Systemdaten:\n" + e.getMessage())
 				.showException(e);
     	}
-		readEdiListeforSystem(aktSystem);
+		readTablesForSystem(aktSystem);
 		return true;
 	}
 	
@@ -326,41 +326,41 @@ public class EdiSystemController {
 		if ("".equals(newName)) {
 			return "Eine Bezeichnung ist erforderlich";
 		}
-		TypedQuery<EdiSystem> tq = entityManager.createQuery(
-				"SELECT s FROM EdiSystem s WHERE LOWER(s.name) = LOWER(:n)",EdiSystem.class);
+		TypedQuery<InSystem> tq = entityManager.createQuery(
+				"SELECT s FROM InSystem s WHERE LOWER(s.name) = LOWER(:n)",InSystem.class);
 		tq.setParameter("n", newName);
-		List<EdiSystem> systemList = tq.getResultList();
-		for (EdiSystem s : systemList ) {
+		List<InSystem> systemList = tq.getResultList();
+		for (InSystem s : systemList ) {
 			if (s.getId() != aktSystem.getId() &&
-				s.getEdiPartner().getId() == aktSystem.getEdiPartner().getId())  {
+				s.getinPartner().getId() == aktSystem.getinPartner().getId())  {
 				if (s.getName().equalsIgnoreCase(newName)) {
 					return "Eine anderes System des Partners \"" +
-							aktSystem.getEdiPartner().getName() + "\" heißt bereits so!";
+							aktSystem.getinPartner().getName() + "\" heißt bereits so!";
 				}
 			}
 		}
 		return null;
 	}
 
-	private void readEdiListeforSystem( EdiSystem selSystem) {
-		ediKomponentenList.clear();
+	private void readTablesForSystem( InSystem selSystem) {
+		inKomponentenList.clear();
 		TypedQuery<Integration> tqS = entityManager.createQuery(
-				"SELECT e FROM Integration e WHERE e.ediKomponente.ediSystem = :s", Integration.class);
+				"SELECT e FROM Integration e WHERE e.inKomponente.inSystem = :s", Integration.class);
 		tqS.setParameter("s", selSystem);
-		List<Integration> ediList = tqS.getResultList();
-		for(Integration e : ediList ) {
-			if (e.getEdiEmpfaenger().size() > 0)
-				ediKomponentenList.addAll(e.getEdiEmpfaenger());
+		List<Integration> resultList = tqS.getResultList();
+		for(Integration e : resultList ) {
+			if (e.getInEmpfaenger().size() > 0)
+				inKomponentenList.addAll(e.getInEmpfaenger());
 			else {
-				EdiEmpfaenger tmpE = new EdiEmpfaenger();
+				InEmpfaenger tmpE = new InEmpfaenger();
 				tmpE.setIntegration(e);
-				ediKomponentenList.addAll(tmpE);
+				inKomponentenList.addAll(tmpE);
 			}
 		}
-		TypedQuery<EdiEmpfaenger> tqE = entityManager.createQuery(
-				"SELECT e FROM EdiEmpfaenger e WHERE e.komponente.ediSystem = :s", EdiEmpfaenger.class);
+		TypedQuery<InEmpfaenger> tqE = entityManager.createQuery(
+				"SELECT e FROM InEmpfaenger e WHERE e.komponente.inSystem = :s", InEmpfaenger.class);
 		tqE.setParameter("s", selSystem);
-		ediKomponentenList.addAll(tqE.getResultList());
+		inKomponentenList.addAll(tqE.getResultList());
 	}
 
     @FXML
@@ -394,24 +394,24 @@ public class EdiSystemController {
 		dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
     }
 	
-	public final ObjectProperty<EdiSystem> ediSystemProperty() {
-		return ediSystem;
+	public final ObjectProperty<InSystem> inSystemProperty() {
+		return inSystem;
 	}
 	
-	public final EdiSystem getEdiSystem() {
-		return ediSystem.get() ;
+	public final InSystem getInSystem() {
+		return inSystem.get() ;
 	}
 	
-	public final void setEdiSystem(EdiSystem ediSystem) {
-		this.ediSystem.set(ediSystem);
+	public final void setInSystem(InSystem inSystem) {
+		this.inSystem.set(inSystem);
 	}
     
-	final static String fxmlFilename = "EdSystem.fxml";
+	final static String fxmlFilename = "InSystem.fxml";
 	final static String fxmlErrortxt = "' was not injected: check FXML-file '" + fxmlFilename + "'.";
     void checkFieldsFromView() {
     	assert tfBezeichnung 			!= null : "fx:id='tfBezeichnung"  			+ fxmlErrortxt;
     	assert taBeschreibung 			!= null : "fx:id='taBeschreibung"  			+ fxmlErrortxt;
-    	assert tcEdiNr 					!= null : "fx:id='tcEdiNr"  				+ fxmlErrortxt;
+    	assert tcInNr 					!= null : "fx:id='tcInNr"  				+ fxmlErrortxt;
     	assert tcSender 				!= null : "fx:id='tcSender"  				+ fxmlErrortxt;
     	assert tcEmpfaenger 			!= null : "fx:id='tcEmpfaenger"  			+ fxmlErrortxt;
     	assert tcGeschaeftsobjekt		!= null : "fx:id='tcGeschaeftsobjekt"		+ fxmlErrortxt;

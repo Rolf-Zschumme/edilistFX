@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="ediKomponente" prefHeight="600.0" prefWidth="935.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.im.controller.EdiKomponenteController">
+<AnchorPane fx:id="inKomponente" prefHeight="600.0" prefWidth="935.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.im.controller.InKomponenteController">
 	<children>
 		<SplitPane dividerPositions="0.0635, 0.5" focusTraversable="true" orientation="VERTICAL" prefHeight="600.0" prefWidth="840.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 			<items>
@@ -42,7 +42,7 @@
 									<children>
 										<TableView fx:id="tvVerwendungen" prefHeight="120.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
 											<columns>
-												<TableColumn fx:id="tcEdiNr" maxWidth="56.000001549720764" minWidth="44.0" prefWidth="56.000001549720764" text=" I-Nr." />
+												<TableColumn fx:id="tcInNr" maxWidth="56.000001549720764" minWidth="44.0" prefWidth="56.000001549720764" text=" I-Nr." />
 												<TableColumn fx:id="tcSender" maxWidth="500.0" minWidth="150.0" prefWidth="237.99996185302734" text="Sender" />
 												<TableColumn fx:id="tcEmpfaenger" maxWidth="500.0" minWidth="150.0" prefWidth="250.0" text="Empfänger" /><TableColumn fx:id="tcGeschaeftsobjekt" maxWidth="400.0" minWidth="100.0" prefWidth="200.0" text="Geschäftsobjekt" />
 												<TableColumn fx:id="tcDatumAb" maxWidth="75.0" minWidth="75.0" prefWidth="75.0" text="Ab-Datum" />

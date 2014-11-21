@@ -51,12 +51,12 @@ import org.controlsfx.dialog.Dialogs;
 import de.vbl.im.controller.subs.DokumentAuswaehlenController;
 import de.vbl.im.controller.subs.AnsprechpartnerAuswaehlenController;
 import de.vbl.im.model.Integration;
-import de.vbl.im.model.EdiEmpfaenger;
-import de.vbl.im.model.EdiKomponente;
-import de.vbl.im.model.EdiPartner;
-import de.vbl.im.model.EdiSystem;
+import de.vbl.im.model.InEmpfaenger;
+import de.vbl.im.model.InKomponente;
+import de.vbl.im.model.InPartner;
+import de.vbl.im.model.InSystem;
 import de.vbl.im.model.GeschaeftsObjekt;
-import de.vbl.im.model.Iszenario;
+import de.vbl.im.model.InSzenario;
 import de.vbl.im.model.Konfiguration;
 import de.vbl.im.model.Ansprechpartner;
 import de.vbl.im.tools.ExportToExcel;
@@ -68,14 +68,14 @@ public class IMController {
 	private static final String SICHERHEITSABFRAGE = "Sicherheitsabfrage";
 
 	private static String dbName;
-	private static int maxEdiNr;
+	private static int maxInNr;
 	private static Stage primaryStage;
     private EntityManager entityManager;
-    private ObservableList<Integration> ediEintraegeList = FXCollections.observableArrayList();
-    private ObservableList<EdiPartner> ediPartnerList = FXCollections.observableArrayList();    
-    private ObservableList<EdiSystem> ediSystemList = FXCollections.observableArrayList();
-    private ObservableList<EdiKomponente> ediKomponentenList = FXCollections.observableArrayList();
-    private ObservableList<Iszenario> iszenarioList = FXCollections.observableArrayList();
+    private ObservableList<Integration> integrationList = FXCollections.observableArrayList();
+    private ObservableList<InPartner> inPartnerList = FXCollections.observableArrayList();    
+    private ObservableList<InSystem> inSystemList = FXCollections.observableArrayList();
+    private ObservableList<InKomponente> inKomponentenList = FXCollections.observableArrayList();
+    private ObservableList<InSzenario> inSzenarioList = FXCollections.observableArrayList();
     private ObservableList<Konfiguration> konfigurationList = FXCollections.observableArrayList();
     private ObservableList<Ansprechpartner> ansprechpartnerList = FXCollections.observableArrayList();
     private ObservableList<GeschaeftsObjekt> geschaeftsobjektList = FXCollections.observableArrayList();    
@@ -83,39 +83,39 @@ public class IMController {
     @FXML private TextField txtInfoZeile;
     @FXML private TabPane tabPaneObjekte;
     
-    @FXML private Tab tabEdiNr;
-    @FXML private TableView<Integration> tableEdiNrAuswahl;
-    @FXML private TableColumn<Integration, String> tColAuswahlEdiNr;
-    @FXML private TableColumn<Integration, String> tColAuswahlEdiNrSender;
-    @FXML private TableColumn<Integration, String> tColAuswahlEdiNrIszenario;
-    @FXML private TableColumn<Integration, String> tColAuswahlEdiNrBezeichnung;
+    @FXML private Tab tabInNr;
+    @FXML private TableView<Integration> tableInNrAuswahl;
+    @FXML private TableColumn<Integration, String> tColAuswahlInNr;
+    @FXML private TableColumn<Integration, String> tColAuswahlInNrSender;
+    @FXML private TableColumn<Integration, String> tColAuswahlInNrInSzenario;
+    @FXML private TableColumn<Integration, String> tColAuswahlInNrBezeichnung;
 
     @FXML private Tab tabPartner;
-    @FXML private TableView<EdiPartner> tablePartnerAuswahl;
-    @FXML private TableColumn<EdiPartner, String> tColAuswahlPartnerName;
-    @FXML private TableColumn<EdiPartner, String> tColAuswahlPartnerSysteme;
-    @FXML private TableColumn<EdiPartner, String> tColAuswahlPartnerKomponenten;
+    @FXML private TableView<InPartner> tablePartnerAuswahl;
+    @FXML private TableColumn<InPartner, String> tColAuswahlPartnerName;
+    @FXML private TableColumn<InPartner, String> tColAuswahlPartnerSysteme;
+    @FXML private TableColumn<InPartner, String> tColAuswahlPartnerKomponenten;
 
     @FXML private Tab tabSysteme;
-    @FXML private TableView<EdiSystem> tableSystemAuswahl;
-    @FXML private TableColumn<EdiSystem, String> tColSelSystemSystemName;
-    @FXML private TableColumn<EdiSystem, String> tColSelSystemPartnerName;
-    @FXML private TableColumn<EdiSystem, String> tColSelSystemKomponenten;
+    @FXML private TableView<InSystem> tableSystemAuswahl;
+    @FXML private TableColumn<InSystem, String> tColSelSystemSystemName;
+    @FXML private TableColumn<InSystem, String> tColSelSystemPartnerName;
+    @FXML private TableColumn<InSystem, String> tColSelSystemKomponenten;
 
     @FXML private Tab tabKomponenten;
-    @FXML private TableView<EdiKomponente> tableKomponentenAuswahl;   
-    @FXML private TableColumn<EdiKomponente, String> tColSelKompoKomponten;
-    @FXML private TableColumn<EdiKomponente, String> tColSelKompoSysteme;
-    @FXML private TableColumn<EdiKomponente, String> tColSelKompoPartner;
+    @FXML private TableView<InKomponente> tableKomponentenAuswahl;   
+    @FXML private TableColumn<InKomponente, String> tColSelKompoKomponten;
+    @FXML private TableColumn<InKomponente, String> tColSelKompoSysteme;
+    @FXML private TableColumn<InKomponente, String> tColSelKompoPartner;
     
     @FXML private Tab tabIszenarien;
-    @FXML private TableView<Iszenario> tableIszenarioAuswahl;
-    @FXML private TableColumn<Iszenario, String> tColSelIszenarioName;
+    @FXML private TableView<InSzenario> tableInSzenarioAuswahl;
+    @FXML private TableColumn<InSzenario, String> tColSelInSzenarioName;
     
     @FXML private Tab tabKonfigurationen;
     @FXML private TableView<Konfiguration> tableKonfigurationAuswahl;
     @FXML private TableColumn<Konfiguration, String> tColSelKonfigurationName;
-    @FXML private TableColumn<Konfiguration, String> tColSelKonfigIszenarioName;
+    @FXML private TableColumn<Konfiguration, String> tColSelKonfigInSzenarioName;
     
     @FXML private Tab tabAnsprechpartner;
     @FXML private TableView<Ansprechpartner> tableKontaktAuswahl;
@@ -132,19 +132,19 @@ public class IMController {
     @FXML private TableColumn<GeschaeftsObjekt, String> tColAuswahlGeschaeftsobjektName;
     
     @FXML private Pane integration;
-    @FXML private Pane ediPartner;
-    @FXML private Pane ediSystem;
-    @FXML private Pane ediKomponente;
-    @FXML private Pane iszenario;
+    @FXML private Pane inPartner;
+    @FXML private Pane inSystem;
+    @FXML private Pane inKomponente;
+    @FXML private Pane inSzenario;
     @FXML private Pane konfiguration;
     @FXML private Pane ansprechpartner;
     @FXML private Pane geschaeftsObjekt;
     
     @FXML private IntegrationController integrationController;
-    @FXML private EdiPartnerController ediPartnerController;
-    @FXML private EdiSystemController ediSystemController;
-    @FXML private EdiKomponenteController ediKomponenteController;
-    @FXML private IszenarioController iszenarioController;
+    @FXML private InPartnerController inPartnerController;
+    @FXML private InSystemController inSystemController;
+    @FXML private InKomponenteController inKomponenteController;
+    @FXML private InSzenarioController inSzenarioController;
     @FXML private KonfigurationController konfigurationController;
     @FXML private AnsprechpartnerController ansprechpartnerController;
     @FXML private GeschaeftsObjektController geschaeftsObjektController;   
@@ -162,10 +162,10 @@ public class IMController {
     	primaryStage.setTitle(APPL_NAME);
     	
     	IntegrationController.setParent(this);
-    	EdiPartnerController.setParent(this);
-    	EdiSystemController.setParent(this);
-    	EdiKomponenteController.setParent(this);
-    	IszenarioController.setParent(this);
+    	InPartnerController.setParent(this);
+    	InSystemController.setParent(this);
+    	InKomponenteController.setParent(this);
+    	InSzenarioController.setParent(this);
     	KonfigurationController.setParent(this);
     	AnsprechpartnerController.setParent(this);
     	GeschaeftsObjektController.setParent(this);
@@ -204,10 +204,10 @@ public class IMController {
     	logger.info("entered");;
     	loadIntegrationListData();
     	setupIntegrationPane();
-    	setupEdiPartnerPane();
-    	setupEdiSystemPane();
+    	setupInPartnerPane();
+    	setupInSystemPane();
     	setupKomponentenPane();
-    	setupIszenarioPane();
+    	setupInSzenarioPane();
     	setupKonfigurationPane();
     	setupAnsprechpartnerPane();
     	setupGeschaeftsobjektPane();
@@ -221,7 +221,7 @@ public class IMController {
 
 						primaryStage.getScene().setCursor(Cursor.WAIT);
 						
-						if (akttab.equals(tabEdiNr)) {
+						if (akttab.equals(tabInNr)) {
 							loadIntegrationListData();
 						}
 						else if (akttab.equals(tabPartner)) {
@@ -234,7 +234,7 @@ public class IMController {
 							loadKomponentenListData();
 						}
 						else if(akttab.equals(tabIszenarien)) {
-							loadIszenarioListData();
+							loadInSzenarioListData();
 						}
 						else if(akttab.equals(tabKonfigurationen)) {
 							loadKonfigurationListData();
@@ -250,8 +250,8 @@ public class IMController {
 
 				}
         );
-        tableEdiNrAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkIntegration(e));
-        tableEdiNrAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkIntegration(e));
+        tableInNrAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkIntegration(e));
+        tableInNrAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkIntegration(e));
 
         tablePartnerAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkPartner(e));
         tablePartnerAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkPartner(e));
@@ -262,8 +262,8 @@ public class IMController {
         tableKomponentenAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkKomponente(e));
 		tableKomponentenAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkKomponente(e));
 		
-		tableIszenarioAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkIszenario(e));
-		tableIszenarioAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkIszenario(e));
+		tableInSzenarioAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkInSzenario(e));
+		tableInSzenarioAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkInSzenario(e));
 		
 		tableKonfigurationAuswahl.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> checkKonfiguration(e));
 		tableKonfigurationAuswahl.addEventFilter(KeyEvent.KEY_PRESSED,     e -> checkKonfiguration(e));
@@ -283,25 +283,25 @@ public class IMController {
     }
     
 	private void checkPartner(Event event) {
-		if (ediPartnerController.checkForChangesAndAskForSave() == false) {
+		if (inPartnerController.checkForChangesAndAskForSave() == false) {
 			event.consume();
 		}
 	}
 	
 	private void checkSystem(Event event) {
-		if (ediSystemController.checkForChangesAndAskForSave() == false) {
+		if (inSystemController.checkForChangesAndAskForSave() == false) {
 			event.consume();
 		}
 	}
 
 	private void checkKomponente(Event event) {
-		if (ediKomponenteController.checkForChangesAndAskForSave() == false) {
+		if (inKomponenteController.checkForChangesAndAskForSave() == false) {
 			event.consume();
 		}
 	}
 	
-	private void checkIszenario(Event event) {
-		if (iszenarioController.checkForChangesAndAskForSave() == false) {
+	private void checkInSzenario(Event event) {
+		if (inSzenarioController.checkForChangesAndAskForSave() == false) {
 			event.consume();
 		}
 	}
@@ -326,10 +326,10 @@ public class IMController {
 
 	private boolean checkAllOk() {
     	return integrationController.checkForChangesAndAskForSave() || 
-    		   ediPartnerController.checkForChangesAndAskForSave() ||
-    	       ediSystemController.checkForChangesAndAskForSave()  ||
-    	       ediKomponenteController.checkForChangesAndAskForSave() ||
-    		   iszenarioController.checkForChangesAndAskForSave()   ||
+    		   inPartnerController.checkForChangesAndAskForSave() ||
+    	       inSystemController.checkForChangesAndAskForSave()  ||
+    	       inKomponenteController.checkForChangesAndAskForSave() ||
+    		   inSzenarioController.checkForChangesAndAskForSave()   ||
     		   konfigurationController.checkForChangesAndAskForSave() ||
     		   ansprechpartnerController.checkForChangesAndAskForSave() ||
     		   geschaeftsObjektController.checkForChangesAndAskForSave(); 
@@ -344,35 +344,35 @@ public class IMController {
 	}
 	
 	@FXML
-	void actionEdiNrContextMenuRequested (Event event) {
+	void actionInNrContextMenuRequested (Event event) {
 		// TODO
-		System.out.println("Contextmenu for EdiNr-Table requested");
+		System.out.println("Contextmenu for Integration-Table requested");
 	}
 	
 	/* ************************************************************************
 	 * set a new selected Integration from other controllers
 	 * ***********************************************************************/
 	protected void setSelectedIntegration (Integration e) {
-		tableEdiNrAuswahl.getSelectionModel().select(e);
+		tableInNrAuswahl.getSelectionModel().select(e);
 	}
     
 	private void setupIntegrationPane() {
 		logger.info("entered");
-    	tableEdiNrAuswahl.setItems(ediEintraegeList);
-    	tColAuswahlEdiNr.setCellValueFactory(cellData -> Bindings.format(Integration.FORMAT_EDINR, 
-    			cellData.getValue().ediNrProperty()));
-    	tColAuswahlEdiNrSender.setCellValueFactory(cellData -> 
+    	tableInNrAuswahl.setItems(integrationList);
+    	tColAuswahlInNr.setCellValueFactory(cellData -> Bindings.format(Integration.FORMAT_INNR, 
+    			cellData.getValue().inNrProperty()));
+    	tColAuswahlInNrSender.setCellValueFactory(cellData -> 
     			cellData.getValue().senderNameProperty());
-    	tColAuswahlEdiNrBezeichnung.setCellValueFactory(cellData -> 
+    	tColAuswahlInNrBezeichnung.setCellValueFactory(cellData -> 
     			cellData.getValue().bezeichnungProperty());
-    	tColAuswahlEdiNrIszenario.setCellValueFactory(cellData -> 
-    			cellData.getValue().iszenarioNameProperty());
+    	tColAuswahlInNrInSzenario.setCellValueFactory(cellData -> 
+    			cellData.getValue().inSzenarioNameProperty());
 
     	integration.setDisable(false);
 
     	integrationController.integrationProperty().bind(
-    						    tableEdiNrAuswahl.getSelectionModel().selectedItemProperty());
-    	tableEdiNrAuswahl.setRowFactory(new Callback<TableView<Integration>, TableRow<Integration>>() {
+    						    tableInNrAuswahl.getSelectionModel().selectedItemProperty());
+    	tableInNrAuswahl.setRowFactory(new Callback<TableView<Integration>, TableRow<Integration>>() {
 			@Override
 			public TableRow<Integration> call(TableView<Integration> table) {
 				final TableRow<Integration> row = new TableRow<Integration>();
@@ -392,53 +392,53 @@ public class IMController {
 		});
     }
 	
-	private void setupEdiPartnerPane() {
+	private void setupInPartnerPane() {
 		logger.info("entered");
-		tablePartnerAuswahl.setItems(ediPartnerList);
+		tablePartnerAuswahl.setItems(inPartnerList);
 		tColAuswahlPartnerName.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
 		tColAuswahlPartnerSysteme.setCellValueFactory(cellData -> Bindings.format("%7d", cellData.getValue().anzSystemeProperty()));
 		tColAuswahlPartnerKomponenten.setCellValueFactory(cell -> Bindings.format("%7d", cell.getValue().anzKomponentenProperty()));
 		
-		ediPartnerController.ediPartnerProperty().bind(tablePartnerAuswahl.getSelectionModel().selectedItemProperty());
-		ediPartner.disableProperty().bind(Bindings.isNull(tablePartnerAuswahl.getSelectionModel().selectedItemProperty()));
+		inPartnerController.inPartnerProperty().bind(tablePartnerAuswahl.getSelectionModel().selectedItemProperty());
+		inPartner.disableProperty().bind(Bindings.isNull(tablePartnerAuswahl.getSelectionModel().selectedItemProperty()));
 	}
 	
-	private void setupEdiSystemPane() {
+	private void setupInSystemPane() {
 		logger.info("entered");
-		tableSystemAuswahl.setItems(ediSystemList);
+		tableSystemAuswahl.setItems(inSystemList);
 		tColSelSystemSystemName.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
-		tColSelSystemPartnerName.setCellValueFactory(cellData -> cellData.getValue().getEdiPartner().nameProperty());
+		tColSelSystemPartnerName.setCellValueFactory(cellData -> cellData.getValue().getinPartner().nameProperty());
 		tColSelSystemKomponenten.setCellValueFactory(cellData -> Bindings.format("%7d", cellData.getValue().anzKomponentenProperty()));
 		
-		ediSystemController.ediSystemProperty().bind(tableSystemAuswahl.getSelectionModel().selectedItemProperty());
-		ediSystem.disableProperty().bind(Bindings.isNull(tableSystemAuswahl.getSelectionModel().selectedItemProperty()));
+		inSystemController.inSystemProperty().bind(tableSystemAuswahl.getSelectionModel().selectedItemProperty());
+		inSystem.disableProperty().bind(Bindings.isNull(tableSystemAuswahl.getSelectionModel().selectedItemProperty()));
 	}
 	
 	private void setupKomponentenPane() {
 		logger.info("entered");
-		tableKomponentenAuswahl.setItems(ediKomponentenList);
+		tableKomponentenAuswahl.setItems(inKomponentenList);
     	tColSelKompoKomponten.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
-    	tColSelKompoSysteme.setCellValueFactory(cellData -> cellData.getValue().getEdiSystem().nameProperty());
-    	tColSelKompoPartner.setCellValueFactory(cellData -> cellData.getValue().getEdiSystem().getEdiPartner().nameProperty());
+    	tColSelKompoSysteme.setCellValueFactory(cellData -> cellData.getValue().getInSystem().nameProperty());
+    	tColSelKompoPartner.setCellValueFactory(cellData -> cellData.getValue().getInSystem().getinPartner().nameProperty());
 
-    	ediKomponenteController.komponenteProperty().bind(tableKomponentenAuswahl.getSelectionModel().selectedItemProperty());
-    	ediKomponente.disableProperty().bind(Bindings.isNull(tableKomponentenAuswahl.getSelectionModel().selectedItemProperty()));
+    	inKomponenteController.komponenteProperty().bind(tableKomponentenAuswahl.getSelectionModel().selectedItemProperty());
+    	inKomponente.disableProperty().bind(Bindings.isNull(tableKomponentenAuswahl.getSelectionModel().selectedItemProperty()));
 	}
 
-	private void setupIszenarioPane() {
+	private void setupInSzenarioPane() {
 		logger.info("entered");
-		tableIszenarioAuswahl.setItems(iszenarioList);
-		tColSelIszenarioName.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
+		tableInSzenarioAuswahl.setItems(inSzenarioList);
+		tColSelInSzenarioName.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
 		
-		iszenarioController.iszenarioProperty().bind(tableIszenarioAuswahl.getSelectionModel().selectedItemProperty());
-		iszenario.disableProperty().bind(Bindings.isNull(tableIszenarioAuswahl.getSelectionModel().selectedItemProperty()));
+		inSzenarioController.inSzenarioProperty().bind(tableInSzenarioAuswahl.getSelectionModel().selectedItemProperty());
+		inSzenario.disableProperty().bind(Bindings.isNull(tableInSzenarioAuswahl.getSelectionModel().selectedItemProperty()));
 	}
 
 	private void setupKonfigurationPane() {
 		logger.info("entered");
 		tableKonfigurationAuswahl.setItems(konfigurationList);
 		tColSelKonfigurationName.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
-		tColSelKonfigIszenarioName.setCellValueFactory(cd -> cd.getValue().iSzenarioNameProperty());
+		tColSelKonfigInSzenarioName.setCellValueFactory(cd -> cd.getValue().inSzenarioNameProperty());
 		
 		konfigurationController.konfigurationProperty().bind(tableKonfigurationAuswahl.getSelectionModel().selectedItemProperty());
 		konfiguration.disableProperty().bind(Bindings.isNull(tableKonfigurationAuswahl.getSelectionModel().selectedItemProperty()));
@@ -472,35 +472,35 @@ public class IMController {
 		TypedQuery<Integration> tq = null;
 		try {
 			tq = entityManager.createQuery(
-					"SELECT e FROM Integration e ORDER BY e.ediNr", Integration.class);
+					"SELECT e FROM Integration e ORDER BY e.inNr", Integration.class);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
 		List<Integration> resultList = tq.getResultList();
-		ediEintraegeList.retainAll(resultList);
-		maxEdiNr = 0;
+		integrationList.retainAll(resultList);
+		maxInNr = 0;
 		for(Integration e : resultList) {
-			if (ediEintraegeList.contains(e) == false) {
-				ediEintraegeList.add(resultList.indexOf(e), e);
+			if (integrationList.contains(e) == false) {
+				integrationList.add(resultList.indexOf(e), e);
 			}
-	    	if (e.getEdiNr() > maxEdiNr) maxEdiNr = e.getEdiNr();
+	    	if (e.getInNr() > maxInNr) maxInNr = e.getInNr();
 		}
 	}
 	
 	protected void loadPartnerListData() {
-		TypedQuery<EdiPartner> tq = entityManager.createQuery(
-				"SELECT p FROM EdiPartner p ORDER BY p.name", EdiPartner.class);
-		List<EdiPartner> aktuList = tq.getResultList(); 
+		TypedQuery<InPartner> tq = entityManager.createQuery(
+				"SELECT p FROM InPartner p ORDER BY p.name", InPartner.class);
+		List<InPartner> aktuList = tq.getResultList(); 
 
-		ediPartnerList.retainAll(aktuList);  // remove all delete entities  
+		inPartnerList.retainAll(aktuList);  // remove all delete entities  
 
-		for ( EdiPartner p : aktuList) {     // insert or update all entities
-			if (ediPartnerList.contains(p) == false) {
-				ediPartnerList.add(aktuList.indexOf(p), p);
+		for ( InPartner p : aktuList) {     // insert or update all entities
+			if (inPartnerList.contains(p) == false) {
+				inPartnerList.add(aktuList.indexOf(p), p);
 			} else {
 //				log("loadPartnerListData","name:" + p.getName() );
-				int aktPos = ediPartnerList.indexOf(p);
-				EdiPartner p1 = ediPartnerList.get(aktPos);
+				int aktPos = inPartnerList.indexOf(p);
+				InPartner p1 = inPartnerList.get(aktPos);
 //				p1.anzSystemeProperty().set(p.anzSystemeProperty().get());
 				p1.anzKomponentenProperty().set(p.anzKomponentenProperty().get());
 			}
@@ -508,43 +508,43 @@ public class IMController {
 	}
 
 	protected void loadSystemListData() {
-		TypedQuery<EdiSystem> tq = entityManager.createQuery(
-				"SELECT s FROM EdiSystem s ORDER BY s.name", EdiSystem.class);
-		List<EdiSystem> aktuList = tq.getResultList();
-		ediSystemList.retainAll(aktuList);  // remove all delete entities  
-		for (EdiSystem s : aktuList) {		// insert or update all entities
-			if (ediSystemList.contains(s) == false) {
-				ediSystemList.add(aktuList.indexOf(s), s);
+		TypedQuery<InSystem> tq = entityManager.createQuery(
+				"SELECT s FROM InSystem s ORDER BY s.name", InSystem.class);
+		List<InSystem> aktuList = tq.getResultList();
+		inSystemList.retainAll(aktuList);  // remove all delete entities  
+		for (InSystem s : aktuList) {		// insert or update all entities
+			if (inSystemList.contains(s) == false) {
+				inSystemList.add(aktuList.indexOf(s), s);
 //			} else {
-//				int aktPos = ediSystemList.indexOf(s);
-//				EdiSystem s1 = ediSystemList.get(aktPos);
+//				int aktPos = inSystemList.indexOf(s);
+//				InSystem s1 = inSystemList.get(aktPos);
 //				s1.anzKomponentenProperty().set(s.anzKomponentenProperty().get());
 			}
 		}
 	}
 
 	protected void loadKomponentenListData() {
-		TypedQuery<EdiKomponente> tq = entityManager.createQuery(
-				"SELECT k FROM EdiKomponente k ORDER BY k.name", EdiKomponente.class);
-		List<EdiKomponente> aktuList = tq.getResultList();
+		TypedQuery<InKomponente> tq = entityManager.createQuery(
+				"SELECT k FROM InKomponente k ORDER BY k.name", InKomponente.class);
+		List<InKomponente> aktuList = tq.getResultList();
 		
-		ediKomponentenList.retainAll(aktuList); // remove delete entities  
-		for ( EdiKomponente k : aktuList) {     // and insert new entities
-			if (ediKomponentenList.contains(k) == false) {
-				ediKomponentenList.add(aktuList.indexOf(k), k);
+		inKomponentenList.retainAll(aktuList); // remove delete entities  
+		for ( InKomponente k : aktuList) {     // and insert new entities
+			if (inKomponentenList.contains(k) == false) {
+				inKomponentenList.add(aktuList.indexOf(k), k);
 			}
 		}
 	}
 
-	protected void loadIszenarioListData() {
-		TypedQuery<Iszenario> tq = entityManager.createQuery(
-				"SELECT i FROM Iszenario i ORDER BY i.name", Iszenario.class);
-		List<Iszenario> aktuList = tq.getResultList();
+	protected void loadInSzenarioListData() {
+		TypedQuery<InSzenario> tq = entityManager.createQuery(
+				"SELECT i FROM InSzenario i ORDER BY i.name", InSzenario.class);
+		List<InSzenario> aktuList = tq.getResultList();
 		
-		iszenarioList.retainAll(aktuList); // remove delete entities
-		for (Iszenario i : aktuList) {	 // and insert new entities
-			if (iszenarioList.contains(i) == false) {
-				iszenarioList.add(aktuList.indexOf(i),i);
+		inSzenarioList.retainAll(aktuList); // remove delete entities
+		for (InSzenario i : aktuList) {	 // and insert new entities
+			if (inSzenarioList.contains(i) == false) {
+				inSzenarioList.add(aktuList.indexOf(i),i);
 			}
 		}
 	}
@@ -633,7 +633,7 @@ public class IMController {
 	}
 
 //    @FXML
-//    void newEdiNr(ActionEvent event) {
+//    void newInNr(ActionEvent event) {
 //    
 //    	FXMLLoader loader = new FXMLLoader();
 //    	String fullname = "subs/NeueIntegration.fxml";
@@ -669,10 +669,10 @@ public class IMController {
 //
 //    	if (dialogController.getResponse() == Dialog.Actions.OK) {
 //    		Integration newEE = dialogController.getNewIntegration();
-//			ediEintraegeList.add(newEE);
-//			if (newEE.getEdiNr() > maxEdiNr) 
-//				maxEdiNr = newEE.getEdiNr();
-//			tableEdiNrAuswahl.getSelectionModel().select(newEE);
+//			integrationList.add(newEE);
+//			if (newEE.getInNr() > maxInNr) 
+//				maxInNr = newEE.getInNr();
+//			tableInNrAuswahl.getSelectionModel().select(newEE);
 //    	}
 //    }    
 
@@ -681,26 +681,26 @@ public class IMController {
     	integrationLoeschen();
     }
     private void integrationLoeschen() {
-    	Integration selectedlistElement = tableEdiNrAuswahl.getSelectionModel().getSelectedItem();
+    	Integration selectedlistElement = tableInNrAuswahl.getSelectionModel().getSelectedItem();
     	if (selectedlistElement != null) {
-    		String ediNr = Integer.toString(selectedlistElement.ediNrProperty().get());
+    		String inNr = Integer.toString(selectedlistElement.inNrProperty().get());
     		Action response = Dialog.Actions.OK;
-    		if (selectedlistElement.getEdiKomponente() != null) {
+    		if (selectedlistElement.getInKomponente() != null) {
     			response = Dialogs.create()
 					.owner(primaryStage).title(APPL_NAME)
 					.actions(Dialog.Actions.OK, Dialog.Actions.CANCEL)
 					.masthead(SICHERHEITSABFRAGE)
-					.message("Integration mit der Nr. " + ediNr + " wirklich löschen?")
+					.message("Integration mit der Nr. " + inNr + " wirklich löschen?")
 					.showConfirm();
     		}
     		if (response == Dialog.Actions.OK) {
     			Integration integration = entityManager.find(Integration.class, selectedlistElement.getId());
     			if (integration==null) {
-    				logger.error("FEHLER: Integration " + ediNr + " ist nicht (mehr) gespeichert");
+    				logger.error("FEHLER: Integration " + inNr + " ist nicht (mehr) gespeichert");
     			}
     			else {
 	        		entityManager.getTransaction().begin();
-	        		Iterator<EdiEmpfaenger> empf = integration.getEdiEmpfaenger().iterator();
+	        		Iterator<InEmpfaenger> empf = integration.getInEmpfaenger().iterator();
 	        		while (empf.hasNext()) {
 	        			entityManager.remove(empf.next());
 	        			empf.remove();
@@ -710,10 +710,10 @@ public class IMController {
 	        		}
 	        		entityManager.remove(integration);
 	        		entityManager.getTransaction().commit();
-	        		setInfoText("Integration mit der Nr. " + ediNr + " erfolgreich gelöscht");
+	        		setInfoText("Integration mit der Nr. " + inNr + " erfolgreich gelöscht");
     			}	
-    			ediEintraegeList.remove(selectedlistElement);
-    			tableEdiNrAuswahl.getSelectionModel().clearSelection();
+    			integrationList.remove(selectedlistElement);
+    			tableInNrAuswahl.getSelectionModel().clearSelection();
     		}
     	}
     }
@@ -819,7 +819,7 @@ public class IMController {
     
     public void refreshKontaktReferences() {
     	if (ansprechpartnerController.getAnsprechpartner() != null) {
-    		ansprechpartnerController.readEdiKomponentenListeforPerson();
+    		ansprechpartnerController.readInKomponentenListeforPerson();
     	}
     }
     
@@ -856,7 +856,7 @@ public class IMController {
     private void checkFieldsFromView() throws Exception {
     	logger.info("entered");
     	assert integration 				!= null : "fx:id=\"integration\" was not injected: check your FXML file 'IM.fxml'.";
-    	assert tabEdiNr					!= null : "fx:id=\"tabEdiNr\" was not injected: check your FXML file 'IM.fxml'.";
+    	assert tabInNr					!= null : "fx:id=\"tabInNr\" was not injected: check your FXML file 'IM.fxml'.";
 
         assert tabPaneObjekte 			!= null : "fx:id=\"tabPaneObjekte\" was not injected: check your FXML file 'IM.fxml'.";
         assert tabPartner 				!= null : "fx:id=\"tabPartner\" was not injected: check your FXML file 'IM.fxml'.";
@@ -869,19 +869,19 @@ public class IMController {
 
         assert txtInfoZeile				!= null : "fx:id=\"txtInfoZeile\" was not injected: check your FXML file 'IM.fxml'.";
 
-        assert tableEdiNrAuswahl 			!= null : "fx:id=\"tableEdiNrAuswahl\" was not injected: check your FXML file 'IM.fxml'.";
-        assert tColAuswahlEdiNr 			!= null : "fx:id=\"tColAuswahlEdiNr\" was not injected: check your FXML file 'IM.fxml'.";
-        assert tColAuswahlEdiNrIszenario	!= null : "fx:id=\"tColAuswahlEdiNrIszenario\" was not injected: check your FXML file 'IM.fxml'.";
+        assert tableInNrAuswahl 			!= null : "fx:id=\"tableInNrAuswahl\" was not injected: check your FXML file 'IM.fxml'.";
+        assert tColAuswahlInNr 			!= null : "fx:id=\"tColAuswahlInNr\" was not injected: check your FXML file 'IM.fxml'.";
+        assert tColAuswahlInNrInSzenario	!= null : "fx:id=\"tColAuswahlInNrInSzenario\" was not injected: check your FXML file 'IM.fxml'.";
         assert tColSelKompoKomponten 		!= null : "fx:id=\"tColSelKompoKomponten\" was not injected: check your FXML file 'IM.fxml'.";
         assert tColSelSystemSystemName 		!= null : "fx:id=\"tColSelSystemSystemName\" was not injected: check your FXML file 'IM.fxml'.";
         
-        assert tColSelIszenarioName 		!= null : "fx:id=\"tColSelIszenarioName\" was not injected: check your FXML file 'IM.fxml'.";
+        assert tColSelInSzenarioName 		!= null : "fx:id=\"tColSelInSzenarioName\" was not injected: check your FXML file 'IM.fxml'.";
         
         assert tablePartnerAuswahl 			!= null : "fx:id=\"tablePartnerAuswahl\" was not injected: check your FXML file 'IM.fxml'.";
         assert tColAuswahlPartnerKomponenten != null : "fx:id=\"tColAuswahlPartnerKomponenten\" was not injected: check your FXML file 'IM.fxml'.";
         assert tColAuswahlPartnerName 		!= null : "fx:id=\"tColAuswahlPartnerName\" was not injected: check your FXML file 'IM.fxml'.";
-        assert tColAuswahlEdiNrSender 		!= null : "fx:id=\"tColAuswahlEdiNrSender\" was not injected: check your FXML file 'IM.fxml'.";
-        assert tColAuswahlEdiNrBezeichnung 	!= null : "fx:id=\"tColAuswahlEdiNrBezeichnung\" was not injected: check your FXML file 'IM.fxml'.";
+        assert tColAuswahlInNrSender 		!= null : "fx:id=\"tColAuswahlInNrSender\" was not injected: check your FXML file 'IM.fxml'.";
+        assert tColAuswahlInNrBezeichnung 	!= null : "fx:id=\"tColAuswahlInNrBezeichnung\" was not injected: check your FXML file 'IM.fxml'.";
 
         assert tableKomponentenAuswahl 		!= null : "fx:id=\"tableKomponentenAuswahl\" was not injected: check your FXML file 'IM.fxml'.";
         assert tColSelKompoPartner 			!= null : "fx:id=\"tColSelKompoPartner\" was not injected: check your FXML file 'IM.fxml'.";

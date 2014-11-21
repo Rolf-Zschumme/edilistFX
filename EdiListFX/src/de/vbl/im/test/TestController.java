@@ -9,9 +9,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import de.vbl.im.controller.IntegrationController;
-import de.vbl.im.controller.EdiKomponenteController;
-import de.vbl.im.controller.EdiPartnerController;
-import de.vbl.im.controller.EdiSystemController;
+import de.vbl.im.controller.InKomponenteController;
+import de.vbl.im.controller.InPartnerController;
+import de.vbl.im.controller.InSystemController;
 import de.vbl.im.controller.IMController;
 
 public class TestController extends Application {
@@ -19,9 +19,9 @@ public class TestController extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		String src;
-		src = EdiKomponenteController.class.getName();
-		src = EdiPartnerController.class.getName();
-		src = EdiSystemController.class.getName();
+		src = InKomponenteController.class.getName();
+		src = InPartnerController.class.getName();
+		src = InSystemController.class.getName();
 		src = IntegrationController.class.getName();
 		src = IMController.class.getName();
 		int lastPkt = src.lastIndexOf(".");
@@ -40,7 +40,7 @@ public class TestController extends Application {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-//		EdiSystemController controller = loader.getController();
+//		InSystemController controller = loader.getController();
 //		controller.setParent();
 		
 		Scene scene = new Scene (root);

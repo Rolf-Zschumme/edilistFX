@@ -3,14 +3,14 @@
 	<persistence-unit name="IntegrationManager" transaction-type="RESOURCE_LOCAL">
 		<class>de.vbl.im.model.Ansprechpartner</class>
 		<class>de.vbl.im.model.DokuLink</class>
-		<class>de.vbl.im.model.EdiEmpfaenger</class>
-		<class>de.vbl.im.model.EdiKomponente</class>
-		<class>de.vbl.im.model.EdiPartner</class>
-		<class>de.vbl.im.model.EdiSystem</class>
+		<class>de.vbl.im.model.InEmpfaenger</class>
+		<class>de.vbl.im.model.InKomponente</class>
+		<class>de.vbl.im.model.InPartner</class>
+		<class>de.vbl.im.model.InSystem</class>
 		<class>de.vbl.im.model.GeschaeftsObjekt</class>
 		<class>de.vbl.im.model.Integration</class>
 		<class>de.vbl.im.model.Intervall</class>
-		<class>de.vbl.im.model.Iszenario</class>
+		<class>de.vbl.im.model.InSzenario</class>
 		<class>de.vbl.im.model.Konfiguration</class>
 		<class>de.vbl.im.model.Repository</class>
 		<class>de.vbl.im.model.Vorhaben</class>

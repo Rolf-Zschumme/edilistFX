@@ -33,13 +33,13 @@ import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
 
 import de.vbl.im.model.Integration;
-import de.vbl.im.model.EdiEmpfaenger;
+import de.vbl.im.model.InEmpfaenger;
 import de.vbl.im.model.Konfiguration;
 
 /*
  * Konfiguration: 
  * 
- *  - gehört zu genau einer Iszenario und 
+ *  - gehört zu genau einer InSzenario und 
  *  - besteht aus einer oder mehreren Integrationen
  * 
  */
@@ -60,13 +60,13 @@ public class KonfigurationController {
     @FXML private URL location;
     @FXML private TextField tfBezeichnung;
     @FXML private TextArea taBeschreibung;
-    @FXML private TableView<EdiEmpfaenger> tvVerwendungen;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcEdiNr;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcEmpfaenger;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcSender;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcGeschaeftsobjekt;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcDatumAb;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcDatumBis;
+    @FXML private TableView<InEmpfaenger> tvVerwendungen;
+    @FXML private TableColumn<InEmpfaenger, String> tcInNr;
+    @FXML private TableColumn<InEmpfaenger, String> tcEmpfaenger;
+    @FXML private TableColumn<InEmpfaenger, String> tcSender;
+    @FXML private TableColumn<InEmpfaenger, String> tcGeschaeftsobjekt;
+    @FXML private TableColumn<InEmpfaenger, String> tcDatumAb;
+    @FXML private TableColumn<InEmpfaenger, String> tcDatumBis;
     
     @FXML private Button btnSpeichern;
     @FXML private Button btnLoeschen;
@@ -99,7 +99,7 @@ public class KonfigurationController {
 				}
 				if (newKonfiguration != null) {
 					aktKonfiguration = newKonfiguration;
-					readEdiListeforKonfiguration(newKonfiguration);
+					readTablesForKonfiguration(newKonfiguration);
 					tfBezeichnung.setText(newKonfiguration.getName());
 					if (newKonfiguration.getBeschreibung() == null) {
 						newKonfiguration.setBeschreibung("");
@@ -134,19 +134,19 @@ public class KonfigurationController {
 		
 //	    Setup for Sub-Panel    
 		
-		tcEdiNr.setCellValueFactory(cellData -> Bindings.format(Integration.FORMAT_EDINR, 
-												cellData.getValue().getIntegration().ediNrProperty()));
+		tcInNr.setCellValueFactory(cellData -> Bindings.format(Integration.FORMAT_INNR, 
+												cellData.getValue().getIntegration().inNrProperty()));
 
-		tcSender.setCellValueFactory(cellData -> cellData.getValue().getIntegration().getEdiKomponente().fullnameProperty());
+		tcSender.setCellValueFactory(cellData -> cellData.getValue().getIntegration().getInKomponente().fullnameProperty());
 		tcEmpfaenger.setCellValueFactory(cellData -> cellData.getValue().getKomponente().fullnameProperty());
 		tcGeschaeftsobjekt.setCellValueFactory(cellData -> cellData.getValue().geschaeftsObjektNameProperty());
 		tcDatumAb.setCellValueFactory(cellData -> cellData.getValue().getIntegration().seitDatumProperty());
 		tcDatumBis.setCellValueFactory(cellData -> cellData.getValue().getIntegration().bisDatumProperty());
 		
 		// TODO: for direct jump to another integration from this table
-		tvVerwendungen.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<EdiEmpfaenger>() {
+		tvVerwendungen.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<InEmpfaenger>() {
 			@Override
-			public void changed (ObservableValue<? extends EdiEmpfaenger> ov, EdiEmpfaenger oldValue, EdiEmpfaenger newValue) {
+			public void changed (ObservableValue<? extends InEmpfaenger> ov, InEmpfaenger oldValue, InEmpfaenger newValue) {
 				logger.info("tvVerwendungen.select.changed" ,"newValue" + newValue);
 			}
 		});
@@ -155,17 +155,17 @@ public class KonfigurationController {
 	@FXML
 	void loeschen(ActionEvent event) {
 		if (integrationSet.size() > 0) {
-			mainCtr.setErrorText("Fehler beim Löschen der Iszenario " + aktKonfiguration.getName() +" wird verwendet");
+			mainCtr.setErrorText("Fehler beim Löschen der InSzenario " + aktKonfiguration.getName() +" wird verwendet");
 			return;
 		}	
-		String iszenarioName1 = "Iszenario \"" + aktKonfiguration.getName() + "\"";
-		String iszenarioName2 = iszenarioName1;
+		String inSzenarioName1 = "InSzenario \"" + aktKonfiguration.getName() + "\"";
+		String inSzenarioName2 = inSzenarioName1;
 		if (aktKonfiguration.getName().equals(tfBezeichnung.getText()) == false) {
-			iszenarioName2 = iszenarioName1 + " / \"" + tfBezeichnung.getText() + "\"";
+			inSzenarioName2 = inSzenarioName1 + " / \"" + tfBezeichnung.getText() + "\"";
 		}
 		Action response = Dialogs.create()
 				.owner(primaryStage).title(primaryStage.getTitle())
-				.message(iszenarioName2 + " wirklich löschen ?")
+				.message(inSzenarioName2 + " wirklich löschen ?")
 				.showConfirm();
 		if (response == Dialog.Actions.YES) {
 			try {
@@ -174,13 +174,13 @@ public class KonfigurationController {
 				entityManager.getTransaction().commit();
 				aktKonfiguration = null;
 				mainCtr.loadKonfigurationListData();
-				mainCtr.setInfoText("Die Iszenario \"" + iszenarioName1 +
+				mainCtr.setInfoText("Die InSzenario \"" + inSzenarioName1 +
 									 "\" wurde erfolgreich gelöscht !");
 			} catch (RuntimeException er) {
 				Dialogs.create()
 					.owner(primaryStage).title(primaryStage.getTitle())
 					.masthead("Datenbankfehler")
-				    .message("Fehler beim Löschen der Komponente " + iszenarioName1)
+				    .message("Fehler beim Löschen der Komponente " + inSzenarioName1)
 				    .showException(er);
 			}
 		}
@@ -240,7 +240,7 @@ public class KonfigurationController {
 			aktKonfiguration.setName(newName);
 			aktKonfiguration.setBeschreibung(newBeschreibung);
 			entityManager.getTransaction().commit();
-			readEdiListeforKonfiguration(aktKonfiguration);
+			readTablesForKonfiguration(aktKonfiguration);
 			mainCtr.setInfoText("Konfiguration " + newName + " wurde gespeichert");
 		}
 		return true;
@@ -257,19 +257,19 @@ public class KonfigurationController {
 		for (Konfiguration k : konfigurationList ) {
 			System.out.println("K.name=" + k.getName());
 			if (k != aktKonfiguration &&
-				k.getIszenario() == aktKonfiguration.getIszenario())  {
+				k.getInSzenario() == aktKonfiguration.getInSzenario())  {
 				if (k.getName().equalsIgnoreCase(newName)) {
-					return "Eine andere Konfiguration der Iszenario " + 
-							aktKonfiguration.getIszenario().getName() + " heißt bereits so";
+					return "Eine andere Konfiguration der InSzenario " + 
+							aktKonfiguration.getInSzenario().getName() + " heißt bereits so";
 				}
 			}
 		}
 		return null;
 	}
 
-	private void readEdiListeforKonfiguration( Konfiguration selKonfiguration) {
+	private void readTablesForKonfiguration( Konfiguration selKonfiguration) {
 		tvVerwendungen.getItems().clear();
-		ObservableList<EdiEmpfaenger> empfaengerList = FXCollections.observableArrayList();
+		ObservableList<InEmpfaenger> empfaengerList = FXCollections.observableArrayList();
 		integrationSet.clear(); 
 		/* 1. lese alle EdiEinträge mit Sender = selekierter Komponente 
 		 * 		-> zeige jeweils alle zugehörigen Empfänger, falls kein Empfänger vorhanden dummy erzeugen
@@ -277,19 +277,19 @@ public class KonfigurationController {
 		TypedQuery<Integration> tqS = entityManager.createQuery(
 				"SELECT k FROM Integration k WHERE k.konfiguration = :k", Integration.class);
 		tqS.setParameter("k", selKonfiguration);
-		List<Integration> ediList = tqS.getResultList();
-		for(Integration e : ediList ) {
+		List<Integration> resultList = tqS.getResultList();
+		for(Integration e : resultList ) {
 			integrationSet.add(e);
-			if (e.getEdiEmpfaenger().size() > 0) {
-				empfaengerList.addAll(e.getEdiEmpfaenger());
+			if (e.getInEmpfaenger().size() > 0) {
+				empfaengerList.addAll(e.getInEmpfaenger());
 			} else {
-				EdiEmpfaenger tmpE = new EdiEmpfaenger();
+				InEmpfaenger tmpE = new InEmpfaenger();
 				tmpE.setIntegration(e);
 				empfaengerList.add(tmpE);
 			}
 		}
 		tvVerwendungen.setItems(empfaengerList);
-//		log("readEdiListeforKomponente","size="+ integrationSet.size());
+//		logger.info("size="+ integrationSet.size());
 	}
 
 	public final ObjectProperty<Konfiguration> konfigurationProperty() {
@@ -307,13 +307,13 @@ public class KonfigurationController {
 	void checkFieldsFromView() {
     	assert tfBezeichnung != null : "fx:id=\"tfBezeichnung\" was not injected: check your FXML file 'Konfiguration.fxml'.";
     	assert taBeschreibung != null : "fx:id=\"taBeschreibung\" was not injected: check your FXML file 'Konfiguration.fxml'.";
-    	assert tcEdiNr != null : "fx:id=\"tcEdiNr\" was not injected: check your FXML file 'Konfiguration.fxml'.";
+    	assert tcInNr != null : "fx:id=\"tcInNr\" was not injected: check your FXML file 'Konfiguration.fxml'.";
     	assert tcSender != null : "fx:id=\"tcSender\" was not injected: check your FXML file 'Konfiguration.fxml'.";
         assert tcEmpfaenger != null : "fx:id=\"tcEmpfaenger\" was not injected: check your FXML file 'Konfiguration.fxml'.";
         assert tcDatumBis != null : "fx:id=\"tcDatumBis\" was not injected: check your FXML file 'Konfiguration.fxml'.";
         assert tvVerwendungen != null : "fx:id=\"tvVerwendungen\" was not injected: check your FXML file 'Konfiguration.fxml'.";
         assert btnLoeschen != null : "fx:id=\"btnLoeschen\" was not injected: check your FXML file 'Konfiguration.fxml'.";
-        assert btnSpeichern != null : "fx:id=\"btnSpeichern\" was not injected: check your FXML file 'Iszenario.fxml'.";
+        assert btnSpeichern != null : "fx:id=\"btnSpeichern\" was not injected: check your FXML file 'InSzenario.fxml'.";
     }
     
 }

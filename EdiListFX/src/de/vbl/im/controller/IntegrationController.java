@@ -77,11 +77,11 @@ import de.vbl.im.controller.subs.NeueIntegrationController;
 import de.vbl.im.controller.subs.KomponentenAuswahlController.KomponentenTyp;
 import de.vbl.im.model.DokuLink;
 import de.vbl.im.model.Integration;
-import de.vbl.im.model.EdiEmpfaenger;
+import de.vbl.im.model.InEmpfaenger;
 import de.vbl.im.model.Intervall;
-import de.vbl.im.model.EdiKomponente;
+import de.vbl.im.model.InKomponente;
 import de.vbl.im.model.GeschaeftsObjekt;
-import de.vbl.im.model.Iszenario;
+import de.vbl.im.model.InSzenario;
 import de.vbl.im.model.Konfiguration;
 import de.vbl.im.model.Repository;
 
@@ -95,17 +95,17 @@ public class IntegrationController {
 
 	private final ObjectProperty<Integration> integration;
 
-	@FXML private TitledPane m_IszenarioPane;
+	@FXML private TitledPane m_InSzenarioPane;
 	@FXML private AnchorPane m_IntegrationPane;
-    @FXML private TabPane tabPaneEdiNr;
-    @FXML private Tab tabAktEdiNr;
+    @FXML private TabPane tabPaneInNr;
+    @FXML private Tab tabAktInNr;
     
     @FXML private ComboBox<Konfiguration> cmbKonfiguration;
-    @FXML private ComboBox<Iszenario> cmbIszenario;
+    @FXML private ComboBox<InSzenario> cmbInSzenario;
     @FXML private Button m_SpeichernBtn;
     @FXML private Button m_NeuAnlageBtn;  // not used because always enabled  
     @FXML private Button m_LoeschenBtn;
-    @FXML private Button m_NewIszenarioBtn;
+    @FXML private Button m_NewInSzenarioBtn;
     @FXML private Button m_NewConfigurationBtn;
     @FXML private Button m_NewDokuLinkBtn;
     @FXML private Button m_RemoveDokuLinkBtn;
@@ -118,12 +118,12 @@ public class IntegrationController {
     @FXML private TableColumn<DokuLink, String> tColDokumentRevision;
     @FXML private TableColumn<DokuLink, String> tColDokumentPfad;
     
-    @FXML private TextArea  taEdiBeschreibung;
+    @FXML private TextArea  taBeschreibung;
     @FXML private ComboBox<String> cmbIntervall;
     @FXML private ComboBox<String> cmbBuOb1;
     @FXML private ComboBox<String> cmbBuOb2;
     @FXML private ComboBox<String> cmbBuOb3;
-    @FXML private TextField ediLastChange;
+    @FXML private TextField tfLastChange;
     @FXML private TextField tfBezeichnung;
     @FXML private DatePicker dpProduktivSeit;
     @FXML private DatePicker dpProduktivBis;
@@ -157,33 +157,33 @@ public class IntegrationController {
     private ObservableList<DokuLink> dokuLinkList     = FXCollections.observableArrayList();
 
     private static class IntegrationPlus {
-    	private int EdiNr;
-    	private Iszenario iszenario;
+    	private int inNr;
+    	private InSzenario inSzenario;
     	private Konfiguration konfiguration;
     	private String bezeichnung;
     	private String beschreibung;
     	private LocalDate seitDatum;
     	private LocalDate bisDatum;
-    	private EdiKomponente sender; 
-    	private EdiEmpfaenger empfaenger[] = new EdiEmpfaenger[MAX_EMPFAENGER];
-    	private EdiKomponente empfaengerKomponente[] = new EdiKomponente[MAX_EMPFAENGER];
+    	private InKomponente sender; 
+    	private InEmpfaenger empfaenger[] = new InEmpfaenger[MAX_EMPFAENGER];
+    	private InKomponente empfaengerKomponente[] = new InKomponente[MAX_EMPFAENGER];
     	private GeschaeftsObjekt geschaeftsObjekt[] = new GeschaeftsObjekt[MAX_EMPFAENGER];
     	private String intervallName;
     	
     	void setData (Integration s) {
-    		EdiNr = s.getEdiNr();
+    		inNr = s.getInNr();
     		konfiguration = s.getKonfiguration();
-    		iszenario = konfiguration==null ? null : konfiguration.getIszenario();
+    		inSzenario = konfiguration==null ? null : konfiguration.getInSzenario();
     		bezeichnung = s.getBezeichnung()==null ? "" : s.getBezeichnung();
     		beschreibung = s.getBeschreibung()==null ? "" : s.getBeschreibung();
     		intervallName = s.getIntervall()==null ? "" : s.getIntervall().getName();
-    		sender = s.getEdiKomponente();
+    		sender = s.getInKomponente();
 			String seitStr = s.seitDatumProperty().getValueSafe();
 			seitDatum = seitStr.equals("") ? null : LocalDate.parse(seitStr);
 			String bisStr = s.bisDatumProperty().getValueSafe();
 			bisDatum = bisStr.equals("") ? null : LocalDate.parse(bisStr);
 			int i=0;
-			for(EdiEmpfaenger e : s.getEdiEmpfaenger()) {
+			for(InEmpfaenger e : s.getInEmpfaenger()) {
 				empfaenger[i] = e;
 				empfaengerKomponente[i] = e.getKomponente();
 				geschaeftsObjekt[i++] = e.getGeschaeftsObjekt();
@@ -222,30 +222,30 @@ public class IntegrationController {
     	setupLocalBindings();
     	integration.addListener( (ov, oldEintrag ,newEintrag) -> {
     		if (oldEintrag != null) {
-    			taEdiBeschreibung.setText("");
+    			taBeschreibung.setText("");
     			tfBezeichnung.setText("");
     			btnEmpfaenger1.setText("");
     			btnEmpfaenger2.setText("");
     			btnEmpfaenger3.setText("");
-    			ediLastChange.setText("");
-    			tabAktEdiNr.setText(INR_PANE_PREFIX + "000");
+    			tfLastChange.setText("");
+    			tabAktInNr.setText(INR_PANE_PREFIX + "000");
     			btnSender.textProperty().unbind();
     		}
+    		cmbInSzenario.setValue(null);
     		if (newEintrag == null) {
     			managerController.setInfoText("Neue Integration kann bearbeitet werden");
-    			cmbIszenario.setValue(null);
     			akt.seitDatum = null;
     			akt.bisDatum = null;
     		} else {
     			readBusinessObject();
     			readIntervalle();
-    			readIszenarioList();
+    			readInSzenarioList();
     			akt.setData(newEintrag);
-    			cmbIszenario.getSelectionModel().select(akt.iszenario);
+    			cmbInSzenario.getSelectionModel().select(akt.inSzenario);
     			cmbKonfiguration.getSelectionModel().select(akt.konfiguration);
-    			tabAktEdiNr.setText(INR_PANE_PREFIX +  newEintrag.getEdiNrStr());
+    			tabAktInNr.setText(INR_PANE_PREFIX +  newEintrag.getInNrStr());
     			tfBezeichnung.setText(akt.bezeichnung);
-    			taEdiBeschreibung.setText(akt.beschreibung);
+    			taBeschreibung.setText(akt.beschreibung);
     			cmbIntervall.getSelectionModel().select(akt.intervallName);
     			if (akt.sender != null) {
     				btnSender.textProperty().bind(akt.sender.fullnameProperty());
@@ -257,7 +257,7 @@ public class IntegrationController {
     			setAktEmpfaenger();
     			
     			org.setData(newEintrag);
-    			setLastChangeField(ediLastChange, newEintrag.getLaeDatum(), newEintrag.getLaeUser());
+    			setLastChangeField(tfLastChange, newEintrag.getLaeDatum(), newEintrag.getLaeUser());
     			
     		}
     		dpProduktivSeit.setValue(akt.seitDatum);
@@ -282,15 +282,15 @@ public class IntegrationController {
     
 	private void setupLocalBindings() {
 		
-		m_NewConfigurationBtn.disableProperty().bind(cmbIszenario.getSelectionModel().selectedItemProperty().isNull());
+		m_NewConfigurationBtn.disableProperty().bind(cmbInSzenario.getSelectionModel().selectedItemProperty().isNull());
 		
 		m_SpeichernBtn.disableProperty().bind(Bindings.not(dataIsChanged));
 		m_LoeschenBtn.disableProperty().bind(this.integration.isNull());
 
-		m_IszenarioPane.disableProperty().bind(Bindings.isNull(integration));
+		m_InSzenarioPane.disableProperty().bind(Bindings.isNull(integration));
 		m_IntegrationPane.disableProperty().bind(Bindings.isNull(integration));
 		
-		setupIszenarioComboBox();
+		setupInSzenarioComboBox();
 		setupDokuLink();
 		setupKonfigurationComboBox();
 		
@@ -304,7 +304,7 @@ public class IntegrationController {
 			managerController.setErrorText(msg);
 		});
 		
-		taEdiBeschreibung.textProperty().addListener((observable, oldValue, newValue) -> {
+		taBeschreibung.textProperty().addListener((observable, oldValue, newValue) -> {
 			String msg = "";
 			if (newValue != null) {
 				akt.beschreibung = newValue;
@@ -394,12 +394,12 @@ public class IntegrationController {
     	});
 	}
 	
-	private void setupIszenarioComboBox() {
+	private void setupInSzenarioComboBox() {
     	
-		cmbIszenario.setCellFactory((cmbBx) -> {
-			return new ListCell<Iszenario>() {
+		cmbInSzenario.setCellFactory((cmbBx) -> {
+			return new ListCell<InSzenario>() {
 				@Override
-				protected void updateItem(Iszenario item, boolean empty) {
+				protected void updateItem(InSzenario item, boolean empty) {
 					super.updateItem(item, empty);
 					if (item == null || empty) {
 						setText(null);
@@ -411,27 +411,27 @@ public class IntegrationController {
 			};
 		});
 		
-		cmbIszenario.setConverter(new StringConverter<Iszenario>() {
+		cmbInSzenario.setConverter(new StringConverter<InSzenario>() {
 			@Override
-			public String toString(Iszenario item) {
+			public String toString(InSzenario item) {
 				return item==null ? null : item.getName();
 			}
 			@Override
-			public Iszenario fromString(String string) {
+			public InSzenario fromString(String string) {
 				return null; // No conversion fromString needed
 			}
 		});
 		
-		// checks to be done before changing the iszenario 
-		cmbIszenario.setOnAction((event) -> {
-			if (akt.EdiNr == org.EdiNr &&				 
-				akt.iszenario == org.iszenario) {
+		// checks to be done before changing the inSzenario 
+		cmbInSzenario.setOnAction((event) -> {
+			if (akt.inNr == org.inNr &&				 
+				akt.inSzenario == org.inSzenario) {
 				if (verifyDokuLinkListIsUnchanged() == false) {
 					// DokuLinkListe has been changed -> this changes may be lost  
 					// ask User if changes should be stored
 					Action response = Dialogs.create().owner(primaryStage)
 							.title(SICHERHEITSABFRAGE)
-							.message("Sollen die Änderungen an den Doku-Referenzen für " + akt.iszenario.getName() +
+							.message("Sollen die Änderungen an den Doku-Referenzen für " + akt.inSzenario.getName() +
 									 " gespeichert werden?")
 							.actions(Dialog.Actions.YES, Dialog.Actions.NO)
 							.showConfirm();
@@ -451,27 +451,27 @@ public class IntegrationController {
 					}
 				}
 			}
-//			Iszenario selIszenario = cmbIszenario.getSelectionModel().getSelectedItem();
-//			logger.info("selected Iszenario:" + selIszenario.getName());
-//			setChangeFlag(akt.iszenario != org.iszenario);
-//			akt.iszenario = selIszneario;
-//			readCmbKonfigurationList(akt.iszenario);
+//			InSzenario selInSzenario = cmbInSzenario.getSelectionModel().getSelectedItem();
+//			logger.info("selected InSzenario:" + selInSzenario.getName());
+//			setChangeFlag(akt.inSzenario != org.inSzenario);
+//			akt.inSzenario = selIszneario;
+//			readCmbKonfigurationList(akt.inSzenario);
 		});
 		
-		cmbIszenario.getSelectionModel().selectedItemProperty().addListener((ov, oldValue, newValue) -> {
-			logger.trace("selected Iszenario:" + (newValue == null ? "null" : newValue.getName()) + 
+		cmbInSzenario.getSelectionModel().selectedItemProperty().addListener((ov, oldValue, newValue) -> {
+			logger.trace("selected InSzenario:" + (newValue == null ? "null" : newValue.getName()) + 
 					  				   " (old:" + (oldValue == null ? "null" : oldValue.getName()) + ")");
-			setChangeFlag(newValue != org.iszenario);
-			akt.iszenario = newValue;
+			setChangeFlag(newValue != org.inSzenario);
+			akt.inSzenario = newValue;
 			// refresh dokuLinkList
 			if (oldValue != newValue) {
 				dokuLinkList.clear();
-				if(akt.iszenario != null) {
-					dokuLinkList.addAll(akt.iszenario.getDokuLink());
+				if(akt.inSzenario != null) {
+					dokuLinkList.addAll(akt.inSzenario.getDokuLink());
 				}
 				managerController.setInfoText("");
 			}
-			readCmbKonfigurationList(akt.iszenario);
+			readCmbKonfigurationList(akt.inSzenario);
 			checkBezeichnungUpdate();
 		});
 	}
@@ -482,7 +482,7 @@ public class IntegrationController {
 	}
 
 	private void setupDokuLink() {
-		m_NewDokuLinkBtn.disableProperty().bind(cmbIszenario.getSelectionModel().selectedItemProperty().isNull());
+		m_NewDokuLinkBtn.disableProperty().bind(cmbInSzenario.getSelectionModel().selectedItemProperty().isNull());
 		m_RemoveDokuLinkBtn.disableProperty().bind(tvDokuLinks.getSelectionModel().selectedItemProperty().isNull());	
 		tvDokuLinks.setItems(dokuLinkList);
 		tColDokumentVorhaben.setCellValueFactory(cellData -> cellData.getValue().vorhabenProperty());
@@ -603,7 +603,7 @@ public class IntegrationController {
     				dokuLinkList.add(dokuLink);
     				userInfo += "wurde eingetragen";
     			}
-    			setChangeFlag(org.iszenario == null || org.iszenario.getDokuLink() == null);
+    			setChangeFlag(org.inSzenario == null || org.inSzenario.getDokuLink() == null);
     		}
         	managerController.setInfoText(userInfo);
     	}
@@ -628,14 +628,14 @@ public class IntegrationController {
     private void removeDokuLinkfromList (DokuLink tobeRemoved) {
     	String dokname = tobeRemoved.getName();
     	tvDokuLinks.getItems().remove(tobeRemoved);
-    	setChangeFlag(org.iszenario == null || org.iszenario.getDokuLink() == null);
+    	setChangeFlag(org.inSzenario == null || org.inSzenario.getDokuLink() == null);
     	managerController.setInfoText("Der Verweis auf das Dokument '" + dokname + "' wurde entfernt");
     }
     
     
 	private void setupKonfigurationComboBox() {
 		
-		cmbKonfiguration.disableProperty().bind(cmbIszenario.getSelectionModel().selectedItemProperty().isNull());
+		cmbKonfiguration.disableProperty().bind(cmbInSzenario.getSelectionModel().selectedItemProperty().isNull());
 		
 		cmbKonfiguration.setCellFactory((cmbBx) -> {
 			return new ListCell<Konfiguration>() {
@@ -673,9 +673,9 @@ public class IntegrationController {
 			akt.konfiguration = newValue;
 			setChangeFlag(newValue != org.konfiguration);
 			
-			// zusätzliche EdiNr-Reiter aktualisieren (entfernen/ergänzen)
+			// zusätzliche inNr-Reiter aktualisieren (entfernen/ergänzen)
 			
-			tabPaneEdiNr.getTabs().retainAll(tabAktEdiNr);
+			tabPaneInNr.getTabs().retainAll(tabAktInNr);
 			if (newValue != null && newValue.getIntegration() != null) {
 				Iterator<Integration> i = newValue.getIntegration().iterator();
 //				log("cmbKonfiguration.changed","extraTab="+extraTab);
@@ -683,26 +683,26 @@ public class IntegrationController {
 				tabMapAfter.clear();
 				while (i.hasNext()) {
 					Integration e = i.next();
-					int iEdiNr = e.getEdiNr();
-					if (iEdiNr != akt.EdiNr ) {
-						Tab extraTab = new Tab(INR_PANE_PREFIX + e.getEdiNrStr());
+					int inNr = e.getInNr();
+					if (inNr != akt.inNr ) {
+						Tab extraTab = new Tab(INR_PANE_PREFIX + e.getInNrStr());
 						extraTab.setUserData(e);
-						if (iEdiNr  < akt.EdiNr ) tabMapBefore.put(iEdiNr, extraTab);
-						if (iEdiNr  > akt.EdiNr ) tabMapAfter.put(iEdiNr, extraTab);
+						if (inNr  < akt.inNr ) tabMapBefore.put(inNr, extraTab);
+						if (inNr  > akt.inNr ) tabMapAfter.put(inNr, extraTab);
 					}	
 				}
 				if (tabMapAfter.size() > 0) {
-					tabPaneEdiNr.getTabs().addAll(1, tabMapAfter.values());
+					tabPaneInNr.getTabs().addAll(1, tabMapAfter.values());
 				}	
 				if (tabMapBefore.size() > 0) {
-					tabPaneEdiNr.getTabs().addAll(0, tabMapBefore.values());
+					tabPaneInNr.getTabs().addAll(0, tabMapBefore.values());
 				}
 			}
 			managerController.setInfoText("");
 		});
 		
 		// check if user want to change the current entity
-		tabPaneEdiNr.addEventFilter(MouseEvent.MOUSE_PRESSED, event ->  {
+		tabPaneInNr.addEventFilter(MouseEvent.MOUSE_PRESSED, event ->  {
 			Node node = (Node) event.getTarget();
 			if (node instanceof Text) {
 				Parent parent = node.getParent();
@@ -710,7 +710,7 @@ public class IntegrationController {
 					Label label = (Label) parent;
 					// compare label-text with all Integration-Panel-text 
 					Integration e = null;
-					for(Tab t : tabPaneEdiNr.getTabs()) {
+					for(Tab t : tabPaneInNr.getTabs()) {
 						if (t.getText() == label.getText()) {
 							if (t.getUserData() instanceof Integration) {
 								e = (Integration) t.getUserData();
@@ -729,7 +729,7 @@ public class IntegrationController {
 			
 		});
 		
-		tabPaneEdiNr.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+		tabPaneInNr.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
 			Node node = (Node) event.getTarget();
 			if (node instanceof TabPane) {
 				Integration e = null;
@@ -831,27 +831,27 @@ public class IntegrationController {
 		}
 	}
 	
-	private void readIszenarioList() {
-        final ObservableList<Iszenario> aktList = FXCollections.observableArrayList();
-		TypedQuery<Iszenario> tq = entityManager.createQuery(
-				"SELECT i FROM Iszenario i ORDER BY i.name", Iszenario.class);
+	private void readInSzenarioList() {
+        final ObservableList<InSzenario> aktList = FXCollections.observableArrayList();
+		TypedQuery<InSzenario> tq = entityManager.createQuery(
+				"SELECT i FROM InSzenario i ORDER BY i.name", InSzenario.class);
 		
 		aktList.addAll(tq.getResultList());
-		if (cmbIszenario.getItems().isEmpty()) {
-			cmbIszenario.setItems(aktList);
+		if (cmbInSzenario.getItems().isEmpty()) {
+			cmbInSzenario.setItems(aktList);
 		}
 		else {
-			cmbIszenario.getItems().retainAll(aktList);
-			cmbIszenario.getItems().setAll(aktList);
+			cmbInSzenario.getItems().retainAll(aktList);
+			cmbInSzenario.getItems().setAll(aktList);
 		}
 		
 	}
 
-	private void readCmbKonfigurationList(Iszenario iszensario) {
+	private void readCmbKonfigurationList(InSzenario inSzenario) {
 		cmbKonfiguration.getItems().clear();
 		TypedQuery<Konfiguration> tq = entityManager.createQuery(
-				"SELECT k FROM Konfiguration k WHERE k.iszenario = :i ORDER BY k.name", Konfiguration.class);
-		tq.setParameter("i", iszensario);
+				"SELECT k FROM Konfiguration k WHERE k.inSzenario = :i ORDER BY k.name", Konfiguration.class);
+		tq.setParameter("i", inSzenario);
 		
 		ObservableList<Konfiguration> aktList = FXCollections.observableArrayList(tq.getResultList());
 
@@ -960,11 +960,6 @@ public class IntegrationController {
     	managerController.handleIntegrationLoeschen(event);
     }
     
-//	public boolean checkForContinueEditing() {
-//		if (aktEdi != null && aktEdiEqualPersistence() == false) {
-//		}
-//		return false;
-//	}
 
     private static enum Checkmode { CHECK_ONLY, ASK_FOR_UPDATE, SAVE_DONT_ASK };
 
@@ -1009,7 +1004,7 @@ public class IntegrationController {
 		if (checkmode == Checkmode.ASK_FOR_UPDATE) {
 			Action response = Dialogs.create().owner(primaryStage)
 							.title(applName).masthead(SICHERHEITSABFRAGE)
-							.message("Soll die Änderungen an der Integration " + integration.get().getEdiNrStr() + 
+							.message("Soll die Änderungen an der Integration " + integration.get().getInNrStr() + 
 									" \"" + integration.get().getBezeichnung() + "\" gespeichert werden?")
 							.showConfirm();
 			if (response == Dialog.Actions.CANCEL) {
@@ -1032,7 +1027,7 @@ public class IntegrationController {
     		return false;
     	}
     	for (int i=0; i<MAX_EMPFAENGER; ++i) {
-    		EdiKomponente empf = akt.empfaengerKomponente[i];
+    		InKomponente empf = akt.empfaengerKomponente[i];
     		if (empf == null) {
     			if (i==0) {
     				String msg = "Ein Empfänger ist erforderlich";
@@ -1056,9 +1051,9 @@ public class IntegrationController {
     			}
     		}
     	}
-    	if(akt.iszenario == null) {
-    		managerController.setErrorText("Eine Iszenario muss ausgewählt oder angelegt werden");
-    		cmbIszenario.requestFocus();
+    	if(akt.inSzenario == null) {
+    		managerController.setErrorText("Eine InSzenario muss ausgewählt oder angelegt werden");
+    		cmbInSzenario.requestFocus();
     		return false;
     	}
     	if (akt.konfiguration == null) {
@@ -1070,66 +1065,66 @@ public class IntegrationController {
     	// end of validation -> start update/insert
     	// ----------------------------------------
 		try {
-			Integration aktEdi = integration.get();
+			Integration aktIn = integration.get();
 			entityManager.getTransaction().begin();
 			// if configuration changed the Integration must be removed from previous configuration	
 			if (org.konfiguration != null && akt.konfiguration != org.konfiguration) {
-				org.konfiguration.getIntegration().remove(aktEdi);
+				org.konfiguration.getIntegration().remove(aktIn);
 			}
-			if (akt.iszenario.getId() == 0L) {
-				entityManager.persist(akt.iszenario);
+			if (akt.inSzenario.getId() == 0L) {
+				entityManager.persist(akt.inSzenario);
 			}
 			if (akt.konfiguration.getId() == 0L) {    	// new configuration for persistence
 				entityManager.persist(akt.konfiguration);
-				akt.konfiguration.setIszenario(akt.iszenario);
+				akt.konfiguration.setInSzenario(akt.inSzenario);
 			}
-			if (akt.konfiguration.getIntegration().contains(aktEdi) == false) {
-				akt.konfiguration.getIntegration().add(aktEdi);
+			if (akt.konfiguration.getIntegration().contains(aktIn) == false) {
+				akt.konfiguration.getIntegration().add(aktIn);
 			}
-			aktEdi.setKonfiguration(akt.konfiguration);
+			aktIn.setKonfiguration(akt.konfiguration);
 			
 			updateDokuLinkListInDatabase();
 			
-			aktEdi.setEdiKomponente(akt.sender); 
-			aktEdi.setBeschreibung(akt.beschreibung);
+			aktIn.setInKomponente(akt.sender); 
+			aktIn.setBeschreibung(akt.beschreibung);
 			
 			if (!akt.intervallName.equals(org.intervallName)) {
-				aktEdi.setIntervall(newIntervall(akt.intervallName));
+				aktIn.setIntervall(newIntervall(akt.intervallName));
 			}
 			
-			Collection<EdiEmpfaenger> tmpEmpfaengerList = new ArrayList<EdiEmpfaenger>();
+			Collection<InEmpfaenger> tmpEmpfaengerList = new ArrayList<InEmpfaenger>();
 			
 			for (int i=0; i<MAX_EMPFAENGER; ++i) {
-				EdiEmpfaenger empf = akt.empfaenger[i];
+				InEmpfaenger empf = akt.empfaenger[i];
 				if (empf == null && akt.empfaengerKomponente[i] != null) {
-					empf = new EdiEmpfaenger();
-					aktEdi.getEdiEmpfaenger().add(empf);
+					empf = new InEmpfaenger();
+					aktIn.getInEmpfaenger().add(empf);
 					entityManager.persist(empf);
 				}
 				if (akt.empfaengerKomponente[i] != null) {
-					empf.setIntegration(aktEdi);
+					empf.setIntegration(aktIn);
 					empf.setKomponente(akt.empfaengerKomponente[i]);
 					empf.setGeschaeftsObjekt(akt.geschaeftsObjekt[i]);
 					tmpEmpfaengerList.add(empf);
 // TODO				empf.getGeschaeftsObjekt().anzVerwendungenProperty().add(1);
 				}
 			}
-			// EdiEmpfaenger at the original EmpfaengerList must be removed 
+			// InEmpfaenger at the original EmpfaengerList must be removed 
 			// from the database if they are not in the new EmpfaengerList  
 			//
 			for (int i=0; i<MAX_EMPFAENGER; ++i) {
-				EdiEmpfaenger empf = org.empfaenger[i];
+				InEmpfaenger empf = org.empfaenger[i];
 				if (empf != null && tmpEmpfaengerList.contains(empf) == false) {
 					entityManager.remove(empf);
 				}
 			}
-			aktEdi.setEdiEmpfaenger(tmpEmpfaengerList);
+			aktIn.setInEmpfaenger(tmpEmpfaengerList);
 			
 //			old: auto generation of field
-//			String tmpEdiBezeichnung = aktEdi.autoBezeichnung(); 
-//			if (aktEdi.getBezeichnung().equals(tmpEdiBezeichnung) == false) {
-//				aktEdi.setBezeichnung(tmpEdiBezeichnung);
-//				tfBezeichnung.textProperty().set(aktEdi.autoBezeichnung());
+//			String tmpBezeichnung = aktIn.autoBezeichnung(); 
+//			if (aktIn.getBezeichnung().equals(tmpBezeichnung) == false) {
+//				aktIn.setBezeichnung(tmpBezeichnung);
+//				tfBezeichnung.textProperty().set(aktIn.autoBezeichnung());
 //			}
 //			new: normal manuell input
 //			temp: set bezeichnung if emppty			
@@ -1137,16 +1132,16 @@ public class IntegrationController {
 				tfBezeichnung.textProperty().set(Integration.autobezeichnung(
 						akt.konfiguration, akt.sender,akt.geschaeftsObjekt[0]));
 			}
-			aktEdi.setBezeichnung(akt.bezeichnung);
+			aktIn.setBezeichnung(akt.bezeichnung);
 			
 			LocalDate aktSeitDatum = dpProduktivSeit.getValue();
-			aktEdi.seitDatumProperty().set(aktSeitDatum==null ? "" : aktSeitDatum.toString());
+			aktIn.seitDatumProperty().set(aktSeitDatum==null ? "" : aktSeitDatum.toString());
 			
 			LocalDate aktBisDatum = dpProduktivBis.getValue();
-			aktEdi.bisDatumProperty().set(aktBisDatum==null ? "" : aktBisDatum.toString());
+			aktIn.bisDatumProperty().set(aktBisDatum==null ? "" : aktBisDatum.toString());
 			
-			aktEdi.setLaeUser(System.getenv("USERNAME").toUpperCase());
-			aktEdi.setLaeDatum(LocalDateTime.now().toString());
+			aktIn.setLaeUser(System.getenv("USERNAME").toUpperCase());
+			aktIn.setLaeDatum(LocalDateTime.now().toString());
 			
 			entityManager.getTransaction().commit();
 			
@@ -1155,11 +1150,11 @@ public class IntegrationController {
 				readIntervalle();	// this will remove selection -> refresh 
 				cmbIntervall.getSelectionModel().select(akt.intervallName);
 			}
-			setLastChangeField(ediLastChange, aktEdi.getLaeDatum(), aktEdi.getLaeUser());			
-			akt.setData(aktEdi);
-			org.setData(aktEdi);
+			setLastChangeField(tfLastChange, aktIn.getLaeDatum(), aktIn.getLaeUser());			
+			akt.setData(aktIn);
+			org.setData(aktIn);
 			
-			managerController.setInfoText("Die Integration " + aktEdi.getEdiNrStr() +
+			managerController.setInfoText("Die Integration " + aktIn.getInNrStr() +
 										  " wurde gespeichert");
 		} catch (RuntimeException e) {
 			Dialogs.create().owner(primaryStage)
@@ -1174,15 +1169,15 @@ public class IntegrationController {
 	
 	private void updateDokuLinkListInDatabase() {
 		// if dokuLinks are removed they must be removed from database 
-		if (akt.iszenario.getDokuLink() != null) {
+		if (akt.inSzenario.getDokuLink() != null) {
 			Collection<DokuLink> toBeRemoved = new ArrayList<DokuLink>();
-			for (DokuLink dok : akt.iszenario.getDokuLink()) {
+			for (DokuLink dok : akt.inSzenario.getDokuLink()) {
 				if (dokuLinkList.contains(dok) == false) {
 					toBeRemoved.add(dok);
 				}
 			}
 			for (DokuLink dok : toBeRemoved) {
-				akt.iszenario.getDokuLink().remove(dok);
+				akt.inSzenario.getDokuLink().remove(dok);
 				entityManager.remove(dok);
 			}
 		}
@@ -1190,8 +1185,8 @@ public class IntegrationController {
 			if (dok.getId() == 0L) {
 				entityManager.persist(dok);
 			}
-			if (akt.iszenario.getDokuLink().contains(dok) == false) {
-				akt.iszenario.getDokuLink().add(dok);
+			if (akt.inSzenario.getDokuLink().contains(dok) == false) {
+				akt.inSzenario.getDokuLink().add(dok);
 			}
 		}
 	}
@@ -1225,7 +1220,7 @@ public class IntegrationController {
 	}
 
 	private boolean verifyDokuLinkListIsUnchanged() {
-		Collection<DokuLink> orgDokuLink = (org.iszenario == null) ? null : org.iszenario.getDokuLink();
+		Collection<DokuLink> orgDokuLink = (org.inSzenario == null) ? null : org.inSzenario.getDokuLink();
 		if ( orgDokuLink == null) {
 			return dokuLinkList.size() == 0; // org is 0 -> unchanged if dokLinkList == 0 
 		}
@@ -1249,7 +1244,7 @@ public class IntegrationController {
 	}
 		
     @FXML
-    void actionNewIszenario(ActionEvent event) {
+    void actionNewInSzenario(ActionEvent event) {
     	String aktName = "";
     	String masterhead = null;
 		while (true) {
@@ -1268,33 +1263,33 @@ public class IntegrationController {
 							 "Bitte ändern oder abbrechen";
 				continue;
 			} 
-			String sql="SELECT i FROM Iszenario i WHERE LOWER(i.name) = LOWER(:n)";
-			TypedQuery<Iszenario> tq = entityManager.createQuery(sql, Iszenario.class);
+			String sql="SELECT i FROM InSzenario i WHERE LOWER(i.name) = LOWER(:n)";
+			TypedQuery<InSzenario> tq = entityManager.createQuery(sql, InSzenario.class);
 			tq.setParameter("n", aktName);
-			List<Iszenario> iList = tq.getResultList();
+			List<InSzenario> iList = tq.getResultList();
 			
 			if (iList.size() > 0) {
-				masterhead = "Iszenario \"" +iList.get(0).getName() +"\" ist bereits vorhanden." + 
+				masterhead = "InSzenario \"" +iList.get(0).getName() +"\" ist bereits vorhanden." + 
 						  "\n Bitte ändern oder abbrechen";
 				continue;
 			}
 			try {
-				Iszenario iszenario = new Iszenario(aktName);
+				InSzenario inSzenario = new InSzenario(aktName);
 				entityManager.getTransaction().begin();
-				entityManager.persist(iszenario);
+				entityManager.persist(inSzenario);
 				entityManager.getTransaction().commit();
 				
-				readIszenarioList();
-				cmbIszenario.getSelectionModel().select(iszenario);
+				readInSzenarioList();
+				cmbInSzenario.getSelectionModel().select(inSzenario);
 				m_NewConfigurationBtn.requestFocus();
 				
-				managerController.setInfoText("Die Iszenario \"" + aktName + "\"" + 
+				managerController.setInfoText("Die InSzenario \"" + aktName + "\"" + 
 					" wurde erfolgreich erstellt und hier ausgewählt");
 				return;
 			} catch (RuntimeException er) {
 				Dialogs.create().owner(primaryStage)
 					.title(applName).masthead("Datenbankfehler")
-					.message("Fehler beim Anlegen einer neuen Iszenario")
+					.message("Fehler beim Anlegen einer neuen InSzenario")
 					.showException(er);
 			}
 		}
@@ -1320,9 +1315,9 @@ public class IntegrationController {
 						  "\n Bitte ändern oder abbrechen";
 				continue;
 			} 
-			String sql="SELECT k FROM Konfiguration k WHERE k.iszenario=:i AND LOWER(k.name) = LOWER(:n)";
+			String sql="SELECT k FROM Konfiguration k WHERE k.inSzenario=:i AND LOWER(k.name) = LOWER(:n)";
 			TypedQuery<Konfiguration> tq = entityManager.createQuery(sql, Konfiguration.class);
-			tq.setParameter("i", akt.iszenario);
+			tq.setParameter("i", akt.inSzenario);
 			tq.setParameter("n", aktName);
 			List<Konfiguration> kList = tq.getResultList();
 			
@@ -1335,15 +1330,15 @@ public class IntegrationController {
 				Konfiguration konfiguration = new Konfiguration(aktName);
 				entityManager.getTransaction().begin();
 				entityManager.persist(konfiguration);
-				konfiguration.setIszenario(akt.iszenario);
+				konfiguration.setInSzenario(akt.inSzenario);
 				entityManager.getTransaction().commit();
 				
-				readCmbKonfigurationList(akt.iszenario);
+				readCmbKonfigurationList(akt.inSzenario);
 				cmbKonfiguration.getSelectionModel().select(konfiguration);
 				cmbKonfiguration.requestFocus();
 				
 				managerController.setInfoText("Die Konfiguartion \"" + aktName + "\"" + 
-					" wurde der Iszenario \"" + akt.iszenario.getName()  + "\"" +
+					" wurde der InSzenario \"" + akt.inSzenario.getName()  + "\"" +
 					" erfolgreich zugefügt und hier ausgewählt");
 				return;
 			} catch (RuntimeException er) {
@@ -1365,7 +1360,7 @@ public class IntegrationController {
     		komponentenAuswahlController.setKomponente(KomponentenTyp.SENDER, akt.sender, entityManager);
     		dialog.showAndWait();
     		if (komponentenAuswahlController.getResponse() == Actions.OK ) {
-    			EdiKomponente selKomponente = komponentenAuswahlController.getSelectedKomponente();
+    			InKomponente selKomponente = komponentenAuswahlController.getSelectedKomponente();
     			if (akt.sender != selKomponente ) {
     				akt.sender = selKomponente; 
     				btnSender.textProperty().unbind();
@@ -1499,10 +1494,10 @@ public class IntegrationController {
 	}
 
     private void checkFieldFromView() {
-        assert m_IszenarioPane		!= null : "fx:id=\"m_IszenarioPane\"      was not injected: check your FXML file 'Integration.fxml'.";
+        assert m_InSzenarioPane		!= null : "fx:id=\"m_InSzenarioPane\"      was not injected: check your FXML file 'Integration.fxml'.";
         assert m_IntegrationPane    	!= null : "fx:id=\"m_IntegrationPane\"        was not injected: check your FXML file 'Integration.fxml'.";
         assert m_SpeichernBtn       != null : "fx:id=\"m_SpeichernBtn\"       was not injected: check your FXML file 'Integration.fxml'.";
-        assert m_NewIszenarioBtn  	!= null : "fx:id=\"m_NewIszenarioBtn\"    was not injected: check your FXML file 'Integration.fxml'.";
+        assert m_NewInSzenarioBtn  	!= null : "fx:id=\"m_NewInSzenarioBtn\"    was not injected: check your FXML file 'Integration.fxml'.";
         assert cmbKonfiguration     != null : "fx:id=\"cmbKonfiguration\"     was not injected: check your FXML file 'Integration.fxml'.";
         assert m_NewDokuLinkBtn     != null : "fx:id=\"m_NewDokuLinkBtn\"     was not injected: check your FXML file 'Integration.fxml'.";
         assert m_RemoveDokuLinkBtn  != null : "fx:id=\"m_RemoveDokuLinkBtn\"  was not injected: check your FXML file 'Integration.fxml'.";
@@ -1513,14 +1508,14 @@ public class IntegrationController {
         assert tColDokumentRevision != null : "fx:id=\"tColDokumentRevision\" was not injected: check your FXML file 'Integration.fxml'.";
         assert tColDokumentPfad     != null : "fx:id=\"tColDokumentPfad\"     was not injected: check your FXML file 'Integration.fxml'.";
 
-        assert taEdiBeschreibung	 != null : "fx:id=\"taEdiBeschreibung\"      was not injected: check your FXML file 'Integration.fxml'.";
+        assert taBeschreibung	 != null : "fx:id=\"taBeschreibung\"      was not injected: check your FXML file 'Integration.fxml'.";
         assert integration 			 != null : "fx:id=\"integration\" 		     was not injected: check your FXML file 'Integration.fxml'.";
         assert cmbIntervall 	 	 != null : "fx:id=\"cmbIntervall\" 		     was not injected: check your FXML file 'Integration.fxml'.";
         assert btnEmpfaenger1 		 != null : "fx:id=\"btnEmpfaenger1\"         was not injected: check your FXML file 'Integration.fxml'.";
         assert btnEmpfaenger2		 != null : "fx:id=\"btnEmpfaenger2\"         was not injected: check your FXML file 'Integration.fxml'.";
         assert btnEmpfaenger3		 != null : "fx:id=\"btnEmpfaenger3\"         was not injected: check your FXML file 'Integration.fxml'.";
         assert m_NewConfigurationBtn != null : "fx:id=\"btnNewConfigurationBtn\" was not injected: check your FXML file 'Integration.fxml'.";
-        assert cmbIszenario			 != null : "fx:id=\"cmbIszenario\"           was not injected: check your FXML file 'Integration.fxml'.";
+        assert cmbInSzenario			 != null : "fx:id=\"cmbInSzenario\"           was not injected: check your FXML file 'Integration.fxml'.";
         assert tfBezeichnung		 != null : "fx:id=\"tfBezeichnung\" 		 was not injected: check your FXML file 'Integration.fxml'.";
         assert cmbBuOb1				 != null : "fx:id=\"cmbBuOb1\" 			     was not injected: check your FXML file 'Integration.fxml'.";
         assert cmbBuOb2				 != null : "fx:id=\"cmbBuOb2\" 			     was not injected: check your FXML file 'Integration.fxml'.";
@@ -1528,7 +1523,7 @@ public class IntegrationController {
         assert btnSender			 != null : "fx:id=\"btnSender\" 			 was not injected: check your FXML file 'Integration.fxml'.";
         assert mbtEmpfaenger2		 != null : "fx:id=\"mbtEmpfaenger2\" 	     was not injected: check your FXML file 'Integration.fxml'.";
         assert mbtEmpfaenger3		 != null : "fx:id=\"mbtEmpfaenger3\" 	     was not injected: check your FXML file 'Integration.fxml'.";
-        assert ediLastChange		 != null : "fx:id=\"ediLastChange\" 		 was not injected: check your FXML file 'Integration.fxml'.";
+        assert tfLastChange		 != null : "fx:id=\"tfLastChange\" 		 was not injected: check your FXML file 'Integration.fxml'.";
         assert dpProduktivSeit		 != null : "fx:id=\"dpProduktivSeit\" 	     was not injected: check your FXML file 'Integration.fxml'.";
         assert dpProduktivBis		 != null : "fx:id=\"dpProduktivBis\" 	     was not injected: check your FXML file 'Integration.fxml'.";
     }

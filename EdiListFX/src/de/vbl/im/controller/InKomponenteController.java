@@ -42,19 +42,19 @@ import org.controlsfx.dialog.Dialogs;
 
 import de.vbl.im.controller.subs.AnsprechpartnerAuswaehlenController;
 import de.vbl.im.model.Integration;
-import de.vbl.im.model.EdiEmpfaenger;
-import de.vbl.im.model.EdiKomponente;
+import de.vbl.im.model.InEmpfaenger;
+import de.vbl.im.model.InKomponente;
 import de.vbl.im.model.Ansprechpartner;
 
-public class EdiKomponenteController implements Initializable  {
-	private static final Logger logger = LogManager.getLogger(EdiKomponenteController.class.getName());
+public class InKomponenteController implements Initializable  {
+	private static final Logger logger = LogManager.getLogger(InKomponenteController.class.getName());
 	private static Stage primaryStage = null;
 	private static IMController mainCtr;
 	private static EntityManager entityManager;
-	private final ObjectProperty<EdiKomponente> edikomponente;
+	private final ObjectProperty<InKomponente> inkomponente;
 	private final ObservableSet<Integration> integrationSet;      // all assigned integrations
 	private final ObservableList<Ansprechpartner> ansprechpartnerList; 
-	private EdiKomponente aktKomponente = null;
+	private InKomponente aktKomponente = null;
 	
     private BooleanProperty dataIsChanged = new SimpleBooleanProperty(false);
 	
@@ -63,29 +63,29 @@ public class EdiKomponenteController implements Initializable  {
     @FXML private TextField tfBezeichnung;
     @FXML private TextArea taBeschreibung;
     @FXML private ListView<Ansprechpartner> lvAnsprechpartner;
-    @FXML private TableView<EdiEmpfaenger> tvVerwendungen;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcEmpfaenger;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcEdiNr;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcSender;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcGeschaeftsobjekt;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcDatumAb;
-    @FXML private TableColumn<EdiEmpfaenger, String> tcDatumBis;
+    @FXML private TableView<InEmpfaenger> tvVerwendungen;
+    @FXML private TableColumn<InEmpfaenger, String> tcEmpfaenger;
+    @FXML private TableColumn<InEmpfaenger, String> tcInNr;
+    @FXML private TableColumn<InEmpfaenger, String> tcSender;
+    @FXML private TableColumn<InEmpfaenger, String> tcGeschaeftsobjekt;
+    @FXML private TableColumn<InEmpfaenger, String> tcDatumAb;
+    @FXML private TableColumn<InEmpfaenger, String> tcDatumBis;
     
     @FXML private Button btnSpeichern;
     @FXML private Button btnLoeschen;
     @FXML private Button btnRemoveAnsprechpartner;
     
-    public EdiKomponenteController() {
-    	edikomponente = new SimpleObjectProperty<>(this, "edikomponente", null);
+    public InKomponenteController() {
+    	inkomponente = new SimpleObjectProperty<>(this, "inkomponente", null);
     	integrationSet = FXCollections.observableSet();
     	ansprechpartnerList = FXCollections.observableArrayList();
     }
 
 	public static void setParent(IMController managerController) {
 		logger.entry();
-		EdiKomponenteController.mainCtr = managerController;
-		EdiKomponenteController.primaryStage = IMController.getStage();
-		EdiKomponenteController.entityManager = managerController.getEntityManager();
+		InKomponenteController.mainCtr = managerController;
+		InKomponenteController.primaryStage = IMController.getStage();
+		InKomponenteController.entityManager = managerController.getEntityManager();
 		logger.exit();
 	}
 
@@ -94,11 +94,11 @@ public class EdiKomponenteController implements Initializable  {
 		logger.entry();
 		checkFieldsFromView();
 		
-		edikomponente.addListener(new ChangeListener<EdiKomponente>() {
+		inkomponente.addListener(new ChangeListener<InKomponente>() {
 			@Override
-			public void changed(ObservableValue<? extends EdiKomponente> ov,
-					EdiKomponente oldKomponente, EdiKomponente newKomponente) {
-				logger.debug("ChangeListener<EdiKomponente>",
+			public void changed(ObservableValue<? extends InKomponente> ov,
+					InKomponente oldKomponente, InKomponente newKomponente) {
+				logger.debug("ChangeListener<InKomponente>",
 					((oldKomponente==null) ? "null" : oldKomponente.getFullname() + " -> " 
 				  + ((newKomponente==null) ? "null" : newKomponente.getFullname() )));
 				if (oldKomponente != null) {
@@ -111,7 +111,7 @@ public class EdiKomponenteController implements Initializable  {
 				}
 				if (newKomponente != null) {
 					aktKomponente = newKomponente;
-					readEdiListeforKomponete(newKomponente);
+					readTablesForKomponete(newKomponente);
 					tfBezeichnung.setText(newKomponente.getName());
 					if (newKomponente.getBeschreibung() == null) {
 						newKomponente.setBeschreibung("");
@@ -164,13 +164,13 @@ public class EdiKomponenteController implements Initializable  {
 		
 //	    Setup for Sub-Panel    
 		
-		tcEdiNr.setCellValueFactory(cellData -> Bindings.format(Integration.FORMAT_EDINR, 
-												cellData.getValue().getIntegration().ediNrProperty()));
+		tcInNr.setCellValueFactory(cellData -> Bindings.format(Integration.FORMAT_INNR, 
+												cellData.getValue().getIntegration().inNrProperty()));
 
-		tcSender.setCellValueFactory(cellData -> cellData.getValue().getIntegration().getEdiKomponente().fullnameProperty());
+		tcSender.setCellValueFactory(cellData -> cellData.getValue().getIntegration().getInKomponente().fullnameProperty());
 		
 		tcSender.setCellFactory(column -> {
-			return new TableCell<EdiEmpfaenger, String>() {
+			return new TableCell<InEmpfaenger, String>() {
 				@Override
 				protected void updateItem (String senderFullname, boolean empty) {
 					super.updateItem(senderFullname, empty);
@@ -190,7 +190,7 @@ public class EdiKomponenteController implements Initializable  {
 		tcEmpfaenger.setCellValueFactory(cellData -> cellData.getValue().getKomponente().fullnameProperty());
 
 		tcEmpfaenger.setCellFactory(column -> {
-			return new TableCell<EdiEmpfaenger, String>() {
+			return new TableCell<InEmpfaenger, String>() {
 				@Override
 				protected void updateItem (String empfaengerFullname, boolean empty) {
 					super.updateItem(empfaengerFullname, empty);
@@ -213,9 +213,9 @@ public class EdiKomponenteController implements Initializable  {
 		tcDatumBis.setCellValueFactory(cellData -> cellData.getValue().getIntegration().bisDatumProperty());
 		
 		// todo: zum Absprung bei Select einer anderen Integration in der Sub-Tabelle
-		tvVerwendungen.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<EdiEmpfaenger>() {
+		tvVerwendungen.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<InEmpfaenger>() {
 			@Override
-			public void changed (ObservableValue<? extends EdiEmpfaenger> ov, EdiEmpfaenger oldValue, EdiEmpfaenger newValue) {
+			public void changed (ObservableValue<? extends InEmpfaenger> ov, InEmpfaenger oldValue, InEmpfaenger newValue) {
 				logger.info("tvVerwendungen.select.changed" ,"newValue" + newValue);
 			}
 		});
@@ -238,7 +238,7 @@ public class EdiKomponenteController implements Initializable  {
 				.showConfirm();
 		if (response == Dialog.Actions.YES) {
 			try {
-				aktKomponente.getEdiSystem().getEdiKomponente().remove(aktKomponente);
+				aktKomponente.getInSystem().getInKomponente().remove(aktKomponente);
 				entityManager.getTransaction().begin();
 				entityManager.remove(aktKomponente);
 				entityManager.getTransaction().commit();
@@ -332,7 +332,7 @@ public class EdiKomponenteController implements Initializable  {
 				.message("Fehler beim Speichern der Komponentendaten:\n" + e.getMessage())
 				.showException(e);
     	}
-		readEdiListeforKomponete(aktKomponente);
+		readTablesForKomponete(aktKomponente);
 		return true;
 	}
 	
@@ -340,13 +340,13 @@ public class EdiKomponenteController implements Initializable  {
 		if ("".equals(newName)) {
 			return "Eine Bezeichnung ist erforderlich";
 		}
-		TypedQuery<EdiKomponente> tq = entityManager.createQuery(
-				"SELECT k FROM EdiKomponente k WHERE LOWER(k.name) = LOWER(:n)",EdiKomponente.class);
+		TypedQuery<InKomponente> tq = entityManager.createQuery(
+				"SELECT k FROM InKomponente k WHERE LOWER(k.name) = LOWER(:n)",InKomponente.class);
 		tq.setParameter("n", newName);
-		List<EdiKomponente> kompoList = tq.getResultList();
-		for (EdiKomponente k : kompoList ) {
+		List<InKomponente> kompoList = tq.getResultList();
+		for (InKomponente k : kompoList ) {
 			if (k.getId() != aktKomponente.getId() &&
-				k.getEdiSystem().getId() == aktKomponente.getEdiSystem().getId())  {
+				k.getInSystem().getId() == aktKomponente.getInSystem().getId())  {
 				if (k.getName().equalsIgnoreCase(newName)) {
 					return "Eine andere Komponente des Systems heißt bereits so!";
 				}
@@ -355,39 +355,38 @@ public class EdiKomponenteController implements Initializable  {
 		return null;
 	}
 
-	private void readEdiListeforKomponete( EdiKomponente selKomponente) {
+	private void readTablesForKomponete( InKomponente selKomponente) {
 		tvVerwendungen.getItems().clear();
-		ObservableList<EdiEmpfaenger> empfaengerList = FXCollections.observableArrayList();
+		ObservableList<InEmpfaenger> empfaengerList = FXCollections.observableArrayList();
 		integrationSet.clear(); 
-		/* 1. lese alle EdiEinträge mit Sender = selekierter Komponente 
+		/* 1. lese alle Einträge mit Sender = selekierter Komponente 
 		 * 		-> zeige jeweils alle zugehörigen Empfänger, falls kein Empfänger vorhanden dummy erzeugen
 		*/
 		TypedQuery<Integration> tqS = entityManager.createQuery(
-				"SELECT e FROM Integration e WHERE e.ediKomponente = :k", Integration.class);
+				"SELECT e FROM Integration e WHERE e.inKomponente = :k", Integration.class);
 		tqS.setParameter("k", selKomponente);
-		List<Integration> ediList = tqS.getResultList();
-		for(Integration e : ediList ) {
+		List<Integration> resultList = tqS.getResultList();
+		for(Integration e : resultList ) {
 			integrationSet.add(e);
-			if (e.getEdiEmpfaenger().size() > 0) {
-				empfaengerList.addAll(e.getEdiEmpfaenger());
+			if (e.getInEmpfaenger().size() > 0) {
+				empfaengerList.addAll(e.getInEmpfaenger());
 			} else {
-				EdiEmpfaenger tmpE = new EdiEmpfaenger();
+				InEmpfaenger tmpE = new InEmpfaenger();
 				tmpE.setIntegration(e);
 				empfaengerList.add(tmpE);
 			}
 		}
-		TypedQuery<EdiEmpfaenger> tqE = entityManager.createQuery(
-				"SELECT e FROM EdiEmpfaenger e WHERE e.komponente = :k", EdiEmpfaenger.class);
+		TypedQuery<InEmpfaenger> tqE = entityManager.createQuery(
+				"SELECT e FROM InEmpfaenger e WHERE e.komponente = :k", InEmpfaenger.class);
 		tqE.setParameter("k", selKomponente);
-//		ediKomponenteList.addAll(tqE.getResultList());
-		for(EdiEmpfaenger e : tqE.getResultList() ) {
-			logger.debug("readEdiListeforKomponete", "Empfaenger:" + e.getKomponente().getFullname() + " add");
+//		inKomponenteList.addAll(tqE.getResultList());
+		for(InEmpfaenger e : tqE.getResultList() ) {
+			logger.debug("Empfaenger:" + e.getKomponente().getFullname() + " add");
 			empfaengerList.add(e);
 			integrationSet.add(e.getIntegration());
 		}
 		
 		tvVerwendungen.setItems(empfaengerList);
-//		log("readEdiListeforKomponente","size="+ integrationSet.size());
 	}
 
     @FXML
@@ -421,30 +420,30 @@ public class EdiKomponenteController implements Initializable  {
 		dataIsChanged.set(!checkForChangesAndSave(Checkmode.ONLY_CHECK));
     }
     
-	public final ObjectProperty<EdiKomponente> komponenteProperty() {
-		return edikomponente;
+	public final ObjectProperty<InKomponente> komponenteProperty() {
+		return inkomponente;
 	}
 	
-	public final EdiKomponente getKomponente() {
-		return edikomponente.get() ;
+	public final InKomponente getKomponente() {
+		return inkomponente.get() ;
 	}
 	
-	public final void setKomponente(EdiKomponente komponente) {
-		this.edikomponente.set(komponente);
+	public final void setKomponente(InKomponente komponente) {
+		this.inkomponente.set(komponente);
 	}
     
 	void checkFieldsFromView() {
-//    	assert ediKomponentePane != null : "fx:id=\"ediKomponente\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
-    	assert tfBezeichnung != null : "fx:id=\"tfBezeichnung\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
-    	assert taBeschreibung != null : "fx:id=\"taBeschreibung\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
-    	assert tcEdiNr != null : "fx:id=\"tcEdiNr\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
-    	assert tcSender != null : "fx:id=\"tcSender\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
-        assert tcEmpfaenger != null : "fx:id=\"tcEmpfaenger\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
-        assert tcDatumBis != null : "fx:id=\"tcDatumBis\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
-        assert tvVerwendungen != null : "fx:id=\"tvVerwendungen\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
-        assert btnLoeschen != null : "fx:id=\"btnLoeschen\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
-        assert btnSpeichern != null : "fx:id=\"btnSpeichern\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
-        assert btnRemoveAnsprechpartner != null : "fx:id=\"btnRemoveAnsprechpartner\" was not injected: check your FXML file 'EdiKomponente.fxml'.";
+//    	assert inKomponentePane != null : "fx:id=\"inKomponente\" was not injected: check your FXML file 'InKomponente.fxml'.";
+    	assert tfBezeichnung != null : "fx:id=\"tfBezeichnung\" was not injected: check your FXML file 'InKomponente.fxml'.";
+    	assert taBeschreibung != null : "fx:id=\"taBeschreibung\" was not injected: check your FXML file 'InKomponente.fxml'.";
+    	assert tcInNr != null : "fx:id=\"tcInNr\" was not injected: check your FXML file 'InKomponente.fxml'.";
+    	assert tcSender != null : "fx:id=\"tcSender\" was not injected: check your FXML file 'InKomponente.fxml'.";
+        assert tcEmpfaenger != null : "fx:id=\"tcEmpfaenger\" was not injected: check your FXML file 'InKomponente.fxml'.";
+        assert tcDatumBis != null : "fx:id=\"tcDatumBis\" was not injected: check your FXML file 'InKomponente.fxml'.";
+        assert tvVerwendungen != null : "fx:id=\"tvVerwendungen\" was not injected: check your FXML file 'InKomponente.fxml'.";
+        assert btnLoeschen != null : "fx:id=\"btnLoeschen\" was not injected: check your FXML file 'InKomponente.fxml'.";
+        assert btnSpeichern != null : "fx:id=\"btnSpeichern\" was not injected: check your FXML file 'InKomponente.fxml'.";
+        assert btnRemoveAnsprechpartner != null : "fx:id=\"btnRemoveAnsprechpartner\" was not injected: check your FXML file 'InKomponente.fxml'.";
 	}
 
 }

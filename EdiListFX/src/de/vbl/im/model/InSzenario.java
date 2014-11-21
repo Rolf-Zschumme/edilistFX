@@ -12,7 +12,6 @@ import javax.persistence.OneToMany;
 import de.vbl.im.model.DokuLink;
 import javax.persistence.ManyToMany;
 import javax.persistence.JoinTable;
-import javax.persistence.JoinColumn;
 import javax.persistence.GeneratedValue;
 import static javax.persistence.GenerationType.IDENTITY;
 import de.vbl.im.model.Ansprechpartner;
@@ -24,7 +23,7 @@ import java.util.Collection;
  * 
  */
 @Entity  
-public class Iszenario {
+public class InSzenario {
 
 	private StringProperty name;
 	private long id;
@@ -33,11 +32,11 @@ public class Iszenario {
 	private Set<DokuLink> dokuLink;
 	private Collection<Ansprechpartner> ansprechpartner;
 	// ==================================
-	public Iszenario() {
+	public InSzenario() {
 		name = new SimpleStringProperty();
 	}
 	
-	public Iszenario(String newName) {
+	public InSzenario(String newName) {
 		this();
 		name.set(newName);
 	}
@@ -74,7 +73,7 @@ public class Iszenario {
 		this.beschreibung = param;
 	}
 
-	@OneToMany(mappedBy = "iszenario")
+	@OneToMany(mappedBy = "inSzenario")
 	public Set<Konfiguration> getKonfiguration() {
 	    return konfiguration;
 	}
@@ -84,7 +83,7 @@ public class Iszenario {
 	}
 
 	@ManyToMany 
-	@JoinTable(joinColumns = @JoinColumn(name = "Iszenario_id", referencedColumnName = "ID"))
+	@JoinTable
 	public Set<DokuLink> getDokuLink() {
 	    return dokuLink;
 	}

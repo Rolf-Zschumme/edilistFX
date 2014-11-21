@@ -20,33 +20,33 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 public class Integration { 
-	public static final int EDI_NR_MIN_LEN = 3;
-	public static final String FORMAT_EDINR = " %03d";
+	public static final int IN_NR_MIN_LEN = 3;
+	public static final String FORMAT_INNR = " %03d";
 	private long id;
-	private IntegerProperty ediNr;
+	private IntegerProperty inNr;
 	private StringProperty bezeichnung;
 	private StringProperty beschreibung;
 	private StringProperty seitDatum;
 	private StringProperty bisDatum;
-	private EdiKomponente ediKomponente;
-	private Collection<EdiEmpfaenger> ediEmpfaenger;
+	private InKomponente inKomponente;
+	private Collection<InEmpfaenger> inEmpfaenger;
 	private String laeDatum; 
 	private String laeUser;
 	
 	private StringProperty senderName;
-	private StringProperty iszenarioName;
+	private StringProperty inSzenarioName;
 	private StringProperty konfigurationName;
 	private Intervall intervall;
 	private Konfiguration konfiguration;
 	public Integration() {
-		ediNr = new SimpleIntegerProperty();
+		inNr = new SimpleIntegerProperty();
 		bezeichnung = new SimpleStringProperty();
 		beschreibung = new SimpleStringProperty();
-		ediEmpfaenger = new ArrayList<EdiEmpfaenger>();
+		inEmpfaenger = new ArrayList<InEmpfaenger>();
 		seitDatum = new SimpleStringProperty();
 		bisDatum = new SimpleStringProperty();
 		senderName = new SimpleStringProperty();
-		iszenarioName = new SimpleStringProperty("");
+		inSzenarioName = new SimpleStringProperty("");
 		konfigurationName = new SimpleStringProperty("");
 	}	
 
@@ -62,21 +62,21 @@ public class Integration {
 	}
 
 	// ------------------------------------------------------------------------
-	public IntegerProperty ediNrProperty() {
-		return ediNr;
+	public IntegerProperty inNrProperty() {
+		return inNr;
 	}
 
-	public Integer getEdiNr() {
-		return ediNr.get();
+	public Integer getInNr() {
+		return inNr.get();
 	}
 
-	public void setEdiNr(Integer param) {
-		ediNr.set(param);
+	public void setInNr(Integer param) {
+		inNr.set(param);
 	}
 	
-	public String getEdiNrStr() {
-		String ret = Integer.toString(getEdiNr());
-		while(ret.length()<EDI_NR_MIN_LEN) ret = "0"+ ret;
+	public String getInNrStr() {
+		String ret = Integer.toString(getInNr());
+		while(ret.length()<IN_NR_MIN_LEN) ret = "0"+ ret;
 		return ret;
 	}
 
@@ -115,27 +115,27 @@ public class Integration {
 	 }
 	 
 	@ManyToOne
-	public EdiKomponente getEdiKomponente() {
-		return ediKomponente;
+	public InKomponente getInKomponente() {
+		return inKomponente;
 	}
 
-	public void setEdiKomponente(EdiKomponente kompo) {
-		if (ediKomponente != null) {
+	public void setInKomponente(InKomponente kompo) {
+		if (inKomponente != null) {
 			senderName.unbind();
 		}
-		ediKomponente = kompo;
+		inKomponente = kompo;
 		if (kompo != null) {
 			senderName.bind(kompo.fullnameProperty());
 		}
 	}
 
 	@OneToMany(mappedBy = "integration")
-	public Collection<EdiEmpfaenger> getEdiEmpfaenger() {
-		return ediEmpfaenger;
+	public Collection<InEmpfaenger> getInEmpfaenger() {
+		return inEmpfaenger;
 	}
 
-	public void setEdiEmpfaenger(Collection<EdiEmpfaenger> param) {
-		this.ediEmpfaenger = param;
+	public void setInEmpfaenger(Collection<InEmpfaenger> param) {
+		this.inEmpfaenger = param;
 	}
  
 	public StringProperty seitDatumProperty() {
@@ -178,22 +178,22 @@ public class Integration {
 		return konfigurationName;
 	}
 	
-	public StringProperty iszenarioNameProperty () {
-		return iszenarioName;
+	public StringProperty inSzenarioNameProperty () {
+		return inSzenarioName;
 	}
 
-	// Return : <Iszenario> - <Sender> - <Geschäftsobjekt> 
+	// Return : <InSzenario> - <Sender> - <Geschäftsobjekt> 
     @Transient
     public static String autobezeichnung(Konfiguration konfiguration,
-    							  EdiKomponente sender,
+    							  InKomponente sender,
     							  GeschaeftsObjekt gObjekt) {
-    	String iszenarioName = "<Iszenario>";
+    	String inSzenarioName = "<InSzenario>";
     	String senderName = "<Sender>";
     	String gObjektName = "<Geschäftsobjekt>";
     	if (konfiguration != null) {
-    		if (konfiguration.getIszenario() != null) {
-    			if (konfiguration.getIszenario().getName() != null)
-    				iszenarioName = konfiguration.getIszenario().getName();
+    		if (konfiguration.getInSzenario() != null) {
+    			if (konfiguration.getInSzenario().getName() != null)
+    				inSzenarioName = konfiguration.getInSzenario().getName();
     		}
     	}	
     	if (sender != null) {
@@ -202,7 +202,7 @@ public class Integration {
     	if (gObjekt != null) {
     		gObjektName = gObjekt.getName();
     	}
-    	return iszenarioName + TrennStr() + senderName + TrennStr() + gObjektName;
+    	return inSzenarioName + TrennStr() + senderName + TrennStr() + gObjektName;
     }
     	
 	private static String TrennStr() {
@@ -231,6 +231,14 @@ public class Integration {
 	}
 
 	public void setKonfiguration(Konfiguration param) {
-	    this.konfiguration = param;
+		if (konfiguration != null) {
+			konfigurationName.unbind();
+			inSzenarioName.unbind();
+		}
+		konfiguration = param;
+		if (konfiguration != null) {
+			konfigurationName.bind(konfiguration.nameProperty());
+			inSzenarioName.bind(konfiguration.inSzenarioNameProperty());
+		}
 	}
 }
