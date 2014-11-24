@@ -216,6 +216,7 @@ public class IntegrationController {
 		readOnlyAccess.set(false);
 	}
 
+	// Subcontroller must know his parent - here it is set
 	public void setParent(IMController managerController) {
 		logger.info("entered");
 		IntegrationController.managerController = managerController;
@@ -244,6 +245,7 @@ public class IntegrationController {
     		}
     		cmbInSzenario.setValue(null);
     		if (newEintrag == null) {
+    			logger.info("integration.Listener newEintrag=null");
     			managerController.setInfoText("Neue Integration kann bearbeitet werden");
     			akt.seitDatum = null;
     			akt.bisDatum = null;
@@ -369,22 +371,22 @@ public class IntegrationController {
 			}
 		});
 
-    	btnEmpfaenger1.disableProperty().bind(Bindings.not(senderIsSelected));
-    	btnEmpfaenger2.disableProperty().bind(Bindings.not(buOb1Exist));
-    	btnEmpfaenger3.disableProperty().bind(Bindings.not(buOb2Exist));
-    
-    	cmbBuOb1.disableProperty().bind(Bindings.not(empfaenger1IsSelected));
-    	cmbBuOb2.disableProperty().bind(Bindings.not(empfaenger2IsSelected));
-    	cmbBuOb3.disableProperty().bind(Bindings.not(empfaenger3IsSelected));
+		cmbBuOb1.disableProperty().bind(Bindings.not(senderIsSelected));
+		btnEmpfaenger1.disableProperty().bind(Bindings.not(buOb1Exist));
     	
-    	btnEmpfaenger2.visibleProperty().bind(buOb1Exist);
-    	cmbBuOb2.visibleProperty().bind(buOb1Exist);
-
+    	cmbBuOb2.disableProperty().bind(Bindings.not(empfaenger1IsSelected));
+    	btnEmpfaenger2.disableProperty().bind(Bindings.not(buOb2Exist));
+    	
+    	cmbBuOb3.disableProperty().bind(Bindings.not(empfaenger2IsSelected));
+    	btnEmpfaenger3.disableProperty().bind(Bindings.not(buOb3Exist));
+		
+    	cmbBuOb2.visibleProperty().bind(empfaenger1IsSelected);
     	mbtEmpfaenger2.visibleProperty().bind(buOb2Exist);
-    	btnEmpfaenger3.visibleProperty().bind(buOb2Exist);
-    	cmbBuOb3.visibleProperty().bind(buOb2Exist);
+    	btnEmpfaenger2.visibleProperty().bind(empfaenger1IsSelected);
     	
+    	cmbBuOb3.visibleProperty().bind(empfaenger2IsSelected);
     	mbtEmpfaenger3.visibleProperty().bind(buOb3Exist);
+    	btnEmpfaenger3.visibleProperty().bind(empfaenger2IsSelected);
     	
     	dpProduktivSeit.setShowWeekNumbers(true);
     	dpProduktivBis.setShowWeekNumbers(true);
@@ -471,7 +473,7 @@ public class IntegrationController {
 		});
 		
 		cmbInSzenario.getSelectionModel().selectedItemProperty().addListener((ov, oldValue, newValue) -> {
-			logger.info("cmbInSzenario.selected InSzenario:" + (newValue == null ? "null" : newValue.getName()) + 
+			logger.info("cmbInSzenarion.selected InSzenario:" + (newValue == null ? "null" : newValue.getName()) + 
 					  				          " (old:" + (oldValue == null ? "null" : oldValue.getName()) + ")");
 			if (org.inSzenario != null) {
 				setChangeFlag(newValue != org.inSzenario);
@@ -946,8 +948,10 @@ public class IntegrationController {
     		return;
     	}
     	managerController.setSelectedIntegration(null);
+    	readBusinessObject();
     	edit.status = Status.NEW;
     	editEnabled.set(true);
+    	btnSender.requestFocus();
     }    
 
     @FXML
@@ -976,8 +980,10 @@ public class IntegrationController {
 	}
 
 	private boolean checkForChangesWithMode(Checkmode checkmode) {
-		if (integration.get() == null) {
-			return true;
+		if (integration.get() != null) {
+			if (edit.status != Status.NEW) {
+				return true;
+			}
 		}
 		if (akt.konfiguration == org.konfiguration        &&
 			akt.sender == org.sender                      &&
