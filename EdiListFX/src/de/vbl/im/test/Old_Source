@@ -1,0 +1,45 @@
+    @FXML
+    void actionNeuanlage(ActionEvent event) {
+
+    	if (checkForChangesAndAskForSave() == false) {
+    		return;
+    	}
+    	FXMLLoader loader = new FXMLLoader();
+    	String fullname = "subs/NeueIntegration"
+    			+ ".fxml";
+    	loader.setLocation(getClass().getResource(fullname));
+    	if (loader.getLocation()==null) {
+    		logger.error("Resource not found :" + fullname);
+    		managerController.setErrorText("FEHLER: Resource ("+fullname+") not found");
+    		return;
+    	}
+    	try {
+    		loader.load();
+    	} catch (IOException e) {
+    		logger.error("Fehler beim Laden der Resource:" + e.getMessage());
+    		managerController.setErrorText("FEHLER: " + e.getMessage());
+    		return;
+    	}
+    	Parent root = loader.getRoot();
+    	Scene scene = new Scene(root);
+    	
+    	Stage dialog = new Stage(StageStyle.UTILITY);
+    	dialog.initModality(Modality.APPLICATION_MODAL);
+    	dialog.initOwner(primaryStage);
+    	dialog.setTitle(primaryStage.getTitle());
+    	
+    	NeueIntegrationController dialogController = loader.getController();
+    	dialogController.setEntityManager(entityManager);
+    	dialogController.start();
+    	
+    	dialog.setScene(scene);
+    	dialog.setX(primaryStage.getX() + 250);
+    	dialog.setY(primaryStage.getY() + 100);
+    	dialog.showAndWait();
+    	
+    	if (dialogController.getResponse() == Dialog.Actions.OK) {
+    		Integration newI = dialogController.getNewIntegration();
+    		managerController.loadIntegrationListData();
+    		managerController.setSelectedIntegration(newI);
+    	}
+    }    

@@ -76,7 +76,7 @@ public class KonfigurationController {
     	this.integrationSet = FXCollections.observableSet();
     }
 
-	public static void setParent(IMController managerController) {
+	public void setParent(IMController managerController) {
 		logger.entry();
 		KonfigurationController.mainCtr = managerController;
 		KonfigurationController.primaryStage = IMController.getStage();

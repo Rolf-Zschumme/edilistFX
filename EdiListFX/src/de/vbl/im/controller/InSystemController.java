@@ -79,7 +79,7 @@ public class InSystemController {
     	this.ansprechpartnerList = FXCollections.observableArrayList();
     }
 
-	public static void setParent(IMController managerController) {
+	public void setParent(IMController managerController) {
 		logger.entry();
 		InSystemController.mainCtr = managerController;
 		InSystemController.primaryStage = IMController.getStage();

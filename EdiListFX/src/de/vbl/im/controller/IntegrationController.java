@@ -73,7 +73,6 @@ import org.tmatesoft.svn.core.SVNException;
 
 import de.vbl.im.controller.subs.DokumentAuswaehlenController;
 import de.vbl.im.controller.subs.KomponentenAuswahlController;
-import de.vbl.im.controller.subs.NeueIntegrationController;
 import de.vbl.im.controller.subs.KomponentenAuswahlController.KomponentenTyp;
 import de.vbl.im.model.DokuLink;
 import de.vbl.im.model.Integration;
@@ -84,14 +83,14 @@ import de.vbl.im.model.GeschaeftsObjekt;
 import de.vbl.im.model.InSzenario;
 import de.vbl.im.model.Konfiguration;
 import de.vbl.im.model.Repository;
+import de.vbl.im.tools.IMconstant;
 
 
 public class IntegrationController {
 	private static final Logger logger = LogManager.getLogger(IntegrationController.class.getName()); 
 	private static final String INR_PANE_PREFIX = " I-Nr. ";
 	private static final Integer MAX_EMPFAENGER = 3;
-	private static final String DEFAULT_KONFIG_NAME = "Ohne XI/PO-Konfiguration";
-	private static final String SICHERHEITSABFRAGE = "Sicherheitsabfrage";
+	private static final String DEFAULT_KONFIG_NAME = "Ohne PO";
 
 	private final ObjectProperty<Integration> integration;
 
@@ -100,10 +99,10 @@ public class IntegrationController {
     @FXML private TabPane tabPaneInNr;
     @FXML private Tab tabAktInNr;
     
-    @FXML private ComboBox<Konfiguration> cmbKonfiguration;
     @FXML private ComboBox<InSzenario> cmbInSzenario;
+    @FXML private ComboBox<Konfiguration> cmbKonfiguration;
     @FXML private Button m_SpeichernBtn;
-    @FXML private Button m_NeuAnlageBtn;  // not used because always enabled  
+    @FXML private Button m_NeuanlageBtn;
     @FXML private Button m_LoeschenBtn;
     @FXML private Button m_NewInSzenarioBtn;
     @FXML private Button m_NewConfigurationBtn;
@@ -137,7 +136,6 @@ public class IntegrationController {
     @FXML private MenuButton mbtEmpfaenger3;
     
     private static Stage primaryStage = null;
-    private static String applName = null;
 	private static IMController managerController;
     private static EntityManager entityManager = null;
 
@@ -150,6 +148,8 @@ public class IntegrationController {
     private BooleanProperty buOb2Exist = new SimpleBooleanProperty(false);
     private BooleanProperty buOb3Exist = new SimpleBooleanProperty(false);
     private BooleanProperty readOnlyAccess = new SimpleBooleanProperty(false);
+    private BooleanProperty konfigNotSelected = new SimpleBooleanProperty(true);
+    private BooleanProperty editEnabled = new SimpleBooleanProperty(false);
     
     private Map<String,GeschaeftsObjekt> businessObjectMap; 
     private ObservableList<String> businessObjectName = FXCollections.observableArrayList();
@@ -193,26 +193,36 @@ public class IntegrationController {
 				empfaengerKomponente[i] = null;
 				geschaeftsObjekt[i++] = null;
 			}
+			
     	}
     }
     IntegrationPlus akt = new IntegrationPlus();
     IntegrationPlus org = new IntegrationPlus();
     
+    private enum Status  { NEW , OLD, DIRTY }
+    private static class EditData {
+    	private Status status;
+//    	private Konfiguration konfiguration;
+//    	
+//    	void set (Integration s) {
+//    		konfiguration = s.getKonfiguration();
+//    		status = Status.OLD;
+//    	}
+    }
+    static EditData edit = new EditData();
     
 	public IntegrationController() {
     	this.integration = new SimpleObjectProperty<>(this, "integration", null);
 		readOnlyAccess.set(false);
 	}
 
-	public static void setParent(IMController managerController) {
-		logger.entry();
-		logger.info("ManagerController:" + managerController);
+	public void setParent(IMController managerController) {
+		logger.info("entered");
 		IntegrationController.managerController = managerController;
 		IntegrationController.primaryStage = IMController.getStage();
 		IntegrationController.entityManager = managerController.getEntityManager();
-		logger.info("EntityManager:" + entityManager);
-		applName = primaryStage.getTitle();
-		logger.exit();
+		readInSzenarioList();
+//		edit.status = Status.NEW;
 	}
 
     @FXML 
@@ -221,6 +231,7 @@ public class IntegrationController {
     	checkFieldFromView();
     	setupLocalBindings();
     	integration.addListener( (ov, oldEintrag ,newEintrag) -> {
+        	logger.info("integration.Listener");
     		if (oldEintrag != null) {
     			taBeschreibung.setText("");
     			tfBezeichnung.setText("");
@@ -263,7 +274,7 @@ public class IntegrationController {
     		dpProduktivSeit.setValue(akt.seitDatum);
     		dpProduktivBis.setValue(akt.bisDatum);
     		dataIsChanged.set(false);
-		});
+    	});
     }	
     
     
@@ -281,14 +292,19 @@ public class IntegrationController {
     }
     
 	private void setupLocalBindings() {
+		logger.info("entered");
 		
-		m_NewConfigurationBtn.disableProperty().bind(cmbInSzenario.getSelectionModel().selectedItemProperty().isNull());
-		
-		m_SpeichernBtn.disableProperty().bind(Bindings.not(dataIsChanged));
-		m_LoeschenBtn.disableProperty().bind(this.integration.isNull());
+		m_NewInSzenarioBtn.disableProperty().bind(readOnlyAccess);
+		m_NewConfigurationBtn.disableProperty().bind(readOnlyAccess.or(
+				cmbInSzenario.getSelectionModel().selectedItemProperty().isNull()));
 
-		m_InSzenarioPane.disableProperty().bind(Bindings.isNull(integration));
-		m_IntegrationPane.disableProperty().bind(Bindings.isNull(integration));
+		m_SpeichernBtn.disableProperty().bind(Bindings.not(dataIsChanged));
+//		m_SpeichernBtn.disableProperty().bind(konfigNotSelected.or(dataIsChanged)); // Bindings.not(dataIsChanged));
+		m_LoeschenBtn.disableProperty().bind(this.integration.isNull());
+		m_NeuanlageBtn.disableProperty().bind(readOnlyAccess.or(dataIsChanged).or(konfigNotSelected));
+
+//		m_InSzenarioPane.disableProperty().bind(Bindings.isNull(integration));
+		m_IntegrationPane.disableProperty().bind(Bindings.not(editEnabled));
 		
 		setupInSzenarioComboBox();
 		setupDokuLink();
@@ -395,7 +411,6 @@ public class IntegrationController {
 	}
 	
 	private void setupInSzenarioComboBox() {
-    	
 		cmbInSzenario.setCellFactory((cmbBx) -> {
 			return new ListCell<InSzenario>() {
 				@Override
@@ -404,13 +419,13 @@ public class IntegrationController {
 					if (item == null || empty) {
 						setText(null);
 					} else {
-						setText(item.getName());
+						setText(item.getIsNrStr() + " - " + item.getName());
 						managerController.setInfoText("");
 					}
 				}
 			};
 		});
-		
+		 
 		cmbInSzenario.setConverter(new StringConverter<InSzenario>() {
 			@Override
 			public String toString(InSzenario item) {
@@ -422,15 +437,16 @@ public class IntegrationController {
 			}
 		});
 		
-		// checks to be done before changing the inSzenario 
+		// do checks which must be done before changing the inSzenario 
 		cmbInSzenario.setOnAction((event) -> {
 			if (akt.inNr == org.inNr &&				 
 				akt.inSzenario == org.inSzenario) {
+				logger.info("cmbInSzenarion.action -> verifyDokuLinkIsUnchanged");
 				if (verifyDokuLinkListIsUnchanged() == false) {
 					// DokuLinkListe has been changed -> this changes may be lost  
 					// ask User if changes should be stored
 					Action response = Dialogs.create().owner(primaryStage)
-							.title(SICHERHEITSABFRAGE)
+							.title(IMconstant.SICHERHEITSABFRAGE)
 							.message("Sollen die Änderungen an den Doku-Referenzen für " + akt.inSzenario.getName() +
 									 " gespeichert werden?")
 							.actions(Dialog.Actions.YES, Dialog.Actions.NO)
@@ -440,28 +456,26 @@ public class IntegrationController {
 							entityManager.getTransaction().begin();
 							updateDokuLinkListInDatabase();
 							entityManager.getTransaction().commit();
-							logger.info("Transaktionstatus(isActive):" + entityManager.getTransaction().isActive());
+							logger.info("Transaction-Status(isActive):" + entityManager.getTransaction().isActive());
 						} catch (RuntimeException er) {
 							Dialogs.create().owner(primaryStage)
-							.title(applName).masthead("Datenbankfehler")
-							.message("Fehler beim Speichern der DokuLinkList-Anderungen")
-							.showException(er);
+								.title(IMconstant.APPL_NAME)
+								.masthead("Datenbankfehler")
+								.message("Fehler beim Speichern der DokuLinkList-Anderungen")
+								.showException(er);
 						}
 
 					}
 				}
 			}
-//			InSzenario selInSzenario = cmbInSzenario.getSelectionModel().getSelectedItem();
-//			logger.info("selected InSzenario:" + selInSzenario.getName());
-//			setChangeFlag(akt.inSzenario != org.inSzenario);
-//			akt.inSzenario = selIszneario;
-//			readCmbKonfigurationList(akt.inSzenario);
 		});
 		
 		cmbInSzenario.getSelectionModel().selectedItemProperty().addListener((ov, oldValue, newValue) -> {
-			logger.trace("selected InSzenario:" + (newValue == null ? "null" : newValue.getName()) + 
-					  				   " (old:" + (oldValue == null ? "null" : oldValue.getName()) + ")");
-			setChangeFlag(newValue != org.inSzenario);
+			logger.info("cmbInSzenario.selected InSzenario:" + (newValue == null ? "null" : newValue.getName()) + 
+					  				          " (old:" + (oldValue == null ? "null" : oldValue.getName()) + ")");
+			if (org.inSzenario != null) {
+				setChangeFlag(newValue != org.inSzenario);
+			}
 			akt.inSzenario = newValue;
 			// refresh dokuLinkList
 			if (oldValue != newValue) {
@@ -473,6 +487,9 @@ public class IntegrationController {
 			}
 			readCmbKonfigurationList(akt.inSzenario);
 			checkBezeichnungUpdate();
+			if (newValue!= null) {
+				cmbKonfiguration.requestFocus();
+			}
 		});
 	}
 	
@@ -669,10 +686,12 @@ public class IntegrationController {
 		final HashMap<Integer, Tab> tabMapBefore = new HashMap<Integer,Tab>();
 		
 		cmbKonfiguration.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-//			log("cmbKonfiguration.changed"," newValue=" +newValue);
+			logger.info("cmbKonfiguration.selected: newValue=" + newValue);
 			akt.konfiguration = newValue;
-			setChangeFlag(newValue != org.konfiguration);
-			
+			if (org.konfiguration != null) {
+				setChangeFlag(newValue != org.konfiguration);
+			}
+
 			// zusätzliche inNr-Reiter aktualisieren (entfernen/ergänzen)
 			
 			tabPaneInNr.getTabs().retainAll(tabAktInNr);
@@ -697,6 +716,10 @@ public class IntegrationController {
 				if (tabMapBefore.size() > 0) {
 					tabPaneInNr.getTabs().addAll(0, tabMapBefore.values());
 				}
+			}
+			konfigNotSelected.set(newValue==null);
+			if (konfigNotSelected.get()== false && org.inNr < 1) {
+				m_NeuanlageBtn.requestFocus();
 			}
 			managerController.setInfoText("");
 		});
@@ -771,7 +794,7 @@ public class IntegrationController {
 	private GeschaeftsObjekt askForNewBusinessObjektName(String newName) {
 		Optional<String> aktName = Dialogs.create()
 				.owner(primaryStage)
-				.title(applName)
+				.title(IMconstant.APPL_NAME)
 				.message("Soll das folgende Geschäftsobjekt gespeichert werden?")
 				.showTextInput(newName);
 		if (aktName.isPresent()) {
@@ -802,9 +825,10 @@ public class IntegrationController {
 			return newBusObj;
 		} catch (RuntimeException er) {
 			Dialogs.create().owner(primaryStage)
-			.title(applName).masthead("Datenbankfehler")
-			.message("Fehler beim speichern des Geschäftsobjektes")
-			.showException(er);
+				.title(IMconstant.APPL_NAME)
+				.masthead("Datenbankfehler")
+				.message("Fehler beim speichern des Geschäftsobjektes")
+				.showException(er);
 		}
 		return null;
 	}	
@@ -910,49 +934,20 @@ public class IntegrationController {
     }
 
     @FXML
+    void actionAendern(ActionEvent event) {
+    	logger.info("TODO");
+    }
+    
+    
+    @FXML
     void actionNeuanlage(ActionEvent event) {
 
     	if (checkForChangesAndAskForSave() == false) {
     		return;
     	}
-    	FXMLLoader loader = new FXMLLoader();
-    	String fullname = "subs/NeueIntegration"
-    			+ ".fxml";
-    	loader.setLocation(getClass().getResource(fullname));
-    	if (loader.getLocation()==null) {
-    		logger.error("Resource not found :" + fullname);
-    		managerController.setErrorText("FEHLER: Resource ("+fullname+") not found");
-    		return;
-    	}
-    	try {
-    		loader.load();
-    	} catch (IOException e) {
-    		logger.error("Fehler beim Laden der Resource:" + e.getMessage());
-    		managerController.setErrorText("FEHLER: " + e.getMessage());
-    		return;
-    	}
-    	Parent root = loader.getRoot();
-    	Scene scene = new Scene(root);
-    	
-    	Stage dialog = new Stage(StageStyle.UTILITY);
-    	dialog.initModality(Modality.APPLICATION_MODAL);
-    	dialog.initOwner(primaryStage);
-    	dialog.setTitle(primaryStage.getTitle());
-    	
-    	NeueIntegrationController dialogController = loader.getController();
-    	dialogController.setEntityManager(entityManager);
-    	dialogController.start();
-    	
-    	dialog.setScene(scene);
-    	dialog.setX(primaryStage.getX() + 250);
-    	dialog.setY(primaryStage.getY() + 100);
-    	dialog.showAndWait();
-    	
-    	if (dialogController.getResponse() == Dialog.Actions.OK) {
-    		Integration newI = dialogController.getNewIntegration();
-    		managerController.loadIntegrationListData();
-    		managerController.setSelectedIntegration(newI);
-    	}
+    	managerController.setSelectedIntegration(null);
+    	edit.status = Status.NEW;
+    	editEnabled.set(true);
     }    
 
     @FXML
@@ -967,12 +962,12 @@ public class IntegrationController {
     	if (!different) {
     		different = !checkForChangesWithMode(Checkmode.CHECK_ONLY);
     	}
-    	logger.debug("Status dataIsChanged wird auf " + different + " gesetzt");
+    	logger.info("Status dataIsChanged wird auf " + different + " gesetzt");
     	dataIsChanged.set(different);
 	}
 	
 	@FXML
-	void speichern(ActionEvent event) {
+	void actionSpeichern(ActionEvent event) {
 		checkForChangesWithMode(Checkmode.SAVE_DONT_ASK);
 	}
 	
@@ -991,22 +986,23 @@ public class IntegrationController {
 			localDateEquals(akt.bisDatum, org.bisDatum)   &&
 			akt.bezeichnung.equals(org.bezeichnung)       &&
 			akt.beschreibung.equals(org.beschreibung)     &&
-			akt.intervallName.equals(org.intervallName) &&
+			akt.intervallName.equals(org.intervallName)   &&
 			verifyDokuLinkListIsUnchanged() == true			     )
 		{
-			logger.debug(checkmode + ": no change found -> no update");
+			logger.info(checkmode + ": no change found -> no update");
 			return true;  
 		}
 		if (checkmode == Checkmode.CHECK_ONLY) {
-			logger.debug(checkmode + ": change found");
+			logger.info(checkmode + ": change found");
 			return false; 
 		}
 		if (checkmode == Checkmode.ASK_FOR_UPDATE) {
 			Action response = Dialogs.create().owner(primaryStage)
-							.title(applName).masthead(SICHERHEITSABFRAGE)
-							.message("Soll die Änderungen an der Integration " + integration.get().getInNrStr() + 
-									" \"" + integration.get().getBezeichnung() + "\" gespeichert werden?")
-							.showConfirm();
+					.title(IMconstant.APPL_NAME)
+					.masthead(IMconstant.SICHERHEITSABFRAGE)
+					.message("Soll die Änderungen an der Integration " + integration.get().getInNrStr() + 
+							" \"" + integration.get().getBezeichnung() + "\" gespeichert werden?")
+					.showConfirm();
 			if (response == Dialog.Actions.CANCEL) {
 				return false;
 			} 
@@ -1020,9 +1016,10 @@ public class IntegrationController {
 		
     	if (akt.sender == null) {
     		Dialogs.create().owner(primaryStage)
-    		.title(applName).masthead("Korrektur-Hinweis")
-    		.message("Sender ist erforderlich")
-    		.showWarning();
+    			.title(IMconstant.APPL_NAME)
+    			.masthead("Korrektur-Hinweis")
+    			.message("Sender ist erforderlich")
+    			.showWarning();
     		btnSender.requestFocus();
     		return false;
     	}
@@ -1158,9 +1155,10 @@ public class IntegrationController {
 										  " wurde gespeichert");
 		} catch (RuntimeException e) {
 			Dialogs.create().owner(primaryStage)
-			.title(applName).masthead("Datenbankfehler")
-			.message("Fehler beim Speichern der Integration")
-			.showException(e);
+				.title(IMconstant.APPL_NAME)
+				.masthead("Datenbankfehler")
+				.message("Fehler beim Speichern der Integration")
+				.showException(e);
 		}	
 		dataIsChanged.set(false);
     	
@@ -1249,7 +1247,8 @@ public class IntegrationController {
     	String masterhead = null;
 		while (true) {
 			Optional<String> newName = Dialogs.create()
-				.owner(primaryStage).title(applName)
+				.owner(primaryStage)
+				.title(IMconstant.APPL_NAME)
 				.masthead(masterhead)
 				.message("Wie soll das neue Integrationsszenario heißen?")
 				.showTextInput(aktName);
@@ -1269,12 +1268,13 @@ public class IntegrationController {
 			List<InSzenario> iList = tq.getResultList();
 			
 			if (iList.size() > 0) {
-				masterhead = "InSzenario \"" +iList.get(0).getName() +"\" ist bereits vorhanden." + 
-						  "\n Bitte ändern oder abbrechen";
+				masterhead = "Das Intgrationsszenario\n\"" +iList.get(0).getName() + "\"" + 
+							 "\nist bereits vorhanden.\nBitte ändern oder abbrechen";
 				continue;
 			}
 			try {
 				InSzenario inSzenario = new InSzenario(aktName);
+				inSzenario.setIsNr(inSzenario.getMaxIsNr(entityManager)+1);
 				entityManager.getTransaction().begin();
 				entityManager.persist(inSzenario);
 				entityManager.getTransaction().commit();
@@ -1283,12 +1283,13 @@ public class IntegrationController {
 				cmbInSzenario.getSelectionModel().select(inSzenario);
 				m_NewConfigurationBtn.requestFocus();
 				
-				managerController.setInfoText("Die InSzenario \"" + aktName + "\"" + 
-					" wurde erfolgreich erstellt und hier ausgewählt");
+				managerController.setInfoText("Das Intergrationsszenario \"" + aktName + "\"" + 
+					" wurde erfolgreich erstellt");
 				return;
 			} catch (RuntimeException er) {
 				Dialogs.create().owner(primaryStage)
-					.title(applName).masthead("Datenbankfehler")
+					.title(IMconstant.APPL_NAME)
+					.masthead("Datenbankfehler")
 					.message("Fehler beim Anlegen einer neuen InSzenario")
 					.showException(er);
 			}
@@ -1301,7 +1302,7 @@ public class IntegrationController {
     	String masterhead = null;
 		while (true) {
 			Optional<String> newName = Dialogs.create()
-				.owner(primaryStage).title(applName)
+				.owner(primaryStage).title(IMconstant.APPL_NAME)
 				.masthead(masterhead)
 				.message("Wie soll die neue Konfiguration heißen?")
 				.showTextInput(aktName);
@@ -1343,7 +1344,8 @@ public class IntegrationController {
 				return;
 			} catch (RuntimeException er) {
 				Dialogs.create().owner(primaryStage)
-					.title(applName).masthead("Datenbankfehler")
+					.title(IMconstant.APPL_NAME)
+					.masthead("Datenbankfehler")
 					.message("Fehler beim Anlegen einer neuen Konfiguration")
 					.showException(er);
 			}
@@ -1494,10 +1496,10 @@ public class IntegrationController {
 	}
 
     private void checkFieldFromView() {
-        assert m_InSzenarioPane		!= null : "fx:id=\"m_InSzenarioPane\"      was not injected: check your FXML file 'Integration.fxml'.";
-        assert m_IntegrationPane    	!= null : "fx:id=\"m_IntegrationPane\"        was not injected: check your FXML file 'Integration.fxml'.";
+        assert m_InSzenarioPane		!= null : "fx:id=\"m_InSzenarioPane\"     was not injected: check your FXML file 'Integration.fxml'.";
+        assert m_IntegrationPane    != null : "fx:id=\"m_IntegrationPane\"    was not injected: check your FXML file 'Integration.fxml'.";
         assert m_SpeichernBtn       != null : "fx:id=\"m_SpeichernBtn\"       was not injected: check your FXML file 'Integration.fxml'.";
-        assert m_NewInSzenarioBtn  	!= null : "fx:id=\"m_NewInSzenarioBtn\"    was not injected: check your FXML file 'Integration.fxml'.";
+        assert m_NewInSzenarioBtn  	!= null : "fx:id=\"m_NewInSzenarioBtn\"   was not injected: check your FXML file 'Integration.fxml'.";
         assert cmbKonfiguration     != null : "fx:id=\"cmbKonfiguration\"     was not injected: check your FXML file 'Integration.fxml'.";
         assert m_NewDokuLinkBtn     != null : "fx:id=\"m_NewDokuLinkBtn\"     was not injected: check your FXML file 'Integration.fxml'.";
         assert m_RemoveDokuLinkBtn  != null : "fx:id=\"m_RemoveDokuLinkBtn\"  was not injected: check your FXML file 'Integration.fxml'.";
@@ -1508,14 +1510,14 @@ public class IntegrationController {
         assert tColDokumentRevision != null : "fx:id=\"tColDokumentRevision\" was not injected: check your FXML file 'Integration.fxml'.";
         assert tColDokumentPfad     != null : "fx:id=\"tColDokumentPfad\"     was not injected: check your FXML file 'Integration.fxml'.";
 
-        assert taBeschreibung	 != null : "fx:id=\"taBeschreibung\"      was not injected: check your FXML file 'Integration.fxml'.";
+        assert taBeschreibung	 	 != null : "fx:id=\"taBeschreibung\"         was not injected: check your FXML file 'Integration.fxml'.";
         assert integration 			 != null : "fx:id=\"integration\" 		     was not injected: check your FXML file 'Integration.fxml'.";
         assert cmbIntervall 	 	 != null : "fx:id=\"cmbIntervall\" 		     was not injected: check your FXML file 'Integration.fxml'.";
         assert btnEmpfaenger1 		 != null : "fx:id=\"btnEmpfaenger1\"         was not injected: check your FXML file 'Integration.fxml'.";
         assert btnEmpfaenger2		 != null : "fx:id=\"btnEmpfaenger2\"         was not injected: check your FXML file 'Integration.fxml'.";
         assert btnEmpfaenger3		 != null : "fx:id=\"btnEmpfaenger3\"         was not injected: check your FXML file 'Integration.fxml'.";
         assert m_NewConfigurationBtn != null : "fx:id=\"btnNewConfigurationBtn\" was not injected: check your FXML file 'Integration.fxml'.";
-        assert cmbInSzenario			 != null : "fx:id=\"cmbInSzenario\"           was not injected: check your FXML file 'Integration.fxml'.";
+        assert cmbInSzenario		 != null : "fx:id=\"cmbInSzenario\"          was not injected: check your FXML file 'Integration.fxml'.";
         assert tfBezeichnung		 != null : "fx:id=\"tfBezeichnung\" 		 was not injected: check your FXML file 'Integration.fxml'.";
         assert cmbBuOb1				 != null : "fx:id=\"cmbBuOb1\" 			     was not injected: check your FXML file 'Integration.fxml'.";
         assert cmbBuOb2				 != null : "fx:id=\"cmbBuOb2\" 			     was not injected: check your FXML file 'Integration.fxml'.";
@@ -1523,7 +1525,7 @@ public class IntegrationController {
         assert btnSender			 != null : "fx:id=\"btnSender\" 			 was not injected: check your FXML file 'Integration.fxml'.";
         assert mbtEmpfaenger2		 != null : "fx:id=\"mbtEmpfaenger2\" 	     was not injected: check your FXML file 'Integration.fxml'.";
         assert mbtEmpfaenger3		 != null : "fx:id=\"mbtEmpfaenger3\" 	     was not injected: check your FXML file 'Integration.fxml'.";
-        assert tfLastChange		 != null : "fx:id=\"tfLastChange\" 		 was not injected: check your FXML file 'Integration.fxml'.";
+        assert tfLastChange			 != null : "fx:id=\"tfLastChange\" 		 	 was not injected: check your FXML file 'Integration.fxml'.";
         assert dpProduktivSeit		 != null : "fx:id=\"dpProduktivSeit\" 	     was not injected: check your FXML file 'Integration.fxml'.";
         assert dpProduktivBis		 != null : "fx:id=\"dpProduktivBis\" 	     was not injected: check your FXML file 'Integration.fxml'.";
     }

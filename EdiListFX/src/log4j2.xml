@@ -22,6 +22,7 @@
 		<logger name="de.vbl.im.controller.subs" level="TRACE" />
 		<logger name="de.vbl.im.tools" level="INFO" />
 		<logger name="de.vbl.im.model" level="INFO" />
+		<logger name="de.vbl.im.test"  level="INFO" />
 		
 		<Root level="ERROR">
 			<AppenderRef ref="Console" />

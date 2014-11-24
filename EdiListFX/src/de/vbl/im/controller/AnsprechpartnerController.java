@@ -70,7 +70,7 @@ public class AnsprechpartnerController {
     	this.ansprechpartner = new SimpleObjectProperty<>(this, "ansprechpartner", null);
     }
 
-	public static void setParent(IMController managerController) {
+	public void setParent(IMController managerController) {
 		logger.entry();
 		AnsprechpartnerController.mainCtr = managerController;
 		AnsprechpartnerController.primaryStage = IMController.getStage();

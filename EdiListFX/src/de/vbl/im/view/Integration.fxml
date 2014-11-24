@@ -6,40 +6,29 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane fx:id="m_Integration_All" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="664.0" prefWidth="923.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.im.controller.IntegrationController">
+<AnchorPane fx:id="m_Integration_All" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="760.0" prefWidth="923.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.im.controller.IntegrationController">
 	<children>
 		<VBox maxHeight="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 			<children>
-				<ToolBar>
-					<items>
-						<Button fx:id="m_SpeichernBtn" disable="true" mnemonicParsing="false" onAction="#speichern" prefWidth="136.0" text="Änderungen speichern" />
-						<Button fx:id="m_NeuanlageBtn" mnemonicParsing="false" onAction="#actionNeuanlage" prefWidth="136.0" text="Neue Integration" />
-						<Button fx:id="m_LoeschenBtn" disable="true" mnemonicParsing="false" onAction="#actionLoeschen" prefWidth="136.0" text="Integration Löschen" />
-					</items>
-					<VBox.margin>
-						<Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
-					</VBox.margin>
-				</ToolBar>
-				<TitledPane fx:id="m_InSzenarioPane" animated="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Integrationsszenario">
+				<TitledPane fx:id="m_InSzenarioPane" animated="false" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" text="Integrationsszenario">
 					<content>
 						<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
 							<children>
-								<GridPane hgap="8.0" layoutX="14.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="251.0" vgap="8.0" AnchorPane.bottomAnchor="19.200000000000017" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="5.199999999999818" AnchorPane.topAnchor="0.0">
+								<GridPane hgap="8.0" layoutX="14.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="271.0" prefWidth="932.0" vgap="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 									<columnConstraints>
 										<ColumnConstraints hgrow="SOMETIMES" maxWidth="85.0" minWidth="10.0" />
-										<ColumnConstraints hgrow="SOMETIMES" maxWidth="503.0" />
+										<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" prefWidth="450.0" />
 										<ColumnConstraints hgrow="NEVER" maxWidth="90.0" minWidth="55.0" prefWidth="70.0" />
-                              <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="10.0" />
+                              <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" />
 									</columnConstraints>
 									<rowConstraints>
-<RowConstraints minHeight="0.0" prefHeight="5.0" vgrow="SOMETIMES" />
-										<RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+<RowConstraints minHeight="0.0" prefHeight="5.0" vgrow="NEVER" />
+										<RowConstraints minHeight="10.0" vgrow="NEVER" />
 										<RowConstraints maxHeight="1.7976931348623157E308" minHeight="60.0" vgrow="SOMETIMES" />
-										<RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-<RowConstraints minHeight="0.0" prefHeight="6.0" vgrow="SOMETIMES" />
+										<RowConstraints minHeight="10.0" vgrow="NEVER" />
 									</rowConstraints>
 									<children>
-<VBox spacing="15.0" GridPane.rowIndex="2">
+<VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="15.0" GridPane.rowIndex="2">
 <children>
 										<Label alignment="CENTER_RIGHT" layoutX="9.600000381469727" layoutY="51.60000038146973" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Dokumente:" GridPane.rowIndex="2">
 										</Label>
@@ -66,7 +55,7 @@
 										<ComboBox fx:id="cmbInSzenario" layoutX="9.600000381469727" layoutY="9.600000381469727" maxWidth="1.7976931348623157E308" AnchorPane.leftAnchor="90.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 										<Label alignment="CENTER_RIGHT" layoutX="9.600000381469727" layoutY="68.60000038146973" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Konfiguration:" GridPane.rowIndex="3">
 										</Label>
-										<ComboBox fx:id="cmbKonfiguration" layoutX="9.600000381469727" layoutY="85.60000038146973" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+										<ComboBox fx:id="cmbKonfiguration" focusTraversable="false" layoutX="9.600000381469727" layoutY="85.60000038146973" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 										<Label alignment="CENTER_RIGHT" layoutX="9.600000381469727" layoutY="34.60000038146973" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Name:" AnchorPane.leftAnchor="14.0" GridPane.rowIndex="1">
 										</Label>
 										<TableView fx:id="tvDokuLinks" editable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onContextMenuRequested="#actionDocumentContextMenuRequested" prefHeight="120.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="2">
@@ -76,7 +65,7 @@
 												<TableColumn fx:id="tColDokumentDatum" editable="false" maxWidth="100.0" minWidth="-1.0" prefWidth="100.0" resizable="false" text="Datum" />
 												<TableColumn fx:id="tColDokumentQuelle" editable="false" maxWidth="250.0" minWidth="20.0" prefWidth="120.0" resizable="false" text="Quelle" /><TableColumn fx:id="tColDokumentPfad" editable="false" maxWidth="1.7976931348623157E308" minWidth="50.0" prefWidth="300.0" text="Pfad" visible="false" /><TableColumn fx:id="tColDokumentRevision" editable="false" maxWidth="80.0" minWidth="-1.0" resizable="false" text="Revision" visible="false" />
 											</columns>
-										</TableView><Button fx:id="m_NewInSzenarioBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#actionNewInSzenario" text="Neu..." GridPane.columnIndex="2" GridPane.rowIndex="1" /><Button fx:id="m_NewConfigurationBtn" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#newKonfiguration" text="Neu..." GridPane.columnIndex="2" GridPane.rowIndex="3" />
+										</TableView><Button fx:id="m_NewInSzenarioBtn" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#actionNewInSzenario" text="Neu..." GridPane.columnIndex="2" GridPane.rowIndex="1" /><Button fx:id="m_NewConfigurationBtn" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#newKonfiguration" text="Neu..." GridPane.columnIndex="2" GridPane.rowIndex="3" />
 									</children>
 <padding>
 <Insets left="5.0" right="8.0" />
@@ -86,149 +75,241 @@
 						</AnchorPane>
 					</content>
 				</TitledPane>
-            <AnchorPane fx:id="m_IntegrationPane" maxHeight="330.0" maxWidth="1.7976931348623157E308">
+            <TitledPane collapsible="false" text="Integrationen">
+               <content>
+      				<ToolBar prefHeight="50.0">
+      					<items>
+                        <HBox spacing="12.0">
+                           <children>
+                              <Button fx:id="m_Aendern" disable="true" mnemonicParsing="false" onAction="#actionAendern" prefWidth="136.0" text="ändern" />
+            						<Button fx:id="m_SpeichernBtn" disable="true" mnemonicParsing="false" onAction="#actionSpeichern" prefWidth="136.0" text="speichern">
+                                 <opaqueInsets>
+                                    <Insets />
+                                 </opaqueInsets>
+                              </Button>
+            						<Button fx:id="m_NeuanlageBtn" disable="true" mnemonicParsing="false" onAction="#actionNeuanlage" prefWidth="136.0" text="neu" />
+            						<Button fx:id="m_LoeschenBtn" disable="true" mnemonicParsing="false" onAction="#actionLoeschen" prefWidth="136.0" text="löschen" />
+                           </children>
+                        </HBox>
+      					</items>
+      					<VBox.margin>
+      						<Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+      					</VBox.margin>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                     <padding>
+                        <Insets left="4.0" top="9.0" />
+                     </padding>
+      				</ToolBar>
+               </content>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+            </TitledPane>
+            <AnchorPane fx:id="m_IntegrationPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="400.0">
                <children>
-                  <TabPane fx:id="tabPaneInNr" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <TabPane fx:id="tabPaneInNr" prefHeight="400.0" prefWidth="934.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <tabs>
                       <Tab fx:id="tabAktInNr" text="I-Nr. 000-00">
                            <content>
-            						<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="301.0">
+            						<AnchorPane>
                                  <children>
-                                    <VBox prefHeight="424.0" prefWidth="949.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <VBox maxHeight="1.7976931348623157E308" prefHeight="371.0" prefWidth="934.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                        <children>
-                                          <AnchorPane>
+                                          <AnchorPane maxHeight="175.0" prefHeight="166.0">
                                              <children>
-                              										<GridPane hgap="8.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="298.0" vgap="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                              										<GridPane hgap="8.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" vgap="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                               											<columnConstraints>
-                              												<ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" prefWidth="130.0" />
-                              												<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" />
-                              												<ColumnConstraints hgrow="NEVER" maxWidth="120.0" prefWidth="110.0" />
+                              												<ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" />
+                              												<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" percentWidth="27.0" prefWidth="270.0" />
+                                                      <ColumnConstraints hgrow="NEVER" maxWidth="65.0" minWidth="10.0" prefWidth="65.0" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="100.0" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="65.0" minWidth="10.0" prefWidth="65.0" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="100.0" />
+                              												<ColumnConstraints hgrow="NEVER" minWidth="-Infinity" prefWidth="92.0" />
                               												<ColumnConstraints hgrow="NEVER" maxWidth="112.0" minWidth="-Infinity" prefWidth="112.0" />
                               											</columnConstraints>
                               											<rowConstraints>
-                                                      <RowConstraints maxHeight="30.0" minHeight="25.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints maxHeight="30.0" minHeight="30.0" percentHeight="0.0" prefHeight="30.0" vgrow="NEVER" />
                               												<RowConstraints maxHeight="30.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
-                              												<RowConstraints maxHeight="30.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
-                              												<RowConstraints maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefHeight="0.0" vgrow="SOMETIMES" />
+                              												<RowConstraints maxHeight="1.7976931348623157E308" minHeight="-Infinity" vgrow="ALWAYS" />
                               												<RowConstraints maxHeight="-Infinity" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
                               												<RowConstraints maxHeight="10.0" minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
                               											</rowConstraints>
                               											<children>
-                              												<TextField fx:id="tfLastChange" editable="false" focusTraversable="false" layoutX="698.0" layoutY="29.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                              												<TextField fx:id="tfLastChange" editable="false" focusTraversable="false" layoutX="698.0" layoutY="29.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="7">
                               													<GridPane.margin>
                               														<Insets />
                               													</GridPane.margin>
                               												</TextField>
-                              												<Label alignment="CENTER_RIGHT" layoutX="10.0" layoutY="32.0" maxWidth="1.7976931348623157E308" text="Beschreibung:" GridPane.rowIndex="2">
+                              												<Label alignment="CENTER_RIGHT" layoutX="10.0" layoutY="32.0" maxWidth="1.7976931348623157E308" text="Beschreibung:" GridPane.rowIndex="1">
                               													<GridPane.margin>
                               														<Insets />
                               													</GridPane.margin>
                               												</Label>
                               
-                              												<Label alignment="CENTER_RIGHT" layoutX="618.0" layoutY="26.0" maxWidth="1.7976931348623157E308" text="produktiv seit:" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                              												<Label alignment="CENTER_RIGHT" layoutX="618.0" layoutY="26.0" maxWidth="1.7976931348623157E308" text="produktiv seit:" textAlignment="CENTER" GridPane.columnIndex="6" GridPane.rowIndex="1">
 												</Label>
                               
-                              												<Label alignment="CENTER_RIGHT" layoutX="618.0" layoutY="74.0" maxWidth="1.7976931348623157E308" text="produktiv bis:" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="4">
+                              												<Label alignment="CENTER_RIGHT" layoutX="618.0" layoutY="74.0" maxWidth="1.7976931348623157E308" text="produktiv bis:" textAlignment="CENTER" GridPane.columnIndex="6" GridPane.rowIndex="3">
                               													<GridPane.margin>
                               														<Insets />
                               													</GridPane.margin>
                               												</Label>
-                              												<TextArea fx:id="taBeschreibung" maxWidth="1.7976931348623157E308" prefHeight="182.0" prefWidth="610.0" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.rowSpan="3">
+                              												<TextArea fx:id="taBeschreibung" maxWidth="1.7976931348623157E308" prefHeight="182.0" prefWidth="610.0" GridPane.columnIndex="1" GridPane.columnSpan="5" GridPane.rowIndex="1" GridPane.rowSpan="3">
                               													<GridPane.margin>
                               														<Insets />
                               													</GridPane.margin>
                               												</TextArea>
-                              												<Label alignment="CENTER_RIGHT" layoutX="618.0" layoutY="26.0" maxWidth="1.7976931348623157E308" prefHeight="17.0" text="letzte Änderung:" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                              												<Label alignment="CENTER_RIGHT" layoutX="618.0" layoutY="26.0" maxWidth="1.7976931348623157E308" prefHeight="17.0" text="letzte Änderung:" textAlignment="CENTER" GridPane.columnIndex="6">
                               													<GridPane.margin>
                               														<Insets />
                               													</GridPane.margin>
                               												</Label>
-                              												<Label alignment="CENTER_RIGHT" layoutX="30.0048828125" layoutY="31.5" maxWidth="1.7976931348623157E308" text="Ausführungs-Intervall:" GridPane.rowIndex="1">
-												</Label>
-                                                      <ComboBox fx:id="cmbIntervall" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                      <DatePicker fx:id="dpProduktivSeit" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-                                                      <DatePicker fx:id="dpProduktivBis" GridPane.columnIndex="3" GridPane.rowIndex="4" />
+                                                      <DatePicker fx:id="dpProduktivSeit" GridPane.columnIndex="7" GridPane.rowIndex="1" />
+                                                      <DatePicker fx:id="dpProduktivBis" GridPane.columnIndex="7" GridPane.rowIndex="3" />
                                                       <Label alignment="CENTER_RIGHT" layoutX="15.0" layoutY="52.0" maxWidth="1.7976931348623157E308" text="Bezeichnung:" />
-                                                      <TextField fx:id="tfBezeichnung" focusTraversable="false" layoutX="864.0" layoutY="13.0" maxWidth="1.7976931348623157E308" prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="3" />
+                                                      <TextField fx:id="tfBezeichnung" focusTraversable="false" layoutX="864.0" layoutY="13.0" maxWidth="1.7976931348623157E308" prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="5" />
                               											</children>
                               											<padding>
                               												<Insets left="5.0" right="8.0" />
                               											</padding>
                               										</GridPane>
                                              </children>
+                                             <opaqueInsets>
+                                                <Insets />
+                                             </opaqueInsets>
+                                             <VBox.margin>
+                                                <Insets top="5.0" />
+                                             </VBox.margin>
                                           </AnchorPane>
-                              
-                                                            										<GridPane layoutY="225.0" maxWidth="1.7976931348623157E308" prefHeight="126.0" vgap="8.0">
-                              											<columnConstraints>
-                              												<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" percentWidth="35.0" prefWidth="200.0" />
-                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="20.0" minWidth="10.0" prefWidth="20.0" />
-                              												<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="120.0" />
-                              												<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" percentWidth="35.0" prefWidth="200.0" />
-                              											</columnConstraints>
-                              											<rowConstraints>
-                              												<RowConstraints vgrow="SOMETIMES" />
-                              												<RowConstraints vgrow="SOMETIMES" />
-                              												<RowConstraints vgrow="SOMETIMES" />
-                              												<RowConstraints vgrow="SOMETIMES" />
-                              											</rowConstraints>
-                              											<children>
-                              												<Label alignment="CENTER" layoutX="44.399993896484375" layoutY="-2.0999984741210938" maxWidth="1.7976931348623157E308" text="Sender" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                              												<Label alignment="CENTER" layoutX="73.99996948242188" layoutY="3.9999771118164062" maxWidth="1.7976931348623157E308" text="Empfänger" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.columnIndex="3" />
-                              												<Label alignment="CENTER" layoutX="20.0" layoutY="10.0" maxWidth="1.7976931348623157E308" text="Geschäftsobjekt" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.columnIndex="2" />
-                              												<Button fx:id="btnSender" alignment="CENTER" layoutX="3.4000015258789062" layoutY="9.399993896484375" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#senderButton" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" GridPane.rowIndex="1">
-                              													<GridPane.margin>
-                              														<Insets />
-                              													</GridPane.margin>
-                              												</Button>
-                              												<Button fx:id="btnEmpfaenger1" alignment="CENTER" layoutX="-24.0" layoutY="1.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#empfaengerButton1" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" GridPane.columnIndex="3" GridPane.rowIndex="1">
-                              													<GridPane.margin>
-                              														<Insets left="5.0" />
-                              													</GridPane.margin>
-                              												</Button>
-                              												<Button fx:id="btnEmpfaenger2" alignment="CENTER" disable="true" layoutX="-46.600006103515625" layoutY="-1.600006103515625" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#empfaengerButton2" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" GridPane.columnIndex="3" GridPane.rowIndex="2">
-                              													<GridPane.margin>
-                              														<Insets left="5.0" />
-                              													</GridPane.margin>
-<contextMenu><ContextMenu>
-  <items>
-    <MenuItem mnemonicParsing="false" onAction="#actionEmpfaenger2loeschen" text="Empfänger löschen" />
-  </items>
-</ContextMenu>
-</contextMenu>
-                              												</Button>
-                              												<Button fx:id="btnEmpfaenger3" alignment="CENTER" disable="true" layoutX="-52.100006103515625" layoutY="14.899993896484375" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#empfaengerButton3" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" GridPane.columnIndex="3" GridPane.rowIndex="3">
-                              													<GridPane.margin>
-                              														<Insets left="5.0" />
-                              													</GridPane.margin>
-<contextMenu><ContextMenu>
-  <items>
-    <MenuItem mnemonicParsing="false" onAction="#actionEmpfaenger3loeschen" text="Empfänger löschen" />
-  </items>
-</ContextMenu>
-</contextMenu>
-                              												</Button>
-                              												<ComboBox fx:id="cmbBuOb1" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="1">
-                              													<GridPane.margin>
-                              														<Insets />
-                              													</GridPane.margin>
-                              												</ComboBox>
-                              												<ComboBox fx:id="cmbBuOb2" disable="true" editable="true" layoutX="515.0" layoutY="35.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                              												<ComboBox fx:id="cmbBuOb3" disable="true" editable="true" layoutX="515.0" layoutY="68.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-                                                <MenuButton fx:id="mbtEmpfaenger2" minWidth="22.0" mnemonicParsing="false" prefWidth="22.0" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
-                                                  <items>
-                                                    <MenuItem mnemonicParsing="false" onAction="#actionEmpfaenger2loeschen" text="Empfänger entfernen" />
-                                                  </items>
-                                                </MenuButton>
-                                                <MenuButton fx:id="mbtEmpfaenger3" minWidth="22.0" mnemonicParsing="false" prefWidth="22.0" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
-                                                   <items>
-                                                      <MenuItem fx:id="mniEmpfaengerZeile3" mnemonicParsing="false" onAction="#actionEmpfaenger3loeschen" text="Empfänger entfernen" />
-                                                   </items>
-                                                </MenuButton>
-                              											</children>
-                              											<padding>
-                              												<Insets bottom="5.0" left="5.0" right="8.0" top="5.0" />
-                              											</padding>
-                              										</GridPane>
+                                          <AnchorPane>
+                                             <children>
+                                                <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="0.0">
+                                                   <children>
+                                          
+                                                                        										<GridPane prefHeight="90.0" prefWidth="934.0" vgap="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                          											<columnConstraints>
+                                          												<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" percentWidth="35.0" prefWidth="200.0" />
+                                                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="20.0" minWidth="10.0" prefWidth="20.0" />
+                                          												<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="120.0" />
+                                          												<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" percentWidth="35.0" prefWidth="200.0" />
+                                          											</columnConstraints>
+                                          											<rowConstraints>
+                                          												<RowConstraints vgrow="SOMETIMES" />
+                                          												<RowConstraints vgrow="SOMETIMES" />
+                                          												<RowConstraints vgrow="SOMETIMES" />
+                                          												<RowConstraints vgrow="SOMETIMES" />
+                                                            <RowConstraints minHeight="25.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          											</rowConstraints>
+                                          											<children>
+                                          												<Label alignment="CENTER" layoutX="44.399993896484375" layoutY="-2.0999984741210938" maxWidth="1.7976931348623157E308" text="Sender" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                          												<Label alignment="CENTER" layoutX="73.99996948242188" layoutY="3.9999771118164062" maxWidth="1.7976931348623157E308" text="Empfänger" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.columnIndex="3" />
+                                          												<Label alignment="CENTER" layoutX="20.0" layoutY="10.0" maxWidth="1.7976931348623157E308" text="Geschäftsobjekt" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.columnIndex="2" />
+                                          												<Button fx:id="btnSender" alignment="CENTER" layoutY="9.399993896484375" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#senderButton" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0" GridPane.rowIndex="1">
+                                          													<GridPane.margin>
+                                          														<Insets />
+                                          													</GridPane.margin>
+                                          												</Button>
+                                                            <ComboBox fx:id="cmbBuOb1" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                                               <GridPane.margin>
+                                                                  <Insets right="4.0" />
+                                                               </GridPane.margin>
+                                                            </ComboBox>
+                                                            <Button fx:id="btnEmpfaenger1" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#empfaengerButton1" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                                                               <GridPane.margin>
+                                                                  <Insets />
+                                                               </GridPane.margin>
+                                                            </Button>
+                                                            <MenuButton fx:id="mbtEmpfaenger2" minWidth="22.0" mnemonicParsing="false" prefWidth="22.0" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
+                                                               <items>
+                                                                  <MenuItem mnemonicParsing="false" onAction="#actionEmpfaenger2loeschen" text="Empfänger entfernen" />
+                                                               </items>
+                                                            </MenuButton>
+                                                            <ComboBox fx:id="cmbBuOb2" disable="true" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                                                               <GridPane.margin>
+                                                                  <Insets right="4.0" />
+                                                               </GridPane.margin>
+                                                            </ComboBox>
+                                                            <Button fx:id="btnEmpfaenger2" alignment="CENTER" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#empfaengerButton2" GridPane.columnIndex="3" GridPane.rowIndex="2">
+                                                               <contextMenu>
+                                                                  <ContextMenu>
+                                                                     <items>
+                                                                        <MenuItem mnemonicParsing="false" onAction="#actionEmpfaenger2loeschen" text="Empfänger löschen" />
+                                                                     </items>
+                                                                  </ContextMenu>
+                                                               </contextMenu>
+                                                            </Button>
+                                                            <MenuButton fx:id="mbtEmpfaenger3" minWidth="22.0" mnemonicParsing="false" prefWidth="22.0" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
+                                                               <items>
+                                                                  <MenuItem fx:id="mniEmpfaengerZeile3" mnemonicParsing="false" onAction="#actionEmpfaenger3loeschen" text="Empfänger entfernen" />
+                                                               </items>
+                                                            </MenuButton>
+                                                            <ComboBox fx:id="cmbBuOb3" disable="true" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                                                               <GridPane.margin>
+                                                                  <Insets right="4.0" />
+                                                               </GridPane.margin>
+                                                            </ComboBox>
+                                                            <Button fx:id="btnEmpfaenger3" alignment="CENTER" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#empfaengerButton3" GridPane.columnIndex="3" GridPane.rowIndex="3">
+                                                               <contextMenu>
+                                                                  <ContextMenu>
+                                                                     <items>
+                                                                        <MenuItem mnemonicParsing="false" onAction="#actionEmpfaenger3loeschen" text="Empfänger löschen" />
+                                                                     </items>
+                                                                  </ContextMenu>
+                                                               </contextMenu>
+                                                            </Button>
+                                                            <MenuButton fx:id="mbtEmpfaenger4" minWidth="22.0" mnemonicParsing="false" prefWidth="22.0" visible="false" GridPane.halignment="RIGHT" GridPane.rowIndex="4">
+                                                               <items>
+                                                                  <MenuItem fx:id="mniEmpfaengerZeile31" mnemonicParsing="false" onAction="#actionEmpfaenger3loeschen" text="Empfänger entfernen" />
+                                                               </items>
+                                                            </MenuButton>
+                                          											</children>
+                                          											<padding>
+                                          												<Insets bottom="5.0" left="5.0" top="5.0" />
+                                          											</padding>
+                                          										</GridPane>
+                                                      <GridPane hgap="4.0" VBox.vgrow="NEVER">
+                                                        <columnConstraints>
+                                                          <ColumnConstraints hgrow="SOMETIMES" maxWidth="130.0" minWidth="10.0" prefWidth="130.0" />
+                                                          <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="50.0" prefWidth="170.0" />
+                                                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="65.0" minWidth="10.0" prefWidth="65.0" />
+                                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="45.0" prefWidth="90.0" />
+                                                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="65.0" minWidth="10.0" prefWidth="65.0" />
+                                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="45.0" prefWidth="90.0" />
+                                                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="80.0" minWidth="10.0" prefWidth="80.0" />
+                                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="45.0" prefWidth="90.0" />
+                                                        </columnConstraints>
+                                                        <rowConstraints>
+                                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                        </rowConstraints>
+                                                         <children>
+                                                            <Label alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" text="Ausführungs-Intervall:" />
+                                                            <ComboBox fx:id="cmbIntervall" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" />
+                                                            <Label alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" text="⌀ Anzahl:" GridPane.columnIndex="2">
+                                                               <GridPane.margin>
+                                                                  <Insets />
+                                                               </GridPane.margin>
+                                                            </Label>
+                                                            <ComboBox fx:id="cmbIntervall1" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="3" />
+                                                            <Label alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" text="⌀ Größe:" GridPane.columnIndex="4">
+                                                               <GridPane.margin>
+                                                                  <Insets />
+                                                               </GridPane.margin>
+                                                            </Label>
+                                                            <ComboBox fx:id="cmbIntervall11" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="5" />
+                                                            <Label alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" text="max. Größe:" GridPane.columnIndex="6" />
+                                                            <ComboBox fx:id="cmbIntervall12" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="7" />
+                                                         </children>
+                                                         <padding>
+                                                            <Insets bottom="8.0" />
+                                                         </padding>
+                                                      </GridPane>
+                                                   </children>
+                                                </VBox>
+                                             </children>
+                                          </AnchorPane>
                                        </children>
                                     </VBox>
                                  </children>

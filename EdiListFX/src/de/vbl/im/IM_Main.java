@@ -61,7 +61,7 @@ public class IM_Main extends Application {
 		try {
 			root = (Parent) loader.load();
 		} catch (Exception e) {
-			logger.error("Fehler beim Laden der fxml-Resource", e);
+			logger.error("Fehler beim Laden der fxml-Resource ", e);
 		}
 		
 		controller = loader.getController();

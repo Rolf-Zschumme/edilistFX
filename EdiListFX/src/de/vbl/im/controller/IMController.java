@@ -60,12 +60,10 @@ import de.vbl.im.model.InSzenario;
 import de.vbl.im.model.Konfiguration;
 import de.vbl.im.model.Ansprechpartner;
 import de.vbl.im.tools.ExportToExcel;
+import de.vbl.im.tools.IMconstant;
 
 public class IMController {
 	private static final Logger logger = LogManager.getLogger(IMController.class.getName()); 
-	private static final String APPL_NAME = "Integration Manager";
-	private static final String PERSISTENCE_UNIT_NAME = "IntegrationManager";
-	private static final String SICHERHEITSABFRAGE = "Sicherheitsabfrage";
 
 	private static String dbName;
 	private static int maxInNr;
@@ -108,8 +106,9 @@ public class IMController {
     @FXML private TableColumn<InKomponente, String> tColSelKompoSysteme;
     @FXML private TableColumn<InKomponente, String> tColSelKompoPartner;
     
-    @FXML private Tab tabIszenarien;
+    @FXML private Tab tabInSzenarien;
     @FXML private TableView<InSzenario> tableInSzenarioAuswahl;
+    @FXML private TableColumn<InSzenario, String> tColSelInSzenarioNr;
     @FXML private TableColumn<InSzenario, String> tColSelInSzenarioName;
     
     @FXML private Tab tabKonfigurationen;
@@ -159,16 +158,16 @@ public class IMController {
 
     public void start(Stage stage) {
     	primaryStage = stage;
-    	primaryStage.setTitle(APPL_NAME);
-    	
-    	IntegrationController.setParent(this);
-    	InPartnerController.setParent(this);
-    	InSystemController.setParent(this);
-    	InKomponenteController.setParent(this);
-    	InSzenarioController.setParent(this);
-    	KonfigurationController.setParent(this);
-    	AnsprechpartnerController.setParent(this);
-    	GeschaeftsObjektController.setParent(this);
+    	primaryStage.setTitle(IMconstant.APPL_NAME);
+    	 
+    	integrationController.setParent(this);
+    	inPartnerController.setParent(this);
+    	inSystemController.setParent(this);
+    	inKomponenteController.setParent(this);
+    	inSzenarioController.setParent(this);
+    	konfigurationController.setParent(this);
+    	ansprechpartnerController.setParent(this);
+    	geschaeftsObjektController.setParent(this);
         
     	// Check for data changes on close request from MainWindow
     	primaryStage.setOnCloseRequest(event -> {
@@ -233,7 +232,7 @@ public class IMController {
 						else if(akttab.equals(tabKomponenten)) {
 							loadKomponentenListData();
 						}
-						else if(akttab.equals(tabIszenarien)) {
+						else if(akttab.equals(tabInSzenarien)) {
 							loadInSzenarioListData();
 						}
 						else if(akttab.equals(tabKonfigurationen)) {
@@ -428,6 +427,7 @@ public class IMController {
 	private void setupInSzenarioPane() {
 		logger.info("entered");
 		tableInSzenarioAuswahl.setItems(inSzenarioList);
+		tColSelInSzenarioNr.setCellValueFactory(cellData -> Bindings.format("%03d",cellData.getValue().isNrProperty()));
 		tColSelInSzenarioName.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
 		
 		inSzenarioController.inSzenarioProperty().bind(tableInSzenarioAuswahl.getSelectionModel().selectedItemProperty());
@@ -589,7 +589,7 @@ public class IMController {
 	@FXML
     void btnUeber(ActionEvent event) {
 		Dialogs.create()
-			.owner(primaryStage).title(APPL_NAME)
+			.owner(primaryStage).title(IMconstant.APPL_NAME)
 			.masthead("VBL-Tool zur Verwaltung der Integrationsszenarios")
 			.message("\nProgramm-Version 1.1.0 - 11.11.2014\n" +
 					 "\nDatenbank-Name: " + dbName +
@@ -629,7 +629,10 @@ public class IMController {
 		for ( String l : classpathEntries) {
 			message += "\n" + l;
 		}
-		Dialogs.create().title(APPL_NAME).masthead(javaVersion).message(message).showInformation();
+		Dialogs.create().title(IMconstant.APPL_NAME)
+					    .masthead(javaVersion)
+					    .message(message)
+					    .showInformation();
 	}
 
 //    @FXML
@@ -687,9 +690,9 @@ public class IMController {
     		Action response = Dialog.Actions.OK;
     		if (selectedlistElement.getInKomponente() != null) {
     			response = Dialogs.create()
-					.owner(primaryStage).title(APPL_NAME)
+					.owner(primaryStage).title(IMconstant.APPL_NAME)
 					.actions(Dialog.Actions.OK, Dialog.Actions.CANCEL)
-					.masthead(SICHERHEITSABFRAGE)
+					.masthead(IMconstant.SICHERHEITSABFRAGE)
 					.message("Integration mit der Nr. " + inNr + " wirklich löschen?")
 					.showConfirm();
     		}
@@ -802,14 +805,14 @@ public class IMController {
     		try {
     			int lines = export.write(file);
     			primaryStage.getScene().setCursor(aktCursor);
-    			Dialogs.create().owner(primaryStage).title(APPL_NAME)
+    			Dialogs.create().owner(primaryStage).title(IMconstant.APPL_NAME)
     					.masthead(null)
     					.message(lines + " Zeilen in der Datei " + file.getName() + 
     							" im Verzeichnis " + file.getParent() +" gespeichert")
     					.showInformation();		
 			} catch (IOException e1) {
 				primaryStage.getScene().setCursor(aktCursor);
-				Dialogs.create().owner(primaryStage).title(APPL_NAME)
+				Dialogs.create().owner(primaryStage).title(IMconstant.APPL_NAME)
 						.masthead("FEHLER")
 						.message("Fehler beim Speichern der Exportdatei")
 						.showException(e1);
@@ -824,15 +827,16 @@ public class IMController {
     }
     
     public void setupEntityManager() {
-    	logger.info("Datenbankverbindung zu {} wird aufgebaut",PERSISTENCE_UNIT_NAME);
+    	final String PERSISTENCE_UNIT = IMconstant.PERSISTENCE_UNIT_NAME;
+    	logger.info("Datenbankverbindung zu {} wird aufgebaut",PERSISTENCE_UNIT);
     	EntityManagerFactory factory = null;
     	try {
-    		factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+    		factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT);
     	} catch (RuntimeException e) {
-    		String msg = "Fehler beim Öffnen der Datenbank (" + PERSISTENCE_UNIT_NAME + ")";
+    		String msg = "Fehler beim Öffnen der Datenbank (" + PERSISTENCE_UNIT + ")";
     		System.out.println(msg);
     		logger.error(msg + "\nMessage:"+ e.getMessage(),e);
-			Dialogs.create().owner(primaryStage).title(APPL_NAME)
+			Dialogs.create().owner(primaryStage).title(IMconstant.APPL_NAME)
 				.masthead("FEHLER")
 				.message("Fehler beim Aufbau der Datenbankverbindung:\n" + e.getMessage())
 				.showException(e);
@@ -862,7 +866,7 @@ public class IMController {
         assert tabPartner 				!= null : "fx:id=\"tabPartner\" was not injected: check your FXML file 'IM.fxml'.";
         assert tabSysteme				!= null : "fx:id=\"tabSysteme\" was not injected: check your FXML file 'IM.fxml'.";
         assert tabKomponenten			!= null : "fx:id=\"tabKomponenten\" was not injected: check your FXML file 'IM.fxml'.";
-        assert tabIszenarien			!= null : "fx:id=\"tabIszenarien\" was not injected: check your FXML file 'IM.fxml'.";
+        assert tabInSzenarien			!= null : "fx:id=\"tabInSzenarien\" was not injected: check your FXML file 'IM.fxml'.";
         assert tabKonfigurationen		!= null : "fx:id=\"tabKonfigurationen\" was not injected: check your FXML file 'IM.fxml'.";
         assert tabAnsprechpartner		!= null : "fx:id=\"tabAnsprechpartner\" was not injected: check your FXML file 'IM.fxml'.";
         assert tabGeschaeftsobjekte		!= null : "fx:id=\"tabGeschaeftsobjekte\" was not injected: check your FXML file 'IM.fxml'.";
@@ -875,6 +879,7 @@ public class IMController {
         assert tColSelKompoKomponten 		!= null : "fx:id=\"tColSelKompoKomponten\" was not injected: check your FXML file 'IM.fxml'.";
         assert tColSelSystemSystemName 		!= null : "fx:id=\"tColSelSystemSystemName\" was not injected: check your FXML file 'IM.fxml'.";
         
+        assert tColSelInSzenarioNr 			!= null : "fx:id=\"tColSelInSzenarioNr\" was not injected: check your FXML file 'IM.fxml'.";
         assert tColSelInSzenarioName 		!= null : "fx:id=\"tColSelInSzenarioName\" was not injected: check your FXML file 'IM.fxml'.";
         
         assert tablePartnerAuswahl 			!= null : "fx:id=\"tablePartnerAuswahl\" was not injected: check your FXML file 'IM.fxml'.";

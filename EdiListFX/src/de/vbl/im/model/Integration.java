@@ -20,8 +20,9 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 public class Integration { 
-	public static final int IN_NR_MIN_LEN = 3;
-	public static final String FORMAT_INNR = " %03d";
+	public static final int IN_NR_MIN_LEN = 2;
+	public static final String FORMAT_INNR = " %02d";
+	
 	private long id;
 	private IntegerProperty inNr;
 	private StringProperty bezeichnung;
@@ -38,6 +39,8 @@ public class Integration {
 	private StringProperty konfigurationName;
 	private Intervall intervall;
 	private Konfiguration konfiguration;
+	
+	// ========================================================================
 	public Integration() {
 		inNr = new SimpleIntegerProperty();
 		bezeichnung = new SimpleStringProperty();
@@ -66,11 +69,11 @@ public class Integration {
 		return inNr;
 	}
 
-	public Integer getInNr() {
+	public int getInNr() {
 		return inNr.get();
 	}
 
-	public void setInNr(Integer param) {
+	public void setInNr(int param) {
 		inNr.set(param);
 	}
 	
@@ -208,12 +211,6 @@ public class Integration {
 	private static String TrennStr() {
 		return "  |  ";
 	}
-//	private String ASCIItoStr(int a) {
-//		byte[] b = { (byte) a };
-//		String ret = new String(b);
-//		return " " + ret + " ";
-//	}
-
 
 	@ManyToOne
 	public Intervall getIntervall() {

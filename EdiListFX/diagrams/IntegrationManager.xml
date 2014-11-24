@@ -44,11 +44,22 @@
 	</entity>
 
 	<entity>
+		<entity-name>de.vbl.im.model.DokuLink</entity-name>
+		<entity-width>120</entity-width>
+		<entity-height>196</entity-height>
+		<entity-X-Coordinate>581</entity-X-Coordinate>
+		<entity-Y-Coordinate>85</entity-Y-Coordinate>
+		<primary-collapsed>true</primary-collapsed>
+		<relation-collapsed>true</relation-collapsed>
+		<basic-collapsed>false</basic-collapsed>
+	</entity>
+
+	<entity>
 		<entity-name>de.vbl.im.model.Repository</entity-name>
 		<entity-width>120</entity-width>
 		<entity-height>58</entity-height>
-		<entity-X-Coordinate>581</entity-X-Coordinate>
-		<entity-Y-Coordinate>387</entity-Y-Coordinate>
+		<entity-X-Coordinate>585</entity-X-Coordinate>
+		<entity-Y-Coordinate>321</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>false</relation-collapsed>
 		<basic-collapsed>true</basic-collapsed>
@@ -88,11 +99,11 @@
 	</entity>
 
 	<entity>
-		<entity-name>de.vbl.im.model.DokuLink</entity-name>
+		<entity-name>de.vbl.im.model.GeschaeftsObjekt</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>196</entity-height>
-		<entity-X-Coordinate>581</entity-X-Coordinate>
-		<entity-Y-Coordinate>85</entity-Y-Coordinate>
+		<entity-height>116</entity-height>
+		<entity-X-Coordinate>23</entity-X-Coordinate>
+		<entity-Y-Coordinate>519</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
@@ -106,17 +117,6 @@
 		<entity-Y-Coordinate>91</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>false</relation-collapsed>
-		<basic-collapsed>false</basic-collapsed>
-	</entity>
-
-	<entity>
-		<entity-name>de.vbl.im.model.GeschaeftsObjekt</entity-name>
-		<entity-width>120</entity-width>
-		<entity-height>116</entity-height>
-		<entity-X-Coordinate>23</entity-X-Coordinate>
-		<entity-Y-Coordinate>519</entity-Y-Coordinate>
-		<primary-collapsed>true</primary-collapsed>
-		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
 	</entity>
 

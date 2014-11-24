@@ -75,7 +75,7 @@ public class GeschaeftsObjektController {
     	this.inSystemAnzahl = new SimpleIntegerProperty(0);
     }
 
-	public static void setParent(IMController managerController) {
+	public void setParent(IMController managerController) {
 		logger.entry(primaryStage);
 		GeschaeftsObjektController.mainCtr = managerController;
 		GeschaeftsObjektController.primaryStage = IMController.getStage();

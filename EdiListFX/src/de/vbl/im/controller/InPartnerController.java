@@ -85,8 +85,8 @@ public class InPartnerController {
     	this.ansprechpartnerList = FXCollections.observableArrayList();
     }
 
-	public static void setParent(IMController managerController) {
-		logger.entry(primaryStage);
+	public void setParent(IMController managerController) {
+		logger.entry(primaryStage); 
 		InPartnerController.mainCtr = managerController;
 		InPartnerController.primaryStage = IMController.getStage();
 		InPartnerController.entityManager = managerController.getEntityManager();

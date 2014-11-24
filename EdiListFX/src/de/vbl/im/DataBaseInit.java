@@ -8,7 +8,6 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
-import de.vbl.im.model.Integration;
 import de.vbl.im.model.InKomponente;
 import de.vbl.im.model.InPartner;
 import de.vbl.im.model.InSystem;
@@ -65,13 +64,13 @@ public class DataBaseInit {
 		}
 		finally {
 			
-			q = em.createQuery("SELECT e FROM Integration e ORDER BY e.inNr");
-			@SuppressWarnings("unchecked")
-			List<Integration> resultList = q.getResultList();
-			for (Integration el : resultList) {
-			   System.out.println(el);
-			}
-			System.out.println("Size: " + resultList.size());
+//			q = em.createQuery("SELECT e FROM Integration e ORDER BY e.inNr");
+//			@SuppressWarnings("unchecked")
+//			List<Integration> resultList = q.getResultList();
+//			for (Integration el : resultList) {
+//			   System.out.println(el);
+//			}
+//			System.out.println("Size: " + resultList.size());
 			System.out.println("DatabaseInit beendet");
 			em.close();
 		}	
@@ -299,6 +298,7 @@ public class DataBaseInit {
 	private static InSzenario newInSzenario (String isznearioName) {
 		InSzenario inSzenario = new InSzenario();
 		inSzenario.setName(isznearioName);
+		inSzenario.setIsNr(inSzenario.getMaxIsNr(em)+1);
 		return inSzenario;
 	}
 

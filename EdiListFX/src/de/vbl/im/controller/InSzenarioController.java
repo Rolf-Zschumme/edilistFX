@@ -69,7 +69,7 @@ public class InSzenarioController {
     	this.integrationSet = FXCollections.observableSet();
     }
 
-	public static void setParent(IMController managerController) {
+	public void setParent(IMController managerController) {
 		logger.entry();
 		InSzenarioController.mainCtr = managerController;
 		InSzenarioController.primaryStage = IMController.getStage();
@@ -85,9 +85,8 @@ public class InSzenarioController {
 			@Override
 			public void changed(ObservableValue<? extends InSzenario> ov,
 					InSzenario oldInSzenario, InSzenario newInSzenario) {
-				log("ChangeListener<InKomponente>",
-					((oldInSzenario==null) ? "null" : oldInSzenario.getName() + " -> " 
-				  + ((newInSzenario==null) ? "null" : newInSzenario.getName() )));
+				logger.info((oldInSzenario==null) ? "null" : oldInSzenario.getName() + " -> " 
+						 + ((newInSzenario==null) ? "null" : newInSzenario.getName() ));
 				if (oldInSzenario != null && newInSzenario == null) {
 					integrationSet.clear();
 					tfBezeichnung.setText("");
@@ -175,7 +174,7 @@ public class InSzenarioController {
 		tvVerwendungen.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<InEmpfaenger>() {
 			@Override
 			public void changed (ObservableValue<? extends InEmpfaenger> ov, InEmpfaenger oldValue, InEmpfaenger newValue) {
-				log("tvVerwendungen.select.changed" ,"newValue" + newValue);
+				logger.info("Jump to newValue: " + newValue);
 			}
 		});
 	}
@@ -226,8 +225,7 @@ public class InSzenarioController {
 	private static enum Checkmode { ONLY_CHECK, ASK_FOR_UPDATE, SAVE_DONT_ASK };
 	
 	private boolean checkForChangesWithMode(Checkmode checkmode) {
-		String l = "checkForChangesWithMode-" + checkmode;
-		log(l,"aktInte=" + (aktInSzenario==null ? "null" : aktInSzenario.getName()));
+		logger.info("checkMode =" + checkmode);
 		if (aktInSzenario == null ) {
 			return true;
 		}
@@ -237,7 +235,7 @@ public class InSzenarioController {
 		String newBeschreibung = taBeschreibung.getText()==null ? "" : taBeschreibung.getText();
 		if (orgName.equals(newName) &&
 			orgBeschreibung.equals(newBeschreibung) ) {
-			log(l, "Name und Bezeichnung unverändert");
+			logger.info("Name und Bezeichnung unverändert");
 		} else {
 			if (checkmode == Checkmode.ONLY_CHECK) {
 				return false;
@@ -262,7 +260,7 @@ public class InSzenarioController {
 				tfBezeichnung.requestFocus();
 				return false;
 			}
-			log(l,"Änderung erkannt -> update");
+			logger.info("Änderung erkannt -> update");
 			entityManager.getTransaction().begin();
 			aktInSzenario.setName(newName);
 			aktInSzenario.setBeschreibung(newBeschreibung);
@@ -328,12 +326,12 @@ public class InSzenarioController {
 		this.inSzenario.set(inSzenario);
 	}
     
-	private static void log(String methode, String message) {
-		if (message != null || methode != null) {
-			String className = InSzenarioController.class.getName().substring(16);
-			System.out.println(className + "." + methode + "(): " + message); 
-		}
-	}
+//	private static void log(String methode, String message) {
+//		if (message != null || methode != null) {
+//			String className = InSzenarioController.class.getName().substring(16);
+//			System.out.println(className + "." + methode + "(): " + message); 
+//		}
+//	}
 
 	void checkFieldsFromView() {
     	assert tfBezeichnung != null : "fx:id=\"tfBezeichnung\" was not injected: check your FXML file 'InSzenario.fxml'.";

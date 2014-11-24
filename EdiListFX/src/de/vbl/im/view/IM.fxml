@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane prefHeight="795.0" prefWidth="1409.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.im.controller.IMController">
+<BorderPane prefHeight="895.0" prefWidth="1409.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.im.controller.IMController">
 	<top>
 		<VBox>
 			<children>
@@ -77,7 +77,7 @@
 						</AnchorPane>
 					</content>
 				</Tab>
-				<Tab fx:id="tabIszenarien" closable="false" text="Integrationsszenarios">
+				<Tab fx:id="tabInSzenarien" closable="false" text="Integrationsszenarios">
 					<content>
 						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
@@ -87,8 +87,8 @@
                                  <children>
                                     <TableView fx:id="tableInSzenarioAuswahl" prefHeight="714.0" prefWidth="416.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                       <columns>
-                                        <TableColumn fx:id="tColSelInSzenarioName" prefWidth="426.0" text="Integrationsszenario" />
-                                        <TableColumn fx:id="tColSelIntegrationKonfigurationAnzahl" prefWidth="147.0" text="Anzahl Konfigurationen" visible="false" />
+                                        <TableColumn fx:id="tColSelInSzenarioNr" editable="false" prefWidth="44.0" text="IS-Nr." />
+                                        <TableColumn fx:id="tColSelInSzenarioName" prefWidth="529.0" text="Integrationsszenario" />
                                       </columns>
                                     </TableView>
                                  </children>

@@ -81,7 +81,7 @@ public class InKomponenteController implements Initializable  {
     	ansprechpartnerList = FXCollections.observableArrayList();
     }
 
-	public static void setParent(IMController managerController) {
+	public void setParent(IMController managerController) {
 		logger.entry();
 		InKomponenteController.mainCtr = managerController;
 		InKomponenteController.primaryStage = IMController.getStage();
