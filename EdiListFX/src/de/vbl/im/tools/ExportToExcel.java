@@ -273,13 +273,13 @@ public class ExportToExcel {
 			
 			for(InEmpfaenger inEmpfaenger : integration.getInEmpfaenger()) {
 				if (integration.getInKomponente().getId() <= 0) {
-					System.out.println("Integration ohne Sender " + integration.getInNrStr());
+					System.out.println("Integration ohne Sender " + integration.inNrStrExp().get());
 					continue; 
 				}
 				row = ee_Sheet.createRow(++e_znr);
 				++anz_zeilen;
 				createCell(row, s=0, styleNormal, e_znr); 
-				createCell(row, ++s, styleNormal, integration.getInNr());			
+				createCell(row, ++s, styleNormal, integration.inNrStrExp().get());			
 				createCeFo(row, ++s, styleNormal, INSZENARIO_SHEET + "!B" + 
 						inSzenarioZeilenNr.get(integration.getKonfiguration().getInSzenario().getId()));				
 				createCeFo(row, ++s, styleNormal, KONFIGURATION_SHEET + "!B" +

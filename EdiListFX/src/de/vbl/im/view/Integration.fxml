@@ -61,7 +61,7 @@
 										<TableView fx:id="tvDokuLinks" editable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onContextMenuRequested="#actionDocumentContextMenuRequested" prefHeight="120.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="2">
 											<columns>
 												<TableColumn fx:id="tColDokumentVorhaben" maxWidth="80.0" text="Vorhaben" />
-												<TableColumn fx:id="tColDokumentName" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="500.0" text="Bezeichnung des Dokuments" />
+												<TableColumn fx:id="tColDokumentName" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="500.0" text="Bezeichnung des Dokumentes" />
 												<TableColumn fx:id="tColDokumentDatum" editable="false" maxWidth="100.0" minWidth="-1.0" prefWidth="100.0" resizable="false" text="Datum" />
 												<TableColumn fx:id="tColDokumentQuelle" editable="false" maxWidth="250.0" minWidth="20.0" prefWidth="120.0" resizable="false" text="Quelle" /><TableColumn fx:id="tColDokumentPfad" editable="false" maxWidth="1.7976931348623157E308" minWidth="50.0" prefWidth="300.0" text="Pfad" visible="false" /><TableColumn fx:id="tColDokumentRevision" editable="false" maxWidth="80.0" minWidth="-1.0" resizable="false" text="Revision" visible="false" />
 											</columns>
@@ -81,14 +81,14 @@
       					<items>
                         <HBox spacing="12.0">
                            <children>
-                              <Button fx:id="m_Aendern" disable="true" mnemonicParsing="false" onAction="#actionAendern" prefWidth="136.0" text="ändern" />
-            						<Button fx:id="m_SpeichernBtn" disable="true" mnemonicParsing="false" onAction="#actionSpeichern" prefWidth="136.0" text="speichern">
+                              <Button fx:id="m_Aendern" disable="true" mnemonicParsing="false" onAction="#actionAendern" prefWidth="136.0" text="Ändern" />
+            						<Button fx:id="m_SpeichernBtn" disable="true" mnemonicParsing="false" onAction="#actionSpeichern" prefWidth="136.0" text="Speichern">
                                  <opaqueInsets>
                                     <Insets />
                                  </opaqueInsets>
                               </Button>
-            						<Button fx:id="m_NeuanlageBtn" disable="true" mnemonicParsing="false" onAction="#actionNeuanlage" prefWidth="136.0" text="neu" />
-            						<Button fx:id="m_LoeschenBtn" disable="true" mnemonicParsing="false" onAction="#actionLoeschen" prefWidth="136.0" text="löschen" />
+            						<Button fx:id="m_NeuanlageBtn" disable="true" mnemonicParsing="false" onAction="#actionNeuanlage" prefWidth="136.0" text="Neu" />
+            						<Button fx:id="m_LoeschenBtn" disable="true" mnemonicParsing="false" onAction="#actionLoeschen" prefWidth="136.0" text="Löschen" />
                            </children>
                         </HBox>
       					</items>
@@ -111,7 +111,7 @@
                <children>
                   <TabPane fx:id="tabPaneInNr" prefHeight="400.0" prefWidth="934.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <tabs>
-                      <Tab fx:id="tabAktInNr" text="I-Nr. 000-00">
+                      <Tab fx:id="tabAktInNr" text="I 000-00">
                            <content>
             						<AnchorPane>
                                  <children>
@@ -149,10 +149,10 @@
                               													</GridPane.margin>
                               												</Label>
                               
-                              												<Label alignment="CENTER_RIGHT" layoutX="618.0" layoutY="26.0" maxWidth="1.7976931348623157E308" text="produktiv seit:" textAlignment="CENTER" GridPane.columnIndex="6" GridPane.rowIndex="1">
+                              												<Label alignment="CENTER_RIGHT" layoutX="618.0" layoutY="26.0" maxWidth="1.7976931348623157E308" text="Produktiv seit:" textAlignment="CENTER" GridPane.columnIndex="6" GridPane.rowIndex="1">
 												</Label>
                               
-                              												<Label alignment="CENTER_RIGHT" layoutX="618.0" layoutY="74.0" maxWidth="1.7976931348623157E308" text="produktiv bis:" textAlignment="CENTER" GridPane.columnIndex="6" GridPane.rowIndex="3">
+                              												<Label alignment="CENTER_RIGHT" layoutX="618.0" layoutY="74.0" maxWidth="1.7976931348623157E308" text="Produktiv bis:" textAlignment="CENTER" GridPane.columnIndex="6" GridPane.rowIndex="3">
                               													<GridPane.margin>
                               														<Insets />
                               													</GridPane.margin>
@@ -162,7 +162,7 @@
                               														<Insets />
                               													</GridPane.margin>
                               												</TextArea>
-                              												<Label alignment="CENTER_RIGHT" layoutX="618.0" layoutY="26.0" maxWidth="1.7976931348623157E308" prefHeight="17.0" text="letzte Änderung:" textAlignment="CENTER" GridPane.columnIndex="6">
+                              												<Label alignment="CENTER_RIGHT" layoutX="618.0" layoutY="26.0" maxWidth="1.7976931348623157E308" prefHeight="17.0" text="Letzte Änderung:" textAlignment="CENTER" GridPane.columnIndex="6">
                               													<GridPane.margin>
                               														<Insets />
                               													</GridPane.margin>
@@ -272,35 +272,39 @@
                                           										</GridPane>
                                                       <GridPane hgap="4.0" VBox.vgrow="NEVER">
                                                         <columnConstraints>
-                                                          <ColumnConstraints hgrow="SOMETIMES" maxWidth="130.0" minWidth="10.0" prefWidth="130.0" />
+                                                          <ColumnConstraints hgrow="SOMETIMES" maxWidth="120.0" minWidth="10.0" prefWidth="125.0" />
                                                           <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="50.0" prefWidth="170.0" />
                                                             <ColumnConstraints hgrow="SOMETIMES" maxWidth="65.0" minWidth="10.0" prefWidth="65.0" />
                                                             <ColumnConstraints hgrow="SOMETIMES" minWidth="45.0" prefWidth="90.0" />
                                                             <ColumnConstraints hgrow="SOMETIMES" maxWidth="65.0" minWidth="10.0" prefWidth="65.0" />
-                                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="45.0" prefWidth="90.0" />
+                                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="40.0" prefWidth="60.0" />
+<ColumnConstraints hgrow="SOMETIMES" minWidth="20.0" prefWidth="32.0" />
                                                             <ColumnConstraints hgrow="SOMETIMES" maxWidth="80.0" minWidth="10.0" prefWidth="80.0" />
-                                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="45.0" prefWidth="90.0" />
+                                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="40.0" prefWidth="60.0" />
+<ColumnConstraints hgrow="SOMETIMES" minWidth="20.0" prefWidth="32.0" />
                                                         </columnConstraints>
                                                         <rowConstraints>
                                                           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                         </rowConstraints>
                                                          <children>
-                                                            <Label alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" text="Ausführungs-Intervall:" />
-                                                            <ComboBox fx:id="cmbIntervall" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" />
+                                                            <Label alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" text="Ausführungsintervall:" />
+                                                            <ComboBox fx:id="m_Intervall" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" />
                                                             <Label alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" text="⌀ Anzahl:" GridPane.columnIndex="2">
                                                                <GridPane.margin>
                                                                   <Insets />
                                                                </GridPane.margin>
                                                             </Label>
-                                                            <ComboBox fx:id="cmbIntervall1" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="3" />
+                                                            <ComboBox fx:id="m_Anzahl" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="3" />
                                                             <Label alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" text="⌀ Größe:" GridPane.columnIndex="4">
                                                                <GridPane.margin>
                                                                   <Insets />
                                                                </GridPane.margin>
                                                             </Label>
-                                                            <ComboBox fx:id="cmbIntervall11" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="5" />
-                                                            <Label alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" text="max. Größe:" GridPane.columnIndex="6" />
-                                                            <ComboBox fx:id="cmbIntervall12" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="7" />
+                                                            <ComboBox fx:id="m_Groesse" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="5" />
+                                                            <ChoiceBox fx:id="m_GroesseEinheit" prefWidth="150.0" GridPane.columnIndex="6" />
+                                                            <Label alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" text="Max.Größe:" GridPane.columnIndex="7" />
+                                                            <ComboBox fx:id="m_MaxGroesse" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="8" />
+                                                            <ChoiceBox fx:id="m_MaxGroesseEinheit" prefWidth="150.0" GridPane.columnIndex="9" />
                                                          </children>
                                                          <padding>
                                                             <Insets bottom="8.0" />

@@ -84,14 +84,14 @@ public class InSzenario {
 	}
 	
 	public final int getMaxIsNr (final EntityManager em) {
-		int maxID=-1;
+		int maxInNr = -1;
 		try {
 			Query query = em.createQuery("SELECT MAX(s.isNr) FROM InSzenario s");
-			maxID = (int) query.getSingleResult();
+			maxInNr = (int) query.getSingleResult();
 		} catch (Exception e) {
 			throw(e);
 		}
-		return maxID; 
+		return maxInNr; 
 	}
 
 	// ------------------------------------------------------------------------

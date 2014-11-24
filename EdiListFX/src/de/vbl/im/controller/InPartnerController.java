@@ -167,8 +167,7 @@ public class InPartnerController {
 		
 //	    Setup for Sub-Panel    
 		
-		tcInNr.setCellValueFactory(cellData -> Bindings.format(Integration.FORMAT_INNR, 
-												cellData.getValue().getIntegration().inNrProperty()));
+		tcInNr.setCellValueFactory(cellData -> cellData.getValue().getIntegration().inNrStrExp());
 
 		tcSender.setCellValueFactory(cellData -> cellData.getValue().getIntegration().getInKomponente().fullnameProperty());
 		
@@ -213,7 +212,7 @@ public class InPartnerController {
 		tvVerwendungen.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<InEmpfaenger>() {
 			@Override
 			public void changed (ObservableValue<? extends InEmpfaenger> ov, InEmpfaenger oldValue, InEmpfaenger newValue) {
-				logger.info("noch nicht impelmentiert: Absprung zu " + newValue.getIntegration().getInNrStr());
+				logger.info("noch nicht impelmentiert: Absprung zu " + newValue.getIntegration().inNrStrExp());
 			}
 		});
 		logger.exit();

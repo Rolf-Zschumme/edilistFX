@@ -6,8 +6,12 @@
 .settings/
 .build/
 
+#sql
+*.sql
+
 # Tests
 screenshot*.png
 
 /build/
 /*.log
+/.gitignore

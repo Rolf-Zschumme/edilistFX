@@ -358,14 +358,14 @@ public class IMController {
 	private void setupIntegrationPane() {
 		logger.info("entered");
     	tableInNrAuswahl.setItems(integrationList);
-    	tColAuswahlInNr.setCellValueFactory(cellData -> Bindings.format(Integration.FORMAT_INNR, 
-    			cellData.getValue().inNrProperty()));
+    	tColAuswahlInNr.setCellValueFactory(cellData -> 
+    										cellData.getValue().inNrStrExp());
     	tColAuswahlInNrSender.setCellValueFactory(cellData -> 
-    			cellData.getValue().senderNameProperty());
+    										cellData.getValue().senderNameProperty());
     	tColAuswahlInNrBezeichnung.setCellValueFactory(cellData -> 
-    			cellData.getValue().bezeichnungProperty());
+    										cellData.getValue().bezeichnungProperty());
     	tColAuswahlInNrInSzenario.setCellValueFactory(cellData -> 
-    			cellData.getValue().inSzenarioNameProperty());
+    										cellData.getValue().inSzenarioNameProperty());
 
     	integration.setDisable(false);
 
@@ -686,7 +686,7 @@ public class IMController {
     private void integrationLoeschen() {
     	Integration selectedlistElement = tableInNrAuswahl.getSelectionModel().getSelectedItem();
     	if (selectedlistElement != null) {
-    		String inNr = Integer.toString(selectedlistElement.inNrProperty().get());
+    		String inNr = selectedlistElement.inNrStrExp().getValueSafe();
     		Action response = Dialog.Actions.OK;
     		if (selectedlistElement.getInKomponente() != null) {
     			response = Dialogs.create()

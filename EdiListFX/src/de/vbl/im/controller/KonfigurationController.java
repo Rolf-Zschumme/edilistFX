@@ -134,9 +134,7 @@ public class KonfigurationController {
 		
 //	    Setup for Sub-Panel    
 		
-		tcInNr.setCellValueFactory(cellData -> Bindings.format(Integration.FORMAT_INNR, 
-												cellData.getValue().getIntegration().inNrProperty()));
-
+		tcInNr.setCellValueFactory(cellData -> cellData.getValue().getIntegration().inNrStrExp());
 		tcSender.setCellValueFactory(cellData -> cellData.getValue().getIntegration().getInKomponente().fullnameProperty());
 		tcEmpfaenger.setCellValueFactory(cellData -> cellData.getValue().getKomponente().fullnameProperty());
 		tcGeschaeftsobjekt.setCellValueFactory(cellData -> cellData.getValue().geschaeftsObjektNameProperty());

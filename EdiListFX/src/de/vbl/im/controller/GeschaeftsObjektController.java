@@ -139,8 +139,7 @@ public class GeschaeftsObjektController {
 		
 //	    Setup for Sub-Panel    
 		
-		tcInNr.setCellValueFactory(cellData -> Bindings.format(Integration.FORMAT_INNR, 
-												cellData.getValue().getIntegration().inNrProperty()));
+		tcInNr.setCellValueFactory(cellData -> cellData.getValue().getIntegration().inNrStrExp());
 		tcInSzenario.setCellValueFactory(cell -> cell.getValue().getIntegration().inSzenarioNameProperty());
 		tcKonfiguration.setCellValueFactory(cell -> cell.getValue().getIntegration().konfigurationNameProperty());
 		tcSender.setCellValueFactory(cellData -> cellData.getValue().getIntegration().getInKomponente().fullnameProperty());

@@ -129,9 +129,7 @@ public class InSzenarioController {
 		
 //	    Setup for Sub-Panel    
 		
-		tcInNr.setCellValueFactory(cellData -> Bindings.format(Integration.FORMAT_INNR, 
-												cellData.getValue().getIntegration().inNrProperty()));
-
+		tcInNr.setCellValueFactory(cellData -> cellData.getValue().getIntegration().inNrStrExp());
 
 		tcKonfiguration.setCellValueFactory(cellData -> cellData.getValue().getIntegration().konfigurationNameProperty());
 		

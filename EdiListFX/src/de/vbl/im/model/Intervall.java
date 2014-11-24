@@ -27,9 +27,11 @@ public class Intervall implements Serializable {
 	private long id;
 	private StringProperty name;
 
+	// ========================================================================
 	public Intervall() {
 		name = new SimpleStringProperty("");
-	}   
+	}  
+	// ------------------------------------------------------------------------
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
 	public long getId() {
@@ -47,7 +49,7 @@ public class Intervall implements Serializable {
 
 	@Column(unique = true)
 	public String getName() {
-		return name.getValue();
+		return name.getValueSafe();
 	}
 
 	public void setName(String name) {

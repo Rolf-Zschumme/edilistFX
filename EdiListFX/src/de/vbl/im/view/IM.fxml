@@ -60,9 +60,9 @@
 														<ToolBar layoutX="-48.0" layoutY="14.0" visible="false" />
 														<TableView fx:id="tableInNrAuswahl" onContextMenuRequested="#actionInNrContextMenuRequested" prefHeight="702.0" tableMenuButtonVisible="true" VBox.vgrow="ALWAYS">
 															<columns>
-																<TableColumn fx:id="tColAuswahlInNr" editable="false" maxWidth="120.0" minWidth="0.0" prefWidth="35.0" text="Nr." />
-																<TableColumn fx:id="tColAuswahlInNrInSzenario" prefWidth="150.0" text="Integrationsszenario" />
-																<TableColumn fx:id="tColAuswahlInNrSender" prefWidth="160.0" text="Sender" />
+																<TableColumn fx:id="tColAuswahlInNr" editable="false" maxWidth="60.0" minWidth="0.0" prefWidth="50.0" text=" I-Nr." />
+																<TableColumn fx:id="tColAuswahlInNrInSzenario" maxWidth="250.0" prefWidth="170.0" text="Integrationsszenario" />
+																<TableColumn fx:id="tColAuswahlInNrSender" maxWidth="300.0" prefWidth="180.0" text="Sender" />
 																<TableColumn fx:id="tColAuswahlInNrBezeichnung" editable="false" maxWidth="1.7976931348623157E308" minWidth="200.0" prefWidth="-1.0" text="Bezeichnung" />
 															</columns>
 														</TableView>
@@ -109,7 +109,7 @@
                                  <children>
                                     <TableView fx:id="tableKonfigurationAuswahl" prefHeight="714.0" prefWidth="416.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                       <columns>
-                                        <TableColumn fx:id="tColSelKonfigurationName" prefWidth="314.0" text="Konfigurations-Name" />
+                                        <TableColumn fx:id="tColSelKonfigurationName" prefWidth="314.0" text="Konfigurationsname" />
                                         <TableColumn fx:id="tColSelKonfigInSzenarioName" prefWidth="259.0" text="Integrationsszenario" />
                                       </columns>
                                     </TableView>

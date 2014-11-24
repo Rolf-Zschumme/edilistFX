@@ -2,26 +2,35 @@ package de.vbl.im.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.StringExpression;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import javax.persistence.Entity;
+import javax.persistence.EntityManager;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.TypedQuery;
 import javax.persistence.Transient;
+
 import de.vbl.im.model.Konfiguration;
+
 import javax.persistence.JoinColumn;
 import javax.persistence.GeneratedValue;
+
 import static javax.persistence.GenerationType.IDENTITY;
+import static javax.persistence.CascadeType.ALL;
 
 @Entity
 public class Integration { 
 	public static final int IN_NR_MIN_LEN = 2;
-	public static final String FORMAT_INNR = " %02d";
+	public static final String FORMAT_INNR = "%03d-%02d";
 	
 	private long id;
 	private IntegerProperty inNr;
@@ -51,7 +60,12 @@ public class Integration {
 		senderName = new SimpleStringProperty();
 		inSzenarioName = new SimpleStringProperty("");
 		konfigurationName = new SimpleStringProperty("");
-	}	
+	}
+	
+//	public Integration(final Konfiguration konfig) {
+//		this();
+//		setKonfiguration(konfig);
+//	}
 
 	// ------------------------------------------------------------------------
 	@Id
@@ -77,10 +91,32 @@ public class Integration {
 		inNr.set(param);
 	}
 	
-	public String getInNrStr() {
-		String ret = Integer.toString(getInNr());
-		while(ret.length()<IN_NR_MIN_LEN) ret = "0"+ ret;
-		return ret;
+	public final int getMaxInNr (final EntityManager em, int startIS) {
+//		try {
+//			Query query = em.createQuery("SELECT MAX(i.inNr) FROM Integration i");
+//			return (int) query.getSingleResult();
+//		} catch (Exception e) {
+//			throw(e);
+//		}
+    	TypedQuery<Integration> tq = em.createQuery(
+				"SELECT i FROM Integration i", Integration.class);
+//    	tq.setParameter("s", startIS * 100);
+		List<Integration> aktuList = tq.getResultList();
+		int maxInNr = 0;
+		for(Integration i : aktuList ) {
+			if (i.inNr.getValue() / 100 > startIS) {
+				break;
+			}
+			int inNr = i.inNr.getValue() % 100;
+	    	if (inNr > maxInNr) maxInNr = inNr;
+		}
+		return maxInNr;
+		
+	}
+
+	public StringExpression inNrStrExp() {
+		int isNr = inNr.get();
+		return (Bindings.format("%03d-%02d", isNr / 100, isNr % 100));
 	}
 
 	// ------------------------------------------------------------------------
@@ -132,7 +168,7 @@ public class Integration {
 		}
 	}
 
-	@OneToMany(mappedBy = "integration")
+	@OneToMany(mappedBy = "integration", cascade = ALL)
 	public Collection<InEmpfaenger> getInEmpfaenger() {
 		return inEmpfaenger;
 	}
@@ -207,7 +243,8 @@ public class Integration {
     	}
     	return inSzenarioName + TrennStr() + senderName + TrennStr() + gObjektName;
     }
-    	
+    
+    // TrennStr for autoBezeichung between InSzenario, Sender and GeschaeftsObjekt    
 	private static String TrennStr() {
 		return "  |  ";
 	}
@@ -238,4 +275,6 @@ public class Integration {
 			inSzenarioName.bind(konfiguration.inSzenarioNameProperty());
 		}
 	}
+	
+	
 }

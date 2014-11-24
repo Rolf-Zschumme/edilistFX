@@ -11,8 +11,8 @@
 <children>
   				<ToolBar layoutX="205.0" layoutY="185.5" maxHeight="35.0" minHeight="35.0">
 					<items>
-						<Button fx:id="btnSpeichern" mnemonicParsing="false" onAction="#speichern" text="Änderungen speichern" />
-						<Button fx:id="btnLoeschen" mnemonicParsing="false" onAction="#loeschen" text="System löschen" />
+						<Button fx:id="btnSpeichern" minWidth="80.0" mnemonicParsing="false" onAction="#speichern" prefWidth="100.0" text="Speichern" />
+						<Button fx:id="btnLoeschen" minWidth="80.0" mnemonicParsing="false" onAction="#loeschen" prefWidth="100.0" text="Löschen" />
 					</items>
 <VBox.margin>
 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -27,13 +27,13 @@
     			<AnchorPane maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0">
 					<children>
 						<Label layoutX="8.0" layoutY="15.0" prefWidth="81.0" text="Bezeichnung:" AnchorPane.leftAnchor="12.0" AnchorPane.topAnchor="5.0" />
-						<TextField fx:id="tfBezeichnung" layoutX="89.0" layoutY="11.0" prefHeight="25.0" prefWidth="200.0" AnchorPane.leftAnchor="100.0" AnchorPane.topAnchor="5.0" />
-						<Label layoutX="324.0" layoutY="15.0" text="Beschreibung:" AnchorPane.leftAnchor="320.0" AnchorPane.topAnchor="5.0" />
-						<TextArea fx:id="taBeschreibung" layoutX="411.0" layoutY="7.0" maxHeight="1.7976931348623157E308" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="400.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
-                                    <Button fx:id="btnRemoveAnsprechpartner" disable="true" mnemonicParsing="false" onAction="#actionRemoveAnsprechpartner" prefWidth="80.0" text="entfernen" AnchorPane.leftAnchor="12.0" AnchorPane.topAnchor="105.0" />
-                                    <Button mnemonicParsing="false" onAction="#actionAddAnsprechpartner" prefWidth="80.0" text="hinzufügen" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="65.0" />
+						<TextField fx:id="tfBezeichnung" layoutX="89.0" layoutY="11.0" prefHeight="25.0" prefWidth="220.0" AnchorPane.leftAnchor="120.0" AnchorPane.topAnchor="5.0" />
+						<Label layoutX="324.0" layoutY="15.0" text="Beschreibung:" AnchorPane.leftAnchor="370.0" AnchorPane.topAnchor="5.0" />
+						<TextArea fx:id="taBeschreibung" layoutX="411.0" layoutY="7.0" maxHeight="1.7976931348623157E308" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="450.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
+                                    <Button fx:id="btnRemoveAnsprechpartner" disable="true" mnemonicParsing="false" onAction="#actionRemoveAnsprechpartner" prefWidth="80.0" text="entfernen" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="105.0" />
+                                    <Button mnemonicParsing="false" onAction="#actionAddAnsprechpartner" prefWidth="80.0" text="hinzufügen" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="65.0" />
                                     <Label alignment="CENTER" disable="true" text="Ansprechpartner:" AnchorPane.leftAnchor="12.0" AnchorPane.topAnchor="40.0" />
-                                    <ListView fx:id="lvAnsprechpartner" prefWidth="200.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="100.0" AnchorPane.topAnchor="40.0" />
+                                    <ListView fx:id="lvAnsprechpartner" prefWidth="220.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="120.0" AnchorPane.topAnchor="40.0" />
 					</children>
 				</AnchorPane>
 </content>
@@ -42,7 +42,7 @@
 </AnchorPane>
 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0">
 <children>
-                  <TitledPane animated="false" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="933.0" text="Verwendungen" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <TitledPane animated="false" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="933.0" text="Verwendungsnachweis" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <content>
                               <TableView fx:id="tvVerwendungen" minHeight="0.0" minWidth="0.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
                                  <columns>
