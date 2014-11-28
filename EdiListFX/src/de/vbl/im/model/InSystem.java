@@ -81,7 +81,7 @@ public class InSystem {
 	}
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
-	@Transient
+	// @Transient
 	public StringProperty fullnameProperty() {
 		return fullname;
 	}

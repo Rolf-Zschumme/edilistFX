@@ -18,7 +18,7 @@
 		</Root>
 		
 		<logger name="de.vbl.im" level="INFO" />
-		<logger name="de.vbl.im.controller" level="INFO" />
+		<logger name="de.vbl.im.controller" level="TRACE" />
 		<logger name="de.vbl.im.controller.subs" level="TRACE" />
 		<logger name="de.vbl.im.tools" level="INFO" />
 		<logger name="de.vbl.im.model" level="INFO" />

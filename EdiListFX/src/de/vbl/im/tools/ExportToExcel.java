@@ -24,7 +24,6 @@ import de.vbl.im.model.InPartner;
 import de.vbl.im.model.InSystem;
 import de.vbl.im.model.GeschaeftsObjekt;
 import de.vbl.im.model.InSzenario;
-import de.vbl.im.model.Konfiguration;
 
 public class ExportToExcel {
 	private static final String PARTNER_SHEET = "Partner";
@@ -32,7 +31,7 @@ public class ExportToExcel {
 	private static final String KOMPONENTEN_SHEET = "Komponenten";
 	private static final String G_OBJEKT_SHEET = "Geschäftsobjekte";
 	private static final String INSZENARIO_SHEET = "Integrationsszenarios";
-	private static final String KONFIGURATION_SHEET = "Konfigurationen";
+//	private static final String KONFIGURATION_SHEET = "Konfigurationen";
 	private static final String INT_SHEET = "Integrationen";
 	private static final String EMPFAENGER_SHEET = "Integrationen mit Empfängern";
 
@@ -50,7 +49,7 @@ public class ExportToExcel {
 	
 		Map<Long, String> komponentenZeilenNr   = new HashMap<Long, String>();
 		Map<Long, String> inSzenarioZeilenNr   = new HashMap<Long, String>();
-		Map<Long, String> konfigurationZeilenNr = new HashMap<Long, String>();
+//		Map<Long, String> konfigurationZeilenNr = new HashMap<Long, String>();
 		Map<Long, String> geschaeftsObZeilenNr  = new HashMap<Long, String>();
 		
 		int anz_zeilen = 0; 
@@ -179,13 +178,13 @@ public class ExportToExcel {
 		createCell(row, ++s, styleHeader, "InSzenario");
 		++anz_zeilen;
 		
-    	Sheet c_Sheet = wb.createSheet(KONFIGURATION_SHEET);
-    	row = c_Sheet.createRow(0);
-		row.setHeightInPoints(20);
-		createCell(row, s=0, styleHeader, "lfd-Nr.");
-		createCell(row, ++s, styleHeader, "Konfiguration");
-		createCell(row, ++s, styleHeader, "InSzenario");
-		++anz_zeilen;
+//    	Sheet c_Sheet = wb.createSheet(KONFIGURATION_SHEET);
+//    	row = c_Sheet.createRow(0);
+//		row.setHeightInPoints(20);
+//		createCell(row, s=0, styleHeader, "lfd-Nr.");
+//		createCell(row, ++s, styleHeader, "Konfiguration");
+//		createCell(row, ++s, styleHeader, "InSzenario");
+//		++anz_zeilen;
 
     	Sheet e_Sheet = wb.createSheet(INT_SHEET);
     	row = e_Sheet.createRow(0);
@@ -193,7 +192,7 @@ public class ExportToExcel {
 		createCell(row, s=0, styleHeader, "lfd-Nr.");
 		createCell(row, ++s, styleHeader, "I-Nr.");
 		createCell(row, ++s, styleHeader, "InSzenario");
-		createCell(row, ++s, styleHeader, "Konfiguration");
+//		createCell(row, ++s, styleHeader, "Konfiguration");
 		createCell(row, ++s, styleHeader, "Bezeichnung");
 		createCell(row, ++s, styleHeader, "Sender");
 		createCell(row, ++s, styleHeader, "Intervall");
@@ -204,7 +203,7 @@ public class ExportToExcel {
     	TypedQuery<InSzenario> inSzenarioQuery = em.createQuery(
     			"SELECT i FROM InSzenario i ORDER BY i.name",InSzenario.class);
     	int i_znr = 0;
-    	int c_znr = 0;
+//    	int c_znr = 0;
     	int e_znr = 0;
     	for (InSzenario inSzenario : inSzenarioQuery.getResultList()) {
     		row =  i_Sheet.createRow(++i_znr);
@@ -213,21 +212,21 @@ public class ExportToExcel {
     		createCell(row, ++s, styleNormal, inSzenario.getName());
     		String i_zStr = Integer.toString(i_znr+1);
     		
-    		for (Konfiguration configuration : inSzenario.getKonfiguration()) {
-        		row =  c_Sheet.createRow(++c_znr);
-        		++anz_zeilen;
-        		createCell(row, s=0, styleNormal, c_znr); 
-        		createCell(row, ++s, styleNormal, configuration.getName());				
-        		createCeFo(row, ++s, styleNormal , INSZENARIO_SHEET + "!B" + i_zStr);  
-        		String c_zStr = Integer.toString(c_znr+1);
+//    		for (Konfiguration configuration : inSzenario.getKonfiguration()) {
+//        		row =  c_Sheet.createRow(++c_znr);
+//        		++anz_zeilen;
+//        		createCell(row, s=0, styleNormal, c_znr); 
+//        		createCell(row, ++s, styleNormal, configuration.getName());				
+//        		createCeFo(row, ++s, styleNormal , INSZENARIO_SHEET + "!B" + i_zStr);  
+//        		String c_zStr = Integer.toString(c_znr+1);
         		
-        		for(Integration integration : configuration.getIntegration()) {
+        		for(Integration integration : inSzenario.getIntegration()) {
         			row = e_Sheet.createRow(++e_znr);
             		++anz_zeilen;
             		createCell(row, s=0, styleNormal, e_znr); 
             		createCell(row, ++s, styleNormal, integration.getInNr());				
             		createCeFo(row, ++s, styleNormal, INSZENARIO_SHEET + "!B" + i_zStr);				
-            		createCeFo(row, ++s, styleNormal, KONFIGURATION_SHEET + "!B" + c_zStr);				
+//            		createCeFo(row, ++s, styleNormal, KONFIGURATION_SHEET + "!B" + c_zStr);				
             		createCell(row, ++s, styleNormal, integration.getBezeichnung());				
             		createCeFo(row, ++s, styleNormal, KOMPONENTEN_SHEET + "!F" + 
             				komponentenZeilenNr.get(integration.getInKomponente().getId()));
@@ -236,19 +235,19 @@ public class ExportToExcel {
             		createCell(row, ++s, styleNormal, integration.getSeitDatum());
             		createCell(row, ++s, styleNormal, integration.getBisDatum());
         		}
-        		konfigurationZeilenNr.put(configuration.getId(), c_zStr);
-    		}
+//       		konfigurationZeilenNr.put(configuration.getId(), c_zStr);
+//    		}
     		inSzenarioZeilenNr.put(inSzenario.getId(), i_zStr);
     	}
     	for (s=0; s<=2; ++s) i_Sheet.autoSizeColumn(s);
-    	for (s=0; s<=3; ++s) c_Sheet.autoSizeColumn(s);
+//    	for (s=0; s<=3; ++s) c_Sheet.autoSizeColumn(s);
     	for (s=0; s<=12; ++s) e_Sheet.autoSizeColumn(s);
     	
     	int i_MaxLen = i_Sheet.getColumnWidth(1);
-    	int c_MaxLen = c_Sheet.getColumnWidth(1);
-    	c_Sheet.setColumnWidth(2, i_MaxLen);
+//    	int c_MaxLen = c_Sheet.getColumnWidth(1);
+//    	c_Sheet.setColumnWidth(2, i_MaxLen);
     	e_Sheet.setColumnWidth(2, i_MaxLen);
-    	e_Sheet.setColumnWidth(3, c_MaxLen);
+//    	e_Sheet.setColumnWidth(3, c_MaxLen);
     	e_Sheet.setColumnWidth(5, p_MaxLen + s_MaxLen + k_MaxLen);
     	
     	Sheet ee_Sheet = wb.createSheet(EMPFAENGER_SHEET);
@@ -281,9 +280,9 @@ public class ExportToExcel {
 				createCell(row, s=0, styleNormal, e_znr); 
 				createCell(row, ++s, styleNormal, integration.inNrStrExp().get());			
 				createCeFo(row, ++s, styleNormal, INSZENARIO_SHEET + "!B" + 
-						inSzenarioZeilenNr.get(integration.getKonfiguration().getInSzenario().getId()));				
-				createCeFo(row, ++s, styleNormal, KONFIGURATION_SHEET + "!B" +
-						konfigurationZeilenNr.get(integration.getKonfiguration().getId()));				
+						inSzenarioZeilenNr.get(integration.getInSzenario().getId()));				
+//				createCeFo(row, ++s, styleNormal, KONFIGURATION_SHEET + "!B" +
+//						konfigurationZeilenNr.get(integration.get....getId()));				
 				createCell(row, ++s, styleNormal, integration.getBezeichnung());				
 				createCeFo(row, ++s, styleNormal, KOMPONENTEN_SHEET + "!F" + 
 						komponentenZeilenNr.get(integration.getInKomponente().getId()));
@@ -300,7 +299,7 @@ public class ExportToExcel {
     	for (s=0; s<=14; ++s) ee_Sheet.autoSizeColumn(s);
     	
     	ee_Sheet.setColumnWidth(2, i_MaxLen);
-    	ee_Sheet.setColumnWidth(3, c_MaxLen);
+//    	ee_Sheet.setColumnWidth(3, c_MaxLen);
     	ee_Sheet.setColumnWidth(5, p_MaxLen + s_MaxLen + k_MaxLen);
     	
 

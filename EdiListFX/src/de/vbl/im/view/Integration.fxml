@@ -6,15 +6,15 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane fx:id="m_Integration_All" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="760.0" prefWidth="923.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.im.controller.IntegrationController">
+<AnchorPane fx:id="m_Integration_All" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="797.0" prefWidth="954.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.vbl.im.controller.IntegrationController">
 	<children>
 		<VBox maxHeight="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 			<children>
-				<TitledPane fx:id="m_InSzenarioPane" animated="false" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" text="Integrationsszenario">
+				<TitledPane fx:id="m_InSzenarioPane" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" text="Integrationsszenario">
 					<content>
 						<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
 							<children>
-								<GridPane hgap="8.0" layoutX="14.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="271.0" prefWidth="932.0" vgap="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+								<GridPane hgap="8.0" layoutX="14.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="220.0" vgap="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 									<columnConstraints>
 										<ColumnConstraints hgrow="SOMETIMES" maxWidth="85.0" minWidth="10.0" />
 										<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" prefWidth="450.0" />
@@ -23,7 +23,7 @@
 									</columnConstraints>
 									<rowConstraints>
 <RowConstraints minHeight="0.0" prefHeight="5.0" vgrow="NEVER" />
-										<RowConstraints minHeight="10.0" vgrow="NEVER" />
+										<RowConstraints minHeight="20.0" vgrow="NEVER" />
 										<RowConstraints maxHeight="1.7976931348623157E308" minHeight="60.0" vgrow="SOMETIMES" />
 										<RowConstraints minHeight="10.0" vgrow="NEVER" />
 									</rowConstraints>
@@ -53,32 +53,40 @@
 </GridPane.margin>
 </VBox>
 										<ComboBox fx:id="cmbInSzenario" layoutX="9.600000381469727" layoutY="9.600000381469727" maxWidth="1.7976931348623157E308" AnchorPane.leftAnchor="90.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-										<Label alignment="CENTER_RIGHT" layoutX="9.600000381469727" layoutY="68.60000038146973" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Konfiguration:" GridPane.rowIndex="3">
-										</Label>
-										<ComboBox fx:id="cmbKonfiguration" focusTraversable="false" layoutX="9.600000381469727" layoutY="85.60000038146973" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 										<Label alignment="CENTER_RIGHT" layoutX="9.600000381469727" layoutY="34.60000038146973" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Name:" AnchorPane.leftAnchor="14.0" GridPane.rowIndex="1">
 										</Label>
-										<TableView fx:id="tvDokuLinks" editable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onContextMenuRequested="#actionDocumentContextMenuRequested" prefHeight="120.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="2">
+										<TableView fx:id="tvDokuLinks" editable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onContextMenuRequested="#actionDocumentContextMenuRequested" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="2">
 											<columns>
 												<TableColumn fx:id="tColDokumentVorhaben" maxWidth="80.0" text="Vorhaben" />
 												<TableColumn fx:id="tColDokumentName" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="500.0" text="Bezeichnung des Dokumentes" />
 												<TableColumn fx:id="tColDokumentDatum" editable="false" maxWidth="100.0" minWidth="-1.0" prefWidth="100.0" resizable="false" text="Datum" />
 												<TableColumn fx:id="tColDokumentQuelle" editable="false" maxWidth="250.0" minWidth="20.0" prefWidth="120.0" resizable="false" text="Quelle" /><TableColumn fx:id="tColDokumentPfad" editable="false" maxWidth="1.7976931348623157E308" minWidth="50.0" prefWidth="300.0" text="Pfad" visible="false" /><TableColumn fx:id="tColDokumentRevision" editable="false" maxWidth="80.0" minWidth="-1.0" resizable="false" text="Revision" visible="false" />
 											</columns>
-										</TableView><Button fx:id="m_NewInSzenarioBtn" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#actionNewInSzenario" text="Neu..." GridPane.columnIndex="2" GridPane.rowIndex="1" /><Button fx:id="m_NewConfigurationBtn" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#newKonfiguration" text="Neu..." GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                                 <GridPane.margin>
+                                    <Insets top="8.0" />
+                                 </GridPane.margin>
+										</TableView><Button fx:id="m_NewInSzenarioBtn" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#actionNewInSzenario" text="Neu..." GridPane.columnIndex="2" GridPane.rowIndex="1" />
 									</children>
 <padding>
-<Insets left="5.0" right="8.0" />
+<Insets left="5.0" />
 </padding>
 								</GridPane>
 							</children>
 						</AnchorPane>
 					</content>
-				</TitledPane>
+				</TitledPane><TitledPane expanded="false" text="Konfigurationen">
+  <content>
+    <AnchorPane maxHeight="80.0" minHeight="65.0" minWidth="0.0" prefHeight="70.0" />
+  </content>
+</TitledPane>
             <TitledPane collapsible="false" text="Integrationen">
                <content>
-      				<ToolBar prefHeight="50.0">
-      					<items>
+<AnchorPane>
+<children>
+<VBox spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+<children>
+<ToolBar>
+<items>
                         <HBox spacing="12.0">
                            <children>
                               <Button fx:id="m_Aendern" disable="true" mnemonicParsing="false" onAction="#actionAendern" prefWidth="136.0" text="Ändern" />
@@ -91,35 +99,21 @@
             						<Button fx:id="m_LoeschenBtn" disable="true" mnemonicParsing="false" onAction="#actionLoeschen" prefWidth="136.0" text="Löschen" />
                            </children>
                         </HBox>
-      					</items>
-      					<VBox.margin>
-      						<Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
-      					</VBox.margin>
-                     <opaqueInsets>
-                        <Insets />
-                     </opaqueInsets>
-                     <padding>
-                        <Insets left="4.0" top="9.0" />
-                     </padding>
-      				</ToolBar>
-               </content>
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-            </TitledPane>
-            <AnchorPane fx:id="m_IntegrationPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="400.0">
+</items>
+</ToolBar>
+            <AnchorPane fx:id="m_IntegrationPane">
                <children>
-                  <TabPane fx:id="tabPaneInNr" prefHeight="400.0" prefWidth="934.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <TabPane fx:id="tabPaneInNr" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <tabs>
                       <Tab fx:id="tabAktInNr" text="I 000-00">
                            <content>
             						<AnchorPane>
                                  <children>
-                                    <VBox maxHeight="1.7976931348623157E308" prefHeight="371.0" prefWidth="934.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <VBox maxHeight="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                        <children>
-                                          <AnchorPane maxHeight="175.0" prefHeight="166.0">
+                                          <AnchorPane maxHeight="175.0">
                                              <children>
-                              										<GridPane hgap="8.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" vgap="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                              										<GridPane hgap="8.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="154.0" prefWidth="955.0" vgap="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                               											<columnConstraints>
                               												<ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" />
                               												<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" percentWidth="27.0" prefWidth="270.0" />
@@ -172,9 +166,6 @@
                                                       <Label alignment="CENTER_RIGHT" layoutX="15.0" layoutY="52.0" maxWidth="1.7976931348623157E308" text="Bezeichnung:" />
                                                       <TextField fx:id="tfBezeichnung" focusTraversable="false" layoutX="864.0" layoutY="13.0" maxWidth="1.7976931348623157E308" prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="5" />
                               											</children>
-                              											<padding>
-                              												<Insets left="5.0" right="8.0" />
-                              											</padding>
                               										</GridPane>
                                              </children>
                                              <opaqueInsets>
@@ -186,10 +177,10 @@
                                           </AnchorPane>
                                           <AnchorPane>
                                              <children>
-                                                <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="0.0">
+                                                <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                    <children>
                                           
-                                                                        										<GridPane prefHeight="90.0" prefWidth="934.0" vgap="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                                        										<GridPane hgap="8.0" vgap="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                           											<columnConstraints>
                                           												<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" percentWidth="35.0" prefWidth="200.0" />
                                                             <ColumnConstraints hgrow="SOMETIMES" maxWidth="20.0" minWidth="10.0" prefWidth="20.0" />
@@ -270,45 +261,51 @@
                                           												<Insets bottom="5.0" left="5.0" top="5.0" />
                                           											</padding>
                                           										</GridPane>
-                                                      <GridPane hgap="4.0" VBox.vgrow="NEVER">
+                                                      <GridPane hgap="4.0" VBox.vgrow="SOMETIMES">
                                                         <columnConstraints>
                                                           <ColumnConstraints hgrow="SOMETIMES" maxWidth="120.0" minWidth="10.0" prefWidth="125.0" />
-                                                          <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="50.0" prefWidth="170.0" />
+                                                          <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="50.0" />
                                                             <ColumnConstraints hgrow="SOMETIMES" maxWidth="65.0" minWidth="10.0" prefWidth="65.0" />
-                                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="45.0" prefWidth="90.0" />
+                                                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="60.0" minWidth="40.0" prefWidth="60.0" />
                                                             <ColumnConstraints hgrow="SOMETIMES" maxWidth="65.0" minWidth="10.0" prefWidth="65.0" />
-                                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="40.0" prefWidth="60.0" />
-<ColumnConstraints hgrow="SOMETIMES" minWidth="20.0" prefWidth="32.0" />
+                                                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="60.0" minWidth="40.0" prefWidth="60.0" />
+<ColumnConstraints hgrow="SOMETIMES" maxWidth="45.0" minWidth="40.0" prefWidth="45.0" />
                                                             <ColumnConstraints hgrow="SOMETIMES" maxWidth="80.0" minWidth="10.0" prefWidth="80.0" />
-                                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="40.0" prefWidth="60.0" />
-<ColumnConstraints hgrow="SOMETIMES" minWidth="20.0" prefWidth="32.0" />
+                                                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="60.0" minWidth="40.0" prefWidth="60.0" />
+<ColumnConstraints hgrow="SOMETIMES" maxWidth="45.0" minWidth="40.0" prefWidth="45.0" />
                                                         </columnConstraints>
                                                         <rowConstraints>
-                                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                          <RowConstraints minHeight="20.0" prefHeight="25.0" vgrow="SOMETIMES" />
+<RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+<RowConstraints prefHeight="25.0" vgrow="SOMETIMES" />
                                                         </rowConstraints>
                                                          <children>
                                                             <Label alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" text="Ausführungsintervall:" />
-                                                            <ComboBox fx:id="m_Intervall" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" />
+                                                            <ComboBox fx:id="m_Intervall" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1">
+																<GridPane.margin><Insets /></GridPane.margin></ComboBox>
                                                             <Label alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" text="⌀ Anzahl:" GridPane.columnIndex="2">
-                                                               <GridPane.margin>
-                                                                  <Insets />
-                                                               </GridPane.margin>
+                                                               	<GridPane.margin><Insets /></GridPane.margin>
                                                             </Label>
-                                                            <ComboBox fx:id="m_Anzahl" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="3" />
+                                                            <TextField fx:id="m_Anzahl" GridPane.columnIndex="3" />
                                                             <Label alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" text="⌀ Größe:" GridPane.columnIndex="4">
-                                                               <GridPane.margin>
-                                                                  <Insets />
-                                                               </GridPane.margin>
+                                                               <GridPane.margin><Insets /></GridPane.margin>
                                                             </Label>
-                                                            <ComboBox fx:id="m_Groesse" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="5" />
+                                                            <TextField fx:id="m_Groesse" GridPane.columnIndex="5" />
                                                             <ChoiceBox fx:id="m_GroesseEinheit" prefWidth="150.0" GridPane.columnIndex="6" />
                                                             <Label alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" text="Max.Größe:" GridPane.columnIndex="7" />
-                                                            <ComboBox fx:id="m_MaxGroesse" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="8" />
+                                                            <TextField fx:id="m_MaxGroesse" GridPane.columnIndex="8" />
                                                             <ChoiceBox fx:id="m_MaxGroesseEinheit" prefWidth="150.0" GridPane.columnIndex="9" />
+                                                                              <HBox spacing="10.0" GridPane.columnIndex="1" GridPane.columnSpan="9" GridPane.rowIndex="2">
+                                                                                 <children>
+      															<ComboBox fx:id="cmbKonfiguration" focusTraversable="false" layoutX="92.0" layoutY="14.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="450.0" AnchorPane.leftAnchor="80.0" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="2" />
+                                                                                    <Button fx:id="m_NewConfigurationBtn" disable="true" layoutX="559.0" layoutY="13.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#newKonfiguration" prefWidth="70.0" text="Neu..." GridPane.columnIndex="4" GridPane.rowIndex="2" />
+                                                                                 </children>
+                                                                              </HBox>
+                                                            <Label alignment="CENTER_RIGHT" layoutX="14.0" layoutY="17.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Konfiguration:" GridPane.rowIndex="2" />
                                                          </children>
-                                                         <padding>
-                                                            <Insets bottom="8.0" />
-                                                         </padding>
+<VBox.margin>
+<Insets bottom="4.0" right="3.0" />
+</VBox.margin>
                                                       </GridPane>
                                                    </children>
                                                 </VBox>
@@ -324,6 +321,18 @@
                   </TabPane>
                </children>
             </AnchorPane>
+</children>
+</VBox>
+</children>
+</AnchorPane>
+               </content>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+<font>
+<Font name="System Bold" size="12.0" />
+</font>
+            </TitledPane>
 			</children>
 		</VBox>
 	</children>

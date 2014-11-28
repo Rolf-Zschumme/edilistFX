@@ -1,32 +1,23 @@
 package de.vbl.im.model;
 
 
+import java.util.Collection;
+import java.util.Set;
+
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import javax.persistence.Entity;
-import javax.persistence.Id;
-
-import de.vbl.im.model.Konfiguration;
-
-import java.util.Set;
-
-import javax.persistence.OneToMany;
-
-import de.vbl.im.model.DokuLink;
-
 import javax.persistence.EntityManager;
-import javax.persistence.ManyToMany;
-import javax.persistence.JoinTable;
 import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Query;
-
 import static javax.persistence.GenerationType.IDENTITY;
-import de.vbl.im.model.Ansprechpartner;
-
-import java.util.Collection;
 
 
 /**
@@ -40,7 +31,7 @@ public class InSzenario {
 	private long id;
 	private IntegerProperty isNr;
 	private String beschreibung;
-	private Set<Konfiguration> konfiguration;
+	private Set<Integration> integration;
 	private Set<DokuLink> dokuLink;
 	private Collection<Ansprechpartner> ansprechpartner;
 	
@@ -118,12 +109,12 @@ public class InSzenario {
 
 	// ------------------------------------------------------------------------ 
 	@OneToMany(mappedBy = "inSzenario")
-	public final Set<Konfiguration> getKonfiguration() {
-	    return konfiguration;
+	public final Set<Integration> getIntegration() {
+	    return integration;
 	}
 
-	public final void setKonfiguration(final Set<Konfiguration> param) {
-	    this.konfiguration = param;
+	public final void setIntegration(final Set<Integration> param) {
+	    this.integration = param;
 	}
 
 	// ------------------------------------------------------------------------ 

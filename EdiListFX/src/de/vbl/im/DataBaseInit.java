@@ -233,35 +233,35 @@ public class DataBaseInit {
 
 		inSzenario = newInSzenario("ANW Meldungsverarbeitung");
 		em.persist(inSzenario);
-		em.persist(newKonfiguration(inSzenario, "CS_ANW_MLD__Meldungseingang"));
-		em.persist(newKonfiguration(inSzenario, "CS_ANW_MLD__Meldungsausgang"));
+		em.persist(newKonfiguration("CS_ANW_MLD__Meldungseingang"));
+		em.persist(newKonfiguration("CS_ANW_MLD__Meldungsausgang"));
 
 		inSzenario = newInSzenario("LST Zahlungenaufträge");
 		em.persist(inSzenario);
-		em.persist(newKonfiguration(inSzenario, "CS_LSTG_Mitteilung_Leistungstraeger__DPAG_Rentenservice"));
-		em.persist(newKonfiguration(inSzenario, "CS_LSTG_Zahlungsanweisung__DPAG_Rentenservice"));
+		em.persist(newKonfiguration("CS_LSTG_Mitteilung_Leistungstraeger__DPAG_Rentenservice"));
+		em.persist(newKonfiguration("CS_LSTG_Zahlungsanweisung__DPAG_Rentenservice"));
 		
 		inSzenario = newInSzenario("CRM Beschäftspartner-Replikation");
 		em.persist(inSzenario);
-		em.persist(newKonfiguration(inSzenario, "CS_ZGP_Replikation__CRM__to__ERP"));
-		em.persist(newKonfiguration(inSzenario, "CS_ZGP_Replikation__ERP__to__CRM"));
+		em.persist(newKonfiguration("CS_ZGP_Replikation__CRM__to__ERP"));
+		em.persist(newKonfiguration("CS_ZGP_Replikation__ERP__to__CRM"));
 		
 		inSzenario = newInSzenario("FV-Anbindung");
 		em.persist(inSzenario);
-		em.persist(newKonfiguration(inSzenario, "CS_ISIV_Koexistenz"));
+		em.persist(newKonfiguration("CS_ISIV_Koexistenz"));
 
 		inSzenario = newInSzenario("Materialbeschaffung (MM)");
 		em.persist(inSzenario);
-		em.persist(newKonfiguration(inSzenario, "CS_e-Procurement_Integration_Lieferanten"));
+		em.persist(newKonfiguration("CS_e-Procurement_Integration_Lieferanten"));
 		
-		em.persist(newKonfiguration(null, "CS_e-Gov_Portal_Integration"));
-		em.persist(newKonfiguration(null, "CS_FS-CD_eAvis_Beitragseingang__RZ_Arbeitgeber"));
-		em.persist(newKonfiguration(null, "CS_RC_SAS_BNP__Filetransfer"));
+		em.persist(newKonfiguration("CS_e-Gov_Portal_Integration"));
+		em.persist(newKonfiguration("CS_FS-CD_eAvis_Beitragseingang__RZ_Arbeitgeber"));
+		em.persist(newKonfiguration("CS_RC_SAS_BNP__Filetransfer"));
 		
 		inSzenario = newInSzenario("Zulage-System");
 		em.persist(inSzenario);
-		em.persist(newKonfiguration(inSzenario, "IS_ZUL_ZUSY_SAP"));
-		em.persist(newKonfiguration(inSzenario, "IS_ZUL_ZUSY_KOEX"));
+		em.persist(newKonfiguration("IS_ZUL_ZUSY_SAP"));
+		em.persist(newKonfiguration("IS_ZUL_ZUSY_KOEX"));
 	}
 	
 //	private static InKomponente getKompo(String string) {
@@ -302,17 +302,12 @@ public class DataBaseInit {
 		return inSzenario;
 	}
 
-	private static Konfiguration newKonfiguration( InSzenario inSzenario,	String konfigName) 
+	private static Konfiguration newKonfiguration( String konfigName) 
 	{
-		System.out.print("Konfiguration anlegen ");
-		if (inSzenario != null) {
-			System.out.print("für \"" + inSzenario.getName() + "\" ");
-		}
-		System.out.println("mit Name \"" + konfigName + "\"");
+		System.out.println("Konfiguration anlegen mit Name \"" + konfigName + "\"");
 		
 		Konfiguration konfiguration = new Konfiguration();
 		konfiguration.setName(konfigName);
-		konfiguration.setInSzenario(inSzenario);
 		return konfiguration;
 	}
 	

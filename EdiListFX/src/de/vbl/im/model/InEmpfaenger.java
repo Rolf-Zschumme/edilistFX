@@ -68,13 +68,13 @@ public class InEmpfaenger {
 	}
 	
 	public void setGeschaeftsObjekt(GeschaeftsObjekt newGeOb) {
-		if (geschaeftsObjekt != null) {
-			geschaeftsObjekt.getInEmpfaenger().remove(this);
-		}
+//		if (geschaeftsObjekt != null) {
+//			geschaeftsObjekt.getInEmpfaenger().remove(this);
+//		}
 	    geschaeftsObjekt = newGeOb;
-	    if (geschaeftsObjekt.getId() > 0 && !geschaeftsObjekt.getInEmpfaenger().contains(this)) {
-	    	geschaeftsObjekt.getInEmpfaenger().add(this);
-	    }
+//	    if (geschaeftsObjekt.getId() > 0 && !geschaeftsObjekt.getInEmpfaenger().contains(this)) {
+//	    	geschaeftsObjekt.getInEmpfaenger().add(this);
+//	    }
     	geschaeftsObjektName.set(newGeOb.getName());
 	}
 	

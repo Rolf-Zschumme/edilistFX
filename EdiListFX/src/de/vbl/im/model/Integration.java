@@ -13,22 +13,21 @@ import javafx.beans.property.StringProperty;
 
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.TypedQuery;
-import javax.persistence.Transient;
 
-import de.vbl.im.model.Konfiguration;
-
-import javax.persistence.JoinColumn;
-import javax.persistence.GeneratedValue;
-
-import static javax.persistence.GenerationType.IDENTITY;
+import de.vbl.im.tools.IMconstant;
 import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.GenerationType.IDENTITY;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Entity
 public class Integration { 
+	private static final Logger logger = LogManager.getLogger(GeschaeftsObjekt.class.getName());
 	public static final int IN_NR_MIN_LEN = 2;
 	public static final String FORMAT_INNR = "%03d-%02d";
 	
@@ -38,16 +37,21 @@ public class Integration {
 	private StringProperty beschreibung;
 	private StringProperty seitDatum;
 	private StringProperty bisDatum;
-	private InKomponente inKomponente;
-	private Collection<InEmpfaenger> inEmpfaenger;
 	private String laeDatum; 
 	private String laeUser;
 	
-	private StringProperty senderName;
+	private InSzenario inSzenario;
 	private StringProperty inSzenarioName;
-	private StringProperty konfigurationName;
-	private Intervall intervall;
+	
+	private InKomponente inKomponente;
+	private StringProperty senderName;
+	
+	private Collection<InEmpfaenger> inEmpfaenger;
+	
 	private Konfiguration konfiguration;
+	private StringProperty konfigurationName;
+	
+	private Intervall intervall;
 	
 	// ========================================================================
 	public Integration() {
@@ -62,11 +66,6 @@ public class Integration {
 		konfigurationName = new SimpleStringProperty("");
 	}
 	
-//	public Integration(final Konfiguration konfig) {
-//		this();
-//		setKonfiguration(konfig);
-//	}
-
 	// ------------------------------------------------------------------------
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
@@ -91,7 +90,7 @@ public class Integration {
 		inNr.set(param);
 	}
 	
-	public final int getMaxInNr (final EntityManager em, int startIS) {
+	public static int getMaxInNr (final EntityManager em, int searchIsNr) {
 //		try {
 //			Query query = em.createQuery("SELECT MAX(i.inNr) FROM Integration i");
 //			return (int) query.getSingleResult();
@@ -99,16 +98,23 @@ public class Integration {
 //			throw(e);
 //		}
     	TypedQuery<Integration> tq = em.createQuery(
-				"SELECT i FROM Integration i", Integration.class);
+				"SELECT i FROM Integration i ORDER BY i.inNr", Integration.class);
 //    	tq.setParameter("s", startIS * 100);
 		List<Integration> aktuList = tq.getResultList();
 		int maxInNr = 0;
 		for(Integration i : aktuList ) {
-			if (i.inNr.getValue() / 100 > startIS) {
+			int foundIsNr = i.inNr.getValue() / 100;
+			if (foundIsNr < searchIsNr) {
+				continue;
+			}
+			if (foundIsNr > searchIsNr) {
 				break;
 			}
 			int inNr = i.inNr.getValue() % 100;
 	    	if (inNr > maxInNr) maxInNr = inNr;
+		}
+		if (maxInNr >= 99) {
+			logger.error("keine neue Integration-Nummer für " + searchIsNr  + " verfuegbar");
 		}
 		return maxInNr;
 		
@@ -119,6 +125,91 @@ public class Integration {
 		return (Bindings.format("%03d-%02d", isNr / 100, isNr % 100));
 	}
 
+	// ------------------------------------------------------------------------
+	@ManyToOne
+	public InSzenario getInSzenario() {
+	    return inSzenario;
+	}
+
+	public void setInSzenario(InSzenario param) {
+		if (inSzenario != null) {
+			inSzenarioName.unbind();
+		}
+	    inSzenario = param;
+		if (inSzenario != null) {
+			inSzenarioName.bind(inSzenario.nameProperty());
+		}
+	}
+
+	public StringProperty inSzenarioNameProperty () {
+		return inSzenarioName;
+	}
+	
+	// ------------------------------------------------------------------------
+	@ManyToOne
+	public InKomponente getInKomponente() {
+		return inKomponente;
+	}
+
+	public void setInKomponente(InKomponente kompo) {
+		if (inKomponente != null) {
+			senderName.unbind();
+		}
+		inKomponente = kompo;
+		if (kompo != null) {
+			senderName.bind(kompo.fullnameProperty());
+		}
+	}
+
+	public StringProperty senderNameProperty() {
+		return senderName;
+	}
+
+//	 public void setSenderName(String param) {
+//		 senderName.set(param);
+//	 }
+	 
+	// ------------------------------------------------------------------------
+	@OneToMany(mappedBy = "integration", cascade = ALL)
+	public Collection<InEmpfaenger> getInEmpfaenger() {
+		return inEmpfaenger;
+	}
+
+	public void setInEmpfaenger(Collection<InEmpfaenger> param) {
+		this.inEmpfaenger = param;
+	}
+ 
+	// ------------------------------------------------------------------------
+	@ManyToOne
+	public Intervall getIntervall() {
+	    return intervall;
+	}
+
+	public void setIntervall(Intervall param) {
+	    this.intervall = param;
+	}
+
+	// ------------------------------------------------------------------------
+	@ManyToOne
+//	@JoinColumn(name = "konfiguration_id", referencedColumnName = "ID")
+	public Konfiguration getKonfiguration() {
+	    return konfiguration;
+	}
+
+	public void setKonfiguration(Konfiguration param) {
+		if (konfiguration != null) {
+			konfigurationName.unbind();
+		}
+		konfiguration = param;
+		if (konfiguration != null) {
+			konfigurationName.bind(konfiguration.nameProperty());
+		}
+	}
+	
+	public StringProperty konfigurationNameProperty () {
+		return konfigurationName;
+	}
+	
 	// ------------------------------------------------------------------------
 	public StringProperty bezeichnungProperty() {
 		return bezeichnung;
@@ -145,38 +236,6 @@ public class Integration {
 	}
 	
 	// ------------------------------------------------------------------------
-	public StringProperty senderNameProperty() {
-		return senderName;
-	}
-
-	 public void setSenderName(String param) {
-		 senderName.set(param);
-	 }
-	 
-	@ManyToOne
-	public InKomponente getInKomponente() {
-		return inKomponente;
-	}
-
-	public void setInKomponente(InKomponente kompo) {
-		if (inKomponente != null) {
-			senderName.unbind();
-		}
-		inKomponente = kompo;
-		if (kompo != null) {
-			senderName.bind(kompo.fullnameProperty());
-		}
-	}
-
-	@OneToMany(mappedBy = "integration", cascade = ALL)
-	public Collection<InEmpfaenger> getInEmpfaenger() {
-		return inEmpfaenger;
-	}
-
-	public void setInEmpfaenger(Collection<InEmpfaenger> param) {
-		this.inEmpfaenger = param;
-	}
- 
 	public StringProperty seitDatumProperty() {
 		return seitDatum;
 	}
@@ -187,6 +246,7 @@ public class Integration {
 		seitDatum.set(param);
 	}
 
+	// ------------------------------------------------------------------------
 	public StringProperty bisDatumProperty() {
 		return bisDatum;
 	}
@@ -197,6 +257,7 @@ public class Integration {
 		bisDatum.set(param);
 	}
 	
+	// ------------------------------------------------------------------------
 	public String getLaeDatum() {
 		return laeDatum;
 	}
@@ -205,6 +266,7 @@ public class Integration {
 		this.laeDatum = laeDatum;
 	}
 	
+	// ------------------------------------------------------------------------
 	public String getLaeUser() {
 		return laeUser;
 	}
@@ -213,68 +275,23 @@ public class Integration {
 		this.laeUser = laeUser;
 	}
 
-	public StringProperty konfigurationNameProperty () {
-		return konfigurationName;
-	}
-	
-	public StringProperty inSzenarioNameProperty () {
-		return inSzenarioName;
-	}
-
+	// ------------------------------------------------------------------------
 	// Return : <InSzenario> - <Sender> - <Geschäftsobjekt> 
-    @Transient
-    public static String autobezeichnung(Konfiguration konfiguration,
-    							  InKomponente sender,
-    							  GeschaeftsObjekt gObjekt) {
-    	String inSzenarioName = "<InSzenario>";
+    // @Transient
+    public String autobezeichnung(InSzenario inSzenario,
+    							  		 InKomponente sender,
+    							  		 GeschaeftsObjekt gObjekt) {
     	String senderName = "<Sender>";
     	String gObjektName = "<Geschäftsobjekt>";
-    	if (konfiguration != null) {
-    		if (konfiguration.getInSzenario() != null) {
-    			if (konfiguration.getInSzenario().getName() != null)
-    				inSzenarioName = konfiguration.getInSzenario().getName();
-    		}
-    	}	
     	if (sender != null) {
     		senderName = sender.getFullname();
     	}
     	if (gObjekt != null) {
     		gObjektName = gObjekt.getName();
     	}
-    	return inSzenarioName + TrennStr() + senderName + TrennStr() + gObjektName;
+    	return inSzenarioName.getValueSafe() + IMconstant.INBEZ_TRENNUNG + 
+    		   senderName + IMconstant.INBEZ_TRENNUNG + 
+    		   gObjektName;
     }
     
-    // TrennStr for autoBezeichung between InSzenario, Sender and GeschaeftsObjekt    
-	private static String TrennStr() {
-		return "  |  ";
-	}
-
-	@ManyToOne
-	public Intervall getIntervall() {
-	    return intervall;
-	}
-
-	public void setIntervall(Intervall param) {
-	    this.intervall = param;
-	}
-
-	@ManyToOne
-	@JoinColumn(name = "konfiguration_id", referencedColumnName = "ID")
-	public Konfiguration getKonfiguration() {
-	    return konfiguration;
-	}
-
-	public void setKonfiguration(Konfiguration param) {
-		if (konfiguration != null) {
-			konfigurationName.unbind();
-			inSzenarioName.unbind();
-		}
-		konfiguration = param;
-		if (konfiguration != null) {
-			konfigurationName.bind(konfiguration.nameProperty());
-			inSzenarioName.bind(konfiguration.inSzenarioNameProperty());
-		}
-	}
-	
-	
 }

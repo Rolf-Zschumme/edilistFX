@@ -233,7 +233,7 @@ public class InSzenarioController {
 		String newBeschreibung = taBeschreibung.getText()==null ? "" : taBeschreibung.getText();
 		if (orgName.equals(newName) &&
 			orgBeschreibung.equals(newBeschreibung) ) {
-			logger.info("Name und Bezeichnung unverändert");
+			logger.info("Name und Bezeichnung unveraendert");
 		} else {
 			if (checkmode == Checkmode.ONLY_CHECK) {
 				return false;
@@ -295,7 +295,7 @@ public class InSzenarioController {
 		 * 		-> zeige jeweils alle zugehörigen Empfänger, falls kein Empfänger vorhanden dummy erzeugen
 		*/
 		TypedQuery<Integration> tqS = entityManager.createQuery(
-				"SELECT e FROM Integration e WHERE e.konfiguration.inSzenario = :i", Integration.class);
+				"SELECT e FROM Integration e WHERE e.inSzenario = :i", Integration.class);
 		tqS.setParameter("i", selInSzenario);
 		List<Integration> resultList = tqS.getResultList();
 		for(Integration e : resultList ) {

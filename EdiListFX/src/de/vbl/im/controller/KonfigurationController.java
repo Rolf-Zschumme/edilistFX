@@ -254,11 +254,9 @@ public class KonfigurationController {
 		List<Konfiguration> konfigurationList = tq.getResultList();
 		for (Konfiguration k : konfigurationList ) {
 			System.out.println("K.name=" + k.getName());
-			if (k != aktKonfiguration &&
-				k.getInSzenario() == aktKonfiguration.getInSzenario())  {
+			if (k != aktKonfiguration)  {
 				if (k.getName().equalsIgnoreCase(newName)) {
-					return "Eine andere Konfiguration der InSzenario " + 
-							aktKonfiguration.getInSzenario().getName() + " heiﬂt bereits so";
+					return "Eine andere Konfiguration heiﬂt bereits so";
 				}
 			}
 		}

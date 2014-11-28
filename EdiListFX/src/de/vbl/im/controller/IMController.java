@@ -352,6 +352,7 @@ public class IMController {
 	 * set a new selected Integration from other controllers
 	 * ***********************************************************************/
 	protected void setSelectedIntegration (Integration e) {
+//		logger.info("setSelected " + e.inNrStrExp().get());
 		tableInNrAuswahl.getSelectionModel().select(e);
 	}
     
@@ -438,7 +439,7 @@ public class IMController {
 		logger.info("entered");
 		tableKonfigurationAuswahl.setItems(konfigurationList);
 		tColSelKonfigurationName.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
-		tColSelKonfigInSzenarioName.setCellValueFactory(cd -> cd.getValue().inSzenarioNameProperty());
+//		tColSelKonfigInSzenarioName.setCellValueFactory(cd -> cd.getValue().inSzenarioNameProperty());
 		
 		konfigurationController.konfigurationProperty().bind(tableKonfigurationAuswahl.getSelectionModel().selectedItemProperty());
 		konfiguration.disableProperty().bind(Bindings.isNull(tableKonfigurationAuswahl.getSelectionModel().selectedItemProperty()));
@@ -708,8 +709,8 @@ public class IMController {
 	        			entityManager.remove(empf.next());
 	        			empf.remove();
 	        		}
-	        		if (integration.getKonfiguration() != null) {
-	        			integration.getKonfiguration().getIntegration().remove(integration);
+	        		if (integration.getInSzenario() != null) {
+	        			integration.getInSzenario().getIntegration().remove(integration);
 	        		}
 	        		entityManager.remove(integration);
 	        		entityManager.getTransaction().commit();

@@ -35,9 +35,9 @@
 	<entity>
 		<entity-name>de.vbl.im.model.Konfiguration</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>136</entity-height>
-		<entity-X-Coordinate>391</entity-X-Coordinate>
-		<entity-Y-Coordinate>206</entity-Y-Coordinate>
+		<entity-height>103</entity-height>
+		<entity-X-Coordinate>585</entity-X-Coordinate>
+		<entity-Y-Coordinate>351</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
@@ -46,11 +46,11 @@
 	<entity>
 		<entity-name>de.vbl.im.model.InSystem</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>221</entity-height>
+		<entity-height>136</entity-height>
 		<entity-X-Coordinate>23</entity-X-Coordinate>
 		<entity-Y-Coordinate>228</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
-		<relation-collapsed>false</relation-collapsed>
+		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
 	</entity>
 
@@ -59,7 +59,7 @@
 		<entity-width>120</entity-width>
 		<entity-height>58</entity-height>
 		<entity-X-Coordinate>585</entity-X-Coordinate>
-		<entity-Y-Coordinate>321</entity-Y-Coordinate>
+		<entity-Y-Coordinate>30</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>false</relation-collapsed>
 		<basic-collapsed>true</basic-collapsed>
@@ -70,7 +70,7 @@
 		<entity-width>120</entity-width>
 		<entity-height>236</entity-height>
 		<entity-X-Coordinate>391</entity-X-Coordinate>
-		<entity-Y-Coordinate>402</entity-Y-Coordinate>
+		<entity-Y-Coordinate>337</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
@@ -79,20 +79,20 @@
 	<entity>
 		<entity-name>de.vbl.im.model.Intervall</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>58</entity-height>
-		<entity-X-Coordinate>581</entity-X-Coordinate>
-		<entity-Y-Coordinate>491</entity-Y-Coordinate>
+		<entity-height>83</entity-height>
+		<entity-X-Coordinate>585</entity-X-Coordinate>
+		<entity-Y-Coordinate>498</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>false</relation-collapsed>
-		<basic-collapsed>true</basic-collapsed>
+		<basic-collapsed>false</basic-collapsed>
 	</entity>
 
 	<entity>
 		<entity-name>de.vbl.im.model.DokuLink</entity-name>
 		<entity-width>120</entity-width>
 		<entity-height>196</entity-height>
-		<entity-X-Coordinate>581</entity-X-Coordinate>
-		<entity-Y-Coordinate>85</entity-Y-Coordinate>
+		<entity-X-Coordinate>585</entity-X-Coordinate>
+		<entity-Y-Coordinate>136</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
@@ -112,9 +112,9 @@
 	<entity>
 		<entity-name>de.vbl.im.model.GeschaeftsObjekt</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>116</entity-height>
+		<entity-height>103</entity-height>
 		<entity-X-Coordinate>23</entity-X-Coordinate>
-		<entity-Y-Coordinate>519</entity-Y-Coordinate>
+		<entity-Y-Coordinate>488</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
@@ -123,9 +123,9 @@
 	<entity>
 		<entity-name>de.vbl.im.model.InEmpfaenger</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>123</entity-height>
+		<entity-height>58</entity-height>
 		<entity-X-Coordinate>219</entity-X-Coordinate>
-		<entity-Y-Coordinate>513</entity-Y-Coordinate>
+		<entity-Y-Coordinate>528</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
@@ -136,7 +136,7 @@
 		<entity-width>120</entity-width>
 		<entity-height>116</entity-height>
 		<entity-X-Coordinate>219</entity-X-Coordinate>
-		<entity-Y-Coordinate>347</entity-Y-Coordinate>
+		<entity-Y-Coordinate>355</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>

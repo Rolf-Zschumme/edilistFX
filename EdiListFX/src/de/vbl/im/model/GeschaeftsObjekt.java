@@ -3,24 +3,17 @@ package de.vbl.im.model;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import java.io.Serializable;
-import java.util.Collection;
 
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+//import org.apache.logging.log4j.LogManager;
+//import org.apache.logging.log4j.Logger;
 
 /**
  * Entity implementation class for Entity: GeschaeftsObjekt
@@ -33,19 +26,19 @@ public class GeschaeftsObjekt implements Serializable {
 	/**
 	 * 
 	 */
-	private static final Logger logger = LogManager.getLogger(GeschaeftsObjekt.class.getName()); 
+//	private static final Logger logger = LogManager.getLogger(GeschaeftsObjekt.class.getName()); 
 	private static final long serialVersionUID = 6212861741600895810L;
 
 	private long id;
 	private StringProperty name;
 	private String beschreibung;
-	private ObservableList<InEmpfaenger> inEmpfaenger;
-	private IntegerProperty anzVerwendungen;
+//	private ObservableList<InEmpfaenger> inEmpfaenger;
+//	private IntegerProperty anzVerwendungen;
 	
 	public GeschaeftsObjekt() {
 		name = new SimpleStringProperty();
-		inEmpfaenger = FXCollections.observableArrayList();
-		anzVerwendungen = new SimpleIntegerProperty();
+//		inEmpfaenger = FXCollections.observableArrayList();
+//		anzVerwendungen = new SimpleIntegerProperty();
 	}   
 	public GeschaeftsObjekt(String name) {
 		this();
@@ -84,18 +77,18 @@ public class GeschaeftsObjekt implements Serializable {
 		this.beschreibung = param;
 	}
 	
-	@OneToMany(mappedBy = "geschaeftsObjekt")
-	public Collection<InEmpfaenger> getInEmpfaenger() {
-	    return inEmpfaenger;
-	}
-	public void setInEmpfaenger(Collection<InEmpfaenger> param) {
-		anzVerwendungen.unbind();
-		inEmpfaenger = FXCollections.observableArrayList(param);
-		logger.trace("name:" + this.getName() + " (" + this.id + ") " + param.size());
-		anzVerwendungen.bind(Bindings.size(inEmpfaenger));
-	}
+//	@OneToMany(mappedBy = "geschaeftsObjekt")
+//	public Collection<InEmpfaenger> getInEmpfaenger() {
+//	    return inEmpfaenger;
+//	}
+//	public void setInEmpfaenger(Collection<InEmpfaenger> param) {
+//		anzVerwendungen.unbind();
+//		inEmpfaenger = FXCollections.observableArrayList(param);
+//		logger.info("name:" + this.getName() + " id:" + this.id + " param.size:" + param.size() + " param:"+param);
+//		anzVerwendungen.bind(Bindings.size(inEmpfaenger));
+//	}
 	
-	public IntegerProperty anzVerwendungenProperty () {
-		return anzVerwendungen;
-	}
+//	public IntegerProperty anzVerwendungenProperty () {
+//		return anzVerwendungen;
+//	}
 }

@@ -6,8 +6,8 @@ public interface IMconstant {
 	static final String PERSISTENCE_UNIT_NAME = "IntegrationManager";
 	static final String SICHERHEITSABFRAGE = "Sicherheitsabfrage";
 	
-									//   " — ";	// geviertstrich	 Alt+0151
-	static final String KOMPO_TRENNUNG = " – ";	// halbgeviertstrich Alt+0150
-	
+									//   " — ";		// geviertstrich	 Alt+0151
+	static final String KOMPO_TRENNUNG = " – ";		// halbgeviertstrich Alt+0150
+	static final String INBEZ_TRENNUNG = "  |  ";
 
 }

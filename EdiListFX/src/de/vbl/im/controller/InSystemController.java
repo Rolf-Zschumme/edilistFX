@@ -165,8 +165,8 @@ public class InSystemController {
 //	    Setup for Sub-Panel    
 		
 		tvVerwendungen.setItems(inKomponentenList);
-		tcInNr.setCellValueFactory(cellData -> 
-					Bindings.format(Integration.FORMAT_INNR, cellData.getValue().getInNrProperty()));
+		tcInNr.setCellValueFactory(cellData -> cellData.getValue().getIntegration().inNrStrExp());
+				// Bindings.format(Integration.FORMAT_INNR, cellData.getValue().getInNrProperty()));
 		
 		tcSender.setCellValueFactory(cellData -> cellData.getValue().senderNameProperty());
 		tcSender.setCellFactory(column -> {

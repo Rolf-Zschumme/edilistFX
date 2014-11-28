@@ -1,9 +1,6 @@
 package de.vbl.im.model;
 
 import static javax.persistence.AccessType.PROPERTY;
-
-import java.util.Set;
-
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -11,10 +8,6 @@ import javax.persistence.Access;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Transient;
-import de.vbl.im.model.InSzenario;
-import javax.persistence.ManyToOne;
 
 /**
  * Entity implementation class for Entity: Szenario
@@ -26,13 +19,10 @@ public class Konfiguration {
 	private long id;
 	private StringProperty name;
 	private String beschreibung;
-	@Transient
-	private StringProperty inSzenarioName;
-	private Set<Integration> integration;
-	private InSzenario inSzenario;
+
+	// ========================================================================
 	public Konfiguration() {
 		name = new SimpleStringProperty();
-		inSzenarioName = new SimpleStringProperty("");
 	}
 	
 	public Konfiguration(String name) {
@@ -65,8 +55,6 @@ public class Konfiguration {
 		name.set(param);
 	}
 
-	
-	
 //	public void addIntegration(Integration e) {
 //		this.integration.add(e);
 //	}
@@ -84,33 +72,4 @@ public class Konfiguration {
 	public void setBeschreibung(String param) {
 		this.beschreibung = param;
 	}
-
-	public StringProperty inSzenarioNameProperty () {
-		return inSzenarioName;
-	}
-
-	@OneToMany(mappedBy = "konfiguration")
-	public Set<Integration> getIntegration() {
-	    return integration;
-	}
-
-	public void setIntegration(Set<Integration> param) {
-	    this.integration = param;
-	}
-
-	@ManyToOne
-	public InSzenario getInSzenario() {
-	    return inSzenario;
-	}
-
-	public void setInSzenario(InSzenario param) {
-		if (inSzenario != null) {
-			inSzenarioName.unbind();
-		}
-	    inSzenario = param;
-		if (inSzenario != null) {
-			inSzenarioName.bind(inSzenario.nameProperty());
-		}
-	}
-
 }
