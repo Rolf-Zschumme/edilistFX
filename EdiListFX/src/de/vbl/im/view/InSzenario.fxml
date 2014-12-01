@@ -10,24 +10,25 @@
 			<items>
 				<ToolBar prefWidth="200.0">
   					<items>
-    					<Button fx:id="btnSpeichern" minWidth="80.0" mnemonicParsing="false" onAction="#speichern" prefWidth="100.0" text="Speichern" />
-    					<Button fx:id="btnLoeschen" minWidth="80.0" mnemonicParsing="false" onAction="#loeschen" prefWidth="100.0" text="Löschen" />
+    					<Button fx:id="btnSpeichern" minWidth="80.0" mnemonicParsing="false" onAction="#action_Speichern" prefWidth="100.0" text="Speichern" />
+    					<Button fx:id="btnNeu" minWidth="80.0" mnemonicParsing="false" onAction="#action_Neu" prefWidth="100.0" text="Neu..." />
+<Button fx:id="btnLoeschen" layoutX="114.0" layoutY="10.0" minWidth="80.0" mnemonicParsing="false" onAction="#action_Loeschen" prefWidth="100.0" text="Löschen" />
 	  				</items>
 				</ToolBar>
 				<AnchorPane minHeight="0.0" minWidth="0.0">
 					<children>
-						<TitledPane animated="false" collapsible="false" prefHeight="146.0" prefWidth="298.0" text="Eigenschaften" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+						<TitledPane fx:id="m_inSzenarioDetailsPane" animated="false" collapsible="false" prefHeight="146.0" prefWidth="298.0" text="Eigenschaften" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 							<content>
 								<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
 									<children>
 										<TextField fx:id="tfBezeichnung" layoutX="86.0" layoutY="11.0" prefHeight="25.0" prefWidth="220.0" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="5.0" />
 										<Label layoutX="8.0" layoutY="15.0" prefWidth="81.0" text="Bezeichnung:" AnchorPane.leftAnchor="12.0" AnchorPane.topAnchor="5.0" />
 										<Label layoutX="319.0" layoutY="15.0" text="Beschreibung:" AnchorPane.leftAnchor="370.0" AnchorPane.topAnchor="5.0" />
-										<ListView fx:id="lvAnsprechpartner" disable="true" prefWidth="220.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="40.0" />
+										<ListView fx:id="lvAnsprechpartner" prefWidth="220.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="40.0" />
 										<TextArea fx:id="taBeschreibung" layoutX="89.0" layoutY="58.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="450.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
 										<Label alignment="CENTER" disable="true" layoutX="6.0" layoutY="64.0" text="Ansprechpartner:" AnchorPane.leftAnchor="12.0" AnchorPane.topAnchor="40.0" />
-										<Button fx:id="aaaa" disable="true" layoutX="14.0" layoutY="74.0" mnemonicParsing="false" prefWidth="80.0" text="hinzufügen" AnchorPane.leftAnchor="20.0" />
-										<Button disable="true" layoutX="14.0" layoutY="108.0" mnemonicParsing="false" prefWidth="80.0" text="entfernen" AnchorPane.leftAnchor="20.0" />
+										<Button fx:id="btnAddAnsprechpartner" layoutX="14.0" layoutY="74.0" mnemonicParsing="false" onAction="#action_AddAnsprechpartner" prefWidth="80.0" text="Hinzufügen" AnchorPane.leftAnchor="20.0" />
+										<Button fx:id="btnRemoveAnsprechpartner" disable="true" layoutX="14.0" layoutY="108.0" mnemonicParsing="false" onAction="#action_RemoveAnsprechpartner" prefWidth="80.0" text="Entfernen" AnchorPane.leftAnchor="20.0" />
 									</children>
 								</AnchorPane>
 							</content>

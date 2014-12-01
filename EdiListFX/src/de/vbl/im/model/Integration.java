@@ -35,6 +35,9 @@ public class Integration {
 	private IntegerProperty inNr;
 	private StringProperty bezeichnung;
 	private StringProperty beschreibung;
+	private Integer anzahlMsg;
+	private Integer averageKB;
+	private Integer maximalKB;
 	private StringProperty seitDatum;
 	private StringProperty bisDatum;
 	private String laeDatum; 
@@ -293,5 +296,31 @@ public class Integration {
     		   senderName + IMconstant.INBEZ_TRENNUNG + 
     		   gObjektName;
     }
-    
+
+    // ------------------------------------------------------------------------
+	public Integer getAnzahlMsg() {
+		return anzahlMsg;
+	}
+
+	public void setAnzahlMsg(Integer anzahlMsg) {
+		this.anzahlMsg = anzahlMsg;
+	}
+
+    // ------------------------------------------------------------------------
+	public Integer getAverageKB() {
+		return averageKB;
+	}
+
+	public void setAverageKB(Integer averageKB) {
+		this.averageKB = averageKB;
+	}
+
+    // ------------------------------------------------------------------------
+	public Integer getMaximalKB() {
+		return maximalKB;
+	}
+
+	public void setMaximalKB(Integer maximalKB) {
+		this.maximalKB = maximalKB;
+	}
 }

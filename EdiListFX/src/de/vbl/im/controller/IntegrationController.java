@@ -72,6 +72,7 @@ import org.controlsfx.dialog.Dialog.Actions;
 import org.controlsfx.dialog.Dialogs;
 import org.tmatesoft.svn.core.SVNException;
 
+import de.vbl.im.controller.InSzenarioController;
 import de.vbl.im.controller.subs.DokumentAuswaehlenController;
 import de.vbl.im.controller.subs.KomponentenAuswahlController;
 import de.vbl.im.controller.subs.KomponentenAuswahlController.KomponentenTyp;
@@ -105,13 +106,13 @@ public class IntegrationController {
     
     @FXML private ComboBox<InSzenario> cmbInSzenario;
     @FXML private ComboBox<Konfiguration> cmbKonfiguration;
-    @FXML private Button m_SpeichernBtn;
-    @FXML private Button m_NeuanlageBtn;
-    @FXML private Button m_LoeschenBtn;
     @FXML private Button m_NewInSzenarioBtn;
     @FXML private Button m_NewConfigurationBtn;
     @FXML private Button m_NewDokuLinkBtn;
     @FXML private Button m_RemoveDokuLinkBtn;
+    @FXML private Button m_SpeichernBtn;
+    @FXML private Button m_NeuanlageBtn;
+    @FXML private Button m_LoeschenBtn;
     
     @FXML private TableView<DokuLink> tvDokuLinks;
     @FXML private TableColumn<DokuLink, String> tColDokumentVorhaben;
@@ -136,10 +137,10 @@ public class IntegrationController {
     @FXML private Button btnEmpfaenger3;
     
     @FXML private ComboBox<String> m_Intervall;
-    @FXML private TextField m_Anzahl;
-    @FXML private TextField m_Groesse;
+    @FXML private TextField m_AnzahlMsg;
+    @FXML private TextField m_GroesseKB;
     @FXML private ChoiceBox<String> m_GroesseEinheit;
-    @FXML private TextField m_MaxGroesse;
+    @FXML private TextField m_MaxGroesseKB;
     @FXML private ChoiceBox<String> m_MaxGroesseEinheit;    
     
     @FXML private MenuButton mbtEmpfaenger2;
@@ -167,10 +168,35 @@ public class IntegrationController {
     private ObservableList<String> groesseEinheitList = FXCollections.observableArrayList("KB","MB","GB");
     private ObservableList<DokuLink> dokuLinkList     = FXCollections.observableArrayList();
 
+    private static class IntegerInKB {
+    	private double value;
+    	private int faktor; // KB=1 MB=1000 GB=1000000
+    	void set(int newValue) {
+    		if (newValue < 1000) {
+    			faktor = 1;
+    		} else if (newValue < 1000000) {
+    			faktor = 1000;
+    		} else {
+    			faktor = 1000000;
+    		}
+    		value = newValue / faktor;
+    	}
+    	String getEinheit() {
+    		switch (faktor) {
+    			case    1: return "KB";
+    			case 1000: return "MB";
+    			default  : return "GB";
+    		}	
+    	}
+    	Integer getValue() {
+    		Double d = value * faktor;
+    		return Integer.parseInt(d.toString());
+    	}
+    }
+    
     private static class IntegrationPlus {
     	private int inNr;
     	private InSzenario inSzenario;
-    	private Konfiguration konfiguration;
     	private String bezeichnung;
     	private String beschreibung;
     	private LocalDate seitDatum;
@@ -180,13 +206,16 @@ public class IntegrationController {
     	private InKomponente empfaengerKomponente[] = new InKomponente[MAX_EMPFAENGER];
     	private GeschaeftsObjekt geschaeftsObjekt[] = new GeschaeftsObjekt[MAX_EMPFAENGER];
     	private String intervallName;
+    	private int anzahlMsg;
+    	private IntegerInKB averageKB = new IntegerInKB();
+    	private IntegerInKB maximalKB = new IntegerInKB();
+    	private Konfiguration konfiguration;
     	
     	void setData (Integration s) {
     		inNr = s.getInNr();
     		inSzenario = s.getInSzenario();
     		bezeichnung   = s.getBezeichnung()==null ? "" : s.getBezeichnung();
     		beschreibung  = s.getBeschreibung()==null ? "" : s.getBeschreibung();
-    		intervallName = s.getIntervall()==null ? "" : s.getIntervall().getName();
     		sender = s.getInKomponente();
 			String seitStr = s.seitDatumProperty().getValueSafe();
 			seitDatum = seitStr.equals("") ? null : LocalDate.parse(seitStr);
@@ -203,7 +232,12 @@ public class IntegrationController {
 				empfaengerKomponente[i] = null;
 				geschaeftsObjekt[i++] = null;
 			}
+			intervallName = s.getIntervall()==null ? "" : s.getIntervall().getName();
+			
 			konfiguration = s.getKonfiguration();
+			anzahlMsg = s.getAnzahlMsg()==null ? 0 : s.getAnzahlMsg();
+			averageKB.set(s.getAverageKB()==null ? 0 : s.getAverageKB());
+			maximalKB.set(s.getMaximalKB()==null ? 0 : s.getMaximalKB());
     	}
     	private String inNrStr() {
    			return String.format(Integration.FORMAT_INNR, inNr / 100, inNr % 100);
@@ -268,8 +302,6 @@ public class IntegrationController {
     				tabsReiterErgaenzen(aktIn.inSzenario.getIntegration().iterator());
     			}
     			resetEmpfaenger();
-//    			aktIn.seitDatum = null;
-//    			aktIn.bisDatum = null;
     		} else {
     			logger.info("integration.Listener newIntegration=" + newIntegration.inNrStrExp().get());
     			if (aktIn.inSzenario != newIntegration.getInSzenario()) {
@@ -283,10 +315,8 @@ public class IntegrationController {
     			}
     			tabAktInNr.setText(INR_PANE_PREFIX + newIntegration.inNrStrExp().get());
     			
-    			cmbKonfiguration.getSelectionModel().select(aktIn.konfiguration);
     			tfBezeichnung.setText(aktIn.bezeichnung);
     			taBeschreibung.setText(aktIn.beschreibung);
-    			m_Intervall.getSelectionModel().select(aktIn.intervallName);
     			if (aktIn.sender != null) {
     				btnSender.textProperty().bind(aktIn.sender.fullnameProperty());
     			} else {
@@ -295,6 +325,12 @@ public class IntegrationController {
     			}
     			senderIsSelected.set(aktIn.sender != null);
     			setAktEmpfaenger();
+    			m_AnzahlMsg.setText(String.format("%d",aktIn.anzahlMsg));
+    			m_GroesseKB.setText(String.format("%.1f",aktIn.averageKB.value));
+    			m_GroesseEinheit.setValue(aktIn.averageKB.getEinheit());
+    			
+    			m_Intervall.getSelectionModel().select(aktIn.intervallName);
+    			cmbKonfiguration.getSelectionModel().select(aktIn.konfiguration);
     			
     			orgIn.setData(newIntegration);
     			setLastChangeField(tfLastChange, newIntegration.getLaeDatum(), newIntegration.getLaeUser());
@@ -331,7 +367,7 @@ public class IntegrationController {
 		cmbInSzenario.opacityProperty().set(1);
 		
 		m_NewInSzenarioBtn.disableProperty().bind(readOnlyAccess.or(editStatusNotNew));
-		m_NewInSzenarioBtn.opacityProperty().set(1);
+//		m_NewInSzenarioBtn.opacityProperty().set(1);
 		
 		m_NewConfigurationBtn.disableProperty().bind(readOnlyAccess.or(
 				cmbInSzenario.getSelectionModel().selectedItemProperty().isNull()));
@@ -1373,57 +1409,12 @@ public class IntegrationController {
 		
     @FXML
     void actionNewInSzenario(ActionEvent event) {
-    	String aktName = "";
-    	String masterhead = null;
-		while (true) {
-			Optional<String> newName = Dialogs.create()
-				.owner(primaryStage)
-				.title(IMconstant.APPL_NAME)
-				.masthead(masterhead)
-				.message("Wie soll das neue Integrationsszenario heiﬂen?")
-				.showTextInput(aktName);
-			if ( !newName.isPresent() ) {
-				managerController.setInfoText("Die Neuanlage wurde abgebrochen");
-				break;
-			}
-			aktName = newName.get().trim();
-			if (aktName.length() < 1) {
-				masterhead = "Eine Eingabe ist erforderlich!\n" + 
-							 "Bitte ‰ndern oder abbrechen";
-				continue;
-			} 
-			String sql="SELECT i FROM InSzenario i WHERE LOWER(i.name) = LOWER(:n)";
-			TypedQuery<InSzenario> tq = entityManager.createQuery(sql, InSzenario.class);
-			tq.setParameter("n", aktName);
-			List<InSzenario> iList = tq.getResultList();
-			
-			if (iList.size() > 0) {
-				masterhead = "Das Intgrationsszenario\n\"" +iList.get(0).getName() + "\"" + 
-							 "\nist bereits vorhanden.\nBitte ‰ndern oder abbrechen";
-				continue;
-			}
-			try {
-				InSzenario inSzenario = new InSzenario(aktName);
-				inSzenario.setIsNr(inSzenario.getMaxIsNr(entityManager)+1);
-				entityManager.getTransaction().begin();
-				entityManager.persist(inSzenario);
-				entityManager.getTransaction().commit();
-				
-				readInSzenarioList();
-				cmbInSzenario.getSelectionModel().select(inSzenario);
-				m_NewConfigurationBtn.requestFocus();
-				
-				managerController.setInfoText("Das Intergrationsszenario \"" + aktName + "\"" + 
-					" wurde erfolgreich erstellt");
-				return;
-			} catch (RuntimeException er) {
-				Dialogs.create().owner(primaryStage)
-					.title(IMconstant.APPL_NAME)
-					.masthead("Datenbankfehler")
-					.message("Fehler beim Anlegen einer neuen InSzenario")
-					.showException(er);
-			}
-		}
+    	InSzenario newIS = InSzenarioController.neuesInSzenarioAnlegen();
+    	if (newIS != null) {
+    		readInSzenarioList();
+    		cmbInSzenario.getSelectionModel().select(newIS);
+    		m_NewConfigurationBtn.requestFocus();
+    	}
     }	
     
     @FXML
@@ -1641,10 +1632,10 @@ public class IntegrationController {
         assert taBeschreibung	 	 != null : "fx:id=\"taBeschreibung\"         was not injected: check your FXML file 'Integration.fxml'.";
         assert integration 			 != null : "fx:id=\"integration\" 		     was not injected: check your FXML file 'Integration.fxml'.";
         assert m_Intervall	 	 	 != null : "fx:id=\"m_Intervall\" 		     was not injected: check your FXML file 'Integration.fxml'.";
-        assert m_Anzahl		 	 	 != null : "fx:id=\"m_Anzahl\"	 		     was not injected: check your FXML file 'Integration.fxml'.";
-        assert m_Groesse	 	 	 != null : "fx:id=\"m_Groesse\" 		     was not injected: check your FXML file 'Integration.fxml'.";
+        assert m_AnzahlMsg		 	 != null : "fx:id=\"m_AnzahlMsg\"		     was not injected: check your FXML file 'Integration.fxml'.";
+        assert m_GroesseKB	 	 	 != null : "fx:id=\"m_GroesseKB\" 		     was not injected: check your FXML file 'Integration.fxml'.";
         assert m_GroesseEinheit	 	 != null : "fx:id=\"m_GroesseEinheit\"	     was not injected: check your FXML file 'Integration.fxml'.";
-        assert m_MaxGroesse	 	 	 != null : "fx:id=\"m_MaxGroesse\" 		     was not injected: check your FXML file 'Integration.fxml'.";
+        assert m_MaxGroesseKB	 	 != null : "fx:id=\"m_MaxGroesseKB\" 	     was not injected: check your FXML file 'Integration.fxml'.";
         assert m_MaxGroesseEinheit	 != null : "fx:id=\"m_MaxGroesseEinheit\"    was not injected: check your FXML file 'Integration.fxml'.";
         assert btnEmpfaenger1 		 != null : "fx:id=\"btnEmpfaenger1\"         was not injected: check your FXML file 'Integration.fxml'.";
         assert btnEmpfaenger2		 != null : "fx:id=\"btnEmpfaenger2\"         was not injected: check your FXML file 'Integration.fxml'.";

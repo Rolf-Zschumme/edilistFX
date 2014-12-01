@@ -118,7 +118,8 @@ public class InKomponenteController implements Initializable  {
 					}
 					taBeschreibung.setText(newKomponente.getBeschreibung());
 					ansprechpartnerList.addAll(newKomponente.getAnsprechpartner());
-					btnRemoveAnsprechpartner.disableProperty().bind(lvAnsprechpartner.getSelectionModel().selectedItemProperty().isNull());
+					btnRemoveAnsprechpartner.disableProperty().bind(
+							lvAnsprechpartner.getSelectionModel().selectedItemProperty().isNull());
 				}
 				dataIsChanged.set(false);
 			}
@@ -305,12 +306,13 @@ public class InKomponenteController implements Initializable  {
 			tfBezeichnung.requestFocus();
 			return false;
 		}
-		logger.info("Update Komponente " + newName);
+		logger.info("Update der Komponente " + newName);
 		try {
 			entityManager.getTransaction().begin();
 			aktKomponente.setName(newName);
 			aktKomponente.setBeschreibung(newBeschreibung);
-			boolean kontaktListChanged = aktKomponente.getAnsprechpartner().retainAll(ansprechpartnerList);
+			boolean kontaktListChanged = aktKomponente.getAnsprechpartner()
+											.retainAll(ansprechpartnerList);
 			for (Ansprechpartner k : ansprechpartnerList) {
 				if (aktKomponente.getAnsprechpartner().contains(k)== false) {
 					aktKomponente.getAnsprechpartner().add(k);

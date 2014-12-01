@@ -286,14 +286,14 @@
                                                             <Label alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" text="⌀ Anzahl:" GridPane.columnIndex="2">
                                                                	<GridPane.margin><Insets /></GridPane.margin>
                                                             </Label>
-                                                            <TextField fx:id="m_Anzahl" GridPane.columnIndex="3" />
+                                                            <TextField fx:id="m_AnzahlMsg" GridPane.columnIndex="3" />
                                                             <Label alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" text="⌀ Größe:" GridPane.columnIndex="4">
                                                                <GridPane.margin><Insets /></GridPane.margin>
                                                             </Label>
-                                                            <TextField fx:id="m_Groesse" GridPane.columnIndex="5" />
+                                                            <TextField fx:id="m_GroesseKB" GridPane.columnIndex="5" />
                                                             <ChoiceBox fx:id="m_GroesseEinheit" prefWidth="150.0" GridPane.columnIndex="6" />
                                                             <Label alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" text="Max.Größe:" GridPane.columnIndex="7" />
-                                                            <TextField fx:id="m_MaxGroesse" GridPane.columnIndex="8" />
+                                                            <TextField fx:id="m_MaxGroesseKB" GridPane.columnIndex="8" />
                                                             <ChoiceBox fx:id="m_MaxGroesseEinheit" prefWidth="150.0" GridPane.columnIndex="9" />
                                                                               <HBox spacing="10.0" GridPane.columnIndex="1" GridPane.columnSpan="9" GridPane.rowIndex="2">
                                                                                  <children>

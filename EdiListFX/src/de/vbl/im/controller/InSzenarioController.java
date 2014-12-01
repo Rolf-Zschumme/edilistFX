@@ -2,6 +2,7 @@ package de.vbl.im.controller;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import javafx.beans.binding.Bindings;
@@ -17,11 +18,15 @@ import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -31,10 +36,14 @@ import org.apache.logging.log4j.Logger;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
+import org.controlsfx.dialog.Dialog.Actions;
 
+import de.vbl.im.controller.subs.AnsprechpartnerAuswaehlenController;
+import de.vbl.im.model.Ansprechpartner;
 import de.vbl.im.model.Integration;
 import de.vbl.im.model.InEmpfaenger;
 import de.vbl.im.model.InSzenario;
+import de.vbl.im.tools.IMconstant;
 
 public class InSzenarioController {
 	private static final Logger logger = LogManager.getLogger(InSzenarioController.class.getName()); 
@@ -43,15 +52,19 @@ public class InSzenarioController {
 	private static EntityManager entityManager;
 	private final ObjectProperty<InSzenario> inSzenario;
 	private final ObservableSet<Integration> integrationSet;      // all integration for this IS
-	private InSzenario aktInSzenario = null;
-
+	private final ObservableList<Ansprechpartner> ansprechpartnerList; 
 	
+	private InSzenario aktInSzenario = null;
+	
+	private BooleanProperty editEnabled = new SimpleBooleanProperty(false);
     private BooleanProperty dataIsChanged = new SimpleBooleanProperty(false);
 	
 	@FXML private ResourceBundle resources;
     @FXML private URL location;
+    @FXML private TitledPane m_inSzenarioDetailsPane;
     @FXML private TextField tfBezeichnung;
     @FXML private TextArea taBeschreibung;
+    @FXML private ListView<Ansprechpartner> lvAnsprechpartner;
     @FXML private TableView<InEmpfaenger> tvVerwendungen;
     @FXML private TableColumn<InEmpfaenger, String> tcInNr;
     @FXML private TableColumn<InEmpfaenger, String> tcKonfiguration;
@@ -62,11 +75,15 @@ public class InSzenarioController {
     @FXML private TableColumn<InEmpfaenger, String> tcDatumBis;
     
     @FXML private Button btnSpeichern;
+    @FXML private Button btnNeu;
     @FXML private Button btnLoeschen;
+    @FXML private Button btnAddAnsprechpartner;
+    @FXML private Button btnRemoveAnsprechpartner;
     
     public InSzenarioController() {
     	this.inSzenario = new SimpleObjectProperty<>(this, "inSzenario", null);
     	this.integrationSet = FXCollections.observableSet();
+    	this.ansprechpartnerList = FXCollections.observableArrayList();
     }
 
 	public void setParent(IMController managerController) {
@@ -87,10 +104,13 @@ public class InSzenarioController {
 					InSzenario oldInSzenario, InSzenario newInSzenario) {
 				logger.info((oldInSzenario==null) ? "null" : oldInSzenario.getName() + " -> " 
 						 + ((newInSzenario==null) ? "null" : newInSzenario.getName() ));
-				if (oldInSzenario != null && newInSzenario == null) {
+				if (oldInSzenario != null) {
+					if(newInSzenario == null) {
+						tfBezeichnung.setText("");
+						taBeschreibung.setText("");
+					}
+					ansprechpartnerList.clear();
 					integrationSet.clear();
-					tfBezeichnung.setText("");
-					taBeschreibung.setText("");
 				}
 				if (newInSzenario != null) {
 					aktInSzenario = newInSzenario;
@@ -100,13 +120,19 @@ public class InSzenarioController {
 						newInSzenario.setBeschreibung("");
 					}
 					taBeschreibung.setText(newInSzenario.getBeschreibung());
+					ansprechpartnerList.addAll(newInSzenario.getAnsprechpartner());
+					btnRemoveAnsprechpartner.disableProperty().bind(
+							lvAnsprechpartner.getSelectionModel().selectedItemProperty().isNull());
+					editEnabled.set(true);
 				}
 				dataIsChanged.set(false);
 			}
 		});
+		m_inSzenarioDetailsPane.disableProperty().bind(Bindings.not(editEnabled));
 		
 		btnSpeichern.disableProperty().bind(Bindings.not(dataIsChanged));
-		btnLoeschen.disableProperty().bind(Bindings.not(Bindings.greaterThanOrEqual(0, Bindings.size(integrationSet))));
+		btnLoeschen.disableProperty().bind(Bindings.not(editEnabled)
+							.or(Bindings.not(Bindings.greaterThanOrEqual(0, Bindings.size(integrationSet)))));
 
 		tfBezeichnung.textProperty().addListener((observable, oldValue, newValue)  -> {
 			String msg = "";
@@ -125,6 +151,21 @@ public class InSzenarioController {
 			} else {	
 				dataIsChanged.set(!checkForChangesWithMode(Checkmode.ONLY_CHECK));
 			}
+		});
+		
+		lvAnsprechpartner.setItems(ansprechpartnerList);
+		lvAnsprechpartner.setCellFactory( (list) -> {
+			return new ListCell<Ansprechpartner>() {
+				@Override
+				protected void updateItem(Ansprechpartner k, boolean empty) {
+					super.updateItem(k, empty);
+					if (k == null || empty) {
+						setText(null);
+					} else {
+						setText(k.getArtNameFirma());
+					}
+				}
+			};
 		});
 		
 //	    Setup for Sub-Panel    
@@ -177,8 +218,72 @@ public class InSzenarioController {
 		});
 	}
 
+
+    @FXML
+    void action_Neu(ActionEvent event) {
+    	if (checkForChangesAndAskForSave() == true) {
+    		InSzenario neuesIS = neuesInSzenarioAnlegen();
+    		if (neuesIS != null) {
+    			mainCtr.setSelectedInSzenario(neuesIS);
+    		}
+    	}
+    }
+    	
+    static public InSzenario neuesInSzenarioAnlegen () {	
+    	InSzenario inSzenario = null;
+    	String aktName = "";
+    	String masterhead = null;
+		while (true) {
+			Optional<String> newName = Dialogs.create()
+				.owner(primaryStage)
+				.title(IMconstant.APPL_NAME)
+				.masthead(masterhead)
+				.message("Wie soll das neue Integrationsszenario heiﬂen?")
+				.showTextInput(aktName);
+			if ( !newName.isPresent() ) {
+				mainCtr.setInfoText("Die Neuanlage wurde abgebrochen");
+				break;
+			}
+			aktName = newName.get().trim();
+			if (aktName.length() < 1) {
+				masterhead = "Eine Eingabe ist erforderlich!\n" + 
+							 "Bitte ‰ndern oder abbrechen";
+				continue;
+			} 
+			String sql="SELECT i FROM InSzenario i WHERE LOWER(i.name) = LOWER(:n)";
+			TypedQuery<InSzenario> tq = entityManager.createQuery(sql, InSzenario.class);
+			tq.setParameter("n", aktName);
+			List<InSzenario> iList = tq.getResultList();
+			
+			if (iList.size() > 0) {
+				masterhead = "Das Intgrationsszenario\n\"" +iList.get(0).getName() + "\"" + 
+							 "\nist bereits vorhanden.\nBitte ‰ndern oder abbrechen";
+				continue;
+			}
+			try {
+				inSzenario = new InSzenario(aktName);
+				inSzenario.setIsNr(inSzenario.getMaxIsNr(entityManager)+1);
+				entityManager.getTransaction().begin();
+				entityManager.persist(inSzenario);
+				entityManager.getTransaction().commit();
+				
+				mainCtr.loadInSzenarioListData();
+				mainCtr.setInfoText("Das Intergrationsszenario \"" + aktName + "\"" + 
+					" wurde erfolgreich erstellt");
+				break;
+			} catch (RuntimeException er) {
+				Dialogs.create().owner(primaryStage)
+					.title(IMconstant.APPL_NAME)
+					.masthead("Datenbankfehler")
+					.message("Fehler beim Anlegen einer neuen InSzenario")
+					.showException(er);
+			}
+		}
+		return inSzenario;
+    }
+
 	@FXML
-	void loeschen(ActionEvent event) {
+	void action_Loeschen(ActionEvent event) {
 		if (integrationSet.size() > 0) {
 			mainCtr.setErrorText("Fehler beim Lˆschen der InSzenario " + aktInSzenario.getName() +" wird verwendet");
 			return;
@@ -212,7 +317,7 @@ public class InSzenarioController {
 	}
 	
 	@FXML
-	void speichern(ActionEvent event) {
+	void action_Speichern(ActionEvent event) {
 		checkForChangesWithMode(Checkmode.SAVE_DONT_ASK);
 	}
 	
@@ -232,40 +337,64 @@ public class InSzenarioController {
 		String orgBeschreibung = aktInSzenario.getBeschreibung()==null ? "" : aktInSzenario.getBeschreibung();
 		String newBeschreibung = taBeschreibung.getText()==null ? "" : taBeschreibung.getText();
 		if (orgName.equals(newName) &&
-			orgBeschreibung.equals(newBeschreibung) ) {
+			orgBeschreibung.equals(newBeschreibung) &&
+			aktInSzenario.getAnsprechpartner().containsAll(ansprechpartnerList) &&
+			ansprechpartnerList.containsAll(aktInSzenario.getAnsprechpartner())   )
+		{
 			logger.info("Name und Bezeichnung unveraendert");
-		} else {
-			if (checkmode == Checkmode.ONLY_CHECK) {
-				return false;
-			}	
-			if (checkmode == Checkmode.ASK_FOR_UPDATE) {
-				Action response = Dialogs.create()
-    				.owner(primaryStage).title(primaryStage.getTitle())
-    				.actions(Dialog.Actions.YES, Dialog.Actions.NO, Dialog.Actions.CANCEL)
-    				.message("Sollen die ƒnderungen der InSzenario " + orgName + " gespeichert werden ?")
-    				.showConfirm();
-	    		if (response == Dialog.Actions.CANCEL) {
-	    			return false;
-	    		}
-	    		if (response == Dialog.Actions.NO) {
-	    			aktInSzenario = null;
-	    			return true;
-	    		}
-			}
-			String msg = checkInSzenarioName(newName);
-			if (msg != null) {
-				mainCtr.setErrorText(msg);
-				tfBezeichnung.requestFocus();
+			return true;
+		}
+		if (checkmode == Checkmode.ONLY_CHECK) {
+			return false;
+		}	
+		if (checkmode == Checkmode.ASK_FOR_UPDATE) {
+			Action response = Dialogs.create()
+					.owner(primaryStage).title(primaryStage.getTitle())
+					.actions(Dialog.Actions.YES, Dialog.Actions.NO, Dialog.Actions.CANCEL)
+					.message("Sollen die ƒnderungen der Integrationsszenario '" + orgName + "' gespeichert werden ?")
+					.showConfirm();
+			if (response == Dialog.Actions.CANCEL) {
 				return false;
 			}
-			logger.info("ƒnderung erkannt -> update");
+			if (response == Dialog.Actions.NO) {
+				aktInSzenario = null;
+				return true;
+			}
+		}
+		String msg = checkInSzenarioName(newName);
+		if (msg != null) {
+			mainCtr.setErrorText(msg);
+			tfBezeichnung.requestFocus();
+			return false;
+		}
+		logger.info("ƒnderung erkannt -> update " + newName);
+		try {
 			entityManager.getTransaction().begin();
 			aktInSzenario.setName(newName);
 			aktInSzenario.setBeschreibung(newBeschreibung);
+			boolean kontaktListChanged = aktInSzenario.getAnsprechpartner()
+					.retainAll(ansprechpartnerList);
+			for (Ansprechpartner k : ansprechpartnerList) {
+				if (aktInSzenario.getAnsprechpartner().contains(k)== false) {
+					aktInSzenario.getAnsprechpartner().add(k);
+					kontaktListChanged = true;
+				}
+			}
 			entityManager.getTransaction().commit();
-			readTablesForInSzenario(aktInSzenario);
-			mainCtr.setInfoText("InSzenario " + orgName + " wurde gespeichert");
+			if (kontaktListChanged) {
+				mainCtr.refreshKontaktReferences();
+			}
+			mainCtr.setInfoText("Das Integrationsszenario '" + newName + "' wurde gespeichert");
+			dataIsChanged.set(false);
+		} catch (RuntimeException e) {
+			logger.error("Message:"+ e.getMessage(),e);
+			Dialogs.create().owner(primaryStage)
+			.title(primaryStage.getTitle())
+			.masthead("FEHLER")
+			.message("Fehler beim Speichern des Integrationsszenarios:\n" + e.getMessage())
+			.showException(e);
 		}
+		readTablesForInSzenario(aktInSzenario);
 		return true;
 	}
 	
@@ -312,6 +441,37 @@ public class InSzenarioController {
 		tvVerwendungen.setItems(empfaengerList);
 	}
 
+    @FXML
+    void action_AddAnsprechpartner(ActionEvent event) {
+    	Stage dialog = new Stage(StageStyle.UTILITY);
+    	AnsprechpartnerAuswaehlenController controller = mainCtr.loadAnsprechpartnerAuswahl(dialog);
+    	if (controller != null) {
+    		dialog.showAndWait();
+    		String userInfo = "Die Kontakt-Auswahl wurde abgebrochen"; 
+    		if (controller.getResponse() == Actions.OK) {
+    			Ansprechpartner selectedKontakt = controller.getAnsprechpartner();
+    			if (ansprechpartnerList.contains(selectedKontakt)) {
+    				userInfo = "Der ausgew‰hlte Kontakt ist bereits eingetragen";
+    			} else {
+    				ansprechpartnerList.add(selectedKontakt);
+    				dataIsChanged.set(!checkForChangesWithMode(Checkmode.ONLY_CHECK));
+    				userInfo = "Der ausgew‰hlte Kontakt wurde erg‰nzt";
+    			}
+    		}
+    		mainCtr.setInfoText(userInfo);
+    	}
+    }
+
+    @FXML
+    void action_RemoveAnsprechpartner(ActionEvent event) {
+    	Ansprechpartner toBeRemoved = lvAnsprechpartner.getSelectionModel().getSelectedItem();
+    	logger.info("remove Kontakt " + toBeRemoved.getNachname());
+    	ansprechpartnerList.remove(toBeRemoved);
+    	mainCtr.setInfoText("Der Ansprechpartner \"" + toBeRemoved.getVorname() + " " + 
+    					toBeRemoved.getNachname() + "\" wurde aus dieser Liste entfernt");
+		dataIsChanged.set(!checkForChangesWithMode(Checkmode.ONLY_CHECK));
+    }
+	
 	public final ObjectProperty<InSzenario> inSzenarioProperty() {
 		return inSzenario;
 	}
@@ -324,24 +484,24 @@ public class InSzenarioController {
 		this.inSzenario.set(inSzenario);
 	}
     
-//	private static void log(String methode, String message) {
-//		if (message != null || methode != null) {
-//			String className = InSzenarioController.class.getName().substring(16);
-//			System.out.println(className + "." + methode + "(): " + message); 
-//		}
-//	}
-
+	final static String fxmlFilename = "InSzenario.fxml";
+	final static String fxmlErrortxt = "' was not injected: check FXML-file '" + fxmlFilename + "'.";
 	void checkFieldsFromView() {
-    	assert tfBezeichnung != null : "fx:id=\"tfBezeichnung\" was not injected: check your FXML file 'InSzenario.fxml'.";
-    	assert taBeschreibung != null : "fx:id=\"taBeschreibung\" was not injected: check your FXML file 'InSzenario.fxml'.";
-    	assert tcInNr != null : "fx:id=\"tcInNr\" was not injected: check your FXML file 'InSzenario.fxml'.";
-    	assert tcKonfiguration != null : "fx:id=\"tcKonfiguration\" was not injected: check your FXML file 'InSzenario.fxml'.";
-    	assert tcSender != null : "fx:id=\"tcSender\" was not injected: check your FXML file 'InSzenario.fxml'.";
-        assert tcEmpfaenger != null : "fx:id=\"tcEmpfaenger\" was not injected: check your FXML file 'InSzenario.fxml'.";
-        assert tcDatumBis != null : "fx:id=\"tcDatumBis\" was not injected: check your FXML file 'InSzenario.fxml'.";
-        assert tvVerwendungen != null : "fx:id=\"tvVerwendungen\" was not injected: check your FXML file 'InSzenario.fxml'.";
-        assert btnLoeschen != null : "fx:id=\"btnLoeschen\" was not injected: check your FXML file 'InSzenario.fxml'.";
-        assert btnSpeichern != null : "fx:id=\"btnSpeichern\" was not injected: check your FXML file 'InSzenario.fxml'.";
+		assert m_inSzenarioDetailsPane	!= null : "fx:id=\"m_inSzenarioDetailsPane"	 + fxmlErrortxt;
+		assert btnSpeichern 			!= null : "fx:id=\"btnSpeichern"			 + fxmlErrortxt;
+		assert btnNeu 					!= null : "fx:id=\"btnNeu"					 + fxmlErrortxt;
+		assert btnLoeschen 				!= null : "fx:id=\"btnLoeschen"				 + fxmlErrortxt;
+		assert btnAddAnsprechpartner 	!= null : "fx:id=\"btnAddAnsprechpartner" 	 + fxmlErrortxt;
+		assert btnRemoveAnsprechpartner != null : "fx:id=\"btnRemoveAnsprechpartner" + fxmlErrortxt;
+    	assert tfBezeichnung 			!= null : "fx:id='tfBezeichnung"   			 + fxmlErrortxt;
+    	assert taBeschreibung			!= null : "fx:id='taBeschreibung" 			 + fxmlErrortxt;
+    	assert tvVerwendungen 			!= null : "fx:id=\"tvVerwendungen"			 + fxmlErrortxt;
+    	assert tcInNr 					!= null : "fx:id=\"tcInNr"					 + fxmlErrortxt;
+    	assert tcKonfiguration			!= null : "fx:id=\"tcKonfiguration"			 + fxmlErrortxt;
+    	assert tcSender 				!= null : "fx:id=\"tcSender"				 + fxmlErrortxt;
+        assert tcGeschaeftsobjekt 		!= null : "fx:id=\"tcGeschaeftsobjekt"		 + fxmlErrortxt;
+        assert tcDatumAb 				!= null : "fx:id=\"tcDatumAb"				 + fxmlErrortxt;
+        assert tcDatumBis 				!= null : "fx:id=\"tcDatumBis"				 + fxmlErrortxt;
     }
     
 }

@@ -76,6 +76,7 @@ public class InPartnerController {
     
     @FXML private Button btnSpeichern;
     @FXML private Button btnLoeschen;
+    @FXML private Button btnAddAnsprechpartner;
     @FXML private Button btnRemoveAnsprechpartner;
     
     public InPartnerController() {
@@ -219,7 +220,7 @@ public class InPartnerController {
 	}
 
 	@FXML
-	void loeschen(ActionEvent event) {
+	void action_Loeschen(ActionEvent event) {
 		if (integrationSet.size() > 0) {
 			String msg = "Fehler beim Löschen des Partners \"" + aktPartner.getName() +"\" da er verwendet wird";
 			mainCtr.setErrorText(msg);
@@ -256,7 +257,7 @@ public class InPartnerController {
 	}
 	
 	@FXML
-	void speichern(ActionEvent event) {
+	void action_Speichern(ActionEvent event) {
 		checkForChangesAndSave(Checkmode.SAVE_DONT_ASK);
 	}
 	
@@ -383,7 +384,7 @@ public class InPartnerController {
 	}
 
     @FXML
-    void actionAddAnsprechpartner(ActionEvent event) {
+    void action_AddAnsprechpartner(ActionEvent event) {
     	Stage dialog = new Stage(StageStyle.UTILITY);
     	AnsprechpartnerAuswaehlenController controller = mainCtr.loadAnsprechpartnerAuswahl(dialog);
     	if (controller != null) {
@@ -404,7 +405,7 @@ public class InPartnerController {
     }
 
     @FXML
-    void actionRemoveAnsprechpartner(ActionEvent event) {
+    void action_RemoveAnsprechpartner(ActionEvent event) {
     	Ansprechpartner toBeRemoved = lvAnsprechpartner.getSelectionModel().getSelectedItem();
     	logger.info("remove Kontakt " + toBeRemoved.getNachname());
     	ansprechpartnerList.remove(toBeRemoved);
@@ -430,7 +431,7 @@ public class InPartnerController {
 	void checkFieldsFromView() {
     	assert tfBezeichnung 			!= null : "fx:id='tfBezeichnung"   			+ fxmlErrortxt;
     	assert taBeschreibung			!= null : "fx:id='taBeschreibung"  			+ fxmlErrortxt;
-    	assert tcInNr					!= null : "fx:id='tcInNr"  				+ fxmlErrortxt;
+    	assert tcInNr					!= null : "fx:id='tcInNr"  					+ fxmlErrortxt;
     	assert tcSender					!= null : "fx:id='tcSender"  				+ fxmlErrortxt;
         assert tcEmpfaenger				!= null : "fx:id='tcEmpfaenger"  			+ fxmlErrortxt;
         assert tcGeschaeftsobjekt		!= null : "fx:id='tcGeschaeftsobjekt"  		+ fxmlErrortxt;
@@ -440,6 +441,7 @@ public class InPartnerController {
         assert lvAnsprechpartner		!= null : "fx:id='lvAnsprechpartner"		+ fxmlErrortxt;
         assert btnLoeschen				!= null : "fx:id='btnLoeschen"  			+ fxmlErrortxt;
         assert btnSpeichern 			!= null : "fx:id='btnSpeichern"  			+ fxmlErrortxt;
+        assert btnAddAnsprechpartner	!= null : "fx:id='btnAddAnsprechpartner"	+ fxmlErrortxt;
         assert btnRemoveAnsprechpartner	!= null : "fx:id='btnRemoveAnsprechpartner"	+ fxmlErrortxt;
     }
 }

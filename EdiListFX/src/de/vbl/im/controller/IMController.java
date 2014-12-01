@@ -172,6 +172,7 @@ public class IMController {
     	// Check for data changes on close request from MainWindow
     	primaryStage.setOnCloseRequest(event -> {
     		if (checkAllOk() == false) {
+    			logger.info("Close abgebrochen");
     			event.consume();
     		}
     	});
@@ -324,20 +325,20 @@ public class IMController {
 	}
 
 	private boolean checkAllOk() {
-    	return integrationController.checkForChangesAndAskForSave() || 
-    		   inPartnerController.checkForChangesAndAskForSave() ||
-    	       inSystemController.checkForChangesAndAskForSave()  ||
-    	       inKomponenteController.checkForChangesAndAskForSave() ||
-    		   inSzenarioController.checkForChangesAndAskForSave()   ||
-    		   konfigurationController.checkForChangesAndAskForSave() ||
-    		   ansprechpartnerController.checkForChangesAndAskForSave() ||
+    	return integrationController.checkForChangesAndAskForSave() 	&& 
+    		   inPartnerController.checkForChangesAndAskForSave() 		&&
+    	       inSystemController.checkForChangesAndAskForSave()  		&&
+    	       inKomponenteController.checkForChangesAndAskForSave()	&&
+    		   inSzenarioController.checkForChangesAndAskForSave()		&&
+    		   konfigurationController.checkForChangesAndAskForSave()	&&
+    		   ansprechpartnerController.checkForChangesAndAskForSave() &&
     		   geschaeftsObjektController.checkForChangesAndAskForSave(); 
 	}
 	
 	// Aufruf "Beenden" via Menue
 	@FXML
 	void onActionCLose(ActionEvent event) {
-		if (checkAllOk() == true) {
+		if (checkAllOk() == true) { 
 			primaryStage.close();
 		}
 	}
@@ -352,10 +353,13 @@ public class IMController {
 	 * set a new selected Integration from other controllers
 	 * ***********************************************************************/
 	protected void setSelectedIntegration (Integration e) {
-//		logger.info("setSelected " + e.inNrStrExp().get());
 		tableInNrAuswahl.getSelectionModel().select(e);
 	}
     
+	protected void setSelectedInSzenario ( InSzenario is) {
+		tableInSzenarioAuswahl.getSelectionModel().select(is);
+	}
+	
 	private void setupIntegrationPane() {
 		logger.info("entered");
     	tableInNrAuswahl.setItems(integrationList);
@@ -432,7 +436,8 @@ public class IMController {
 		tColSelInSzenarioName.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
 		
 		inSzenarioController.inSzenarioProperty().bind(tableInSzenarioAuswahl.getSelectionModel().selectedItemProperty());
-		inSzenario.disableProperty().bind(Bindings.isNull(tableInSzenarioAuswahl.getSelectionModel().selectedItemProperty()));
+//		inSzenario.disableProperty().bind(Bindings.isNull(tableInSzenarioAuswahl.getSelectionModel().selectedItemProperty()));
+		inSzenario.setDisable(false);
 	}
 
 	private void setupKonfigurationPane() {

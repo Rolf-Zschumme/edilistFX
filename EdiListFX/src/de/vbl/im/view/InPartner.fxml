@@ -10,8 +10,8 @@
 			<items>
 				<ToolBar prefWidth="200.0">
   					<items>
-    					<Button fx:id="btnSpeichern" minWidth="80.0" mnemonicParsing="false" onAction="#speichern" prefWidth="100.0" text="Speichern" />
-    					<Button fx:id="btnLoeschen" minWidth="80.0" mnemonicParsing="false" onAction="#loeschen" prefWidth="100.0" text="Löschen" />
+    					<Button fx:id="btnSpeichern" minWidth="80.0" mnemonicParsing="false" onAction="#action_Speichern" prefWidth="100.0" text="Speichern" />
+    					<Button fx:id="btnLoeschen" minWidth="80.0" mnemonicParsing="false" onAction="#action_Loeschen" prefWidth="100.0" text="Löschen" />
 	  				</items>
 				</ToolBar>
 				<AnchorPane minHeight="0.0" minWidth="0.0">
@@ -26,8 +26,8 @@
 										<ListView fx:id="lvAnsprechpartner" prefWidth="220.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="120.0" AnchorPane.topAnchor="40.0" />
 										<TextArea fx:id="taBeschreibung" layoutX="89.0" layoutY="58.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="450.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
 										<Label alignment="CENTER" disable="true" layoutX="6.0" layoutY="64.0" text="Ansprechpartner:" AnchorPane.leftAnchor="12.0" AnchorPane.topAnchor="40.0" />
-										<Button layoutX="14.0" layoutY="74.0" mnemonicParsing="false" onAction="#actionAddAnsprechpartner" prefWidth="80.0" text="hinzufügen" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="65.0" />
-										<Button fx:id="btnRemoveAnsprechpartner" disable="true" layoutX="14.0" layoutY="108.0" mnemonicParsing="false" onAction="#actionRemoveAnsprechpartner" prefWidth="80.0" text="entfernen" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="105.0" />
+										<Button fx:id="btnAddAnsprechpartner" layoutX="14.0" layoutY="74.0" mnemonicParsing="false" onAction="#action_AddAnsprechpartner" prefWidth="80.0" text="Hinzufügen" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="65.0" />
+										<Button fx:id="btnRemoveAnsprechpartner" disable="true" layoutX="14.0" layoutY="108.0" mnemonicParsing="false" onAction="#action_RemoveAnsprechpartner" prefWidth="80.0" text="Entfernen" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="105.0" />
 									</children>
 								</AnchorPane>
 							</content>

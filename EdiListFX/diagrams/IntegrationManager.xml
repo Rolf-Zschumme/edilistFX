@@ -68,9 +68,9 @@
 	<entity>
 		<entity-name>de.vbl.im.model.Integration</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>236</entity-height>
+		<entity-height>276</entity-height>
 		<entity-X-Coordinate>391</entity-X-Coordinate>
-		<entity-Y-Coordinate>337</entity-Y-Coordinate>
+		<entity-Y-Coordinate>306</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
@@ -81,7 +81,7 @@
 		<entity-width>120</entity-width>
 		<entity-height>83</entity-height>
 		<entity-X-Coordinate>585</entity-X-Coordinate>
-		<entity-Y-Coordinate>498</entity-Y-Coordinate>
+		<entity-Y-Coordinate>479</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>false</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
@@ -114,7 +114,7 @@
 		<entity-width>120</entity-width>
 		<entity-height>103</entity-height>
 		<entity-X-Coordinate>23</entity-X-Coordinate>
-		<entity-Y-Coordinate>488</entity-Y-Coordinate>
+		<entity-Y-Coordinate>491</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
@@ -125,7 +125,7 @@
 		<entity-width>120</entity-width>
 		<entity-height>58</entity-height>
 		<entity-X-Coordinate>219</entity-X-Coordinate>
-		<entity-Y-Coordinate>528</entity-Y-Coordinate>
+		<entity-Y-Coordinate>514</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
