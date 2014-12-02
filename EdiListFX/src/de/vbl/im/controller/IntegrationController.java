@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -160,7 +161,7 @@ public class IntegrationController {
     private BooleanProperty readOnlyAccess = new SimpleBooleanProperty(false);
     private BooleanProperty inSzenarioNotSelected = new SimpleBooleanProperty(true);
     private BooleanProperty editEnabled = new SimpleBooleanProperty(false);
-    private BooleanProperty editStatusNotNew = new SimpleBooleanProperty(false);
+    private BooleanProperty editStatusNew = new SimpleBooleanProperty(false);
     
     private Map<String,GeschaeftsObjekt> businessObjectMap; 
     private ObservableList<String> businessObjectName = FXCollections.observableArrayList();
@@ -202,6 +203,17 @@ public class IntegrationController {
     			case 1000000: return "MB";
     			default     : return "GB";
     		}	
+    	}
+    	boolean setFaktor(String einheit) {
+    		if ("KB".equals(einheit))
+    			faktor = 1000;
+    		else if ("MB".equals(einheit))
+    			faktor = 1000000;
+    		else if ("GB".equals(einheit))
+    			faktor = 1000000000;
+    		else
+    			return false;
+    		return true;
     	}
     	
     }
@@ -259,6 +271,7 @@ public class IntegrationController {
     IntegrationPlus orgIn = new IntegrationPlus();
     
     private enum Status  { DESELECT, NEW , OLD, DIRTY }
+
     private static class EditData {
     	private Status status = Status.DESELECT;
     }
@@ -279,6 +292,7 @@ public class IntegrationController {
 		readCmbKonfigurationList();
 		readBusinessObject();
 		readIntervalle();
+		logger.exit();
 	}
 	
 
@@ -287,7 +301,7 @@ public class IntegrationController {
     	logger.info("init");
     	checkFieldFromView();
     	setupLocalBindings();
-    	integration.addListener( (ov, oldIntegration ,newIntegration) -> {
+    	integration.addListener( (ov, oldIntegration, newIntegration) -> {
     		logger.info("integration.Listener ENTRY");
     		if (oldIntegration != null) {
     			logger.info("integration.Listener oldIntegration:" + oldIntegration.inNrStrExp().get());
@@ -349,7 +363,7 @@ public class IntegrationController {
     			setLastChangeField(tfLastChange, newIntegration.getLaeDatum(), newIntegration.getLaeUser());
     			
     	    	edit.status = Status.OLD;
-    	    	editStatusNotNew.set(true);
+    	    	editStatusNew.set(false);
     	    	editEnabled.set(true);
     		}
     		dpProduktivSeit.setValue(aktIn.seitDatum);
@@ -376,10 +390,10 @@ public class IntegrationController {
 	private void setupLocalBindings() {
 		logger.info("entered");
 		
-		cmbInSzenario.disableProperty().bind(readOnlyAccess.or(editStatusNotNew));
+		cmbInSzenario.disableProperty().bind(readOnlyAccess.or((integration.isNotNull().and(editStatusNew.not()))));
 		cmbInSzenario.opacityProperty().set(1);
 		
-		m_NewInSzenarioBtn.disableProperty().bind(readOnlyAccess.or(editStatusNotNew));
+		m_NewInSzenarioBtn.disableProperty().bind(readOnlyAccess.or(editStatusNew.not()));
 //		m_NewInSzenarioBtn.opacityProperty().set(1);
 		
 		m_NewConfigurationBtn.disableProperty().bind(readOnlyAccess.or(
@@ -388,7 +402,8 @@ public class IntegrationController {
 		m_SpeichernBtn.disableProperty().bind(Bindings.not(dataIsChanged));
 //		m_SpeichernBtn.disableProperty().bind(inSzenarioNotSelected.or(dataIsChanged)); // Bindings.not(dataIsChanged));
 		m_LoeschenBtn.disableProperty().bind(this.integration.isNull());
-		m_NeuanlageBtn.disableProperty().bind(readOnlyAccess.or(dataIsChanged).or(inSzenarioNotSelected));
+		m_NeuanlageBtn.disableProperty().bind(readOnlyAccess.or(dataIsChanged).or(inSzenarioNotSelected)
+									.or((editStatusNew).and(Bindings.not(inSzenarioNotSelected)) ) );
 
 //		m_InSzenarioPane.disableProperty().bind(Bindings.isNull(integration));
 		m_IntegrationPane.disableProperty().bind(Bindings.not(editEnabled));
@@ -417,16 +432,36 @@ public class IntegrationController {
 		});
 
 		m_Intervall.setItems(intervallNameList);
-		m_GroesseEinheit.setItems(groesseEinheitList);
-		m_MaxGroesseEinheit.setItems(groesseEinheitList);
-
+		m_Intervall.valueProperty().addListener((ov, oldValue, newValue) -> {
+			String msg = "";
+			if (newValue != null && aktIn.intervallName.equals(newValue) == false) {
+				logger.debug("cmbIntervall.changed to " + newValue);
+				aktIn.intervallName = newValue;
+				setChangeFlag(!aktIn.intervallName.equals(orgIn.intervallName));
+			}
+			managerController.setErrorText(msg);			
+		});
+		
+		m_AnzahlMsg.textProperty().addListener((ov, oldValue, newValue) -> {
+			String msg = "";
+			if (newValue != null) {
+				
+			}
+			managerController.setErrorText(msg);			
+		});
+		
+		m_GroesseKB.
 		m_GroesseKB.textProperty().addListener((ov, oldValue, newValue) -> {
 			String msg = "";
 			if (newValue != null) {
 				String s = "0";
 				if (newValue.length()>0) {
-					Double d = Double.parseDouble(newValue.replace(',', '.')) * 1000;
-					s = String.format("%.0f", d);
+					try {
+						Double d = Double.parseDouble(newValue.replace(',', '.')) * 1000;
+						s = String.format("%.0f", d);
+					} catch (NumberFormatException ex) {
+						s = oldValue;
+					}
 				}
 				aktIn.averageByte.value = Long.parseLong(s);
 				if (aktIn.averageByte.getEinheit() == null) {
@@ -437,16 +472,20 @@ public class IntegrationController {
 			managerController.setErrorText(msg);			
 		});
 		
-		
-		m_Intervall.valueProperty().addListener((ov, oldValue, newValue) -> {
+		m_GroesseEinheit.setItems(groesseEinheitList);
+		m_GroesseEinheit.valueProperty().addListener((ov, oldValue, newValue) -> {
 			String msg = "";
-			if (newValue != null && aktIn.intervallName.equals(newValue) == false) {
-				logger.debug("cmbIntervall.changed to " + newValue);
-				aktIn.intervallName = newValue;
-				setChangeFlag(!aktIn.intervallName.equals(orgIn.intervallName));
+			if (newValue != null) {
+				if (aktIn.averageByte.setFaktor(newValue) == false) {
+					msg = "FEHLER: ungültige Einheit '" + newValue + "'";
+				}
+				setChangeFlag(aktIn.averageByte.get()!=orgIn.averageByte.get());
 			}
 			managerController.setErrorText(msg);			
 		});
+		
+		m_MaxGroesseEinheit.setItems(groesseEinheitList);
+		
 		
 		businessObjectMap = new HashMap<String,GeschaeftsObjekt>();		
 		cmbBuOb1.setItems(businessObjectName);
@@ -515,6 +554,7 @@ public class IntegrationController {
     			managerController.setInfoText("");  			
     		}
     	});
+    	logger.exit();
 	}
 	
 	private void setupInSzenarioComboBox() {
@@ -597,25 +637,22 @@ public class IntegrationController {
 				if(aktIn.inSzenario != null) {
 					dokuLinkList.addAll(aktIn.inSzenario.getDokuLink());
 				}
-				if (edit.status == Status.NEW) {
+//				if (edit.status == Status.NEW) {
     				aktIn.inNr = neueInNrErmitteln(aktIn.inSzenario);
     				tabAktInNr.setText(INR_PANE_PREFIX  + aktIn.inNrStr() );
-				}
-				managerController.setInfoText("");
+//				}
 			}
-			checkBezeichnungUpdate();
-			
 			inSzenarioNotSelected.set(newValue==null);
 			
 			if (newValue!= null) {
 				m_NeuanlageBtn.requestFocus();
 			}
-			
 			// zusätzliche INR-Reiter aktualisieren (entfernen/ergänzen)
 			tabPaneInNr.getTabs().retainAll(tabAktInNr);
 			if (newValue != null && aktIn.inNr > 0 && newValue.getIntegration() != null) {
 				tabsReiterErgaenzen(newValue.getIntegration().iterator());
 			}
+			managerController.setInfoText("");
 			logger.exit();
 		});
 		
@@ -650,10 +687,6 @@ public class IntegrationController {
     		logger.trace("Before:" + tabMapBefore.size());
     		tabPaneInNr.getTabs().addAll(0, tabMapBefore.values());
     	}
-	}
-
-	private void checkBezeichnungUpdate() {
-		// TODO Auto-generated method stub
 	}
 
 	private void setupDokuLink() {
@@ -1036,9 +1069,9 @@ public class IntegrationController {
 	} 
 	
 	private void resetEmpfaenger() {
-//		for (int i=0 ; i < MAX_EMPFAENGER; ++i) {
-//			aktIn.empfaengerKomponente[i] = null;
-//		}
+		for (int i=0 ; i < MAX_EMPFAENGER; ++i) {
+			aktIn.empfaengerKomponente[i] = null;
+		}
 		cmbBuOb1.getSelectionModel().select(null);
 		cmbBuOb1.getSelectionModel().select(null);
 		cmbBuOb3.getSelectionModel().select(null);
@@ -1109,7 +1142,7 @@ public class IntegrationController {
     	managerController.setSelectedIntegration(null);
 //    	readBusinessObject();
     	edit.status = Status.NEW;
-    	editStatusNotNew.set(false);
+    	editStatusNew.set(true);
     	editEnabled.set(true);
     	cmbInSzenario.requestFocus();
     	logger.exit();
@@ -1146,7 +1179,7 @@ public class IntegrationController {
 				logger.warn("NO INTEGRATION AND status NOT NEW");
 				// e.g. first selection
 				return true; 
-			}
+			} 
 		}
 		if (aktIn.inSzenario == orgIn.inSzenario               &&
 			aktIn.sender == orgIn.sender                       &&
@@ -1156,6 +1189,7 @@ public class IntegrationController {
 			aktIn.bezeichnung.equals(orgIn.bezeichnung)        &&
 			aktIn.beschreibung.equals(orgIn.beschreibung)      &&
 			aktIn.intervallName.equals(orgIn.intervallName)    &&
+			aktIn.anzahlMsg != orgIn.anzahlMsg				   &&
 			aktIn.averageByte.get() == orgIn.averageByte.get() &&
 			aktIn.konfiguration == orgIn.konfiguration         &&
 			verifyDokuLinkListIsUnchanged() == true			     )
@@ -1168,11 +1202,12 @@ public class IntegrationController {
 			return false; 
 		}
 		if (checkmode == Checkmode.ASK_FOR_UPDATE) {
+			String inBez = aktIn.bezeichnung==null ? "" : aktIn.bezeichnung; 
 			Action response = Dialogs.create().owner(primaryStage)
 					.title(IMconstant.APPL_NAME)
 					.masthead(IMconstant.SICHERHEITSABFRAGE)
 					.message("Soll die Änderungen an der Integration " + aktIn.inNr + 
-							" \"" + aktIn.bezeichnung + "\" gespeichert werden?")
+							" \"" + inBez + "\" gespeichert werden?")
 					.showConfirm();
 			if (response == Dialog.Actions.CANCEL) {
 				return false;
@@ -1267,13 +1302,6 @@ public class IntegrationController {
 			sIntegration.setInKomponente(aktIn.sender); 
 			sIntegration.setBeschreibung(aktIn.beschreibung);
 			
-			if (aktIn.intervallName == null) {
-				aktIn.intervallName = "";
-			}
-			if (!aktIn.intervallName.equals(orgIn.intervallName)) {
-				sIntegration.setIntervall(newIntervall(aktIn.intervallName));
-			}
-			
 			Collection<InEmpfaenger> tmpEmpfaengerList = new ArrayList<InEmpfaenger>();
 			
 			for (int i=0; i<MAX_EMPFAENGER; ++i) {
@@ -1327,6 +1355,12 @@ public class IntegrationController {
 			sIntegration.setLaeUser(System.getenv("USERNAME").toUpperCase());
 			sIntegration.setLaeDatum(LocalDateTime.now().toString());
 			
+			if (aktIn.intervallName == null) {
+				aktIn.intervallName = "";
+			}
+			if (!aktIn.intervallName.equals(orgIn.intervallName)) {
+				sIntegration.setIntervall(newIntervall(aktIn.intervallName));
+			}
 			sIntegration.setAnzahlMsg(aktIn.anzahlMsg);
 			sIntegration.setAverageByte(aktIn.averageByte.get());
 			
@@ -1612,6 +1646,28 @@ public class IntegrationController {
     	dataIsChanged.set(true);
     }
     
+    final Pattern pattern = Pattern.compile("^\\d*\\.?\\d*$");
+    final TextField tf = new TextField() {
+       @Override
+       public void replaceText(int start, int end, String text) {
+           String newText = getText().substring(0, start)+text+getText().substring(end);
+            if (pattern.matcher(newText).matches()) {
+                super.replaceText(start, end, text);
+            }
+        }
+
+        @Override
+        public void replaceSelection(String text) {
+            int start = getSelection().getStart();
+            int end = getSelection().getEnd();
+            String newText = getText().substring(0, start)+text+getText().substring(end);
+            if (pattern.matcher(newText).matches()) {
+                super.replaceSelection(text);
+            }
+        }
+    };
+    
+    
     private FXMLLoader loadKomponentenAuswahl(Stage dialog, int xOffset, int yOffset) {
     	FXMLLoader loader = new FXMLLoader();
     	String fullName = "subs/KomponentenAuswahl.fxml";
@@ -1688,7 +1744,5 @@ public class IntegrationController {
         assert dpProduktivSeit		 != null : "fx:id=\"dpProduktivSeit\" 	     was not injected: check your FXML file 'Integration.fxml'.";
         assert dpProduktivBis		 != null : "fx:id=\"dpProduktivBis\" 	     was not injected: check your FXML file 'Integration.fxml'.";
     }
-
-    
-    
 }
+
