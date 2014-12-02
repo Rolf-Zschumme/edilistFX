@@ -35,9 +35,9 @@ public class Integration {
 	private IntegerProperty inNr;
 	private StringProperty bezeichnung;
 	private StringProperty beschreibung;
-	private Integer anzahlMsg;
-	private Integer averageKB;
-	private Integer maximalKB;
+	private int anzahlMsg;
+	private long averageByte;
+	private long maximalByte;
 	private StringProperty seitDatum;
 	private StringProperty bisDatum;
 	private String laeDatum; 
@@ -307,20 +307,20 @@ public class Integration {
 	}
 
     // ------------------------------------------------------------------------
-	public Integer getAverageKB() {
-		return averageKB;
+	public long getAverageByte() {
+		return averageByte;
 	}
 
-	public void setAverageKB(Integer averageKB) {
-		this.averageKB = averageKB;
+	public void setAverageByte(long averageByte) {
+		this.averageByte = averageByte;
 	}
 
     // ------------------------------------------------------------------------
-	public Integer getMaximalKB() {
-		return maximalKB;
+	public long getMaximalByte() {
+		return maximalByte;
 	}
 
-	public void setMaximalKB(Integer maximalKB) {
-		this.maximalKB = maximalKB;
+	public void setMaximalByte(long maximalByte) {
+		this.maximalByte = maximalByte;
 	}
 }

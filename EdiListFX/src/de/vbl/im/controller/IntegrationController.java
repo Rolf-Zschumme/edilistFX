@@ -139,8 +139,8 @@ public class IntegrationController {
     @FXML private ComboBox<String> m_Intervall;
     @FXML private TextField m_AnzahlMsg;
     @FXML private TextField m_GroesseKB;
-    @FXML private ChoiceBox<String> m_GroesseEinheit;
     @FXML private TextField m_MaxGroesseKB;
+    @FXML private ChoiceBox<String> m_GroesseEinheit;
     @FXML private ChoiceBox<String> m_MaxGroesseEinheit;    
     
     @FXML private MenuButton mbtEmpfaenger2;
@@ -168,30 +168,42 @@ public class IntegrationController {
     private ObservableList<String> groesseEinheitList = FXCollections.observableArrayList("KB","MB","GB");
     private ObservableList<DokuLink> dokuLinkList     = FXCollections.observableArrayList();
 
-    private static class IntegerInKB {
-    	private double value;
-    	private int faktor; // KB=1 MB=1000 GB=1000000
-    	void set(int newValue) {
-    		if (newValue < 1000) {
-    			faktor = 1;
-    		} else if (newValue < 1000000) {
+    private static class LongForByte {
+    	private long value;
+    	private int faktor; // KB=1.000 MB=1.000.000 GB=1.000.000.000
+    	void set(long lg) {
+    		if (lg < 1000000) {
     			faktor = 1000;
-    		} else {
+    		} else if (lg < 1000000000) {
     			faktor = 1000000;
+    		} else {
+    			faktor = 1000000000;
     		}
-    		value = newValue / faktor;
+    		value = lg;
+    	}
+    	long get() {
+    		return value;
+    	}
+    	String getValue() {
+    		String format = "%.0f";
+    		if (value == 0) return "";
+    		if (value / faktor < 10 && ((value / faktor) % 10) > 0 ) {
+    			format = "%.1f";
+    		} 
+    		double d = value;
+    		return String.format(format,d / faktor);
     	}
     	String getEinheit() {
+    		if (value == 0) {
+    			return null;
+    		}
     		switch (faktor) {
-    			case    1: return "KB";
-    			case 1000: return "MB";
-    			default  : return "GB";
+    			case    1000: return "KB";
+    			case 1000000: return "MB";
+    			default     : return "GB";
     		}	
     	}
-    	Integer getValue() {
-    		Double d = value * faktor;
-    		return Integer.parseInt(d.toString());
-    	}
+    	
     }
     
     private static class IntegrationPlus {
@@ -207,8 +219,8 @@ public class IntegrationController {
     	private GeschaeftsObjekt geschaeftsObjekt[] = new GeschaeftsObjekt[MAX_EMPFAENGER];
     	private String intervallName;
     	private int anzahlMsg;
-    	private IntegerInKB averageKB = new IntegerInKB();
-    	private IntegerInKB maximalKB = new IntegerInKB();
+    	private LongForByte averageByte = new LongForByte();
+    	private LongForByte maximalByte = new LongForByte();
     	private Konfiguration konfiguration;
     	
     	void setData (Integration s) {
@@ -236,8 +248,8 @@ public class IntegrationController {
 			
 			konfiguration = s.getKonfiguration();
 			anzahlMsg = s.getAnzahlMsg()==null ? 0 : s.getAnzahlMsg();
-			averageKB.set(s.getAverageKB()==null ? 0 : s.getAverageKB());
-			maximalKB.set(s.getMaximalKB()==null ? 0 : s.getMaximalKB());
+			averageByte.set(s.getAverageByte());
+			maximalByte.set(s.getMaximalByte());
     	}
     	private String inNrStr() {
    			return String.format(Integration.FORMAT_INNR, inNr / 100, inNr % 100);
@@ -326,9 +338,10 @@ public class IntegrationController {
     			senderIsSelected.set(aktIn.sender != null);
     			setAktEmpfaenger();
     			m_AnzahlMsg.setText(String.format("%d",aktIn.anzahlMsg));
-    			m_GroesseKB.setText(String.format("%.1f",aktIn.averageKB.value));
-    			m_GroesseEinheit.setValue(aktIn.averageKB.getEinheit());
-    			
+    			m_GroesseKB.setText(aktIn.averageByte.getValue());
+    			m_GroesseEinheit.setValue(aktIn.averageByte.getEinheit());
+    			m_MaxGroesseKB.setText(aktIn.maximalByte.getValue());
+    			m_MaxGroesseEinheit.setValue(aktIn.maximalByte.getEinheit());
     			m_Intervall.getSelectionModel().select(aktIn.intervallName);
     			cmbKonfiguration.getSelectionModel().select(aktIn.konfiguration);
     			
@@ -406,6 +419,24 @@ public class IntegrationController {
 		m_Intervall.setItems(intervallNameList);
 		m_GroesseEinheit.setItems(groesseEinheitList);
 		m_MaxGroesseEinheit.setItems(groesseEinheitList);
+
+		m_GroesseKB.textProperty().addListener((ov, oldValue, newValue) -> {
+			String msg = "";
+			if (newValue != null) {
+				String s = "0";
+				if (newValue.length()>0) {
+					Double d = Double.parseDouble(newValue.replace(',', '.')) * 1000;
+					s = String.format("%.0f", d);
+				}
+				aktIn.averageByte.value = Long.parseLong(s);
+				if (aktIn.averageByte.getEinheit() == null) {
+					m_GroesseEinheit.setValue("KB");
+				}
+				setChangeFlag(aktIn.averageByte.get()!=orgIn.averageByte.get());
+			}
+			managerController.setErrorText(msg);			
+		});
+		
 		
 		m_Intervall.valueProperty().addListener((ov, oldValue, newValue) -> {
 			String msg = "";
@@ -1117,15 +1148,16 @@ public class IntegrationController {
 				return true; 
 			}
 		}
-		if (aktIn.inSzenario == orgIn.inSzenario        &&
-			aktIn.sender == orgIn.sender                      &&
-			verifyEmpfaengerAreUnchanged() == true        &&
-			localDateEquals(aktIn.seitDatum, orgIn.seitDatum) &&
-			localDateEquals(aktIn.bisDatum, orgIn.bisDatum)   &&
-			aktIn.bezeichnung.equals(orgIn.bezeichnung)       &&
-			aktIn.beschreibung.equals(orgIn.beschreibung)     &&
-			aktIn.intervallName.equals(orgIn.intervallName)   &&
-			aktIn.konfiguration == orgIn.konfiguration        &&
+		if (aktIn.inSzenario == orgIn.inSzenario               &&
+			aktIn.sender == orgIn.sender                       &&
+			verifyEmpfaengerAreUnchanged() == true             &&
+			localDateEquals(aktIn.seitDatum, orgIn.seitDatum)  &&
+			localDateEquals(aktIn.bisDatum, orgIn.bisDatum)    &&
+			aktIn.bezeichnung.equals(orgIn.bezeichnung)        &&
+			aktIn.beschreibung.equals(orgIn.beschreibung)      &&
+			aktIn.intervallName.equals(orgIn.intervallName)    &&
+			aktIn.averageByte.get() == orgIn.averageByte.get() &&
+			aktIn.konfiguration == orgIn.konfiguration         &&
 			verifyDokuLinkListIsUnchanged() == true			     )
 		{
 			logger.info(checkmode + ": no change found -> no update");
@@ -1294,6 +1326,9 @@ public class IntegrationController {
 			
 			sIntegration.setLaeUser(System.getenv("USERNAME").toUpperCase());
 			sIntegration.setLaeDatum(LocalDateTime.now().toString());
+			
+			sIntegration.setAnzahlMsg(aktIn.anzahlMsg);
+			sIntegration.setAverageByte(aktIn.averageByte.get());
 			
 			sIntegration.setKonfiguration(aktIn.konfiguration);
 			
