@@ -28,6 +28,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -137,6 +138,7 @@ public class IntegrationController {
     @FXML private Button btnEmpfaenger2;
     @FXML private Button btnEmpfaenger3;
     
+//    private DoubleProperty doubleProperty = new SimpleDoubleProperty(0.0);
     @FXML private ComboBox<String> m_Intervall;
     @FXML private TextField m_AnzahlMsg;
     @FXML private TextField m_GroesseKB;
@@ -146,7 +148,6 @@ public class IntegrationController {
     
     @FXML private MenuButton mbtEmpfaenger2;
     @FXML private MenuButton mbtEmpfaenger3;
-    
     
     
     private BooleanProperty dataIsChanged = new SimpleBooleanProperty(false);
@@ -450,7 +451,8 @@ public class IntegrationController {
 			managerController.setErrorText(msg);			
 		});
 		
-		m_GroesseKB.
+		m_GroesseKB.addEventFilter(KeyEvent.KEY_TYPED, numeric_Validation(9));
+		
 		m_GroesseKB.textProperty().addListener((ov, oldValue, newValue) -> {
 			String msg = "";
 			if (newValue != null) {
@@ -460,7 +462,8 @@ public class IntegrationController {
 						Double d = Double.parseDouble(newValue.replace(',', '.')) * 1000;
 						s = String.format("%.0f", d);
 					} catch (NumberFormatException ex) {
-						s = oldValue;
+						m_GroesseKB.setText(oldValue);
+						msg = "Fehler: keine gültige Zahl";
 					}
 				}
 				aktIn.averageByte.value = Long.parseLong(s);
@@ -557,6 +560,28 @@ public class IntegrationController {
     	logger.exit();
 	}
 	
+	public EventHandler<KeyEvent> numeric_Validation(int maxLen) {
+		return new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent e) {
+				TextField txt_TextField = (TextField) e.getSource();
+				
+				if (txt_TextField.getText().length() >= maxLen) {
+					e.consume();
+				}
+				if (e.getCharacter().matches("[0-9,]")) {
+					if(txt_TextField.getText().contains(",") && e.getCharacter().matches("[,]")) {
+						e.consume();
+					} else if(txt_TextField.getText().length() == 0 && e.getCharacter().matches("[,]")) {
+						e.consume();
+					}
+				} else {
+					e.consume();
+				}	
+			}
+		};
+	}
+
 	private void setupInSzenarioComboBox() {
 		cmbInSzenario.setCellFactory((cmbBx) -> {
 			return new ListCell<InSzenario>() {

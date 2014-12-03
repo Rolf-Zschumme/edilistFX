@@ -19,13 +19,13 @@
 			<property name="eclipselink.jdbc.batch-writing" value="None"/>
 			<property name="eclipselink.jdbc.native-sql" value="false"/>
 			<property name="eclipselink.jdbc.cache-statements" value="false"/>
-			<property name="javax.persistence.jdbc.url" value="jdbc:postgresql://servecm01:5432/xidv01"/>
-			<property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://10.0.0.13:3306/ediliste"/>
+			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
 			<property name="eclipselink.ddl-generation.output-mode" value="both"/>
 			<property name="eclipselink.application-location" value="./ddl"/>
 			<property name="javax.persistence.schema-generation.create-database-schemas" value="true"/>
-			<property name="javax.persistence.jdbc.user" value="lyan"/>
-			<property name="javax.persistence.jdbc.password" value="lyan"/>
+			<property name="javax.persistence.jdbc.user" value="ediliste"/>
+			<property name="javax.persistence.jdbc.password" value="1234567"/>
 		</properties>
 	</persistence-unit>
 </persistence>
