@@ -88,7 +88,8 @@ import de.vbl.im.model.InSzenario;
 import de.vbl.im.model.Konfiguration;
 import de.vbl.im.model.Repository;
 import de.vbl.im.tools.IMconstant;
-
+import de.vbl.im.tools.LongForByte;
+ 
 
 public class IntegrationController {
 	private static final Logger logger = LogManager.getLogger(IntegrationController.class.getName()); 
@@ -141,8 +142,8 @@ public class IntegrationController {
 //    private DoubleProperty doubleProperty = new SimpleDoubleProperty(0.0);
     @FXML private ComboBox<String> m_Intervall;
     @FXML private TextField m_AnzahlMsg;
-    @FXML private TextField m_GroesseKB;
-    @FXML private TextField m_MaxGroesseKB;
+    @FXML private TextField m_GroesseMsg;
+    @FXML private TextField m_MaxGroesseMsg;
     @FXML private ChoiceBox<String> m_GroesseEinheit;
     @FXML private ChoiceBox<String> m_MaxGroesseEinheit;    
     
@@ -170,55 +171,6 @@ public class IntegrationController {
     private ObservableList<String> groesseEinheitList = FXCollections.observableArrayList("KB","MB","GB");
     private ObservableList<DokuLink> dokuLinkList     = FXCollections.observableArrayList();
 
-    private static class LongForByte {
-    	private long value;
-    	private int faktor; // KB=1.000 MB=1.000.000 GB=1.000.000.000
-    	void set(long lg) {
-    		if (lg < 1000000) {
-    			faktor = 1000;
-    		} else if (lg < 1000000000) {
-    			faktor = 1000000;
-    		} else {
-    			faktor = 1000000000;
-    		}
-    		value = lg;
-    	}
-    	long get() {
-    		return value;
-    	}
-    	String getValue() {
-    		String format = "%.0f";
-    		if (value == 0) return "";
-    		if (value / faktor < 10 && ((value / faktor) % 10) > 0 ) {
-    			format = "%.1f";
-    		} 
-    		double d = value;
-    		return String.format(format,d / faktor);
-    	}
-    	String getEinheit() {
-    		if (value == 0) {
-    			return null;
-    		}
-    		switch (faktor) {
-    			case    1000: return "KB";
-    			case 1000000: return "MB";
-    			default     : return "GB";
-    		}	
-    	}
-    	boolean setFaktor(String einheit) {
-    		if ("KB".equals(einheit))
-    			faktor = 1000;
-    		else if ("MB".equals(einheit))
-    			faktor = 1000000;
-    		else if ("GB".equals(einheit))
-    			faktor = 1000000000;
-    		else
-    			return false;
-    		return true;
-    	}
-    	
-    }
-    
     private static class IntegrationPlus {
     	private int inNr;
     	private InSzenario inSzenario;
@@ -315,13 +267,20 @@ public class IntegrationController {
     			tabPaneInNr.getTabs().retainAll(tabAktInNr);
     			btnSender.textProperty().unbind();
     			btnSender.setText("");
+    			m_AnzahlMsg.setText("");
+    			m_GroesseEinheit.setValue(null);
+    			m_GroesseMsg.setText("");
+    			m_MaxGroesseEinheit.setValue(null);
+    			m_MaxGroesseMsg.setText("");
     			cmbKonfiguration.getSelectionModel().select(null);
     		}
     		if (newIntegration == null) {
     			logger.info("integration.Listener newIntegration==null");
     			managerController.setInfoText("Neue Integration kann bearbeitet werden");
     			InSzenario prevInSzenario = aktIn.inSzenario;
-    			aktIn.setData(new Integration());
+    			Integration newI = new Integration();
+    			aktIn.setData(newI);
+    			orgIn.setData(newI);
     			if (prevInSzenario != null) {
     				aktIn.inSzenario = prevInSzenario;
     				aktIn.inNr = neueInNrErmitteln(aktIn.inSzenario);
@@ -331,6 +290,7 @@ public class IntegrationController {
     			resetEmpfaenger();
     		} else {
     			logger.info("integration.Listener newIntegration=" + newIntegration.inNrStrExp().get());
+    			orgIn.setData(newIntegration);
     			if (aktIn.inSzenario != newIntegration.getInSzenario()) {
     				aktIn.setData(newIntegration);
     				cmbInSzenario.getSelectionModel().select(aktIn.inSzenario);
@@ -353,14 +313,13 @@ public class IntegrationController {
     			senderIsSelected.set(aktIn.sender != null);
     			setAktEmpfaenger();
     			m_AnzahlMsg.setText(String.format("%d",aktIn.anzahlMsg));
-    			m_GroesseKB.setText(aktIn.averageByte.getValue());
     			m_GroesseEinheit.setValue(aktIn.averageByte.getEinheit());
-    			m_MaxGroesseKB.setText(aktIn.maximalByte.getValue());
+    			m_GroesseMsg.setText(aktIn.averageByte.getValueStr());
     			m_MaxGroesseEinheit.setValue(aktIn.maximalByte.getEinheit());
+    			m_MaxGroesseMsg.setText(aktIn.maximalByte.getValueStr());
     			m_Intervall.getSelectionModel().select(aktIn.intervallName);
     			cmbKonfiguration.getSelectionModel().select(aktIn.konfiguration);
     			
-    			orgIn.setData(newIntegration);
     			setLastChangeField(tfLastChange, newIntegration.getLaeDatum(), newIntegration.getLaeUser());
     			
     	    	edit.status = Status.OLD;
@@ -432,64 +391,29 @@ public class IntegrationController {
 			managerController.setErrorText(msg);
 		});
 
-		m_Intervall.setItems(intervallNameList);
-		m_Intervall.valueProperty().addListener((ov, oldValue, newValue) -> {
-			String msg = "";
-			if (newValue != null && aktIn.intervallName.equals(newValue) == false) {
-				logger.debug("cmbIntervall.changed to " + newValue);
-				aktIn.intervallName = newValue;
-				setChangeFlag(!aktIn.intervallName.equals(orgIn.intervallName));
-			}
-			managerController.setErrorText(msg);			
-		});
-		
-		m_AnzahlMsg.textProperty().addListener((ov, oldValue, newValue) -> {
-			String msg = "";
-			if (newValue != null) {
-				
-			}
-			managerController.setErrorText(msg);			
-		});
-		
-		m_GroesseKB.addEventFilter(KeyEvent.KEY_TYPED, numeric_Validation(9));
-		
-		m_GroesseKB.textProperty().addListener((ov, oldValue, newValue) -> {
-			String msg = "";
-			if (newValue != null) {
-				String s = "0";
-				if (newValue.length()>0) {
-					try {
-						Double d = Double.parseDouble(newValue.replace(',', '.')) * 1000;
-						s = String.format("%.0f", d);
-					} catch (NumberFormatException ex) {
-						m_GroesseKB.setText(oldValue);
-						msg = "Fehler: keine gültige Zahl";
-					}
-				}
-				aktIn.averageByte.value = Long.parseLong(s);
-				if (aktIn.averageByte.getEinheit() == null) {
-					m_GroesseEinheit.setValue("KB");
-				}
-				setChangeFlag(aktIn.averageByte.get()!=orgIn.averageByte.get());
-			}
-			managerController.setErrorText(msg);			
-		});
-		
-		m_GroesseEinheit.setItems(groesseEinheitList);
-		m_GroesseEinheit.valueProperty().addListener((ov, oldValue, newValue) -> {
-			String msg = "";
-			if (newValue != null) {
-				if (aktIn.averageByte.setFaktor(newValue) == false) {
-					msg = "FEHLER: ungültige Einheit '" + newValue + "'";
-				}
-				setChangeFlag(aktIn.averageByte.get()!=orgIn.averageByte.get());
-			}
-			managerController.setErrorText(msg);			
-		});
-		
-		m_MaxGroesseEinheit.setItems(groesseEinheitList);
-		
-		
+    	dpProduktivSeit.setShowWeekNumbers(true);
+    	dpProduktivBis.setShowWeekNumbers(true);
+    	
+    	dpProduktivSeit.setOnAction(event -> {
+    		aktIn.seitDatum = dpProduktivSeit.getValue();
+    		setChangeFlag(aktIn.seitDatum != orgIn.seitDatum);
+    		if (aktIn.bisDatum != null && aktIn.seitDatum.isAfter(aktIn.bisDatum)) {
+        		managerController.setInfoText("Seit-Datum sollte vor Bis-Datum liegen");  			
+    		} else {
+    			managerController.setInfoText("");  			
+    		}
+    	});
+    	
+    	dpProduktivBis.setOnAction(event -> {
+    		aktIn.bisDatum = dpProduktivBis.getValue();
+    		setChangeFlag(aktIn.bisDatum != orgIn.bisDatum);
+    		if (aktIn.seitDatum != null && aktIn.bisDatum.isBefore(aktIn.seitDatum)) {
+        		managerController.setInfoText("Bis-Datum sollte nach Seit-Datum liegen");  			
+    		} else {
+    			managerController.setInfoText("");  			
+    		}
+    	});
+    	
 		businessObjectMap = new HashMap<String,GeschaeftsObjekt>();		
 		cmbBuOb1.setItems(businessObjectName);
 		cmbBuOb2.setItems(businessObjectName);
@@ -535,28 +459,77 @@ public class IntegrationController {
     	mbtEmpfaenger3.visibleProperty().bind(buOb3Exist);
     	btnEmpfaenger3.visibleProperty().bind(empfaenger2IsSelected);
     	
-    	dpProduktivSeit.setShowWeekNumbers(true);
-    	dpProduktivBis.setShowWeekNumbers(true);
-    	
-    	dpProduktivSeit.setOnAction(event -> {
-    		aktIn.seitDatum = dpProduktivSeit.getValue();
-    		setChangeFlag(aktIn.seitDatum != orgIn.seitDatum);
-    		if (aktIn.bisDatum != null && aktIn.seitDatum.isAfter(aktIn.bisDatum)) {
-        		managerController.setInfoText("Seit-Datum sollte vor Bis-Datum liegen");  			
-    		} else {
-    			managerController.setInfoText("");  			
-    		}
-    	});
-    	
-    	dpProduktivBis.setOnAction(event -> {
-    		aktIn.bisDatum = dpProduktivBis.getValue();
-    		setChangeFlag(aktIn.bisDatum != orgIn.bisDatum);
-    		if (aktIn.seitDatum != null && aktIn.bisDatum.isBefore(aktIn.seitDatum)) {
-        		managerController.setInfoText("Bis-Datum sollte nach Seit-Datum liegen");  			
-    		} else {
-    			managerController.setInfoText("");  			
-    		}
-    	});
+		m_Intervall.setItems(intervallNameList);
+		m_Intervall.valueProperty().addListener((ov, oldValue, newValue) -> {
+			String msg = "";
+			if (newValue != null && aktIn.intervallName.equals(newValue) == false) {
+				logger.debug("cmbIntervall.changed to " + newValue);
+				aktIn.intervallName = newValue;
+				setChangeFlag(!aktIn.intervallName.equals(orgIn.intervallName));
+			}
+			managerController.setErrorText(msg);			
+		});
+		
+		m_AnzahlMsg.addEventFilter(KeyEvent.KEY_TYPED, integer_Validation(7));
+		
+		m_AnzahlMsg.textProperty().addListener((ov, oldValue, newValue) -> {
+			String msg = "";
+			if (newValue != null) {
+				if (newValue.equals("")) {
+					newValue = "0";
+				}
+				aktIn.anzahlMsg = Integer.parseInt(newValue);
+				setChangeFlag(aktIn.anzahlMsg != orgIn.anzahlMsg);
+			}
+			managerController.setErrorText(msg);			
+		});
+		
+		m_GroesseMsg.addEventFilter(KeyEvent.KEY_TYPED, numeric_Validation(3));
+		m_GroesseMsg.textProperty().addListener((ov, oldValue, newValue) -> {
+			String msg = "";
+			if (newValue != null) {
+				if (m_GroesseEinheit.getSelectionModel().isEmpty()) {
+					m_GroesseEinheit.setValue("KB");
+				}
+				msg = aktIn.averageByte.setValue(newValue);
+				setChangeFlag(aktIn.averageByte.get() != orgIn.averageByte.get());
+			}
+			managerController.setErrorText(msg);			
+		});
+		
+		m_GroesseEinheit.setItems(groesseEinheitList);
+		m_GroesseEinheit.valueProperty().addListener((ov, oldValue, newValue) -> {
+			String msg = "";
+			if (newValue != null) {
+				msg = aktIn.averageByte.setEinheit(newValue);
+				setChangeFlag(aktIn.averageByte.get() != orgIn.averageByte.get());
+			}
+			managerController.setErrorText(msg);			
+		});
+		
+		m_MaxGroesseMsg.addEventFilter(KeyEvent.KEY_TYPED, numeric_Validation(3));
+		m_MaxGroesseMsg.textProperty().addListener((ov, oldValue, newValue) -> {
+			String msg = "";
+			if (newValue != null) {
+				if (m_MaxGroesseEinheit.getSelectionModel().isEmpty()) {
+					m_MaxGroesseEinheit.setValue("KB");
+				}
+				msg = aktIn.maximalByte.setValue(newValue);
+				setChangeFlag(aktIn.maximalByte.get() != orgIn.maximalByte.get());
+			}
+			managerController.setErrorText(msg);			
+		});
+		
+		m_MaxGroesseEinheit.setItems(groesseEinheitList);
+		m_MaxGroesseEinheit.valueProperty().addListener((ov, oldValue, newValue) -> {
+			String msg = "";
+			if (newValue != null) {
+				msg = aktIn.maximalByte.setEinheit(newValue);
+				setChangeFlag(aktIn.maximalByte.get() != orgIn.maximalByte.get());
+			}
+			managerController.setErrorText(msg);			
+		});
+		
     	logger.exit();
 	}
 	
@@ -564,19 +537,33 @@ public class IntegrationController {
 		return new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent e) {
-				TextField txt_TextField = (TextField) e.getSource();
+				TextField textField = (TextField) e.getSource();
 				
-				if (txt_TextField.getText().length() >= maxLen) {
+				if (textField.getText().length() >= maxLen) {
 					e.consume();
 				}
 				if (e.getCharacter().matches("[0-9,]")) {
-					if(txt_TextField.getText().contains(",") && e.getCharacter().matches("[,]")) {
+					if(textField.getText().contains(",") && e.getCharacter().matches("[,]")) {
 						e.consume();
-					} else if(txt_TextField.getText().length() == 0 && e.getCharacter().matches("[,]")) {
+					} else if(textField.getText().length() == 0 && e.getCharacter().matches("[0,]")) {
 						e.consume();
 					}
 				} else {
 					e.consume();
+				}	
+			}
+		};
+	}
+	public EventHandler<KeyEvent> integer_Validation(int maxLen) {
+		return new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent e) {
+				TextField textField = (TextField) e.getSource();
+				if (textField.getText().length() >= maxLen || 
+					!e.getCharacter().matches("[0-9]")     || 
+					(textField.getText().length() == 0  && 
+					  e.getCharacter().matches("[0]"))      ) {
+						e.consume();
 				}	
 			}
 		};
@@ -662,10 +649,10 @@ public class IntegrationController {
 				if(aktIn.inSzenario != null) {
 					dokuLinkList.addAll(aktIn.inSzenario.getDokuLink());
 				}
-//				if (edit.status == Status.NEW) {
+				if (edit.status == Status.NEW) {
     				aktIn.inNr = neueInNrErmitteln(aktIn.inSzenario);
-    				tabAktInNr.setText(INR_PANE_PREFIX  + aktIn.inNrStr() );
-//				}
+				}
+				tabAktInNr.setText(INR_PANE_PREFIX  + aktIn.inNrStr() );
 			}
 			inSzenarioNotSelected.set(newValue==null);
 			
@@ -680,7 +667,6 @@ public class IntegrationController {
 			managerController.setInfoText("");
 			logger.exit();
 		});
-		
 	}
 	
     private void tabsReiterErgaenzen(Iterator<Integration> iterator) {
@@ -1164,8 +1150,10 @@ public class IntegrationController {
     	if (checkForChangesAndAskForSave() == false) {
     		return;
     	}
-    	managerController.setSelectedIntegration(null);
-//    	readBusinessObject();
+    	//  
+    	if (integration != null) {
+    		managerController.setSelectedIntegration(null);
+    	}
     	edit.status = Status.NEW;
     	editStatusNew.set(true);
     	editEnabled.set(true);
@@ -1214,8 +1202,9 @@ public class IntegrationController {
 			aktIn.bezeichnung.equals(orgIn.bezeichnung)        &&
 			aktIn.beschreibung.equals(orgIn.beschreibung)      &&
 			aktIn.intervallName.equals(orgIn.intervallName)    &&
-			aktIn.anzahlMsg != orgIn.anzahlMsg				   &&
+			aktIn.anzahlMsg == orgIn.anzahlMsg				   &&
 			aktIn.averageByte.get() == orgIn.averageByte.get() &&
+			aktIn.maximalByte.get() == orgIn.maximalByte.get() &&
 			aktIn.konfiguration == orgIn.konfiguration         &&
 			verifyDokuLinkListIsUnchanged() == true			     )
 		{
@@ -1388,6 +1377,7 @@ public class IntegrationController {
 			}
 			sIntegration.setAnzahlMsg(aktIn.anzahlMsg);
 			sIntegration.setAverageByte(aktIn.averageByte.get());
+			sIntegration.setMaximalByte(aktIn.maximalByte.get());
 			
 			sIntegration.setKonfiguration(aktIn.konfiguration);
 			
@@ -1408,11 +1398,12 @@ public class IntegrationController {
 				m_Intervall.getSelectionModel().select(aktIn.intervallName);
 			}
 		}
-		setLastChangeField(tfLastChange, sIntegration.getLaeDatum(), sIntegration.getLaeUser());			
+//		setLastChangeField(tfLastChange, sIntegration.getLaeDatum(), sIntegration.getLaeUser());			
 		aktIn.setData(sIntegration);
 		orgIn.setData(sIntegration);
 		
 		managerController.loadIntegrationListData();
+		managerController.setSelectedIntegration(sIntegration);
 		managerController.setInfoText("Die Integration " + sIntegration.inNrStrExp().get() +
 				" wurde gespeichert");
 		dataIsChanged.set(false);
@@ -1749,9 +1740,9 @@ public class IntegrationController {
         assert integration 			 != null : "fx:id=\"integration\" 		     was not injected: check your FXML file 'Integration.fxml'.";
         assert m_Intervall	 	 	 != null : "fx:id=\"m_Intervall\" 		     was not injected: check your FXML file 'Integration.fxml'.";
         assert m_AnzahlMsg		 	 != null : "fx:id=\"m_AnzahlMsg\"		     was not injected: check your FXML file 'Integration.fxml'.";
-        assert m_GroesseKB	 	 	 != null : "fx:id=\"m_GroesseKB\" 		     was not injected: check your FXML file 'Integration.fxml'.";
+        assert m_GroesseMsg	 	 	 != null : "fx:id=\"m_GroesseMsg\" 		     was not injected: check your FXML file 'Integration.fxml'.";
         assert m_GroesseEinheit	 	 != null : "fx:id=\"m_GroesseEinheit\"	     was not injected: check your FXML file 'Integration.fxml'.";
-        assert m_MaxGroesseKB	 	 != null : "fx:id=\"m_MaxGroesseKB\" 	     was not injected: check your FXML file 'Integration.fxml'.";
+        assert m_MaxGroesseMsg	 	 != null : "fx:id=\"m_MaxGroesseMsg\" 	     was not injected: check your FXML file 'Integration.fxml'.";
         assert m_MaxGroesseEinheit	 != null : "fx:id=\"m_MaxGroesseEinheit\"    was not injected: check your FXML file 'Integration.fxml'.";
         assert btnEmpfaenger1 		 != null : "fx:id=\"btnEmpfaenger1\"         was not injected: check your FXML file 'Integration.fxml'.";
         assert btnEmpfaenger2		 != null : "fx:id=\"btnEmpfaenger2\"         was not injected: check your FXML file 'Integration.fxml'.";
