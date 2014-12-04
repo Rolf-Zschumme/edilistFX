@@ -17,6 +17,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Query;
+
 import static javax.persistence.GenerationType.IDENTITY;
 
 
@@ -26,6 +27,7 @@ import static javax.persistence.GenerationType.IDENTITY;
  */
 @Entity  
 public class InSzenario {
+	public static final String FORMAT_ISNR = "%03d";
 
 	private StringProperty name;
 	private long id;
@@ -63,7 +65,7 @@ public class InSzenario {
 	}
 
 	public final String getIsNrStr() {
-		return String.format("%03d", this.isNr.get());
+		return String.format(FORMAT_ISNR, this.isNr.get());
 	}
 	
 	public final int getIsNr() {

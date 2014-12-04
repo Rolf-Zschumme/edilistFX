@@ -31,10 +31,11 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
 
+import de.vbl.im.model.Ansprechpartner;
 import de.vbl.im.model.InKomponente;
 import de.vbl.im.model.InPartner;
 import de.vbl.im.model.InSystem;
-import de.vbl.im.model.Ansprechpartner;
+import de.vbl.im.model.InSzenario;
 
 public class AnsprechpartnerController {
 	private static final Logger logger = LogManager.getLogger(AnsprechpartnerController.class.getName());
@@ -43,6 +44,7 @@ public class AnsprechpartnerController {
 	private static EntityManager entityManager;
 	private final ObjectProperty<Ansprechpartner> ansprechpartner;
 	private final ObservableList<InKomponente> inKomponentenList = FXCollections.observableArrayList();
+	private final ObservableList<InSzenario> inSzenarioList = FXCollections.observableArrayList();
 	private Ansprechpartner aktAnsprechpartner = null;
 	
 	private BooleanProperty dataIsChanged = new SimpleBooleanProperty(false);
@@ -62,6 +64,10 @@ public class AnsprechpartnerController {
     @FXML private TableColumn<InKomponente, String> tcPartnerName;
     @FXML private TableColumn<InKomponente, String> tcSystemName;
     @FXML private TableColumn<InKomponente, String> tcKomponentenName;
+    
+    @FXML private TableView<InSzenario> tvInSzenario;
+    @FXML private TableColumn<InSzenario, String> tcInSzenario;
+    @FXML private TableColumn<InSzenario, String> tcIsNr;
     
     @FXML private Button btnSpeichern;
     @FXML private Button btnLoeschen;
@@ -91,6 +97,7 @@ public class AnsprechpartnerController {
 				btnLoeschen.disableProperty().unbind();
 				if (oldPerson != null) {
 					inKomponentenList.clear();
+					inSzenarioList.clear();
 				}
 				tfNachname.setText("");
 				tfVorname.setText("");
@@ -98,6 +105,7 @@ public class AnsprechpartnerController {
 					aktAnsprechpartner = newPerson;
 					logger.trace("newPerson.Name="+ newPerson.getNachname());
 					readInKomponentenListeforPerson();
+					readInSzeanrioListeforPerson();
 					tfNummer.setText(newPerson.getNummer());
 					m_Art.getSelectionModel().select(newPerson.getArtLong());
 					if (newPerson.getNachname() == null) newPerson.setNachname("");
@@ -109,7 +117,11 @@ public class AnsprechpartnerController {
 					tfMailadresse.setText(newPerson.getMail());
 					if (newPerson.getTelefon() == null) newPerson.setTelefon("");
 					tfTelefon.setText(newPerson.getTelefon());
-					btnLoeschen.disableProperty().bind(Bindings.lessThan(0,Bindings.size(inKomponentenList)));
+//					BooleanBinding hasKomponent = Bindings.lessThan(0,Bindings.size(inKomponentenList));
+//					BooleanBinding hasSzenario  = Bindings.lessThan(0,Bindings.size(inSzenarioList));
+//					btnLoeschen.disableProperty().bind(hasKomponent.or(hasSzenario)); 
+					btnLoeschen.disableProperty().bind(Bindings.lessThan(0,Bindings.size(inKomponentenList))
+												   .or(Bindings.lessThan(0,Bindings.size(inSzenarioList))));
 				}
 				dataIsChanged.set(false);
 			}
@@ -185,20 +197,26 @@ public class AnsprechpartnerController {
 			}
 		});
 		
-//	    Setup for Sub-Panel    
+//	    Setup for Sub-Panels    
 		
 		tvKomponenten.setItems(inKomponentenList);
-
 		tcKomponentenName.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
-		
 		tcSystemName.setCellValueFactory(cellData -> cellData.getValue().getInSystem().nameProperty());
-		
 		tcPartnerName.setCellValueFactory(cellData -> cellData.getValue().getInSystem().getinPartner().nameProperty());
+		
+		tvInSzenario.setItems(inSzenarioList);
+		tcIsNr.setCellValueFactory(cellData -> Bindings.format(InSzenario.FORMAT_ISNR, 
+												     cellData.getValue().getIsNr()));
+		tcInSzenario.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
 	}
 
 	@FXML
 	void loeschen(ActionEvent event) {
 		if (inKomponentenList.size() > 0) {
+			mainCtr.setErrorText("Fehler: Löschung nicht möglich da Eintragungen vorhanden");
+			return;
+		}	
+		if (inSzenarioList.size() > 0) {
 			mainCtr.setErrorText("Fehler: Löschung nicht möglich da Eintragungen vorhanden");
 			return;
 		}	
@@ -217,7 +235,7 @@ public class AnsprechpartnerController {
 				entityManager.remove(aktAnsprechpartner);
 				entityManager.getTransaction().commit();
 				aktAnsprechpartner = null;
-				mainCtr.loadSystemListData();
+				mainCtr.loadAnsprechpartnerListData();
 				mainCtr.setInfoText("Das " + aktName + " wurde erfolgreich gelöscht !");
 			} catch (RuntimeException er) {
 				Dialogs.create()
@@ -316,6 +334,7 @@ public class AnsprechpartnerController {
 					.showException(e);
 	    	}
 			readInKomponentenListeforPerson();
+			readInSzeanrioListeforPerson();
 		}
 		return true;
 	}
@@ -378,6 +397,19 @@ public class AnsprechpartnerController {
 			inKomponentenList.size() + " Komponenten gefunden");
 	}
 
+	protected void readInSzeanrioListeforPerson() {
+		inSzenarioList.clear();
+		TypedQuery<InSzenario> tqK = entityManager.createQuery(
+				"SELECT i FROM InSzenario i", InSzenario.class);
+		List<InSzenario> resultList = tqK.getResultList();
+		for(InSzenario k : resultList ) {
+			if (k.getAnsprechpartner().size() > 0 &&  
+				k.getAnsprechpartner().contains(aktAnsprechpartner) ) {
+				inSzenarioList.add(k);
+			}
+		}
+	}
+	
 	public final ObjectProperty<Ansprechpartner> ansprechpartnerProperty() {
 		return ansprechpartner;
 	}
@@ -391,14 +423,21 @@ public class AnsprechpartnerController {
 	}
     
     void checkFieldsFromView() {
-    	assert tfNummer      != null : "fx:id=\"tfNummer\" was not injected: check your FXML file 'InSystem.fxml'.";
-    	assert tfNachname    != null : "fx:id=\"tfNachname\" was not injected: check your FXML file 'InSystem.fxml'.";
-    	assert tfVorname     != null : "fx:id=\"tfVorname\" was not injected: check your FXML file 'InSystem.fxml'.";
-    	assert tfAbteilung   != null : "fx:id=\"tfAbteilung\" was not injected: check your FXML file 'InSystem.fxml'.";
-        assert tfMailadresse != null : "fx:id=\"tfMailadresse\" was not injected: check your FXML file 'InSystem.fxml'.";
-        assert tfTelefon     != null : "fx:id=\"tfTelefon\" was not injected: check your FXML file 'InSystem.fxml'.";
-        assert tvKomponenten != null : "fx:id=\"tvKomponenten\" was not injected: check your FXML file 'InSystem.fxml'.";
-        assert btnSpeichern  != null : "fx:id=\"btnSpeichern\" was not injected: check your FXML file 'InSystem.fxml'.";
-        assert btnLoeschen   != null : "fx:id=\"btnLoeschen\" was not injected: check your FXML file 'InSystem.fxml'.";
+    	assert tfNummer      	 != null : "fx:id=\"tfNummer\" was not injected: check your FXML file 'Ansprechpartner.fxml'.";
+    	assert tfNachname    	 != null : "fx:id=\"tfNachname\" was not injected: check your FXML file 'Ansprechpartner.fxml'.";
+    	assert tfVorname     	 != null : "fx:id=\"tfVorname\" was not injected: check your FXML file 'Ansprechpartner.fxml'.";
+    	assert tfAbteilung   	 != null : "fx:id=\"tfAbteilung\" was not injected: check your FXML file 'Ansprechpartner.fxml'.";
+        assert tfMailadresse	 != null : "fx:id=\"tfMailadresse\" was not injected: check your FXML file 'Ansprechpartner.fxml'.";
+        assert tfTelefon		 != null : "fx:id=\"tfTelefon\" was not injected: check your FXML file 'Ansprechpartner.fxml'.";
+        assert tvKomponenten	 != null : "fx:id=\"tvKomponenten\" was not injected: check your FXML file 'Ansprechpartner.fxml'.";
+        assert tcPartnerName     != null : "fx:id=\"tcPartnerName\" was not injected: check your FXML file 'Ansprechpartner.fxml'.";
+        assert tcSystemName      != null : "fx:id=\"tcSystemName\" was not injected: check your FXML file 'Ansprechpartner.fxml'.";
+        assert tcKomponentenName != null : "fx:id=\"tcKomponentenName\" was not injected: check your FXML file 'Ansprechpartner.fxml'.";
+
+        assert btnSpeichern  	 != null : "fx:id=\"btnSpeichern\" was not injected: check your FXML file 'Ansprechpartner.fxml'.";
+        assert btnLoeschen   	 != null : "fx:id=\"btnLoeschen\" was not injected: check your FXML file 'Ansprechpartner.fxml'.";
+        assert tvInSzenario  	 != null : "fx:id=\"tvInSzenario\" was not injected: check your FXML file 'Ansprechpartner.fxml'.";
+        assert tcInSzenario 	 != null : "fx:id=\"tcInSzenario\" was not injected: check your FXML file 'Ansprechpartner.fxml'.";
+        assert tcIsNr 			 != null : "fx:id=\"tcIsNr\" was not injected: check your FXML file 'Ansprechpartner.fxml'.";
     }
 }
