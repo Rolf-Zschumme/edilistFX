@@ -14,8 +14,8 @@
 		<entity-name>de.vbl.im.model.InSzenario</entity-name>
 		<entity-width>120</entity-width>
 		<entity-height>136</entity-height>
-		<entity-X-Coordinate>391</entity-X-Coordinate>
-		<entity-Y-Coordinate>30</entity-Y-Coordinate>
+		<entity-X-Coordinate>415</entity-X-Coordinate>
+		<entity-Y-Coordinate>10</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
@@ -36,10 +36,54 @@
 		<entity-name>de.vbl.im.model.Konfiguration</entity-name>
 		<entity-width>120</entity-width>
 		<entity-height>103</entity-height>
-		<entity-X-Coordinate>585</entity-X-Coordinate>
-		<entity-Y-Coordinate>351</entity-Y-Coordinate>
+		<entity-X-Coordinate>609</entity-X-Coordinate>
+		<entity-Y-Coordinate>331</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>true</relation-collapsed>
+		<basic-collapsed>false</basic-collapsed>
+	</entity>
+
+	<entity>
+		<entity-name>de.vbl.im.model.DokuLink</entity-name>
+		<entity-width>120</entity-width>
+		<entity-height>196</entity-height>
+		<entity-X-Coordinate>609</entity-X-Coordinate>
+		<entity-Y-Coordinate>116</entity-Y-Coordinate>
+		<primary-collapsed>true</primary-collapsed>
+		<relation-collapsed>true</relation-collapsed>
+		<basic-collapsed>false</basic-collapsed>
+	</entity>
+
+	<entity>
+		<entity-name>de.vbl.im.model.Repository</entity-name>
+		<entity-width>120</entity-width>
+		<entity-height>58</entity-height>
+		<entity-X-Coordinate>609</entity-X-Coordinate>
+		<entity-Y-Coordinate>10</entity-Y-Coordinate>
+		<primary-collapsed>true</primary-collapsed>
+		<relation-collapsed>false</relation-collapsed>
+		<basic-collapsed>true</basic-collapsed>
+	</entity>
+
+	<entity>
+		<entity-name>de.vbl.im.model.Integration</entity-name>
+		<entity-width>120</entity-width>
+		<entity-height>276</entity-height>
+		<entity-X-Coordinate>415</entity-X-Coordinate>
+		<entity-Y-Coordinate>286</entity-Y-Coordinate>
+		<primary-collapsed>true</primary-collapsed>
+		<relation-collapsed>true</relation-collapsed>
+		<basic-collapsed>false</basic-collapsed>
+	</entity>
+
+	<entity>
+		<entity-name>de.vbl.im.model.Intervall</entity-name>
+		<entity-width>120</entity-width>
+		<entity-height>83</entity-height>
+		<entity-X-Coordinate>609</entity-X-Coordinate>
+		<entity-Y-Coordinate>459</entity-Y-Coordinate>
+		<primary-collapsed>true</primary-collapsed>
+		<relation-collapsed>false</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
 	</entity>
 
@@ -55,44 +99,11 @@
 	</entity>
 
 	<entity>
-		<entity-name>de.vbl.im.model.Repository</entity-name>
+		<entity-name>de.vbl.im.model.GeschaeftsObjekt</entity-name>
 		<entity-width>120</entity-width>
-		<entity-height>58</entity-height>
-		<entity-X-Coordinate>585</entity-X-Coordinate>
-		<entity-Y-Coordinate>30</entity-Y-Coordinate>
-		<primary-collapsed>true</primary-collapsed>
-		<relation-collapsed>false</relation-collapsed>
-		<basic-collapsed>true</basic-collapsed>
-	</entity>
-
-	<entity>
-		<entity-name>de.vbl.im.model.Integration</entity-name>
-		<entity-width>120</entity-width>
-		<entity-height>276</entity-height>
-		<entity-X-Coordinate>391</entity-X-Coordinate>
-		<entity-Y-Coordinate>306</entity-Y-Coordinate>
-		<primary-collapsed>true</primary-collapsed>
-		<relation-collapsed>true</relation-collapsed>
-		<basic-collapsed>false</basic-collapsed>
-	</entity>
-
-	<entity>
-		<entity-name>de.vbl.im.model.Intervall</entity-name>
-		<entity-width>120</entity-width>
-		<entity-height>83</entity-height>
-		<entity-X-Coordinate>585</entity-X-Coordinate>
-		<entity-Y-Coordinate>479</entity-Y-Coordinate>
-		<primary-collapsed>true</primary-collapsed>
-		<relation-collapsed>false</relation-collapsed>
-		<basic-collapsed>false</basic-collapsed>
-	</entity>
-
-	<entity>
-		<entity-name>de.vbl.im.model.DokuLink</entity-name>
-		<entity-width>120</entity-width>
-		<entity-height>196</entity-height>
-		<entity-X-Coordinate>585</entity-X-Coordinate>
-		<entity-Y-Coordinate>136</entity-Y-Coordinate>
+		<entity-height>103</entity-height>
+		<entity-X-Coordinate>23</entity-X-Coordinate>
+		<entity-Y-Coordinate>455</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
@@ -106,17 +117,6 @@
 		<entity-Y-Coordinate>91</entity-Y-Coordinate>
 		<primary-collapsed>true</primary-collapsed>
 		<relation-collapsed>false</relation-collapsed>
-		<basic-collapsed>false</basic-collapsed>
-	</entity>
-
-	<entity>
-		<entity-name>de.vbl.im.model.GeschaeftsObjekt</entity-name>
-		<entity-width>120</entity-width>
-		<entity-height>103</entity-height>
-		<entity-X-Coordinate>23</entity-X-Coordinate>
-		<entity-Y-Coordinate>491</entity-Y-Coordinate>
-		<primary-collapsed>true</primary-collapsed>
-		<relation-collapsed>true</relation-collapsed>
 		<basic-collapsed>false</basic-collapsed>
 	</entity>
 
