@@ -40,7 +40,7 @@ public class IM_Main extends Application {
 		try {
 			Parent root = loadAndStartController();
 			Scene scene = new Scene(root); 
-			scene.getStylesheets().add(getClass().getResource("view/application.css").toExternalForm());
+			scene.getStylesheets().add(getClass().getResource("controller/view/application.css").toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch (Exception e) {
@@ -55,7 +55,7 @@ public class IM_Main extends Application {
 	}
 
 	public Parent loadAndStartController() {
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("view/IM.fxml"));
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("controller/view/IM.fxml"));
 		Parent root = null;
 
 		try {

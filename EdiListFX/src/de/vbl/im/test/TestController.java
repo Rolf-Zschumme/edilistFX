@@ -8,11 +8,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import de.vbl.im.controller.IMController;
 import de.vbl.im.controller.IntegrationController;
 import de.vbl.im.controller.InKomponenteController;
 import de.vbl.im.controller.InPartnerController;
 import de.vbl.im.controller.InSystemController;
-import de.vbl.im.controller.IMController;
 
 public class TestController extends Application {
 
