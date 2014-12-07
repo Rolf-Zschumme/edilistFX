@@ -111,6 +111,7 @@ public class InPartnerController {
 					inSystemAnzahl.unbind();
 					ansprechpartnerList.clear();
 					integrationSet.clear();
+					btnRemoveAnsprechpartner.disableProperty().unbind();
 				}
 				if (newPartner != null) {
 					aktPartner = newPartner;

@@ -30,8 +30,8 @@
 						<TextField fx:id="tfBezeichnung" layoutX="89.0" layoutY="11.0" prefHeight="25.0" prefWidth="220.0" AnchorPane.leftAnchor="120.0" AnchorPane.topAnchor="5.0" />
 						<Label layoutX="324.0" layoutY="15.0" text="Beschreibung:" AnchorPane.leftAnchor="370.0" AnchorPane.topAnchor="5.0" />
 						<TextArea fx:id="taBeschreibung" layoutX="411.0" layoutY="7.0" maxHeight="1.7976931348623157E308" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="450.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
-                                    <Button fx:id="btnRemoveAnsprechpartner" disable="true" mnemonicParsing="false" onAction="#actionRemoveAnsprechpartner" prefWidth="80.0" text="entfernen" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="105.0" />
-                                    <Button mnemonicParsing="false" onAction="#actionAddAnsprechpartner" prefWidth="80.0" text="hinzufügen" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="65.0" />
+                                    <Button fx:id="btnRemoveAnsprechpartner" disable="true" mnemonicParsing="false" onAction="#actionRemoveAnsprechpartner" prefWidth="80.0" text="Entfernen" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="105.0" />
+                                    <Button mnemonicParsing="false" onAction="#actionAddAnsprechpartner" prefWidth="80.0" text="Hinzufügen" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="65.0" />
                                     <Label alignment="CENTER" disable="true" text="Ansprechpartner:" AnchorPane.leftAnchor="12.0" AnchorPane.topAnchor="40.0" />
                                     <ListView fx:id="lvAnsprechpartner" prefWidth="220.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="120.0" AnchorPane.topAnchor="40.0" />
 					</children>

@@ -597,7 +597,7 @@ public class IMController {
 		Dialogs.create()
 			.owner(primaryStage).title(IMconstant.APPL_NAME)
 			.masthead("VBL-Tool zur Verwaltung der Integrationsszenarios")
-			.message("\nProgramm-Version 1.1.0 - 11.11.2014\n" +
+			.message("\nProgramm-Version 1.2.0 - 05.12.2014\n" +
 					 "\nDatenbank-Name: " + dbName +
 			   	     "\nJava-Runtime-Verion: " + System.getProperty("java.version"))
 			.showInformation();
@@ -860,6 +860,9 @@ public class IMController {
     	Map<String, Object> properties = entityManager.getProperties();
     	String dbUrl = (String) properties.get("javax.persistence.jdbc.url");
     	dbName = dbUrl.substring(dbUrl.lastIndexOf("/")+1);
+    	if (dbName.startsWith("xid")) {
+    		IMconstant.APPL_NAME += " DEV"; 
+    	}
     	logger.info("Datenbankverbindung zur DB \"" + dbName + "\" erfolgreich hergestellt.");
     }
     
