@@ -23,7 +23,8 @@ public class IM_Main extends Application {
 	public static void main(String[] args) {
 		Date date = java.util.Calendar.getInstance().getTime();
 		SimpleDateFormat dateFormatter =  new SimpleDateFormat("dd.MM.yyyy");
-		String dateString = dateFormatter.format(date);		
+		String dateString = dateFormatter.format(date);
+		System.out.println("Java-Version " + System.getProperty("java.version"));
 		logger.info("Java-Version:" + System.getProperty("java.version") + " Datum: " + dateString);
 		try {
 			launch(args);
