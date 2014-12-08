@@ -1,6 +1,7 @@
 package de.vbl.im.controller;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Iterator;
@@ -801,13 +802,16 @@ public class IMController {
 
    		File file = fileChooser.showSaveDialog(primaryStage);
    		
+   		Action response = Dialog.Actions.CANCEL;
     	if (file != null) {
 			initialExportFilePath = file.getParent();
 			initialExportFileName = file.getName();
+	   		response = Dialog.Actions.YES;
+    	}
+    	while (response == Dialog.Actions.YES) {
 			Cursor aktCursor = primaryStage.getScene().getCursor();
 			primaryStage.getScene().setCursor(Cursor.WAIT);
     		ExportToExcel export = new ExportToExcel(entityManager);
-    		
     		try {
     			int lines = export.write(file);
     			primaryStage.getScene().setCursor(aktCursor);
@@ -815,13 +819,22 @@ public class IMController {
     					.masthead(null)
     					.message(lines + " Zeilen in der Datei " + file.getName() + 
     							" im Verzeichnis " + file.getParent() +" gespeichert")
-    					.showInformation();		
-			} catch (IOException e1) {
+    					.showInformation();
+    			response = Dialog.Actions.CLOSE;
+    		} catch (FileNotFoundException e) {
+				primaryStage.getScene().setCursor(aktCursor);
+				response = Dialogs.create().owner(primaryStage).title(IMconstant.APPL_NAME)
+						.masthead("HINWEIS")
+						.message(e.getMessage() + "\n\nVorgang wiederholen?")
+						.actions(Dialog.Actions.YES, Dialog.Actions.CANCEL)
+						.showConfirm();
+    		} catch (IOException e) {
 				primaryStage.getScene().setCursor(aktCursor);
 				Dialogs.create().owner(primaryStage).title(IMconstant.APPL_NAME)
 						.masthead("FEHLER")
 						.message("Fehler beim Speichern der Exportdatei")
-						.showException(e1);
+						.showException(e);
+				file = null;
 			}
     	}
     }

@@ -172,4 +172,15 @@ public class Ansprechpartner implements Serializable {
 		}
 		return ret;
 	}
+	// @Transient
+	static public String alltoString (Collection<Ansprechpartner> liste) {
+		String ret = "";
+		if (liste != null && liste.size() > 0) {
+			for(Ansprechpartner ansprechPartner : liste) {
+				ret += ansprechPartner.getArtNameFirma().trim() + "\n";
+			}
+			ret = ret.substring(0, ret.length() - 1);
+		}
+		return ret;
+	}
 }
