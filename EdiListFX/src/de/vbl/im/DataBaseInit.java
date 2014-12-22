@@ -58,7 +58,7 @@ public class DataBaseInit {
 						
 		} catch (RuntimeException e) {
 			if (ta != null && ta.isActive()) {
-				System.out.println("Rollback wird durchgeführt");
+				System.out.println("Rollback wird durchgefÃ¼hrt");
 			}
 			e.printStackTrace();
 		}
@@ -86,10 +86,10 @@ public class DataBaseInit {
 		repro1.setName("QS-Akte");
 		repro1.setLocation("svn://itneu/SE-Akten");
 		repro1.setStartPfad("/03_QS-Akte");
-		repro1.setBenutzer("adelfinop");
-		repro1.setPasswort("16WKGE");
+		repro1.setBenutzer("ad");
+		repro1.setPasswort("*******");
 		em.persist(repro1);
-		System.out.println("Repository für " + repro1.getName() + " angelegt.");
+		System.out.println("Repository fÃ¼r " + repro1.getName() + " angelegt.");
 		
 		Repository repro2 = new Repository();
 		repro2.setId(2L);
@@ -99,7 +99,7 @@ public class DataBaseInit {
 		repro2.setBenutzer("Tester");
 		repro2.setPasswort("******");
 		em.persist(repro2);
-		System.out.println("Repository für " + repro2.getName() + " angelegt.");
+		System.out.println("Repository fÃ¼r " + repro2.getName() + " angelegt.");
 	}
 
 
@@ -155,7 +155,7 @@ public class DataBaseInit {
 					em.persist(k[132] = newKomponente(system,"FV"));
 					em.persist(k[133] = newKomponente(system,"UEV"));
 			em.persist(system = newSystem(partner,"APC"));
-					em.persist(k[141] = newKomponente(system,"DÜVA"));
+					em.persist(k[141] = newKomponente(system,"DÃœVA"));
 			em.persist(system = newSystem(partner,"Dateiablage"));
 					em.persist(k[151] = newKomponente(system,"FB-AGS"));
 
@@ -236,12 +236,12 @@ public class DataBaseInit {
 		em.persist(newKonfiguration("CS_ANW_MLD__Meldungseingang"));
 		em.persist(newKonfiguration("CS_ANW_MLD__Meldungsausgang"));
 
-		inSzenario = newInSzenario("LST Zahlungenaufträge");
+		inSzenario = newInSzenario("LST ZahlungenauftrÃ¤ge");
 		em.persist(inSzenario);
 		em.persist(newKonfiguration("CS_LSTG_Mitteilung_Leistungstraeger__DPAG_Rentenservice"));
 		em.persist(newKonfiguration("CS_LSTG_Zahlungsanweisung__DPAG_Rentenservice"));
 		
-		inSzenario = newInSzenario("CRM Beschäftspartner-Replikation");
+		inSzenario = newInSzenario("CRM BeschÃ¤ftspartner-Replikation");
 		em.persist(inSzenario);
 		em.persist(newKonfiguration("CS_ZGP_Replikation__CRM__to__ERP"));
 		em.persist(newKonfiguration("CS_ZGP_Replikation__ERP__to__CRM"));
@@ -289,9 +289,9 @@ public class DataBaseInit {
 		em.persist(g[7]  = new GeschaeftsObjekt("ZfA-Meldungen"));			++anzGO;
 		em.persist(g[8]  = new GeschaeftsObjekt("MM-Bestellanfrage"));		++anzGO;
 		em.persist(g[9]  = new GeschaeftsObjekt("MM-Bestellung"));			++anzGO;
-		em.persist(g[10] = new GeschaeftsObjekt("MM-Bestelländerung"));		++anzGO;
+		em.persist(g[10] = new GeschaeftsObjekt("MM-BestellÃ¤nderung"));		++anzGO;
 		em.persist(g[11] = new GeschaeftsObjekt("MM-Materialstammdaten"));	++anzGO;
-		em.persist(g[12] = new GeschaeftsObjekt("MM-Einkaufsinfosätze"));	++anzGO;
+		em.persist(g[12] = new GeschaeftsObjekt("MM-EinkaufsinfosÃ¤tze"));	++anzGO;
 		System.out.println(anzGO + " Geschaeftobjekte() angelegt");
 	}
 	
@@ -322,7 +322,7 @@ public class DataBaseInit {
 	private static InKomponente newKomponente(	InSystem system, 
 												String name		) 
 	{
-		System.out.println("Komponente anlegen für \"" + system.getName() +
+		System.out.println("Komponente anlegen fÃ¼r \"" + system.getName() +
 												"\" mit Name \"" + name + "\"");
 		InKomponente k = new InKomponente(name,system);
 		return k;
